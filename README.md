@@ -30,7 +30,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
 
 # 봇 실행하기
-끝봇의 코드를 직접 실행해보고 싶으시면, [라이센스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
+끝봇의 코드를 직접 실행해보고 싶으시면, [라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
 
 ## 요구사항
 - python 3.8
@@ -38,8 +38,9 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - mongoDB
 
 ```shell
-git clone https://github.com/janu8ry/kkutbot.git # config.yml 수정
+git clone https://github.com/janu8ry/kkutbot.git
 pip3 install -r requirements.txt
+mv config.example.yml config.yml # config.yml 수정
 python3 main.py
 ```
 
@@ -49,6 +50,8 @@ python3 main.py
 끝봇 이메일: [kkutbot@gmail.com](mailto:kkutbot@gmail.com)    
 [![discord](https://discordapp.com/api/guilds/702761942217130005/embed.png?style=banner2)](https://discord.gg/z8tRzwf)
 
-# 라이센스
+# 라이선스
 
-AGPL-3.0
+**AGPL-3.0**
+- 사용자의 요청시 소스코드를 제공할 의무가 있습니다.
+- 어떤 목적으로, 어떤 형태로든 사용할 수 있지만 사용하거나 변경된 프로그램을 배포하는 경우 무조건 동일한 라이선스 즉, AGPL로 공개해야 한다.
