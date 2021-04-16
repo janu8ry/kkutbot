@@ -46,4 +46,4 @@ python3 main.py
 
 # 라이센스
 
-agpl
+AGPL-3.0
