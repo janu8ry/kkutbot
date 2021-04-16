@@ -211,7 +211,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("현재 이용 정지 되지 않은 유저입니다.")
 
-    @commands.command(name="$실행", usage="ㄲ$실행 (코드)", aliases=("ㅅ", "$ㅅ"), hidden=True)
+    @commands.command(name="$실행", usage="ㄲ$실행 (코드)", aliases=("ㅅ", "$ㅅ"), hidden=True)  # thanks to seojin200403
     @commands.is_owner()
     async def run_code(self, ctx: commands.Context, *, code: str):
         """파이썬 코드를 실행합니다."""

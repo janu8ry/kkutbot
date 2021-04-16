@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import random
 from typing import Union
 
@@ -41,7 +41,7 @@ def time_convert(time: timedelta) -> str:
     return f"{time.seconds}초"
 
 
-def split_string(n: str, unit=2000, t="\n") -> tuple:
+def split_string(n: str, unit=2000, t="\n") -> tuple:  # thanks to seojin200403
     n = n.split(t)
     x = list()
     r = list()

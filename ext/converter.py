@@ -8,7 +8,7 @@ from discord.ext.commands import errors, Context
 from ext.db import db
 
 
-class SpecialMemberConverter(Converter):
+class SpecialMemberConverter(Converter):  # thanks to seojin200403
     async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
         try:
             return await MemberConverter().convert(ctx, argument)

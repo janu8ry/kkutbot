@@ -1,3 +1,5 @@
+# 파트너 봇 "한마루" 와의 데이터 공유를 위한 모듈입니다.
+
 import pickle
 import os
 

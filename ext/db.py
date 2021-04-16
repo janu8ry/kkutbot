@@ -6,7 +6,7 @@ import discord
 import yaml
 
 
-def get(data, path: list):
+def get(data, path: list):  # thanks to seojin200403
     if len(path) > 1:
         try:
             return get(data[path[0]], path[1:])
