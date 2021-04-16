@@ -52,7 +52,7 @@ async def reload_commands(ctx: commands.Context, *, extension=None):
 
 @bot.event
 async def on_command(ctx: commands.Context):
-    if isinstance(ctx.channel, discord.DMChannel):
+    if isinstance(ctx.channel, discord.DMChannel):  # TODO: 로깅을 웹후크로 변경
         await bot.log(escape_mentions(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}"))
     else:
         await bot.log(escape_mentions(f"{ctx.author} [`{ctx.author.id}`]  |  {ctx.guild} [`{ctx.guild.id}`]  |  {ctx.channel} [`{ctx.channel.id}`]  |  {ctx.message.content}"))
