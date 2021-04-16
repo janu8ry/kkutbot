@@ -27,7 +27,6 @@ bot_whitelist:
 # list of admin ids that can use admin commands.
 admin:
   - 00000
-  - 00000
 
 # channel id that kkutbot logs
 log_channel: 00000
