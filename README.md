@@ -29,6 +29,9 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 
 버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
 
+# Todo
+- [ ] 이미 출석해도 주간 출석 현황 조회 가능하도록 변경
+
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
 
