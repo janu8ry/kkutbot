@@ -9,6 +9,7 @@
 
 **[봇 초대하기](https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=126016&scope=bot)**
 
+
 ## 정보
 - 개발자: sonix18#3825
 - 개발 언어: python 3.8.6 ([discord.py 1.7.0](https://discordpy.readthedocs.io/en/latest/index.html))
@@ -17,12 +18,16 @@
 - 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
+
 # 기여하기
 이슈 등록이나 PR은 언제나 환영입니다!
+
 ## 건의사항
-Pull Request / Issue 등록 또는 서포트 서버의 `#건의사항` 채널
+Issue 등록 또는 서포트 서버의 `#건의사항` 채널
 ## 버그제보
 Issue 등록 또는 서포트 서버의 `#버그제보` 채널
+
+버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [라이센스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
