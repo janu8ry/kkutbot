@@ -1,5 +1,6 @@
 # 디스코드봇, 끝봇
 ![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg) [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226) ![GitHub](https://img.shields.io/github/license/janu8ry/kkutbot) ![python](https://img.shields.io/badge/python-3.8-blue)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjanu8ry%2Fkkutbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjanu8ry%2Fkkutbot?ref=badge_shield)
 
 # 소개
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
@@ -47,3 +48,7 @@ python3 main.py
 # 라이센스
 
 agpl
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjanu8ry%2Fkkutbot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjanu8ry%2Fkkutbot?ref=badge_large)
