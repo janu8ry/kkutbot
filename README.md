@@ -11,7 +11,7 @@
 
 
 ## 정보
-- 개발자: sonix18#3825
+- 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
 - 개발 언어: python 3.8.6 ([discord.py 1.7.0](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 1.6 (개발버전: 1.7a)
 - 데이터베이스: mongoDB  
