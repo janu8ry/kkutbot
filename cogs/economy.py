@@ -72,11 +72,11 @@ class Economy(commands.Cog, name="경제"):
 
         await ctx.send(f"{msg}\n\n**주간 출석 현황**\n{' '.join(week_daily)}\n\n{options}")
 
-    """@commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
-    @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def quest(self, ctx: commands.Context):
-        "매일 퀘스트를 클리어하고 보상을 획득합니다."
-        embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))"""
+    # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
+    # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
+    # async def quest(self, ctx: commands.Context):
+    #     """매일 퀘스트를 클리어하고 보상을 획득합니다."""
+    #     embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
 
 
 def setup(bot: Kkutbot):
