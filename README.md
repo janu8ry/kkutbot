@@ -1,5 +1,5 @@
 # 디스코드봇, 끝봇
-![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg) [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226) ![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen) ![python](https://img.shields.io/badge/python-3.8-blue)
+![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg) [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226) ![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen) ![python](https://img.shields.io/badge/python-3.8-blue) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5e1c2e0ce394529b1c57f9c8eccc7aa)](https://app.codacy.com/gh/janu8ry/kkutbot?utm_source=github.com&utm_medium=referral&utm_content=janu8ry/kkutbot&utm_campaign=Badge_Grade_Settings)
 
 # 소개
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
@@ -28,6 +28,9 @@ Issue 등록 또는 서포트 서버의 `#건의사항` 채널
 Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 
 버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
+
+# Todo
+- [ ] 이미 출석해도 주간 출석 현황 조회 가능하도록 변경
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
