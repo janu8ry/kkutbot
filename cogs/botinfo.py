@@ -83,7 +83,7 @@ class BotInfo(commands.Cog, name="일반"):
                 "서버 /사용자 수, 샤드": f'`{len(self.bot.guilds)}`개/`{db.user.count_documents({})}`명, `{ctx.guild.shard_id + 1}/{self.bot.shard_count}`',
                 "크레딧": '끝봇 개발에 도움을 주신\n`서진`, `심심러`님, 프로필\n사진을 만들어 주신\n`Tim23` 님께 감사드립니다.',
                 "저작권": 'Icon made by `Pixel\nperfect`, `Freepik`,\n`Good Ware`\nfrom [flaticon](https://www.flaticon.com)',
-                f"링크": f"[봇 초대하기]({config('links.invite.bot')})\n[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[dbl]({config('links.dbl')})"}
+                "링크": f"[봇 초대하기]({config('links.invite.bot')})\n[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[dbl]({config('links.dbl')})"}
         for k, v in desc.items():
             embed.add_field(name=k, value=v)
         embed.set_thumbnail(url=self.bot.user.avatar_url)

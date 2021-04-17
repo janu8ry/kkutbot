@@ -24,7 +24,7 @@ class SoloGame:
 
     async def send_info_embed(self, _msg: Union[discord.Message, commands.Context], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
         _embed = discord.Embed(title=f"끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"현재 점수: `{self.score}` 점", color=config('colors.help'))
-        _embed.add_field(name=f"단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_DU(self.bot_word))})```", inline=False)
+        _embed.add_field(name="단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_DU(self.bot_word))})```", inline=False)
         _embed.add_field(name="남은 시간", value=f"`{round((15 if self.kkd else 10) - (time.time() - self.begin_time), 1)}` 초", inline=False)
         _embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입하여 규칙을 확인할 수 있습니다.")
         try:
@@ -89,13 +89,13 @@ class MultiGame:
     async def update_embed(self, embed):
         try:
             await self.msg.delete()
-        except:  # noqa
+        except discord.NotFound:
             pass
         self.msg = await self.msg.channel.send(embed=embed)
 
     def game_embed(self):
         embed = discord.Embed(title="끝말잇기 멀티플레이", description=f"라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}", color=config('colors.help'))
-        embed.add_field(name=f"단어", value=f"```yaml\n{self.word} ({' / '.join(get_DU(self.word))})```")
+        embed.add_field(name="단어", value=f"```yaml\n{self.word} ({' / '.join(get_DU(self.word))})```")
         embed.add_field(name="누적 점수", value=f"`{self.score}` 점", inline=False)
         embed.add_field(name="플레이어", value=f"`{'`, `'.join([_x.name for _x in self.players if _x not in self.final_score])}`", inline=False)
         embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입하여 규칙을 확인할 수 있습니다.")
@@ -294,7 +294,7 @@ class Game(commands.Cog, name="게임"):
 
                         if m.content == "시작" and game.host == m.author:
                             if len(game.players) < 2:
-                                await ctx.send(f"플레이어 수가 부족하여 게임을 시작할 수 없습니다.")
+                                await ctx.send("플레이어 수가 부족하여 게임을 시작할 수 없습니다.")
                             else:
                                 await ctx.send(f"{game.host.mention} 님의 게임을 시작합니다.")
                                 await msg.delete()
