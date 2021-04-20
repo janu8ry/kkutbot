@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import dbl
+from dhooks import Webhook
 import koreanbots
 import UniqueBotsKR
 
@@ -21,6 +22,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))
         self.uniquebots = UniqueBotsKR.client(self, config('token.uniquebots'), autopost=not config('test'))
+        self.webhook = Webhook.Async(config('webhook_url'))
         # self.hanmaru = hanmaru.Handler(self)
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
@@ -29,7 +31,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.start()
 
     async def log(self, msg: str, embed: discord.Embed = None):
-        await self.get_channel(config('log_channel')).send(msg, embed=embed)
+        await self.webhook.send(msg, embed=embed)
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         try:

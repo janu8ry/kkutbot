@@ -57,6 +57,7 @@ class Admin(commands.Cog, name="관리자"):
     async def logout(self, ctx: commands.Context):
         """봇을 종료합니다."""
         await ctx.send("<:done:716902844975808606> 완료! 로그아웃 되었습니다.")
+        await self.bot.webhook.close()
         await self.bot.close()
 
     @commands.command(name="$서버", usage="ㄲ$서버", hidden=True)

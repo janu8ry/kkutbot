@@ -28,8 +28,8 @@ bot_whitelist:
 admin:
   - 00000
 
-# channel id that kkutbot logs
-log_channel: 00000
+# webhook url for logging command usages
+webhook_url: https://discord.com/api/webhooks/channel_id/token
 
 # embed colors
 colors:
