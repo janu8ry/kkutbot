@@ -65,7 +65,7 @@ class Misc(commands.Cog, name="기타"):
                 }  # 'game.rank_solo.tier': {'$nin': ["언랭크", "뉴비"]}
         }
         if event in eventlist:
-            rank = db.user.find(rank_query).sort(eventlist[event], -1).limit(15)
+            rank = db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
             embed = discord.Embed(title=f"랭킹 top 15 | {event}", description="\n".join(await self.format_rank(rank, eventlist[event])), color=config('colors.help'))
         elif event in modelist:
             embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
