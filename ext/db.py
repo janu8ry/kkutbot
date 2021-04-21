@@ -35,7 +35,7 @@ def emoji(query: str) -> str:
 
 mongo = MongoClient(
     host=config('mongo.ip') if config('test') else 'localhost',
-    port=27017,
+    port=config('mongo.port'),
     username=config('mongo.user'),
     password=config('mongo.password')
 )

@@ -11,6 +11,8 @@ from ext.bot import Kkutbot
 class Profile(commands.Cog, name="사용자"):
     """사용자의 프로필에 관련된 카테고리입니다!"""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

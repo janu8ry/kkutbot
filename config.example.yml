@@ -40,6 +40,7 @@ colors:
 # mongodb configuration
 mongo:
   ip: mongoDB server ip
+  port: 27017
   user: mongoDB username
   password: mongoDB passwd
 

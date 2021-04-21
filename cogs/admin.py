@@ -18,6 +18,8 @@ from ext.bot import Kkutbot
 class Admin(commands.Cog, name="관리자"):
     """관리자 전용 명령어들이 있는 카테고리 입니다."""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
@@ -57,13 +59,12 @@ class Admin(commands.Cog, name="관리자"):
     async def logout(self, ctx: commands.Context):
         """봇을 종료합니다."""
         await ctx.send("<:done:716902844975808606> 완료! 로그아웃 되었습니다.")
-        await self.bot.webhook.close()
         await self.bot.close()
 
     @commands.command(name="$서버", usage="ㄲ$서버", hidden=True)
     @commands.is_owner()
     async def servers(self, ctx: commands.Context):
-        """끝봇이 참가중인 서버의 목록을 확인합니다."""
+        """끝봇이 참가중인 서버의 목록을 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)"""
         for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in self.bot.guilds)):
             await ctx.send(content)
 
@@ -145,8 +146,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.is_owner()
     async def announce_users(self, ctx: commands.Context, *, ann: str):
         """끝봇의 유저들에게 공지를 전송합니다."""
-        title = ann.replace("ㄲ$공지 ", "").split(" | ")[0]
-        desc = ann.replace("ㄲ$공지 ", "").split(" | ")[1]
+        title, desc = ann.replace("ㄲ$공지 ", "").split(" | ")
         embed = discord.Embed(
             title=f"**{ctx.author.name}** 님의 메일함",
             description="> 1주일간 읽지 않은 메일 `1` 개",

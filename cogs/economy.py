@@ -11,6 +11,8 @@ from ext.bot import Kkutbot
 class Economy(commands.Cog, name="경제"):
     """끝봇의 포인트에 관련된 명령어들이 있는 카테고리입니다."""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
@@ -56,10 +58,12 @@ class Economy(commands.Cog, name="경제"):
             if all(week_data.values()):
                 bonus = random.randint(50, 150)
                 add(ctx.author, 'points', bonus)
-                options = f"""{ctx.author.mention}님은 일주일 동안 모두 출석했습니다!
+                options = f"""
+                {ctx.author.mention}님은 일주일 동안 모두 출석했습니다!
                 
                 **추가 보상**
-                +{bonus}<:points:715547592578170880>"""
+                +{bonus}<:points:715547592578170880>
+                """
 
         week_data = read(ctx.author, 'daily')
         for i in range(time.localtime().tm_wday + 1):

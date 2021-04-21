@@ -1,15 +1,18 @@
 from datetime import timedelta
 import random
 from typing import Union
+import json
 
 import discord
 from discord.ext import commands
 
 from ext.db import read, config
-from ext.bot import Kkutbot
 
-DU = Kkutbot.DUlaw()
-wordlist = Kkutbot.wordlist()
+with open('general/wordlist.json', 'r', encoding="utf-8") as f:
+    DU = json.load(f)
+
+with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
+    wordlist = json.load(f)
 
 
 def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:

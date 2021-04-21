@@ -8,6 +8,8 @@ from ext.bot import Kkutbot
 class BotInfo(commands.Cog, name="일반"):
     """봇의 기본 정보에 대한 카테고리입니다!"""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

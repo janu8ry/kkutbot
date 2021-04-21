@@ -3,8 +3,8 @@ import json
 import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import dbl
 from dhooks import Webhook
+import dbl
 import koreanbots
 import UniqueBotsKR
 
@@ -14,6 +14,7 @@ from ext.db import write, db, config
 
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "1.7.0a"
+    __slots__ = ("dblpy", "koreanbots", "uniquebots", "webhook", "hanmaru", "scheduler")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
@@ -30,7 +31,9 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, 'interval', seconds=10)
         self.scheduler.start()
 
-    async def log(self, msg: str, embed: discord.Embed = None):
+    async def log(self, msg: str, embed: discord.Embed = None, nomention=True):
+        if nomention:
+            msg = discord.utils.escape_mentions(msg)
         await self.webhook.send(msg, embed=embed)
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
@@ -39,10 +42,7 @@ class Kkutbot(commands.AutoShardedBot):
         except koreanbots.NotFound:
             return False
         else:
-            if voteinfo.response['voted']:
-                return True
-            else:
-                return False
+            return voteinfo.response['voted']
 
     def try_reload(self, name: str):
         try:
@@ -53,16 +53,18 @@ class Kkutbot(commands.AutoShardedBot):
             except commands.ExtensionNotFound:
                 self.load_extension(name)
 
-    async def reset_daily_alert(self):  # noqa
+    async def update_presence(self):
+        await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
+
+    @staticmethod
+    async def reset_daily_alert():
         write('general', 'daily', 0)
         db.user.update_many({'alert.daily': True}, {'$set': {'alert.daily': False}})
 
-    async def reset_daily(self):  # noqa
+    @staticmethod
+    async def reset_daily():
         week_daily = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
         db.user.update_many(None, {'$set': {'daily': week_daily}})
-
-    async def update_presence(self):
-        await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
     @staticmethod
     def wordlist() -> dict:

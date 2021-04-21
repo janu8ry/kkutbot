@@ -9,6 +9,8 @@ from ext.db import db
 
 
 class SpecialMemberConverter(Converter):  # thanks to seojin200403
+    """User & Member Converter without Member Intents"""
+
     async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
         try:
             return await MemberConverter().convert(ctx, argument)

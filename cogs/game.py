@@ -13,6 +13,10 @@ from ext.bot import Kkutbot
 
 
 class SoloGame:
+    """Game Model for single play mode"""
+
+    __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "channel")
+
     def __init__(self, ctx: commands.Context, kkd: bool = False):
         self.player = ctx.author
         self.kkd = kkd
@@ -52,6 +56,10 @@ class SoloGame:
 
 
 class MultiGame:
+    """Game Model for multiple play mode"""
+
+    __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time", "final_score", "score")
+
     def __init__(self, ctx: commands.Context):
         self.players = [ctx.author]
         self.ctx = ctx
@@ -86,14 +94,14 @@ class MultiGame:
                         value="`" + '`\n`'.join([str(_x) for _x in self.players]) + "`")
         return embed
 
-    async def update_embed(self, embed):
+    async def update_embed(self, embed: discord.Embed):
         try:
             await self.msg.delete()
         except discord.NotFound:
             pass
         self.msg = await self.msg.channel.send(embed=embed)
 
-    def game_embed(self):
+    def game_embed(self) -> discord.Embed:
         embed = discord.Embed(title="끝말잇기 멀티플레이", description=f"라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}", color=config('colors.help'))
         embed.add_field(name="단어", value=f"```yaml\n{self.word} ({' / '.join(get_DU(self.word))})```")
         embed.add_field(name="누적 점수", value=f"`{self.score}` 점", inline=False)
@@ -145,6 +153,8 @@ class MultiGame:
 
 class Game(commands.Cog, name="게임"):
     """끝봇의 메인 기능인 끝말잇기 게임에 대한 카테고리입니다!"""
+
+    __slots__ = ("bot", )
     guild_multi_games = list()
 
     def __init__(self, bot: Kkutbot):

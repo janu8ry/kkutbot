@@ -1,10 +1,10 @@
 import os
 import time
 from datetime import datetime, timedelta
+import asyncio
 
 import discord
 from discord.ext import commands
-from discord.utils import escape_mentions
 
 from ext.db import read, write, add, delete, config, db
 from ext.bot import Kkutbot
@@ -52,10 +52,10 @@ async def reload_commands(ctx: commands.Context, *, extension=None):
 
 @bot.event
 async def on_command(ctx: commands.Context):
-    if isinstance(ctx.channel, discord.DMChannel):  # TODO: 로깅을 웹후크로 변경
-        await bot.log(escape_mentions(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}"))
+    if isinstance(ctx.channel, discord.DMChannel):
+        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}")
     else:
-        await bot.log(escape_mentions(f"{ctx.author} [`{ctx.author.id}`]  |  {ctx.guild} [`{ctx.guild.id}`]  |  {ctx.channel} [`{ctx.channel.id}`]  |  {ctx.message.content}"))
+        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  {ctx.guild} [`{ctx.guild.id}`]  |  {ctx.channel} [`{ctx.channel.id}`]  |  {ctx.message.content}")
 
     add(ctx.author, 'command_used', 1)
     write(ctx.author, 'last_command', time.time())
@@ -179,7 +179,7 @@ async def on_guild_join(guild: discord.Guild):
     write(guild, 'invited', datetime.now())
     await bot.log(f"{guild.name}에 봇 새로 초대됨. 현재 {len(bot.guilds)}개 서버 참여중")
     if len(bot.guilds) % 50 == 0:
-        await bot.log(f"<@610625541157945344> 서버 {len(bot.guilds)}개 달성!")
+        await bot.log(f"<@610625541157945344> `{len(bot.guilds)}`서버 달성", nomention=False)
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']]
     embed = discord.Embed(
         description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
@@ -225,3 +225,4 @@ async def on_guild_remove(guild: discord.Guild):
 
 print("로그인 하는 중...")
 bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 개선, 웹사이트에 추가
+asyncio.run(bot.webhook.close())

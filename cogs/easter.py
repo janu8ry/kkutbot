@@ -11,9 +11,10 @@ from ext.db import config
 class EasterEgg(commands.Cog, name="이스터에그"):
     """그런게 없을까?"""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
-        self.target = None
 
     @commands.command(name="슬롯", usage="ㄲ슬롯 <값>")
     @commands.bot_has_permissions(add_reactions=True)
@@ -27,7 +28,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
             await ctx.send("올인하세요")
             return
         msg = await ctx.send(
-            f":slot_machine: **{str(ctx.author).split('#')[0]}**님의 슬롯 | <:hanmaru_token:796185418616930314> `9999` 베팅 | <:hanmaru_token:796185418616930314> `0` 누적\n"
+            f":slot_machine: **{ctx.author.name}**님의 슬롯 | <:hanmaru_token:796185418616930314> `9999` 베팅 | <:hanmaru_token:796185418616930314> `0` 누적\n"
             "[❔] [❔] [❔]")
         slot_em = list()
         for _ in range(3):
@@ -77,17 +78,18 @@ NodeNotConnected:""",
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def byab(self, ctx: commands.Context):
         """🐳 안녕하세요!"""
-        await ctx.send("코로나19로 힘든 시기!\n"
-                       "딩가딩가 놀 수만은 없죠.\n"
-                       "도움이 필요하실 때에는 어떻게 한다?\n"
-                       "우리 고래뱝을 쓴다!\n"
-                       "미친듯이 안켜지지만 어쩔 수 없어요\n\n"
-                       "개발중이라 조금 불안정할 수 있어요!\n"
-                       "씹덕봇은 아니니까 걱정하지 않으셔도 돼요\n"
-                       "망한 것 같지만, 좋은 봇입니다! 초대해봐요\n\n"
-                       "**봇 초대 링크**\n\n"
-                       "https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=336066630&scope=bot"
-                       )
+        await ctx.send("""
+        코로나19로 힘든 시기!
+        딩가딩가 놀 수만은 없죠.
+        우리 고래뱝을 쓴다!
+        미친듯이 안켜지지만 어쩔 수 없어요...
+        개발중이라 조금 불안정할 수 있어요!
+        씹덕봇은 아니니까 걱정하지 않으셔도 돼요.
+        망한 것 같지만, 좋은 봇입니다! 초대해봐요
+        **봇 초대 링크**
+        
+        https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=336066630&scope=bot
+        """)
 
 
 def setup(bot: Kkutbot):

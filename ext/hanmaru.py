@@ -1,5 +1,3 @@
-# 파트너 봇 "한마루" 와의 데이터 공유를 위한 모듈입니다.
-
 import pickle
 import os
 
@@ -11,6 +9,10 @@ from ext.db import read, config, db
 
 
 class Handler:
+    """File transfer handler for partner bot 'hanmaru'"""
+
+    __slots__ = ("bot", "_input", "_output", "export_path", "fetch_path", "queue")
+
     def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
         self._input = 781893295415885834

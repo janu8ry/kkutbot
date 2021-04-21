@@ -15,6 +15,8 @@ from ext.bot import Kkutbot
 class Misc(commands.Cog, name="기타"):
     """끝봇의 기타 명령어들에 대한 카테고리입니다."""
 
+    __slots__ = ("bot", )
+
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
