@@ -5,8 +5,6 @@ import discord
 from discord.ext.commands.converter import Converter, UserConverter, MemberConverter
 from discord.ext.commands import errors, Context
 
-from ext.db import db
-
 
 class SpecialMemberConverter(Converter):  # thanks to seojin200403
     """User & Member Converter without Member Intents"""
@@ -22,13 +20,13 @@ class SpecialMemberConverter(Converter):  # thanks to seojin200403
             pass
 
         if argument.isnumeric():
-            user = db.user.find_one({'_id': int(argument)})
+            user = ctx.bot.db.user.find_one({'_id': int(argument)})
             return await ctx.bot.fetch_user(user['_id'])
         else:
             if re.match(r"<@!?([0-9]+)>$", argument):
                 return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
             else:
-                user = db.user.find_one({'_name': str(argument)})
+                user = ctx.bot.db.user.find_one({'_name': str(argument)})
                 if user:
                     return await ctx.bot.fetch_user(user['_id'])
                 else:

@@ -9,7 +9,7 @@ import meval
 from humanize import naturalsize
 import psutil
 
-from ext.db import read, write, add, read_hanmaru, db, delete, config
+from ext.db import read, write, add, read_hanmaru, delete, config
 from ext.converter import SpecialMemberConverter
 from ext.utils import split_string, is_admin
 from ext.bot import Kkutbot
@@ -39,9 +39,9 @@ class Admin(commands.Cog, name="관리자"):
         embed.add_field(
             name="현황",
             value=f"서버: `{len(self.bot.guilds)}`개\n"
-            f"유저: `{db.user.count_documents({})}`명\n"
-            f"미사용 유저: `{db.unused.count_documents({})}`명\n"
-            f"활성화: `{db.user.count_documents({'last_command': {'$gt': time.time() - 86400 * count}})}`명\n"
+            f"유저: `{self.bot.db.user.count_documents({})}`명\n"
+            f"미사용 유저: `{self.bot.db.unused.count_documents({})}`명\n"
+            f"활성화: `{self.bot.db.user.count_documents({'last_command': {'$gt': time.time() - 86400 * count}})}`명\n"
             f"출석 유저 수: `{read(None, 'daily')}`명"
         )
         mem = psutil.virtual_memory()
@@ -92,7 +92,7 @@ class Admin(commands.Cog, name="관리자"):
         if user is None:
             user = ctx.author
 
-        if not db.hanmaru.find_one({'_id': user.id}):
+        if not self.bot.db.hanmaru.find_one({'_id': user.id}):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 한마루의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read_hanmaru(user).items())):
             await ctx.send(content)
@@ -104,7 +104,7 @@ class Admin(commands.Cog, name="관리자"):
         if guild is None:
             guild = ctx.guild
 
-        if not db.guild.find_one({'_id': guild.id}):
+        if not self.bot.db.guild.find_one({'_id': guild.id}):
             return await ctx.send("해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read(guild).items())):
             await ctx.send(content)
@@ -136,7 +136,7 @@ class Admin(commands.Cog, name="관리자"):
         if user is None:
             user = ctx.author
 
-        if db.user.find_one({'_id': user.id}):
+        if self.bot.db.user.find_one({'_id': user.id}):
             delete(user)
             await ctx.send("<:done:716902844975808606> 완료!")
         else:
@@ -161,7 +161,7 @@ class Admin(commands.Cog, name="관리자"):
                 timeout=30
             )
             if m.content == "ㅇ":
-                db.user.update_many(
+                self.bot.db.user.update_many(
                     {},
                     {
                         '$push': {'mail': {'title': title, 'value': desc, 'time': datetime.now()}},
@@ -179,7 +179,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def send_notice(self, ctx: commands.Context, target: SpecialMemberConverter(), *, word: str):
         """유저에게 알림을 전송합니다."""
-        db.user.update_one(
+        self.bot.db.user.update_one(
             {'_id': target.id},
             {
                 '$push': {'mail': {'title': "관리자로부터의 알림", 'value': word, 'time': datetime.now()}},
@@ -221,7 +221,7 @@ class Admin(commands.Cog, name="관리자"):
             globals(),
             discord=discord,
             asyncio=asyncio,
-            db=db,
+            db=self.bot.db,
             bot=self.bot,
             ctx=ctx,
             read=read,
@@ -241,9 +241,9 @@ class Admin(commands.Cog, name="관리자"):
     async def add_user_cache(self, ctx: commands.Context):
         """유저 캐시를 리프레시합니다."""
         counter = 0
-        users = db.user.count_documents({"_name": None})
+        users = self.bot.db.user.count_documents({"_name": None})
         msg = await ctx.send(f"진행중... (`{counter}`/`{users}`)")
-        for t in db.user.find({"_name": None}):
+        for t in self.bot.db.user.find({"_name": None}):
             counter = await self.update_user_name(t['_id'], counter)
             await msg.edit(content=f"진행중... (`{counter}`/`{users}`)")
         await ctx.send("<:done:716902844975808606> 완료!")
@@ -254,14 +254,14 @@ class Admin(commands.Cog, name="관리자"):
         cleaned = 0
         deleted = 0
         if delete_data == 'y':
-            deleted = db.unused.count_documents()
-            db.unused.drop()
-        for user in db.user.find({
+            deleted = self.bot.db.unused.count_documents()
+            self.bot.db.unused.drop()
+        for user in self.bot.db.user.find({
             'last_command': {'$lt': time.time() - 86400 * days},
             'command_used': {'$lt': command_usage}
         }):
-            db.unused.insert_one(user)
-            db.user.delete_one({"_id": user['_id']})
+            self.bot.db.unused.insert_one(user)
+            self.bot.db.user.delete_one({"_id": user['_id']})
             cleaned += 1
         await ctx.send(f"<:done:716902844975808606> `{cleaned}` 명 데이터 보존 처리, `{deleted}` 명 데이터 삭제 완료!")
 

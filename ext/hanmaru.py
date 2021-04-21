@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 # from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from ext.db import read, config, db
+from ext.db import read, config
 
 
 class Handler:
@@ -40,7 +40,7 @@ class Handler:
                 with open(self.fetch_path, 'rb') as f:
                     new_input = pickle.load(f)
                 for k, v in new_input.items():
-                    db.hanmaru.update_one({'_id': int(k)}, v, {'upsert': True})
+                    self.bot.db.hanmaru.update_one({'_id': int(k)}, v, {'upsert': True})  # noqa
                 os.remove(self.fetch_path)
 
     def add_queue(self, user: int):

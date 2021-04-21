@@ -14,12 +14,13 @@ from ext.db import write, db, config
 
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "1.7.0a"
-    __slots__ = ("dblpy", "koreanbots", "uniquebots", "webhook", "hanmaru", "scheduler")
+    __slots__ = ("db", "dblpy", "koreanbots", "uniquebots", "webhook", "hanmaru", "scheduler")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.db = db
         self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))
         self.uniquebots = UniqueBotsKR.client(self, config('token.uniquebots'), autopost=not config('test'))

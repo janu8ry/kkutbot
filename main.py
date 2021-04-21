@@ -6,7 +6,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from ext.db import read, write, add, delete, config, db
+from ext.db import read, write, add, delete, config
 from ext.bot import Kkutbot
 from ext.utils import time_convert
 
@@ -29,7 +29,7 @@ async def on_ready():
     bot.try_reload('jishaku')
     print("카테고리 'jishaku'을(를) 불러왔습니다!")
     print(f"'{bot.user.name}'으로 로그인됨")
-    print(f"서버수: {len(bot.guilds)}, 유저수: {db.user.count_documents({})}, 미사용 유저수: {db.unused.count_documents({})}")
+    print(f"서버수: {len(bot.guilds)}, 유저수: {bot.db.user.count_documents({})}, 미사용 유저수: {bot.db.unused.count_documents({})}")
 
 
 @bot.event

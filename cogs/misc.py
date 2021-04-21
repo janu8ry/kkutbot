@@ -8,7 +8,7 @@ from discord.utils import escape_markdown as e_mk
 from pymongo import DESCENDING, cursor
 
 from ext import utils
-from ext.db import read, write, config, db, get
+from ext.db import read, write, config, get
 from ext.bot import Kkutbot
 
 
@@ -67,15 +67,15 @@ class Misc(commands.Cog, name="기타"):
                 }  # 'game.rank_solo.tier': {'$nin': ["언랭크", "뉴비"]}
         }
         if event in eventlist:
-            rank = db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
+            rank = self.bot.db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
             embed = discord.Embed(title=f"랭킹 top 15 | {event}", description="\n".join(await self.format_rank(rank, eventlist[event])), color=config('colors.help'))
         elif event in modelist:
             embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
-            # rank_winrate = db.user.find(rank_query).sort({f"game.{modelist[event]}.win": -1}).limit(15)  # noqa todo: 승률 랭킹 개선
+            # rank_winrate = self.bot.db.user.find(rank_query).sort({f"game.{modelist[event]}.win": DESCENDING}).limit(15)  # noqa todo: 승률 랭킹 개선
             rank = await asyncio.gather(
-                # self.format_rank(db.user.find(rank_query).where(f"this.game.{modelist[event]}.win / this.game.{modelist[event]}.times * 100")),
-                self.format_rank(db.user.find(rank_query).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
-                self.format_rank(db.user.find(rank_query).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
+                # self.format_rank(self.bot.db.user.find(rank_query).where(f"this.game.{modelist[event]}.win / this.game.{modelist[event]}.times * 100")),
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
             )
             # embed.add_field(name="승률", value="\n".join(rank[0]))
             embed.add_field(name="승리수", value="\n".join(rank[1]))
