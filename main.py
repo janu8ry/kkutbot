@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from ext.db import read, write, add, delete, config
-from ext.bot import Kkutbot
+from ext.core import Kkutbot, KkutbotContext
 from ext.utils import time_convert
 
 bot = Kkutbot(
@@ -22,14 +22,17 @@ bot = Kkutbot(
 
 @bot.event
 async def on_ready():
+    print("-" * 75)
     for cogname in os.listdir("cogs"):
         if cogname.endswith(".py"):
             bot.try_reload(cogname[:-3])
             print(f"카테고리 '{cogname[:-3]}'을(를) 불러왔습니다!")
     bot.try_reload('jishaku')
     print("카테고리 'jishaku'을(를) 불러왔습니다!")
+    print("-" * 75)
     print(f"'{bot.user.name}'으로 로그인됨")
     print(f"서버수: {len(bot.guilds)}, 유저수: {bot.db.user.count_documents({})}, 미사용 유저수: {bot.db.unused.count_documents({})}")
+    print("-" * 75)
 
 
 @bot.event
@@ -39,7 +42,7 @@ async def on_shard_ready(shard_id):
 
 @bot.command(name="$리로드", usage="ㄲ리로드 <카테고리>", aliases=("ㄹ", "$ㄹ"))
 @commands.is_owner()
-async def reload_commands(ctx: commands.Context, *, extension=None):
+async def reload_commands(ctx: KkutbotContext, *, extension=None):
     """카테고리를 다시 로딩합니다."""
     if extension is None:
         for cogname in os.listdir("cogs"):
@@ -47,11 +50,11 @@ async def reload_commands(ctx: commands.Context, *, extension=None):
                 bot.try_reload(cogname[:-3])
     else:
         bot.try_reload(extension)
-    await ctx.send("<:done:716902844975808606> 완료!")
+    await ctx.send("{done} 완료!")
 
 
 @bot.event
-async def on_command(ctx: commands.Context):
+async def on_command(ctx: KkutbotContext):
     if isinstance(ctx.channel, discord.DMChannel):
         await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}")
     else:
@@ -73,13 +76,13 @@ async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return
     else:
-        ctx = await bot.get_context(message)
+        ctx = await bot.get_context(message, cls=KkutbotContext)
         await bot.invoke(ctx)
         # await bot.hanmaru.get(ctx)
 
 
 @bot.event
-async def on_command_completion(ctx: commands.Context):
+async def on_command_completion(ctx: KkutbotContext):
     # bot.hanmaru.add_queue(ctx.author.id)
 
     if not read(ctx.author, 'alert.daily'):
@@ -104,7 +107,7 @@ async def on_command_completion(ctx: commands.Context):
 
 
 @bot.check
-async def check(ctx: commands.Context):
+async def check(ctx: KkutbotContext):
     if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:
         try:
             embed = discord.Embed(
@@ -120,7 +123,7 @@ async def check(ctx: commands.Context):
 
 
 @bot.event
-async def on_command_error(ctx: commands.Context, error: commands.CommandError):
+async def on_command_error(ctx: KkutbotContext, error: commands.CommandError):
     if isinstance(error, commands.errors.BotMissingPermissions):
         await ctx.send(f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한이 필요합니다.")
     elif isinstance(error, commands.errors.MissingPermissions):

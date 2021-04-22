@@ -57,6 +57,10 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
+    @property
+    def emojis(self):
+        return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
+
     @staticmethod
     async def reset_daily_alert():
         write('general', 'daily', 0)
@@ -76,3 +80,19 @@ class Kkutbot(commands.AutoShardedBot):
     def DUlaw() -> dict:
         with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
             return json.load(f)
+
+
+class KkutbotContext(commands.Context):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    async def send(self, content=None, *,
+                   tts=False, embed=None, file=None,
+                   files=None, delete_after=None, nonce=None,
+                   allowed_mentions=None, reference=None,
+                   mention_author=None) -> discord.Message:
+        content = content.format(**self.bot.emojis) if content else None
+        return await super().send(content=content, tts=tts, embed=embed, file=file,
+                                  files=files, delete_after=delete_after, nonce=nonce,
+                                  allowed_mentions=allowed_mentions, reference=reference,
+                                  mention_author=mention_author)

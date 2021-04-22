@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from ext.db import read, write, add, config
 from ext.utils import get_DU, get_word, choose_first_word
-from ext.bot import Kkutbot
+from ext.core import Kkutbot, KkutbotContext
 
 
 class SoloGame:
@@ -17,7 +17,7 @@ class SoloGame:
 
     __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "channel")
 
-    def __init__(self, ctx: commands.Context, kkd: bool = False):
+    def __init__(self, ctx: KkutbotContext, kkd: bool = False):
         self.player = ctx.author
         self.kkd = kkd
         self.score = 0
@@ -26,7 +26,7 @@ class SoloGame:
         self.used_words = [self.bot_word]
         self.channel = ctx.channel
 
-    async def send_info_embed(self, _msg: Union[discord.Message, commands.Context], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
+    async def send_info_embed(self, _msg: Union[discord.Message, KkutbotContext], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
         _embed = discord.Embed(title=f"끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"현재 점수: `{self.score}` 점", color=config('colors.help'))
         _embed.add_field(name="단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_DU(self.bot_word))})```", inline=False)
         _embed.add_field(name="남은 시간", value=f"`{round((15 if self.kkd else 10) - (time.time() - self.begin_time), 1)}` 초", inline=False)
@@ -44,7 +44,7 @@ class SoloGame:
         mode = 'kkd' if self.kkd else 'rank_solo'
         embed = discord.Embed(title="게임 결과", description=f"**{'승리' if win else '패배'}**  |  {'봇이 대응할 단어를 찾지 못했습니다!' if win else f'대답시간이 {15 if self.kkd else 10}초를 초과했습니다...'}", color=config('colors.general') if win else config('colors.error'))
         embed.add_field(name="점수", value=f"`{self.score}` 점")
-        embed.add_field(name="보상", value=f"`{points}` <:points:715547592578170880>")
+        embed.add_field(name="보상", value=f"`{points}` {{points}}")
         await self.channel.send(self.player.mention, embed=embed)
         add(self.player, 'points', points)
         add(self.player, f'game.{mode}.times', 1)
@@ -60,7 +60,7 @@ class MultiGame:
 
     __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time", "final_score", "score")
 
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         self.players = [ctx.author]
         self.ctx = ctx
         self.msg = ctx.message
@@ -128,7 +128,7 @@ class MultiGame:
         rank = sorted(self.final_score.items(), key=operator.itemgetter(1), reverse=True)
         for n, kv in enumerate(rank):
             if n < len(rank) - 1:
-                desc.append(f"**{n + 1}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` <:points:715547592578170880>")  # noqa
+                desc.append(f"**{n + 1}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")  # noqa
                 add(kv[0], 'points', int(rank[n + 1][1]) * 2)
                 add(kv[0], 'game.guild_multi.times', 1)
                 write(kv[0], 'last_command', time.time())
@@ -164,7 +164,7 @@ class Game(commands.Cog, name="게임"):
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def game(self, ctx: commands.Context, mode: int = None):
+    async def game(self, ctx: KkutbotContext, mode: int = None):
         """
         **1.게임 방법**
         상대방이 처음 단어를 제시하면, 플레이어는 상대방이
@@ -195,14 +195,14 @@ class Game(commands.Cog, name="게임"):
         3종류의 모드 추가 개발중...
         """
 
-        def check(_x: Union[discord.Message, commands.Context]) -> bool:
+        def check(_x: Union[discord.Message, KkutbotContext]) -> bool:
             return _x.author == ctx.author and _x.channel == ctx.channel
 
         def check_reaction(emoji_reaction: discord.Reaction, emoji_user: Union[discord.User, discord.Member]) -> bool:
             return (emoji_user == ctx.author) and (str(emoji_reaction) in ["1️⃣", "2️⃣", "3️⃣", "❌"]) and (emoji_reaction.message.author.id == self.bot.user.id)
 
         if read(ctx.author, 'points') <= 30:
-            return await ctx.send(f"{ctx.author.mention} 포인트가 30점 미만이라 플레이 할 수 없습니다.\n"
+            return await ctx.send(f"{ctx.author.mention} {{denyed}} 포인트가 30점 미만이라 플레이 할 수 없습니다.\n"
                                   f"`ㄲ출석`, `ㄲ지원금`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
         if mode is None:
             embed = discord.Embed(title="끝말잇기", description="끝말잇기 게임의 모드를 선택해 주세요.", color=config('colors.general'))
@@ -214,7 +214,7 @@ class Game(commands.Cog, name="게임"):
             await asyncio.gather(*[msg.add_reaction(_x) for _x in ("1️⃣", "2️⃣", "3️⃣", "❌")])
         else:
             if not (1 <= mode <= 3):
-                return await ctx.send("존재하지 않는 모드입니다.")
+                return await ctx.send("{denyed} 존재하지 않는 모드입니다.")
             else:
                 embed = discord.Embed(title="게임을 시작합니다!", color=config('colors.general'))
                 msg = await ctx.send(ctx.author.mention, embed=embed)
@@ -284,7 +284,7 @@ class Game(commands.Cog, name="게임"):
                         m = await self.bot.wait_for('message', check=lambda _y: _y.content in ("참가", "나가기", "시작") and _y.channel == ctx.channel, timeout=120.0)
                         if m.content == "참가" and m.author not in game.players:
                             if read(m.author, 'banned'):
-                                await ctx.send("차단된 유저는 게임에 참가할 수 없습니다.")
+                                await ctx.send("{denyed} 차단된 유저는 게임에 참가할 수 없습니다.")
                             else:
                                 game.players.append(m.author)
                                 await ctx.send(f"{m.author.mention} 님이 참가했습니다.")

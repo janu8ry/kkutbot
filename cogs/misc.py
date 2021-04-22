@@ -9,7 +9,7 @@ from pymongo import DESCENDING, cursor
 
 from ext import utils
 from ext.db import read, write, config, get
-from ext.bot import Kkutbot
+from ext.core import Kkutbot, KkutbotContext
 
 
 class Misc(commands.Cog, name="기타"):
@@ -22,7 +22,7 @@ class Misc(commands.Cog, name="기타"):
 
     @commands.command(name="핑", usage="ㄲ핑")
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
-    async def ping(self, ctx: commands.Context):
+    async def ping(self, ctx: KkutbotContext):
         """끝봇의 응답 속도를 확인합니다."""
         message = await ctx.send("걸린 시간: `---`ms")
         ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
@@ -48,7 +48,7 @@ class Misc(commands.Cog, name="기타"):
 
     @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("리더보드", "순위", "ㄹㅋ"))  # todo: 서버랭킹
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def ranking(self, ctx: commands.Context, *, event="솔로"):
+    async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
         """여러 분야의 top10 랭킹을 확입합니다.
 
         **<분야>**
@@ -86,7 +86,7 @@ class Misc(commands.Cog, name="기타"):
 
     @commands.command(name="메일", usage="ㄲ메일", aliases=("메일함", "알림", "공지"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def mail(self, ctx: commands.Context):
+    async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다.
 
         수신한지 2주가 지난 미확인 메일은 자동으로 삭제됩니다."""

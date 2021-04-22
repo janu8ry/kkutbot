@@ -4,7 +4,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from ext.bot import Kkutbot
+from ext.core import Kkutbot, KkutbotContext
 from ext.db import config
 
 
@@ -21,7 +21,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def hanmaru_slot(self, ctx: commands.Context, amount=None):
+    async def hanmaru_slot(self, ctx: KkutbotContext, amount=None):
         """올인하세요"""
         em = ['🍎', '🍇', '🍌', '🍊', '🥝', '🍑', '⭐']
         if not amount == "올인":
@@ -50,7 +50,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
 
     @commands.command(name="재생", usage="ㄲ재생 <노래명>")
     @commands.cooldown(rate=1, per=4, type=commands.BucketType.user)
-    async def green_play(self, ctx: commands.Context, song=None):
+    async def green_play(self, ctx: KkutbotContext, song=None):
         """노래나 들으실래요?"""
         if song is None:
             raise commands.BadArgument
@@ -70,13 +70,13 @@ NodeNotConnected:""",
 
     @commands.command(name="$디스코드", usage="ㄲ$디스코드", aliases=("$디코",))
     @commands.max_concurrency(1)
-    async def my_discord(self, ctx: commands.Context):
+    async def my_discord(self, ctx: KkutbotContext):
         """?"""
         return await ctx.send("**그런거 없다**")
 
     @commands.command(name="뱝", usage="ㄲ뱝", aliases=("고래뱝", "뱝뱝", "ㄸ뜌"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def byab(self, ctx: commands.Context):
+    async def byab(self, ctx: KkutbotContext):
         """🐳 안녕하세요!"""
         await ctx.send("""
         코로나19로 힘든 시기!

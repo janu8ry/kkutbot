@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from ext.db import config
-from ext.bot import Kkutbot
+from ext.core import Kkutbot, KkutbotContext
 
 
 class BotInfo(commands.Cog, name="일반"):
@@ -15,7 +15,7 @@ class BotInfo(commands.Cog, name="일반"):
 
     @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
-    async def help(self, ctx: commands.Context, *, command_name=None):
+    async def help(self, ctx: KkutbotContext, *, command_name=None):
         """끝봇의 커맨드 목록을 확인합니다."""
         cog_list = ("일반", "게임", "사용자", "경제", "기타")
         if not command_name:
@@ -40,7 +40,7 @@ class BotInfo(commands.Cog, name="일반"):
             elif ctx.author.id in config('admin'):
                 admin_command_list = [c.name for c in cog_data.get_commands() if not c.hidden]
             else:
-                return await ctx.send("존재하지 않는 명령어 또는 카테고리입니다.")
+                return await ctx.send("{denyed} 존재하지 않는 명령어 또는 카테고리입니다.")
             embed = discord.Embed(
                 title=f"카테고리 정보 | {cog_data.qualified_name}",
                 description=cog_data.description,
@@ -62,7 +62,7 @@ class BotInfo(commands.Cog, name="일반"):
             return await ctx.send(embed=embed)
         cmd = self.bot.get_command(command_name)
         if not cmd or (command_name.startswith("$") and (ctx.author.id not in config('admin'))) or self.bot.get_command(command_name).hidden:
-            return await ctx.send("존재하지 않는 명령어 또는 카테고리입니다.")
+            return await ctx.send("{denyed} 존재하지 않는 명령어 또는 카테고리입니다.")
         embed = discord.Embed(
             title=f"명령어 정보 | {cmd}",
             description=f"{cmd.help}\n> [상세 도움말]({config('links.blog')}/blog/명령어-{cmd.name})",
@@ -74,7 +74,7 @@ class BotInfo(commands.Cog, name="일반"):
 
     @commands.command(name="정보", usage="ㄲ정보", aliases=("봇정보", "봇", "저작권", "ㅈㅂ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    async def kkutbot_info(self, ctx: commands.Context):
+    async def kkutbot_info(self, ctx: KkutbotContext):
         """끝봇의 정보를 확인합니다."""
         embed = discord.Embed(
             title="끝봇 정보",
@@ -93,7 +93,7 @@ class BotInfo(commands.Cog, name="일반"):
 
     @commands.command(name="초대", usage="ㄲ초대", aliases=("링크", "ㅊㄷ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    async def kkutbot_invite(self, ctx: commands.Context):
+    async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
         embed = discord.Embed(title="끝봇 초대하기",
                               description="끝봇을 사용하고 싶다면 아래 링크를 통해\n"
@@ -109,7 +109,7 @@ class BotInfo(commands.Cog, name="일반"):
 
     @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    async def community_invite(self, ctx: commands.Context):
+    async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장 확인합니다."""
         embed = discord.Embed(title="끝봇 커뮤니티 참가하기",
                               description=f"[끝봇 커뮤니티]({config('links.invite.server')})에 참가하여, \n"
