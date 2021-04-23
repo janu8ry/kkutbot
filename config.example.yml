@@ -63,15 +63,15 @@ emojis:
 # useful links
 links:
   invite:
-    bot: https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot
-    server: https://discord.gg/z8tRzwf
+    bot: bot invite url
+    server: support server url
   monitoring:
     pm2: pm2 monitoring url
     mongo: mongoDB monitoring url
-  korenbots: https://koreanbots.dev/bots/703956235900420226
-  dbl: https://top.gg/bot/703956235900420226
-  uniquebots: https://uniquebots.kr/bots/info/703956235900420226
-  blog: https://kkutbot.github.io
+  korenbots: koreanbots url
+  dbl: top.gg url
+  uniquebots: uniquebots url
+  blog: blog(homepage) url
 
 # users defauld data schema
 default_data:
