@@ -1,5 +1,3 @@
-import json
-
 import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -70,16 +68,6 @@ class Kkutbot(commands.AutoShardedBot):
     async def reset_daily():
         week_daily = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
         db.user.update_many(None, {'$set': {'daily': week_daily}})
-
-    @staticmethod
-    def wordlist() -> dict:
-        with open('general/wordlist.json', 'r', encoding="utf-8") as f:
-            return json.load(f)
-
-    @staticmethod
-    def DUlaw() -> dict:
-        with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
-            return json.load(f)
 
 
 class KkutbotContext(commands.Context):
