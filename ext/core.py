@@ -86,13 +86,28 @@ class KkutbotContext(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    async def send(self, content=None, *,
-                   tts=False, embed=None, file=None,
-                   files=None, delete_after=None, nonce=None,
-                   allowed_mentions=None, reference=None,
-                   mention_author=None) -> discord.Message:
+    async def send(self,
+                   content=None,
+                   *,
+                   tts=False,
+                   embed=None,
+                   file=None,
+                   files=None,
+                   delete_after=None,
+                   nonce=None,
+                   allowed_mentions=None,
+                   reference=None,
+                   mention_author=None
+                   ) -> discord.Message:
         content = content.format(**self.bot.emojis) if content else None
-        return await super().send(content=content, tts=tts, embed=embed, file=file,
-                                  files=files, delete_after=delete_after, nonce=nonce,
-                                  allowed_mentions=allowed_mentions, reference=reference,
-                                  mention_author=mention_author)
+        return await super().send(content=content,
+                                  tts=tts,
+                                  embed=embed,
+                                  file=file,
+                                  files=files,
+                                  delete_after=delete_after,
+                                  nonce=nonce,
+                                  allowed_mentions=allowed_mentions,
+                                  reference=reference,
+                                  mention_author=mention_author
+                                  )
