@@ -111,3 +111,7 @@ class KkutbotContext(commands.Context):
                                   reference=reference,
                                   mention_author=mention_author
                                   )
+
+    async def reply(self, content=None, **kwargs):
+        content = content.format(**self.bot.emojis) if content else None
+        return await super().reply(content=content, **kwargs)
