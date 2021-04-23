@@ -1,36 +1,10 @@
 from datetime import datetime
-from typing import Union, Optional
+from typing import Optional
 
 from pymongo import MongoClient
 import discord
-import yaml
 
-
-def get(data, path: list):  # thanks to seojin200403
-    if len(path) > 1:
-        try:
-            return get(data[path[0]], path[1:])
-        except KeyError:
-            return None
-    else:
-        try:
-            return data[path[0]]
-        except KeyError:
-            return None
-
-
-def config(query: Optional[str] = None) -> Union[str, int, dict, list]:
-    with open('config.yml') as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
-        if not query:
-            return data
-        else:
-            return get(data, query.split('.'))
-
-
-def emoji(query: str) -> str:
-    emoji_id = config(f'emojis.{query}')
-    return f"<:{query}:{emoji_id}>"
+from ext.config import config, get_nested_dict as get
 
 
 mongo = MongoClient(
