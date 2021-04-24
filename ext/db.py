@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from copy import deepcopy
 
 from pymongo import MongoClient
 import discord
@@ -40,7 +41,7 @@ def read(target, path: str = None):
         main_data = collection.find_one({'_id': _get_id(target)})
         if not main_data:
             if _collection_name(target) == "user":
-                main_data = config('default_data').copy()
+                main_data = deepcopy(config('default_data'))
             else:
                 main_data = dict()
     else:
