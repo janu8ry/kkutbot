@@ -81,11 +81,11 @@ class BotInfo(commands.Cog, name="일반"):
             description=f"버전 {self.bot.__version__} | {self.bot.version_info}",
             color=config('colors.general')
         )
-        desc = {"개발자": 'sonix18#3825', "개발 언어": f'python 3.8.6\n(discord.py {discord.__version__})',
+        desc = {"개발자": f'{(await self.bot.application_info()).owner}', "개발 언어": f'python 3.8.6\n(discord.py {discord.__version__})',
                 "서버 /사용자 수, 샤드": f'`{len(self.bot.guilds)}`개/`{self.bot.db.user.count_documents({})}`명, `{ctx.guild.shard_id + 1}/{self.bot.shard_count}`',
-                "크레딧": '끝봇 개발에 도움을 주신\n`서진`, `심심러`님, 프로필\n사진을 만들어 주신\n`Tim23` 님께 감사드립니다.',
+                "크레딧": '끝봇 개발에 도움을 주신\n`서진`님, 프로필 사진을\n만들어 주신`! Tim23`\n님께 감사드립니다.',
                 "저작권": 'Icon made by `Pixel\nperfect`, `Freepik`,\n`Good Ware`\nfrom [flaticon](https://www.flaticon.com)',
-                "링크": f"[봇 초대하기]({config('links.invite.bot')})\n[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[dbl]({config('links.dbl')})"}
+                "링크": f"[봇 초대하기]({config('links.invite.bot')})\n[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[github]({config('links.github')})"}
         for k, v in desc.items():
             embed.add_field(name=k, value=v)
         embed.set_thumbnail(url=self.bot.user.avatar_url)

@@ -68,9 +68,10 @@ links:
   monitoring:
     pm2: pm2 monitoring url
     mongo: mongoDB monitoring url
-  korenbots: koreanbots url
+  koreanbots: koreanbots url
   dbl: top.gg url
   uniquebots: uniquebots url
+  github: github repository url
   blog: blog(homepage) url
 
 # users defauld data schema
