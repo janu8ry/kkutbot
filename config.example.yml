@@ -29,7 +29,9 @@ admin:
   - 00000
 
 # webhook url for logging command usages
-webhook_url: https://discord.com/api/webhooks/channel_id/token
+webhook:
+  main: https://discord.com/api/webhooks/channel_id/token
+  test: https://discord.com/api/webhooks/channel_id/token
 
 # embed colors
 colors:

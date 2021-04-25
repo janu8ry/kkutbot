@@ -22,7 +22,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))
         self.uniquebots = UniqueBotsKR.client(self, config('token.uniquebots'), autopost=not config('test'))
-        self.webhook = Webhook.Async(config('webhook_url'))
+        self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))
         # self.hanmaru = hanmaru.Handler(self)
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
