@@ -10,6 +10,8 @@ from ext.db import read, write, add, delete, config
 from ext.core import Kkutbot, KkutbotContext
 from ext.utils import time_convert
 
+os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'
+
 bot = Kkutbot(
     command_prefix=commands.when_mentioned_or("ㄲ"),
     help_command=None,
