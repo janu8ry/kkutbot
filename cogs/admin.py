@@ -83,7 +83,7 @@ class Admin(commands.Cog, name="관리자"):
         if not read(user, 'register_date'):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read(user).items())):
-            await ctx.send(content)
+            await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$마루정보", usage="ㄲ$마루정보 <유저>")
     @commands.check(is_admin)
@@ -92,7 +92,7 @@ class Admin(commands.Cog, name="관리자"):
         if not self.bot.db.hanmaru.find_one({'_id': user.id}):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 한마루의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read_hanmaru(user).items())):
-            await ctx.send(content)
+            await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
     @commands.check(is_admin)
@@ -104,7 +104,7 @@ class Admin(commands.Cog, name="관리자"):
         if not self.bot.db.guild.find_one({'_id': guild.id}):
             return await ctx.send("해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read(guild).items())):
-            await ctx.send(content)
+            await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
     @commands.check(is_admin)

@@ -1,5 +1,3 @@
-from typing import Callable
-
 import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -87,9 +85,11 @@ class KkutbotContext(commands.Context):
                    nonce=None,
                    allowed_mentions=None,
                    reference=None,
-                   mention_author=None
+                   mention_author=None,
+                   escape_emoji_formatting=False
                    ) -> discord.Message:
-        content = content.format(**self.bot.emojis) if content else None
+        if escape_emoji_formatting is False:
+            content = content.format(**self.bot.emojis) if content else None
         return await super().send(content=content,
                                   tts=tts,
                                   embed=embed,
