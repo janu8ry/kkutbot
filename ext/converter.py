@@ -10,6 +10,11 @@ class SpecialMemberConverter(Converter):  # thanks to seojin200403
     """User & Member Converter without Member Intents"""
 
     async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
+        argument = argument.strip(' ')
+
+        if not len(argument):
+            return ctx.author
+
         try:
             return await MemberConverter().convert(ctx, argument)
         except errors.MemberNotFound:

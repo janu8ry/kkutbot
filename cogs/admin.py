@@ -70,7 +70,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>")
     @commands.check(is_admin)
-    async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
+    async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in read(None, 'commands').items())):
@@ -87,7 +87,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$마루정보", usage="ㄲ$마루정보 <유저>")
     @commands.check(is_admin)
-    async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
+    async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
         """유저의 한마루 정보를 출력합니다."""
         if user is None:
             user = ctx.author
@@ -111,7 +111,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
     @commands.check(is_admin)
-    async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter = None):
+    async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 포인트를 지급합니다."""
         if user is None:
             user = ctx.author
@@ -121,7 +121,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
     @commands.check(is_admin)
-    async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter = None):
+    async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 메달을 지급합니다."""
         if user is None:
             user = ctx.author
@@ -131,7 +131,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", hidden=True)
     @commands.is_owner()
-    async def delete_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
+    async def delete_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
         """유저의 데이터를 초기화합니다."""
         if user is None:
             user = ctx.author

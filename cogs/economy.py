@@ -19,7 +19,7 @@ class Economy(commands.Cog, name="경제"):
     @commands.command(name="지원금", usage="ㄲ지원금")
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
-    async def get_start_point(self, ctx: commands.Context):
+    async def get_start_point(self, ctx: KkutbotContext):
         """[koreanbots](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받아가세요!"""
         write(ctx.author, 'alert.start_point', True)
         if await self.bot.if_koreanbots_voted(ctx.author):
@@ -41,7 +41,7 @@ class Economy(commands.Cog, name="경제"):
     @commands.command(name="출석", usage="ㄲ출석", aliases=("ㅊ", "ㅊㅅ"))  # todo: 출석 방식 변경
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def daily_check(self, ctx: commands.Context):
+    async def daily_check(self, ctx: KkutbotContext):
         """출석체크를 하고 100포인트를 획득합니다."""
         write(ctx.author, 'alert.daily', True)
         options = ''
@@ -78,7 +78,7 @@ class Economy(commands.Cog, name="경제"):
 
     # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
     # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    # async def quest(self, ctx: commands.Context):
+    # async def quest(self, ctx: KkutbotContext):
     #     """매일 퀘스트를 클리어하고 보상을 획득합니다."""
     #     embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
 

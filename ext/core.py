@@ -103,3 +103,27 @@ class KkutbotContext(commands.Context):
     async def reply(self, content=None, **kwargs):
         content = content.format(**self.bot.emojis) if content else None
         return await super().reply(content=content, **kwargs)
+
+
+class KkutbotCommand(commands.Command):
+    def __init__(self, func, **kwargs):
+        super().__init__(func, **kwargs)
+
+
+def command(name=None, cls=None, **attrs):
+    if cls is None:
+        cls = commands.Command
+
+    def decorator(func):
+        if isinstance(func, commands.Command):
+            raise TypeError('Callback is already a command.')
+        if not attrs.get('rest_is_raw'):
+            rest_is_raw = False
+        else:
+            rest_is_raw = attrs.pop('rest_is_raw', True)
+        return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
+
+    return decorator
+
+
+commands.command = command
