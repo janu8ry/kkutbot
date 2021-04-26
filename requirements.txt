@@ -1,4 +1,4 @@
-discord.py~=1.7.0
+discord.py~=1.7.1
 PyYAML~=5.4.1
 pymongo~=3.11.3
 koreanbots~=0.2.3
