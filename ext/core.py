@@ -110,18 +110,15 @@ class KkutbotCommand(commands.Command):
         super().__init__(func, **kwargs)
 
 
-def command(name=None, cls=None, **attrs):
-    if cls is None:
-        cls = commands.Command
-
+def command(name=None, **attrs):
     def decorator(func):
         if isinstance(func, commands.Command):
             raise TypeError('Callback is already a command.')
-        if not attrs.get('rest_is_raw'):
+        if attrs.get('rest_is_raw') is False:
             rest_is_raw = False
         else:
             rest_is_raw = attrs.pop('rest_is_raw', True)
-        return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
+        return KkutbotCommand(func, name=name, rest_is_raw=rest_is_raw, **attrs)
 
     return decorator
 
