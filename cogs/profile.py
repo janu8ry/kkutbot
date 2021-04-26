@@ -27,9 +27,9 @@ class Profile(commands.Cog, name="사용자"):
                         f":star: 현 시즌 티어    -    **{get_tier(user, 'rank_solo')}**    |    **{get_tier(user, 'rank_multi')}**\n​",
             color=config('colors.general')
         )
-        embed.add_field(name="{points} **포인트**", value=f"{read(user, 'points')}")
-        embed.add_field(name="{starter} **승률**", value=f"{get_winrate(user, 'rank_solo')}% | {get_winrate(user, 'rank_multi')}%")
-        embed.add_field(name="{s_medal} **메달**", value=f"{read(user, 'medal')}")
+        embed.add_field(name=f"{self.bot.get_emoji(715547592578170880)} **포인트**", value=f"{read(user, 'points')}")
+        embed.add_field(name=f"{self.bot.get_emoji(715559187756875807)} **승률**", value=f"{get_winrate(user, 'rank_solo')}% | {get_winrate(user, 'rank_multi')}%")
+        embed.add_field(name=f"{self.bot.get_emoji(794532325068898334)} **메달**", value=f"{read(user, 'medal')}")
         embed.set_thumbnail(url=user.avatar_url)
         embed.set_footer(text=f"더 자세한 정보는 'ㄲ통계' 명령어로 확인할 수 있어요!{' ' * 83}​")
         await ctx.send(embed=embed)
@@ -47,11 +47,8 @@ class Profile(commands.Cog, name="사용자"):
 
     @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    async def stats(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
+    async def stats(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """대상의 자세한 통계를 확인합니다."""
-        if user is None:
-            user = ctx.author
-
         embed = discord.Embed(
             title=str(user),
             description=f"가입일 : `{str(read(user, 'register_date'))[:10]}`",

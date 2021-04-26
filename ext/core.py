@@ -1,3 +1,5 @@
+from typing import Callable
+
 import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -116,10 +118,10 @@ def command(name=None, cls=None, **attrs):
     def decorator(func):
         if isinstance(func, commands.Command):
             raise TypeError('Callback is already a command.')
-        if attrs.get('rest_is_raw') is False:
-            rest_is_raw = False
-        else:
+        if ('user' in func.__annotations__) and (attrs.get('rest_is_raw') is not False):
             rest_is_raw = attrs.pop('rest_is_raw', True)
+        else:
+            rest_is_raw = attrs.pop('rest_is_raw', False)
         return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
 
     return decorator

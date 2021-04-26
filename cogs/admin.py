@@ -68,9 +68,9 @@ class Admin(commands.Cog, name="관리자"):
         for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in self.bot.guilds)):
             await ctx.send(content)
 
-    @commands.command(name="$정보", usage="ㄲ$정보 <유저>")
+    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     @commands.check(is_admin)
-    async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
+    async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in read(None, 'commands').items())):
@@ -87,11 +87,8 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$마루정보", usage="ㄲ$마루정보 <유저>")
     @commands.check(is_admin)
-    async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
+    async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 한마루 정보를 출력합니다."""
-        if user is None:
-            user = ctx.author
-
         if not self.bot.db.hanmaru.find_one({'_id': user.id}):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 한마루의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read_hanmaru(user).items())):
@@ -113,9 +110,6 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 포인트를 지급합니다."""
-        if user is None:
-            user = ctx.author
-
         add(user, 'points', amount)
         await ctx.send("{done} 완료!")
 
@@ -123,19 +117,13 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 메달을 지급합니다."""
-        if user is None:
-            user = ctx.author
-
         add(user, 'medal', amount)
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", hidden=True)
     @commands.is_owner()
-    async def delete_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter):
+    async def delete_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 데이터를 초기화합니다."""
-        if user is None:
-            user = ctx.author
-
         if self.bot.db.user.find_one({'_id': user.id}):
             delete(user)
             await ctx.send("{done} 완료!")
@@ -177,12 +165,12 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$알림", usage="ㄲ$알림 <유저> <내용>")
     @commands.check(is_admin)
-    async def send_notice(self, ctx: KkutbotContext, target: SpecialMemberConverter(), *, word: str):
+    async def send_notice(self, ctx: KkutbotContext, user: SpecialMemberConverter(), *, word: str):
         """유저에게 알림을 전송합니다."""
         self.bot.db.user.update_one(
-            {'_id': target.id},
+            {'_id': user.id},
             {
-                '$push': {'mail': {'title': "관리자로부터의 알림", 'value': word, 'time': datetime.now()}},
+                '$push': {'mail': {'title': "관리자로부터의 알림", 'value': word.lstrip(), 'time': datetime.now()}},
                 '$set': {'alert.mail': False}
             }
         )
@@ -190,25 +178,25 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=('차단',))
     @commands.check(is_admin)
-    async def block_user(self, ctx: KkutbotContext, target: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
+    async def block_user(self, ctx: KkutbotContext, user: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
-        if read(target, 'banned'):
+        if read(user, 'banned'):
             return await ctx.send("{denyed} 이미 정지 된 유저입니다.")
-        write(target, 'banned', True)
-        await target.send(
+        write(user, 'banned', True)
+        await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
-            f"사유: `{reason}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
+            f"사유: `{reason.lstrip()}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
             f"끝봇 공식 커뮤니티에서 정지 해제를 요청 할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$정지해제", usage="ㄲ$정지해제 <유저>", aliases=('차단해제',))
     @commands.check(is_admin)
-    async def unblock_user(self, ctx: KkutbotContext, *, target: SpecialMemberConverter()):
+    async def unblock_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 이용 정지 처리를 해제합니다."""
-        if read(target, 'banned'):
-            write(target, 'banned', False)
+        if read(user, 'banned'):
+            write(user, 'banned', False)
             await ctx.send("<:done:716902844975808606> 완료!")
-            await target.send("당신은 `끝봇 이용 정지` 처리가 해제 되었습니다. 다음부터는 조심해 주세요!")
+            await user.send("당신은 `끝봇 이용 정지` 처리가 해제 되었습니다. 다음부터는 조심해 주세요!")
         else:
             await ctx.send("{denyed} 현재 이용 정지 되지 않은 유저입니다.")
 
