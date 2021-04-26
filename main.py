@@ -11,12 +11,13 @@ from ext.core import Kkutbot, KkutbotContext
 from ext.utils import time_convert
 
 bot = Kkutbot(
-    command_prefix=commands.when_mentioned_or("ㄲ ", "ㄲ"),
+    command_prefix=commands.when_mentioned_or("ㄲ"),
     help_command=None,
     intents=discord.Intents.default(),
     activity=discord.Game("봇 로딩"),
     owner_id=610625541157945344,
-    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False)
+    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+    strip_after_prefix=True
 )
 
 
