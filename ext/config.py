@@ -4,10 +4,10 @@ import yaml
 
 
 with open('config.yml') as f:
-    config_data = yaml.load(f, Loader=yaml.FullLoader)
+    config_data = yaml.load(f, Loader=yaml.FullLoader)  # loads config file
 
 
-def get_nested_dict(data, path: list):
+def get_nested_dict(data, path: list):  # get value in nested dictionary
     for i in path:
         data = data.get(i, None)
     return data

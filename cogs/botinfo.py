@@ -15,7 +15,7 @@ class BotInfo(commands.Cog, name="일반"):
 
     @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
-    async def help(self, ctx: KkutbotContext, *, command_name=None):
+    async def help(self, ctx: KkutbotContext, *, command_name: str = None):
         """끝봇의 커맨드 목록을 확인합니다."""
         cog_list = ("일반", "게임", "사용자", "경제", "기타")
         if not command_name:

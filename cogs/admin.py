@@ -72,7 +72,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
         """유저의 (상세)정보를 출력합니다."""
-        if user is None:
+        if user is None:  # check public data
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in read(None, 'commands').items())):
                 await ctx.send(content)
             public_data = read(user).copy()
@@ -195,7 +195,7 @@ class Admin(commands.Cog, name="관리자"):
         """유저의 이용 정지 처리를 해제합니다."""
         if read(user, 'banned'):
             write(user, 'banned', False)
-            await ctx.send("<:done:716902844975808606> 완료!")
+            await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제 되었습니다. 다음부터는 조심해 주세요!")
         else:
             await ctx.send("{denyed} 현재 이용 정지 되지 않은 유저입니다.")
@@ -219,7 +219,7 @@ class Admin(commands.Cog, name="관리자"):
         )
         await ctx.send("{done} 완료!")
 
-    async def update_user_name(self, target, counter):
+    async def update_user_name(self, target: int, counter: int) -> int:  # update cached username
         username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
         write(target, '_name', username)
         return counter + 1

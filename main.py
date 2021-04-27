@@ -2,6 +2,7 @@ import os
 import time
 from datetime import datetime, timedelta
 import asyncio
+from typing import Type
 
 import discord
 from discord.ext import commands
@@ -10,16 +11,16 @@ from ext.db import read, write, add, delete, config
 from ext.core import Kkutbot, KkutbotContext
 from ext.utils import time_convert
 
-os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'
+os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'  # jishaku config
 
 bot = Kkutbot(
     command_prefix=commands.when_mentioned_or("ㄲ"),
-    help_command=None,
+    help_command=None,  # disables the default help command
     intents=discord.Intents.default(),
     activity=discord.Game("봇 로딩"),
     owner_id=610625541157945344,
     allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
-    strip_after_prefix=True
+    strip_after_prefix=True  # allows 'ㄲ ' prefix
 )
 
 
@@ -48,7 +49,7 @@ async def on_shard_ready(shard_id):
 
 @bot.command(name="$리로드", usage="ㄲ리로드 <카테고리>", aliases=("ㄹ", "$ㄹ"))
 @commands.is_owner()
-async def reload_commands(ctx: KkutbotContext, *, extension=None):
+async def reload_commands(ctx: KkutbotContext, *, extension: str = None):
     """카테고리를 다시 로딩합니다."""
     if extension is None:
         for cogname in os.listdir("cogs"):
@@ -80,7 +81,7 @@ async def on_command(ctx: KkutbotContext):
 @bot.event
 async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
-        return
+        return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
         ctx = await bot.get_context(message, cls=KkutbotContext)
         await bot.invoke(ctx)
@@ -114,7 +115,7 @@ async def on_command_completion(ctx: KkutbotContext):
 
 @bot.check
 async def check(ctx: KkutbotContext):
-    if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:
+    if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:  # if kkutbot has no permission to send message
         try:
             embed = discord.Embed(
                 title="오류",
@@ -129,7 +130,7 @@ async def check(ctx: KkutbotContext):
 
 
 @bot.event
-async def on_command_error(ctx: KkutbotContext, error: commands.CommandError):
+async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandError]):
     if isinstance(error, commands.errors.BotMissingPermissions):
         await ctx.send(f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한이 필요합니다.")
     elif isinstance(error, commands.errors.MissingPermissions):
@@ -187,7 +188,7 @@ async def on_command_error(ctx: KkutbotContext, error: commands.CommandError):
 async def on_guild_join(guild: discord.Guild):
     write(guild, 'invited', datetime.now())
     await bot.log(f"{guild.name}에 봇 새로 초대됨. 현재 {len(bot.guilds)}개 서버 참여중")
-    if len(bot.guilds) % 50 == 0:
+    if len(bot.guilds) % 100 == 0:
         await bot.log(f"<@610625541157945344> `{len(bot.guilds)}`서버 달성", nomention=False)
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']]
     embed = discord.Embed(
@@ -221,7 +222,8 @@ async def on_guild_join(guild: discord.Guild):
         )
         try:
             await announce[0].send(embed=embed)
-            await (await bot.fetch_user(guild.owner_id)).send(embed=embed)
+            owner = await bot.fetch_user(guild.owner_id)
+            await owner.send(embed=embed)
         except:  # noqa
             pass
 
@@ -234,4 +236,5 @@ async def on_guild_remove(guild: discord.Guild):
 
 print("로그인 하는 중...")
 bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 개선, 웹사이트에 추가
-asyncio.run(bot.webhook.close())
+asyncio.run(bot.webhook.close())  # close the webhook session when bot is off
+# asyncio.run(bot.http._HTTPClient__session.close())  # noqa

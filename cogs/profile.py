@@ -24,7 +24,7 @@ class Profile(commands.Cog, name="사용자"):
         embed = discord.Embed(
             title=e_mk(str(user)),
             description=f"```yaml\n{read(user, 'info_word')}```\n"
-                        f":star: 현 시즌 티어    -    **{get_tier(user, 'rank_solo')}**    |    **{get_tier(user, 'rank_multi')}**\n​",
+                        f":star: 현 시즌 티어 - **{get_tier(user, 'rank_solo')}** | **{get_tier(user, 'rank_multi')}**\n​",
             color=config('colors.general')
         )
         embed.add_field(name=f"{self.bot.get_emoji(715547592578170880)} **포인트**", value=f"{read(user, 'points')}")

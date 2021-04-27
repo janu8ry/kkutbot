@@ -21,7 +21,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def hanmaru_slot(self, ctx: KkutbotContext, amount=None):
+    async def hanmaru_slot(self, ctx: KkutbotContext, amount: str = None):
         """올인하세요"""
         em = ['🍎', '🍇', '🍌', '🍊', '🥝', '🍑', '⭐']
         if not amount == "올인":
@@ -50,7 +50,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
 
     @commands.command(name="재생", usage="ㄲ재생 <노래명>")
     @commands.cooldown(rate=1, per=4, type=commands.BucketType.user)
-    async def green_play(self, ctx: KkutbotContext, song=None):
+    async def green_play(self, ctx: KkutbotContext, song: str = None):
         """노래나 들으실래요?"""
         if song is None:
             raise commands.BadArgument

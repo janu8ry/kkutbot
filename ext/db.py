@@ -15,10 +15,11 @@ mongo = MongoClient(
     password=config('mongo.password')
 )
 
-db = mongo['kkuttest' if config('test') else 'kkutbot']
+db = mongo['kkuttest' if config('test') else 'kkutbot']  # main database
 
 
 def _collection_name(target) -> Optional[str]:
+    """returns collection name"""
     if isinstance(target, discord.User) or isinstance(target, discord.Member) or isinstance(target, discord.ClientUser) or isinstance(target, int):
         return "user"
     elif isinstance(target, discord.Guild):
@@ -28,22 +29,25 @@ def _collection_name(target) -> Optional[str]:
 
 
 def _get_id(target) -> int:
+    """returns target id"""
     return getattr(target, 'id', target)
 
 
 def _get_name(target) -> str:
+    """returns target name"""
     return getattr(target, 'name', None)
 
 
 def read(target, path: str = None):
+    """returns value of target"""
     if target:
         collection = db[_collection_name(target)]
         main_data = collection.find_one({'_id': _get_id(target)})
-        if not main_data:
+        if not main_data:  # if target is not in db
             if _collection_name(target) == "user":
-                main_data = deepcopy(config('default_data'))
+                main_data = deepcopy(config('default_data'))  # returns default user data schema
             else:
-                main_data = dict()
+                main_data = dict()  # returns empty dict
     else:
         main_data = db.general.find_one()
 
@@ -54,6 +58,7 @@ def read(target, path: str = None):
 
 
 def read_hanmaru(target, path: str = None):
+    """returns value of target from hanmaru data"""
     main_data = db.hanmaru.find_one({'_id': _get_id(target)})
 
     if path is None:
@@ -63,19 +68,20 @@ def read_hanmaru(target, path: str = None):
 
 
 def write(target, path, value):
+    """writes value to db"""
     collection = _collection_name(target)
 
     if collection == "user":
-        if not read(target, 'register_date'):
-            if data := db.unused.find_one({'_id': _get_id(target)}):
+        if not read(target, 'register_date'):  # if target is not in db
+            if data := db.unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
                 db.user.insert_one(data)
-                db.unused.remove({'_id': _get_id(target)})
+                db.unused.remove({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
             else:
                 main_data = read(target)
                 main_data['register_date'] = datetime.now()
                 main_data['_id'] = _get_id(target)
                 main_data['_name'] = _get_name(target)
-                db.user.insert_one(main_data)
+                db.user.insert_one(main_data)  # create new data
         if (name := _get_name(target)) != read(target, '_name'):
             db.user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
     if collection == "guild":
@@ -89,9 +95,11 @@ def write(target, path, value):
 
 
 def add(target, path: str, value: int):
+    """adds value to target data"""
     data_before = read(target, path) or 0
     write(target, path, data_before + value)
 
 
 def delete(target):
+    """deletes the target data"""
     db[_collection_name(target)].delete_one({'_id': _get_id(target)})

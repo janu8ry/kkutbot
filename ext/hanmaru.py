@@ -25,6 +25,7 @@ class Handler:
         # self.scheduler.start()
 
     async def send(self):
+        """sends data file to output channel"""
         if not self.queue:
             return
         with open(self.export_path, 'wb') as f:
@@ -34,6 +35,7 @@ class Handler:
         self.queue = dict()
 
     async def get(self, ctx: commands.Context):
+        """fetches data file from input channel"""
         if ctx.channel.id == self._input and ctx.author.id == (699565735076167700 if config('test') else 686460052982464522) and ctx.message.attachments:
             if ctx.message.attachments[0].filename == 'export':
                 await ctx.message.attachments[0].save(self.fetch_path)
@@ -43,5 +45,5 @@ class Handler:
                     self.bot.db.hanmaru.update_one({'_id': int(k)}, v, {'upsert': True})  # noqa
                 os.remove(self.fetch_path)
 
-    def add_queue(self, user: int):
+    def add_queue(self, user: int):  # adds changed user data to queue
         self.queue[user] = read(user)
