@@ -1,15 +1,15 @@
-import random
-import time
 import asyncio
 import operator
+import random
+import time
 from typing import Union
 
 import discord
 from discord.ext import commands
 
-from ext.db import read, write, add, config
-from ext.utils import get_DU, get_word, choose_first_word
 from ext.core import Kkutbot, KkutbotContext
+from ext.db import add, config, read, write
+from ext.utils import choose_first_word, get_DU, get_word
 
 
 class SoloGame:

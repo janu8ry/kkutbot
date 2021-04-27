@@ -1,15 +1,15 @@
 from typing import Type
 
-import discord
-from discord.ext import commands
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from dhooks import Webhook
 import dbl
+import discord
 import koreanbots
 import UniqueBotsKR
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from dhooks import Webhook
+from discord.ext import commands
 
 # from ext import hanmaru
-from ext.db import write, db, config
+from ext.db import config, db, write
 
 
 class Kkutbot(commands.AutoShardedBot):

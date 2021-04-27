@@ -1,9 +1,8 @@
-import pickle
 import os
+import pickle
 
 from ext.db import db
 from ext.utils import get_tier
-
 
 db.user.drop()
 for i in os.listdir('data/user'):

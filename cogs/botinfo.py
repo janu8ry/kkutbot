@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 
-from ext.db import config
 from ext.core import Kkutbot, KkutbotContext
+from ext.db import config
 
 
 class BotInfo(commands.Cog, name="일반"):

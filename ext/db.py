@@ -1,12 +1,12 @@
+from copy import deepcopy
 from datetime import datetime
 from typing import Optional
-from copy import deepcopy
 
-from pymongo import MongoClient
 import discord
+from pymongo import MongoClient
 
-from ext.config import config, get_nested_dict as get
-
+from ext.config import config
+from ext.config import get_nested_dict as get
 
 mongo = MongoClient(
     host=config('mongo.ip') if config('test') else 'localhost',

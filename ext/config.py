@@ -1,7 +1,6 @@
-from typing import Union, Optional
+from typing import Optional, Union
 
 import yaml
-
 
 with open('config.yml') as f:
     config_data = yaml.load(f, Loader=yaml.FullLoader)  # loads config file

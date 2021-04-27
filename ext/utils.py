@@ -1,12 +1,12 @@
-from datetime import timedelta
-import random
-from typing import Union
 import json
+import random
+from datetime import timedelta
+from typing import Union
 
 import discord
 from discord.ext import commands
 
-from ext.db import read, config
+from ext.db import config, read
 
 with open('general/wordlist.json', 'r', encoding="utf-8") as f:
     DU = json.load(f)

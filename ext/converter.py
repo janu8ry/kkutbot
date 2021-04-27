@@ -2,8 +2,9 @@ import re
 from typing import Union
 
 import discord
-from discord.ext.commands.converter import Converter, UserConverter, MemberConverter
-from discord.ext.commands import errors, Context
+from discord.ext.commands import Context, errors
+from discord.ext.commands.converter import (Converter, MemberConverter,
+                                            UserConverter)
 
 
 class SpecialMemberConverter(Converter):
