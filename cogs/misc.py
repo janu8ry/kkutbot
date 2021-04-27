@@ -57,6 +57,7 @@ class Misc(commands.Cog, name="기타"):
         게임 - 솔로, 멀티, 쿵쿵따, 온라인, 앞말잇기, 서버
 
         랭킹에 등재되려면 끝말잇기 게임을 20번 이상 플레이해야 합니다."""
+        await ctx.trigger_typing()
         eventlist = {"포인트": 'points', "메달": 'medal', "출석": 'daily_times', "명령어": 'command_used'}
         modelist = {"솔로": 'rank_solo', "멀티": 'rank_multi', "쿵쿵따": 'kkd', "온라인": 'online_multi', "앞말잇기": 'apmal'}
         rank_query = {
