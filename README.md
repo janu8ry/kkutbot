@@ -12,7 +12,7 @@
 
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
-- 개발 언어: python 3.8.6 ([discord.py 1.7.0](https://discordpy.readthedocs.io/en/latest/index.html))
+- 개발 언어: python 3.8.6 ([discord.py 1.7.1](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 1.6 (개발버전: 1.7a)
 - 데이터베이스: mongoDB  
 - 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
@@ -41,7 +41,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [ ] 한방단어 입력시 즉시 판정
 
 # 봇 실행하기
-끝봇의 코드를 직접 실행해보고 싶으시면, [라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
+끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
 
 ## 요구사항
 - python 3.8
