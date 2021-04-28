@@ -57,8 +57,8 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
-    @property
-    def emojis(self):
+    @staticmethod
+    def dict_emojis():
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
 
     @staticmethod
@@ -169,7 +169,7 @@ class KkutbotContext(commands.Context):
         :class:`~discord.Message`
             The message that was sent."""
         if escape_emoji_formatting is False:
-            content = content.format(**self.bot.emojis) if content else None
+            content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
                                   tts=tts,
                                   embed=embed,
@@ -183,7 +183,8 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, **kwargs):  # same as above
-        content = content.format(**self.bot.emojis) if content else None
+        if kwargs.get('escape_emoji_formatting', False):
+            content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
 
 
@@ -209,3 +210,17 @@ def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
 
 
 commands.command = command  # replace 'command' decorator in 'discord.ext.commands' module
+
+
+class KkutbotEmbed(discord.Embed):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def add_field(self, *, name, value, inline=True, escape_emoji_formatting=False):
+        if escape_emoji_formatting is False:
+            name = name.format(**Kkutbot.dict_emojis()) if name else None
+            value = value.format(**Kkutbot.dict_emojis()) if value else None
+        return super().add_field(name=name, value=value, inline=inline)
+
+
+discord.Embed = KkutbotEmbed  # replace 'Embed' class in 'discord.embeds' module
