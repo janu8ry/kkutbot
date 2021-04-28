@@ -210,21 +210,21 @@ class Game(commands.Cog, name="게임"):
             embed.add_field(name=":two:", value="-서버원들과 친선전", inline=False)
             embed.add_field(name=":three:", value="-쿵쿵따", inline=False)
             embed.set_footer(text="'ㄲ도움 끝말잇기' 로 더 자세한 도움말을 확인해 보세요!")
-            msg = await ctx.send(ctx.author.mention, embed=embed)
+            msg = await ctx.reply(ctx.author.mention, embed=embed)
             await asyncio.gather(*[msg.add_reaction(_x) for _x in ("1️⃣", "2️⃣", "3️⃣", "❌")])
         else:
             if not (1 <= mode <= 3):
-                return await ctx.send("{denyed} 존재하지 않는 모드입니다.")
+                return await ctx.reply("{denyed} 존재하지 않는 모드입니다.")
             else:
                 embed = discord.Embed(title="게임을 시작합니다!", color=config('colors.general'))
-                msg = await ctx.send(ctx.author.mention, embed=embed)
+                msg = await ctx.reply(embed=embed)
         try:
             if not mode:
                 reaction, _ = await self.bot.wait_for('reaction_add', timeout=10.0, check=check_reaction)
             else:
                 reaction = None
         except asyncio.TimeoutError:
-            await ctx.send("취소되었습니다.")
+            await msg.reply("취소되었습니다.")
             return
         else:
             if str(reaction) == "1️⃣" or mode == 1:

@@ -44,7 +44,7 @@ class Profile(commands.Cog, name="사용자"):
         if "`" in info_word:
             return await ctx.send("{denyed} 일부 문자는 소개말에 사용될 수 없습니다.")
         write(ctx.author, 'info_word', info_word)
-        await ctx.send(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' 로 변경했습니다!")
+        await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' 로 변경했습니다!")
 
     @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)

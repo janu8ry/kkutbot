@@ -25,9 +25,9 @@ class EasterEgg(commands.Cog, name="이스터에그"):
         """올인하세요"""
         em = ['🍎', '🍇', '🍌', '🍊', '🥝', '🍑', '⭐']
         if not amount == "올인":
-            await ctx.send("올인하세요")
+            await ctx.reply("올인하세요")
             return
-        msg = await ctx.send(
+        msg = await ctx.reply(
             f":slot_machine: **{ctx.author.name}**님의 슬롯 | <:hanmaru_token:796185418616930314> `9999` 베팅 | <:hanmaru_token:796185418616930314> `0` 누적\n"
             "[❔] [❔] [❔]")
         slot_em = list()

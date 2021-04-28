@@ -25,10 +25,10 @@ class Economy(commands.Cog, name="경제"):
         if await self.bot.if_koreanbots_voted(ctx.author):
             if not read(ctx.author, 'start_point'):
                 add(ctx.author, 'points', 300)
-                await ctx.send("+300 {points} 를 받았습니다!")
+                await ctx.reply("+300 {points} 를 받았습니다!")
                 write(ctx.author, 'start_point', True)
             else:
-                await ctx.send("{denyed} 이미 지원금을 받았습니다.")
+                await ctx.reply("{denyed} 이미 지원금을 받았습니다.")
         else:
             embed = discord.Embed(
                 description="{denyed} "
@@ -36,7 +36,7 @@ class Economy(commands.Cog, name="경제"):
                             "반영까지 1-2분정도 소요 될 수 있습니다.",
                 color=config('colors.error')
             )
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed)
 
     @commands.command(name="출석", usage="ㄲ출석", aliases=("ㅊ", "ㅊㅅ"))  # todo: 출석 방식 변경
     @commands.bot_has_permissions(external_emojis=True)
@@ -74,7 +74,7 @@ class Economy(commands.Cog, name="경제"):
         for _ in range(7 - len(week_daily)):
             week_daily.append(":white_square_button:")
 
-        await ctx.send(f"{msg}\n\n**주간 출석 현황**\n{' '.join(week_daily)}\n\n{options}")
+        await ctx.reply(f"{msg}\n\n**주간 출석 현황**\n{' '.join(week_daily)}\n\n{options}")
 
     # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ, ""과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
     # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)

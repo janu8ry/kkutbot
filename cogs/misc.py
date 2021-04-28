@@ -93,14 +93,14 @@ class Misc(commands.Cog, name="기타"):
         수신한지 2주가 지난 미확인 메일은 자동으로 삭제됩니다."""
         if not read(ctx.author, 'mail'):
             embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description="> 읽지 않은 메일이 없습니다.", color=config('colors.general'))
-            return await ctx.send(embed=embed)
+            return await ctx.reply(embed=embed)
         embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description=f"> 2주 동안 읽지 않은 메일 `{len(read(ctx.author, 'mail'))}` 개", color=config('colors.general'))
         for x in read(ctx.author, 'mail'):
             if (datetime.now() - x['time']).days <= 14:
                 embed.add_field(name=f"{x['title']} - `{utils.time_convert(datetime.now() - x['time'])} 전`", value=x['value'], inline=False)
         write(ctx.author, 'mail', list())
         write(ctx.author, 'alert.mail', True)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
 
 def setup(bot: Kkutbot):
