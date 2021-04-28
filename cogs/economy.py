@@ -16,7 +16,7 @@ class Economy(commands.Cog, name="경제"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="지원금", usage="ㄲ지원금")
+    @commands.command(name="지원금", usage="ㄲ지원금", alias=("ㅈㅇㄱ", ))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_start_point(self, ctx: KkutbotContext):
@@ -76,7 +76,7 @@ class Economy(commands.Cog, name="경제"):
 
         await ctx.send(f"{msg}\n\n**주간 출석 현황**\n{' '.join(week_daily)}\n\n{options}")
 
-    # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
+    # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ, ""과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
     # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     # async def quest(self, ctx: KkutbotContext):
     #     """매일 퀘스트를 클리어하고 보상을 획득합니다."""

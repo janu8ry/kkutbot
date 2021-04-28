@@ -160,7 +160,7 @@ class Game(commands.Cog, name="게임"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="끝말잇기", usage="ㄲ끝말잇기", aliases=("ㄲ", "끝"))
+    @commands.command(name="끝말잇기", usage="ㄲ끝말잇기", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
@@ -220,7 +220,7 @@ class Game(commands.Cog, name="게임"):
                 msg = await ctx.send(ctx.author.mention, embed=embed)
         try:
             if not mode:
-                reaction, user = await self.bot.wait_for('reaction_add', timeout=10.0, check=check_reaction)
+                reaction, _ = await self.bot.wait_for('reaction_add', timeout=10.0, check=check_reaction)
             else:
                 reaction = None
         except asyncio.TimeoutError:

@@ -46,7 +46,7 @@ class Misc(commands.Cog, name="기타"):
         names = await asyncio.gather(*[self.get_user_name(i['_id']) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
-    @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("리더보드", "순위", "ㄹㅋ"))  # todo: 서버랭킹
+    @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))  # todo: 서버랭킹
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
         """여러 분야의 top10 랭킹을 확입합니다.
@@ -85,7 +85,7 @@ class Misc(commands.Cog, name="기타"):
             raise BadArgument
         await ctx.send(embed=embed)
 
-    @commands.command(name="메일", usage="ㄲ메일", aliases=("메일함", "알림", "공지"))
+    @commands.command(name="메일", usage="ㄲ메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다.

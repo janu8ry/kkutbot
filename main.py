@@ -1,14 +1,14 @@
+import asyncio
 import os
 import time
 from datetime import datetime, timedelta
-import asyncio
 from typing import Type
 
 import discord
 from discord.ext import commands
 
-from ext.db import read, write, add, delete, config
 from ext.core import Kkutbot, KkutbotContext
+from ext.db import add, config, delete, read, write
 from ext.utils import time_convert
 
 os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'  # jishaku config
@@ -47,7 +47,7 @@ async def on_shard_ready(shard_id):
     print(f"{shard_id}번 샤드 준비 완료!")
 
 
-@bot.command(name="$리로드", usage="ㄲ리로드 <카테고리>", aliases=("ㄹ", "$ㄹ"))
+@bot.command(name="$리로드", usage="ㄲ리로드 <카테고리>", aliases=("$ㄹ", ))
 @commands.is_owner()
 async def reload_commands(ctx: KkutbotContext, *, extension: str = None):
     """카테고리를 다시 로딩합니다."""

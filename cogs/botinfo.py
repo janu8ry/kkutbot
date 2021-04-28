@@ -13,7 +13,7 @@ class BotInfo(commands.Cog, name="일반"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ"))
+    @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ", "ㄷ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext, *, command_name: str = None):
         """끝봇의 커맨드 목록을 확인합니다."""
@@ -107,7 +107,7 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코"))
+    @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장 확인합니다."""

@@ -35,7 +35,7 @@ class Profile(commands.Cog, name="사용자"):
         embed.set_footer(text=f"더 자세한 정보는 'ㄲ통계' 명령어로 확인할 수 있어요!{' ' * 83}​")
         await ctx.send(embed=embed)
 
-    @commands.command(name="소개말", usage="ㄲ소개말 <할말>", aliases=("소개설정", "소개변경", "정보수정"))
+    @commands.command(name="소개말", usage="ㄲ소개말 <할말>", aliases=("ㅅㄱㅁ", "소개설정", "소개변경", "정보수정"))
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def set_info_word(self, ctx: KkutbotContext, *, info_word: str):
         """프로필의 소개말을 변경합니다. (최대 50자)"""
