@@ -3,3 +3,5 @@ venv
 general/**/*.bin
 __pycache__
 config.yml
+backup
+tmp

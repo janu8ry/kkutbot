@@ -4,6 +4,8 @@ import pickle
 from ext.db import db
 from ext.utils import get_tier
 
+os.mkdir('backup')
+
 db.user.drop()
 for i in os.listdir('data/user'):
     ls = []

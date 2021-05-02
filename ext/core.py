@@ -1,5 +1,7 @@
 import os
-import subprocess
+import shutil
+import zipfile
+from datetime import date
 from typing import Type
 
 import dbl
@@ -62,9 +64,16 @@ class Kkutbot(commands.AutoShardedBot):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
     async def backup(self):  # noqa
-        fp = os.path.join(os.getcwd(), 'backup')
-        cmd = f"mongodump -h {config('mongo.ip')}:{config('mongo.port')} --db kkutbot --authenticationDatabase admin -u {config('mongo.user')} -p {config('mondo.password')} -o {fp}"
-        subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        tmp = "./tmp"
+        cmd = f"mongodump -h {config('mongo.ip')}:{config('mongo.port')} --db kkutbot --authenticationDatabase admin -u {config('mongo.user')} -p {config('mondo.password')} -o {tmp}"
+        os.system(cmd)
+        today = date.today().strftime("%Y-%m-%d")
+        fp = os.path.join(os.getcwd(), 'backup', f'backup-{today}.zip')
+        with zipfile.ZipFile(fp, 'w') as archive:
+            for folder, _, files in os.walk(tmp):
+                for file in files:
+                    archive.write(os.path.join(folder, file), os.path.relpath(os.path.join(folder, file), '.'), compress_type=zipfile.ZIP_DEFLATED)
+        shutil.rmtree(tmp)
         await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
 
     @staticmethod

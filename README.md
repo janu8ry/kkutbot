@@ -55,6 +55,18 @@ mv config.example.yml config.yml # config.yml 수정
 python3 main.py
 ```
 
+## DB 백업
+매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.zip` 형태로 압축되어 백업되고,   
+`config.yml` 에 지정한 백업용 디스코드 채널에도 공유됩니다.
+
+### 복구하기
+
+```shell
+unzip backup/backup-xxxx-xx-xx.zip  # 압축해제  tmp 디렉토리 생성
+mongorestore -h dbhost:dbport --db kkutbot --authenticationDatabase admin -u dbuser -p dbpasswd tmp/kkutbot --drop
+rm -rf tmp
+```
+
 # 연락하기
 
 개발자 디스코드: ``sonix18#3825``    
