@@ -46,6 +46,9 @@ mongo:
   user: mongoDB username
   password: mongoDB passwd
 
+# mongodb backup channel id
+backup_channel: 0000
+
 # emoji name & id that kkutbot uses (emojis in official support server)
 emojis:
   starter: 715559187756875807

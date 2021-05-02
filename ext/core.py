@@ -1,3 +1,5 @@
+import os
+import subprocess
 from typing import Type
 
 import dbl
@@ -30,6 +32,8 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
         self.scheduler.add_job(self.reset_daily, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
         self.scheduler.add_job(self.update_presence, 'interval', seconds=10)
+        if not config('test'):
+            self.scheduler.add_job(self.backup, 'cron', hour=5, minute=0, second=0)
         self.scheduler.start()
 
     async def log(self, msg: str, embed: discord.Embed = None, nomention=True):
@@ -56,6 +60,12 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
+
+    async def backup(self):  # noqa
+        fp = os.path.join(os.getcwd(), 'backup')
+        cmd = f"mongodump -h {config('mongo.ip')}:{config('mongo.port')} --db kkutbot --authenticationDatabase admin -u {config('mongo.user')} -p {config('mondo.password')} -o {fp}"
+        subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
 
     @staticmethod
     def dict_emojis():
