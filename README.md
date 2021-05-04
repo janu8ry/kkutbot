@@ -50,7 +50,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
-pip3 install -r requirements.txt
+# pip3 install -r requirements.txt
 mv config.example.yml config.yml # config.yml 수정
 python3 main.py
 ```
