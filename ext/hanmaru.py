@@ -9,7 +9,6 @@ from ext.db import config, read
 # from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
-
 class Handler:
     """File transfer handler for partner bot 'hanmaru'"""
 
