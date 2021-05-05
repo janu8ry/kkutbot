@@ -1,5 +1,9 @@
 # 디스코드봇, 끝봇
-![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg) [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226) ![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen) ![python](https://img.shields.io/badge/python-3.8-blue) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5e1c2e0ce394529b1c57f9c8eccc7aa)](https://app.codacy.com/gh/janu8ry/kkutbot?utm_source=github.com&utm_medium=referral&utm_content=janu8ry/kkutbot&utm_campaign=Badge_Grade_Settings)
+[![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg)](https://koreanbots.dev/bots/703956235900420226)
+[![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226)
+[![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
+[![python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5e1c2e0ce394529b1c57f9c8eccc7aa)](https://app.codacy.com/gh/janu8ry/kkutbot?utm_source=github.com&utm_medium=referral&utm_content=janu8ry/kkutbot&utm_campaign=Badge_Grade_Settings)
 
 # 소개
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
@@ -13,7 +17,7 @@
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
 - 개발 언어: python 3.8.9 ([discord.py 1.7.2](https://discordpy.readthedocs.io/en/latest/index.html))
-- 버전: 1.6 (개발버전: 1.7a)
+- 버전: 1.6.0 (개발버전: 1.7.0-alpha.0)
 - 데이터베이스: mongoDB  
 - 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
@@ -41,17 +45,34 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [ ] 한방단어 입력시 즉시 판정
 
 # 봇 실행하기
-끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](https://github.com/janu8ry/kkutbot/blob/master/LICENSE) 를 꼭 지켜주세요.
+끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE) 를 꼭 지켜주세요.
 
 ## 요구사항
 - python 3.8
 - git
 - mongoDB 4.4
-- poetry (선택)
+- [poetry](https://python-poetry.org)
+- [pyenv](https://github.com/pyenv/pyenv), [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) (선택)
 
+### poetry 가상환경 사용 (기본)
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
-poetry install # poetry가 없다면 pip3 install -r requirements.txt
+cd kkutbot
+poetry install
+nano config.yml # config.yml 수정
+poetry shell
+python3 main.py
+```
+
+### pyenv 가상환경 사용 (추천)
+```shell
+pyenv install 3.8.9
+pyenv virtualenv 3.8.9 kkutbot
+
+git clone https://github.com/janu8ry/kkutbot.git
+cd kkutbot
+pyenv local kkutbot
+poetry install
 nano config.yml # config.yml 수정
 python3 main.py
 ```
