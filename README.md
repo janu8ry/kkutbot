@@ -12,7 +12,7 @@
 
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
-- 개발 언어: python 3.8.6 ([discord.py 1.7.1](https://discordpy.readthedocs.io/en/latest/index.html))
+- 개발 언어: python 3.8.9 ([discord.py 1.7.2](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 1.6 (개발버전: 1.7a)
 - 데이터베이스: mongoDB  
 - 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
@@ -46,12 +46,13 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 ## 요구사항
 - python 3.8
 - git
-- mongoDB
+- mongoDB 4.4
+- poetry (선택)
 
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
-# pip3 install -r requirements.txt
-mv config.example.yml config.yml # config.yml 수정
+poetry install # poetry가 없다면 pip3 install -r requirements.txt
+nano config.yml # config.yml 수정
 python3 main.py
 ```
 
