@@ -31,11 +31,6 @@ async def on_ready():
         if cogname.endswith(".py"):
             bot.try_reload(cogname[:-3])
             print(f"카테고리 '{cogname[:-3]}'을(를) 불러왔습니다!")
-    try:
-        bot.try_reload('jishaku')
-    except commands.ExtensionAlreadyLoaded:
-        pass
-    print("카테고리 'jishaku'을(를) 불러왔습니다!")
     print("-" * 75)
     print(f"'{bot.user.name}'으로 로그인됨")
     print(f"서버수: {len(bot.guilds)}, 유저수: {bot.db.user.count_documents({})}, 미사용 유저수: {bot.db.unused.count_documents({})}")
