@@ -22,7 +22,7 @@ humanize = "^3.3.0"
 dblpy = "^0.4.0"
 dhooks = "^1.1.4"
 aiohttp = {version = "^3.7.3", extras = ["speedups"]}
-jishaku = {git = "https://github.com/Gorialis/jishaku", rev = "master"}
+jishaku = {git = "https://github.com/Gorialis/jishaku.git"}
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"
