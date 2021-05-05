@@ -15,11 +15,18 @@ def dbconfig(query: str):
     return config(f"mongo.{mode}.{query}")
 
 
+db_options = dict()
+username = dbconfig('user')
+password = dbconfig('password')
+
+if all([username, password]):  # if both username and password is not None
+    db_options['username'] = username
+    db_options['password'] = password
+
 mongo = MongoClient(
     host=dbconfig('ip'),
     port=dbconfig('port'),
-    username=dbconfig('user'),
-    password=dbconfig('password')
+    **db_options
 )
 
 db = mongo[dbconfig('db')]  # main database

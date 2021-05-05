@@ -45,14 +45,14 @@ mongo:
     ip: mongoDB server ip
     port: 27017
     db: kkutbot
-    user: mongoDB username
-    password: mongoDB passwd
+    user: mongoDB username  # 'null' if you are not using auth
+    password: mongoDB passwd  # 'null' if you are not using auth
   test:
     ip: 127.0.0.1
     port: 27017
     db: kkuttest
-    user: mongoDB username
-    password: mongoDB passwd
+    user: mongoDB username  # 'null' if you are not using auth
+    password: mongoDB passwd  # 'null' if you are not using auth
 
 # mongodb backup channel id
 backup_channel: 0000
