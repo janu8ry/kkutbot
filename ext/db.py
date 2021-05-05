@@ -8,14 +8,21 @@ from pymongo import MongoClient
 from ext.config import config
 from ext.config import get_nested_dict as get
 
+mode = "test" if config("test") else "main"
+
+
+def dbconfig(query: str):
+    return config(f"mongo.{mode}.{query}")
+
+
 mongo = MongoClient(
-    host=config('mongo.ip') if config('test') else 'localhost',
-    port=config('mongo.port'),
-    username=config('mongo.user'),
-    password=config('mongo.password')
+    host=dbconfig('ip'),
+    port=dbconfig('port'),
+    username=dbconfig('user'),
+    password=dbconfig('password')
 )
 
-db = mongo['kkuttest' if config('test') else 'kkutbot']  # main database
+db = mongo[dbconfig('db')]  # main database
 
 
 def _collection_name(target) -> Optional[str]:
