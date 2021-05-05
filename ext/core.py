@@ -13,7 +13,7 @@ from dhooks import Webhook
 from discord.ext import commands
 
 # from ext import hanmaru
-from ext.db import config, db, write
+from ext.db import config, db, dbconfig, password, username, write
 
 
 class Kkutbot(commands.AutoShardedBot):
@@ -52,20 +52,20 @@ class Kkutbot(commands.AutoShardedBot):
             return voteinfo.response['voted']
 
     def try_reload(self, name: str):
+        name = f"cogs.{name}"
         try:
-            self.reload_extension(f"cogs.{name}")
+            self.reload_extension(name)
         except commands.ExtensionNotLoaded:
-            try:
-                self.load_extension(f"cogs.{name}")
-            except commands.ExtensionNotFound:
-                self.load_extension(name)
+            self.load_extension(name)
 
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
     async def backup(self):  # noqa
         tmp = "./tmp"
-        cmd = f"mongodump -h {config('mongo.ip')}:{config('mongo.port')} --db kkutbot --authenticationDatabase admin -u {config('mongo.user')} -p {config('mondo.password')} -o {tmp}"
+        cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db kkutbot --authenticationDatabase admin -o {tmp}"
+        if all([username, password]):
+            cmd += f" -u {username} -p {password}"
         os.system(cmd)
         today = date.today().strftime("%Y-%m-%d")
         fp = os.path.join(os.getcwd(), 'backup', f'backup-{today}.zip')
