@@ -1,7 +1,18 @@
+# Jetbrains IDE config
 .idea
+
+# virtualenv
 venv
-general/**/*.bin
+
+# cache
 __pycache__
+
+# secret config file
 config.yml
+
+# directory for bd backup
 backup
 tmp
+
+# pyenv virtualenv config
+.python-version
