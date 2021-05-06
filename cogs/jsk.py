@@ -1,18 +1,59 @@
+import asyncio
+import io
 import os
 import re
 
 import discord
 from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
+from jishaku.exception_handling import ReplResponseReactor
 from jishaku.features.baseclass import Feature
+from jishaku.flags import SCOPE_PREFIX
+from jishaku.functools import AsyncSender
+from jishaku.paginators import PaginatorInterface, WrappedPaginator
+from jishaku.repl import AsyncCodeExecutor
+from jishaku.repl.repl_builtins import (http_get_bytes, http_get_json,
+                                        http_post_bytes, http_post_json)
 
 from ext.core import Kkutbot, KkutbotContext
+from ext.db import add, db, read, read_hanmaru, write
+
+
+def get_var_dict_from_ctx(ctx: KkutbotContext, prefix: str = '_'):
+    """
+    Returns the dict to be used in REPL for a given Context.
+    """
+
+    raw_var_dict = {
+        'author': ctx.author,
+        'bot': ctx.bot,
+        'channel': ctx.channel,
+        'ctx': ctx,
+        'find': discord.utils.find,
+        'get': discord.utils.get,
+        'guild': ctx.guild,
+        'http_get_bytes': http_get_bytes,
+        'http_get_json': http_get_json,
+        'http_post_bytes': http_post_bytes,
+        'http_post_json': http_post_json,
+        'message': ctx.message,
+        'msg': ctx.message,
+        'discord': discord,
+        'asyncio': asyncio,
+        'db': db,
+        'read': read,
+        'write': write,
+        'add': add,
+        'read_hanmaru': read_hanmaru
+    }
+
+    return {f'{prefix}{k}': v for k, v in raw_var_dict.items()}
 
 
 class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
     """jishaku의 커스텀 확장 명령어들이 있는 카테고리입니다."""
 
-    filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")
+    filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
 
     @Feature.Command(parent="jsk", name="poetry")
     async def jsk_poetry(self, ctx: KkutbotContext, *, argument: codeblock_converter):
@@ -57,6 +98,68 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             return await ctx.send(f"`{path}`: Cowardly refusing to read a file >128MB.")
 
         return await ctx.send(file=discord.File(path))
+
+    @Feature.Command(parent="jsk", name="py", aliases=["python"])
+    async def jsk_python(self, ctx: KkutbotContext, *, argument: codeblock_converter):
+        """
+        Direct evaluation of Python code.
+        """
+
+        arg_dict = get_var_dict_from_ctx(ctx, SCOPE_PREFIX)
+        arg_dict["_"] = self.last_result
+
+        scope = self.scope
+
+        try:
+            async with ReplResponseReactor(ctx.message):
+                with self.submit(ctx):
+                    executor = AsyncCodeExecutor(argument.content, scope, arg_dict=arg_dict)
+                    async for send, result in AsyncSender(executor):
+                        if result is None:
+                            continue
+
+                        self.last_result = result  # noqa
+
+                        if isinstance(result, discord.File):
+                            send(await ctx.send(file=result, escape_emoji_formatting=True))
+                        elif isinstance(result, discord.Embed):
+                            send(await ctx.send(embed=result, escape_emoji_formatting=True))
+                        elif isinstance(result, PaginatorInterface):
+                            send(await result.send_to(ctx))
+                        else:
+                            if not isinstance(result, str):
+                                # repr all non-strings
+                                result = repr(result)
+
+                            if len(result) <= 2000:
+                                if result.strip() == '':
+                                    result = "\u200b"
+
+                                send(await ctx.send(result.replace(self.bot.http.token, "[token omitted]"), escape_emoji_formatting=True))
+
+                            elif len(result) < 50_000:  # File "full content" preview limit
+                                # Discord's desktop and web client now supports an interactive file content
+                                #  display for files encoded in UTF-8.
+                                # Since this avoids escape issues and is more intuitive than pagination for
+                                #  long results, it will now be prioritized over PaginatorInterface if the
+                                #  resultant content is below the filesize threshold
+                                send(await ctx.send(file=discord.File(
+                                    filename="output.py",
+                                    fp=io.BytesIO(result.encode('utf-8'))
+                                ), escape_emoji_formatting=True))
+
+                            else:
+                                # inconsistency here, results get wrapped in codeblocks when they are too large
+                                #  but don't if they're not. probably not that bad, but noting for later review
+                                paginator = WrappedPaginator(prefix='```py', suffix='```', max_size=1985)
+
+                                paginator.add_line(result)
+
+                                interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
+                                send(await interface.send_to(ctx))
+
+        finally:
+            scope.clear_intersection(arg_dict)
 
 
 def setup(bot: Kkutbot):
