@@ -18,7 +18,7 @@ with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
 def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
     game_times = read(target, f'game.{mode}.times')
     game_win_times = read(target, f'game.{mode}.win')
-    if (game_times == 0) or (game_win_times == 0):
+    if 0 in (game_times, game_win_times):
         return 0
     else:
         return round(game_win_times / game_times * 100, 2)
