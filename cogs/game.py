@@ -11,6 +11,8 @@ from ext.core import Kkutbot, KkutbotContext
 from ext.db import add, config, read, write
 from ext.utils import choose_first_word, get_DU, get_word
 
+# TODO: 중도 포기 기능 추가
+
 
 class SoloGame:
     """Game Model for single play mode"""
