@@ -65,7 +65,7 @@ class Kkutbot(commands.AutoShardedBot):
         tmp = "./tmp"
         cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db kkutbot --authenticationDatabase admin -o {tmp}"
         if all([username, password]):
-            cmd += f" -u {username} -p {password}"
+            cmd += f" --authenticationDatabase admin -u {username} -p {password}"
         os.system(cmd)
         today = date.today().strftime("%Y-%m-%d")
         fp = os.path.join(os.getcwd(), 'backup', f'backup-{today}.zip')
