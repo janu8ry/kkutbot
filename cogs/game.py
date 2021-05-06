@@ -273,9 +273,8 @@ class Game(commands.Cog, name="게임"):
                     raise commands.errors.NoPrivateMessage
                 if ctx.channel.id in Game.guild_multi_games:
                     raise commands.MaxConcurrencyReached(1, per=commands.BucketType.channel)
-                else:
-                    Game.guild_multi_games.append(ctx.channel.id)
 
+                Game.guild_multi_games.append(ctx.channel.id)
                 game = MultiGame(ctx)
 
                 while True:
