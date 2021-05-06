@@ -22,7 +22,7 @@ class SoloGame:
         self.kkd = kkd
         self.score = 0
         self.begin_time = time.time()
-        self.bot_word = choose_first_word(special=True if kkd else False)
+        self.bot_word = choose_first_word(special=bool(kkd))
         self.used_words = [self.bot_word]
         self.channel = ctx.channel
 
