@@ -112,27 +112,33 @@ default_data:
       win: 0
       best: 0
       tier: 언랭크
+      winrate: 0
     rank_multi:
       times: 0
       win: 0
       best: 0
       tier: 언랭크
+      winrate: 0
     kkd:
       times: 0
       win: 0
       best: 0
+      winrate: 0
     guild_multi:
       times: 0
       win: 0
       best: 0
+      winrate: 0
     online_multi:
       times: 0
       win: 0
       best: 0
+      winrate: 0
     apmal:
       times: 0
       win: 0
       best: 0
+      winrate: 0
   daily_times: 0
   command_used: 0
   banned: false

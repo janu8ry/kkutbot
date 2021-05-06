@@ -1,8 +1,9 @@
 import os
 import pickle
 
+from ext.config import config
 from ext.db import db
-from ext.utils import get_tier
+from ext.utils import get_tier, get_winrate
 
 os.mkdir('backup')
 
@@ -18,6 +19,8 @@ for i in os.listdir('data/user'):
             del data['commands']
         data['game']['rank_solo']['tier'] = get_tier(int(str(i).replace('.bin', '')), 'rank_solo', emoji=False)
         data['game']['rank_multi']['tier'] = "언랭크"
+        for mode in config('modelist').values():
+            data['game'][mode]['winrate'] = get_winrate(int(str(i).replace('.bin', '')), mode)
         ls.append(data)
     db.user.insert_many(ls)
 
