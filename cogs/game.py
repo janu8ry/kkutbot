@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from ext.core import Kkutbot, KkutbotContext
 from ext.db import add, config, read, write
-from ext.utils import choose_first_word, get_DU, get_word
+from ext.utils import choose_first_word, get_DU, get_tier, get_word
 
 # TODO: 중도 포기 기능 추가
 
@@ -17,7 +17,7 @@ from ext.utils import choose_first_word, get_DU, get_word
 class SoloGame:
     """Game Model for single play mode"""
 
-    __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "channel")
+    __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "ctx")
 
     def __init__(self, ctx: KkutbotContext, kkd: bool = False):
         self.player = ctx.author
@@ -26,7 +26,7 @@ class SoloGame:
         self.begin_time = time.time()
         self.bot_word = choose_first_word(special=bool(kkd))
         self.used_words = [self.bot_word]
-        self.channel = ctx.channel
+        self.ctx = ctx
 
     async def send_info_embed(self, _msg: Union[discord.Message, KkutbotContext], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
         _embed = discord.Embed(title=f"끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"현재 점수: `{self.score}` 점", color=config('colors.help'))
@@ -37,7 +37,7 @@ class SoloGame:
             return await _msg.reply(desc, embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
         except discord.HTTPException as e:
             if e.code == 50035:
-                return await self.channel.send(f"{_msg.author.mention}님, {desc}", embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
+                return await self.ctx.send(f"{_msg.author.mention}님, {desc}", embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
 
     async def game_end(self, win: bool = True):
         if win:
@@ -47,13 +47,30 @@ class SoloGame:
         embed = discord.Embed(title="게임 결과", description=f"**{'승리' if win else '패배'}**  |  {'봇이 대응할 단어를 찾지 못했습니다!' if win else f'대답시간이 {15 if self.kkd else 10}초를 초과했습니다...'}", color=config('colors.general') if win else config('colors.error'))
         embed.add_field(name="점수", value=f"`{self.score}` 점")
         embed.add_field(name="보상", value=f"`{points}` {{points}}")
-        await self.channel.send(self.player.mention, embed=embed)
+        await self.ctx.send(self.player.mention, embed=embed)
         add(self.player, 'points', points)
         add(self.player, f'game.{mode}.times', 1)
         if win:
             add(self.player, f'game.{mode}.win', 1)
         if self.score > read(self.player, f'game.{mode}.best'):
             write(self.player, f'game.{mode}.best', self.score)
+        tier = get_tier(self.player, mode, emoji=False)
+        if (tier_past := read(self.player, f'game.{mode}.tier')) != tier:
+            write(self.player, f'game.{mode}.tier', tier)
+            tierlist = list(config('tierlist').keys())
+            if tierlist.index(tier) > tierlist.index(tier_past):
+                embed = discord.Embed(
+                    title="티어 승급!",
+                    description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
+                )
+                embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
+            else:
+                embed = discord.Embed(
+                    title="티어 강등...",
+                    description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
+                )
+                embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
+            await self.ctx.send(self.player.mention, embed=embed)
         del self
 
 
@@ -138,6 +155,23 @@ class MultiGame:
                     write(kv[0], 'game.guild_multi.best', self.score)
                 if (n + 1) <= round((len(rank) - 1) / 2):
                     add(kv[0], 'game.guild_multi.win', 1)
+                tier = get_tier(kv[0], 'guild_multi', emoji=False)
+                if (tier_past := read(kv[0], f'game.guild_multi.tier')) != tier:
+                    write(kv[0], f'game.guild_multi.tier', tier)
+                    tierlist = list(config('tierlist').keys())
+                    if tierlist.index(tier) > tierlist.index(tier_past):
+                        embed = discord.Embed(
+                            title="티어 승급!",
+                            description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
+                        )
+                        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
+                    else:
+                        embed = discord.Embed(
+                            title="티어 강등...",
+                            description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
+                        )
+                        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
+                    await self.ctx.send(kv[0].mention, embed=embed)
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
