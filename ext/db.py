@@ -34,7 +34,7 @@ db = mongo[dbconfig('db')]  # main database
 
 def _collection_name(target) -> Optional[str]:
     """returns collection name"""
-    if isinstance(target, discord.User) or isinstance(target, discord.Member) or isinstance(target, discord.ClientUser) or isinstance(target, int):
+    if isinstance(target, (discord.User, discord.Member, discord.ClientUser, int)):
         return "user"
     elif isinstance(target, discord.Guild):
         return "guild"
