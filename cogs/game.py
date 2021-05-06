@@ -166,8 +166,8 @@ class MultiGame(GameBase):
                 if (n + 1) <= round((len(rank) - 1) / 2):
                     add(kv[0], 'game.guild_multi.win', 1)
                 tier = get_tier(kv[0], 'guild_multi', emoji=False)
-                if (tier_past := read(kv[0], f'game.guild_multi.tier')) != tier:
-                    write(kv[0], f'game.guild_multi.tier', tier)
+                if (tier_past := read(kv[0], 'game.guild_multi.tier')) != tier:
+                    write(kv[0], 'game.guild_multi.tier', tier)
                     await self.alert_tier_change(kv[0], tier, tier_past)
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
