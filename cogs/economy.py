@@ -45,7 +45,7 @@ class Economy(commands.Cog, name="경제"):
         """출석체크를 하고 100포인트를 획득합니다."""
         write(ctx.author, 'alert.daily', True)
         options = ''
-        week_daily = list()
+        week_daily = []
         week_data = read(ctx.author, 'daily')
         if read(ctx.author, f'daily.{time.localtime().tm_wday}'):
             msg = "{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도 해 주세요."

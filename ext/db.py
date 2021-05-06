@@ -15,7 +15,7 @@ def dbconfig(query: str):
     return config(f"mongo.{mode}.{query}")
 
 
-db_options = dict()
+db_options = {}
 username = dbconfig('user')
 password = dbconfig('password')
 
@@ -61,7 +61,7 @@ def read(target, path: str = None):
             if _collection_name(target) == "user":
                 main_data = deepcopy(config('default_data'))  # returns default user data schema
             else:
-                main_data = dict()  # returns empty dict
+                main_data = {}  # returns empty dict
     else:
         main_data = db.general.find_one()
 

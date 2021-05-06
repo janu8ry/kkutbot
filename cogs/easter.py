@@ -30,7 +30,7 @@ class EasterEgg(commands.Cog, name="이스터에그"):
         msg = await ctx.reply(
             f":slot_machine: **{ctx.author.name}**님의 슬롯 | <:hanmaru_token:796185418616930314> `9999` 베팅 | <:hanmaru_token:796185418616930314> `0` 누적\n"
             "[❔] [❔] [❔]")
-        slot_em = list()
+        slot_em = []
         for _ in range(3):
             n_em = random.choice(em)
             slot_em.append(n_em)
