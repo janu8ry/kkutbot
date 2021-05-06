@@ -354,14 +354,6 @@ cairosvg = "*"
 discord = "*"
 
 [[package]]
-name = "meval"
-version = "2.5"
-description = "Performs async evaluations of strings"
-category = "main"
-optional = false
-python-versions = ">=3.5"
-
-[[package]]
 name = "multidict"
 version = "5.1.0"
 description = "multidict implementation"
@@ -563,7 +555,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "3181f2398f959a2e118d2aa62f1f29cdcdce881d42585832a944832c2f2098da"
+content-hash = "25a0cd3a2af54efa8bd01f0ddc91398b9629f7aa14012b41aeb1c5a59b72e500"
 
 [metadata.files]
 aiodns = [
@@ -801,10 +793,6 @@ isort = [
 jishaku = []
 koreanbots = [
     {file = "koreanbots-0.2.3-py3-none-any.whl", hash = "sha256:7cd7650ea90ee3d9bf256d74ccc4d14bcc8e62ab6d645e8702d9dc22a1b1f5b3"},
-]
-meval = [
-    {file = "meval-2.5-py3-none-any.whl", hash = "sha256:24430865001b5596864a7c28f423294edadaac57af9ab6964dda3eabc8762577"},
-    {file = "meval-2.5.tar.gz", hash = "sha256:a5aa481617f1fd07a5972076cd3aa14e38515ac84b3ff028efdf76371a856765"},
 ]
 multidict = [
     {file = "multidict-5.1.0-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:b7993704f1a4b204e71debe6095150d43b2ee6150fa4f44d6d966ec356a8d61f"},

@@ -3,7 +3,6 @@ import time
 from datetime import datetime
 
 import discord
-import meval
 import psutil
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
@@ -199,25 +198,6 @@ class Admin(commands.Cog, name="관리자"):
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제 되었습니다. 다음부터는 조심해 주세요!")
         else:
             await ctx.send("{denyed} 현재 이용 정지 되지 않은 유저입니다.")
-
-    @commands.command(name="$실행", usage="ㄲ$실행 (코드)", aliases=("ㅅ", "$ㅅ"), hidden=True)  # thanks to seojin200403
-    @commands.is_owner()
-    async def run_code(self, ctx: KkutbotContext, *, code: str):
-        """파이썬 코드를 실행합니다."""
-        await meval.meval(
-            code,
-            globals(),
-            discord=discord,
-            asyncio=asyncio,
-            db=self.bot.db,
-            bot=self.bot,
-            ctx=ctx,
-            read=read,
-            write=write,
-            add=add,
-            read_hanmaru=read_hanmaru
-        )
-        await ctx.send("{done} 완료!")
 
     async def update_user_name(self, target: int, counter: int) -> int:  # update cached username
         username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
