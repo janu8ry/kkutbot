@@ -13,7 +13,7 @@ class SpecialMemberConverter(Converter):
     async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
         argument = argument.lstrip()
 
-        if not len(argument):  # return author when argument is empty
+        if not argument:  # return author when argument is empty
             return ctx.author
 
         try:
