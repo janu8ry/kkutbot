@@ -46,7 +46,7 @@ class Misc(commands.Cog, name="기타"):
         names = await asyncio.gather(*[self.get_user_name(i['_id']) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
-    @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))  # todo: 서버랭킹
+    @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
         """여러 분야의 top10 랭킹을 확입합니다.
@@ -72,13 +72,13 @@ class Misc(commands.Cog, name="기타"):
             embed = discord.Embed(title=f"랭킹 top 15 | {event}", description="\n".join(await self.format_rank(rank, eventlist[event])), color=config('colors.help'))
         elif event in modelist:
             embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
-            # rank_winrate = self.bot.db.user.find(rank_query).sort({f"game.{modelist[event]}.win": DESCENDING}).limit(15)  # noqa todo: 승률 랭킹 개선
             rank = await asyncio.gather(
-                # self.format_rank(self.bot.db.user.find(rank_query).where(f"this.game.{modelist[event]}.win / this.game.{modelist[event]}.times * 100")),
+
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.winrate", DESCENDING).limit(15), f"game.{modelist[event]}.winrate"),
                 self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
                 self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
             )
-            # embed.add_field(name="승률", value="\n".join(rank[0]))
+            embed.add_field(name="승률", value="\n".join(rank[0]))
             embed.add_field(name="승리수", value="\n".join(rank[1]))
             embed.add_field(name="최고점수", value="\n".join(rank[2]))
         else:
