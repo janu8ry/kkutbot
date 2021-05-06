@@ -14,19 +14,44 @@ from ext.utils import choose_first_word, get_DU, get_tier, get_word
 # TODO: 중도 포기 기능 추가
 
 
-class SoloGame:
+class GameBase:
+    """Base Game Model for many modes."""
+
+    __slots__ = ("ctx", "score", "begin_time")
+
+    def __init__(self, ctx: KkutbotContext):
+        self.ctx = ctx
+        self.score = 0
+        self.begin_time = time.time()
+
+    async def alert_tier_change(self, player: discord.User, tier: str, tier_past: str) -> discord.Message:
+        tierlist = list(config('tierlist').keys())
+        if tierlist.index(tier) > tierlist.index(tier_past):
+            embed = discord.Embed(
+                title="티어 승급!",
+                description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
+            )
+            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
+        else:
+            embed = discord.Embed(
+                title="티어 강등...",
+                description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
+            )
+            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
+        return await self.ctx.send(player.mention, embed=embed)
+
+
+class SoloGame(GameBase):
     """Game Model for single play mode"""
 
     __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "ctx")
 
     def __init__(self, ctx: KkutbotContext, kkd: bool = False):
+        super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
-        self.score = 0
-        self.begin_time = time.time()
         self.bot_word = choose_first_word(special=bool(kkd))
         self.used_words = [self.bot_word]
-        self.ctx = ctx
 
     async def send_info_embed(self, _msg: Union[discord.Message, KkutbotContext], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
         _embed = discord.Embed(title=f"끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"현재 점수: `{self.score}` 점", color=config('colors.help'))
@@ -57,38 +82,23 @@ class SoloGame:
         tier = get_tier(self.player, mode, emoji=False)
         if (tier_past := read(self.player, f'game.{mode}.tier')) != tier:
             write(self.player, f'game.{mode}.tier', tier)
-            tierlist = list(config('tierlist').keys())
-            if tierlist.index(tier) > tierlist.index(tier_past):
-                embed = discord.Embed(
-                    title="티어 승급!",
-                    description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
-                )
-                embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
-            else:
-                embed = discord.Embed(
-                    title="티어 강등...",
-                    description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
-                )
-                embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
-            await self.ctx.send(self.player.mention, embed=embed)
+            await self.alert_tier_change(self.player, tier, tier_past)
         del self
 
 
-class MultiGame:
+class MultiGame(GameBase):
     """Game Model for multiple play mode"""
 
     __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time", "final_score", "score")
 
     def __init__(self, ctx: KkutbotContext):
+        super().__init__(ctx)
         self.players = [ctx.author]
-        self.ctx = ctx
         self.msg = ctx.message
         self.turn = 0
         self.word = choose_first_word()
         self.used_words = [self.word]
-        self.begin_time = time.time()
         self.final_score = {}
-        self.score = 0
 
     @property
     def host(self) -> discord.User:
@@ -158,20 +168,7 @@ class MultiGame:
                 tier = get_tier(kv[0], 'guild_multi', emoji=False)
                 if (tier_past := read(kv[0], f'game.guild_multi.tier')) != tier:
                     write(kv[0], f'game.guild_multi.tier', tier)
-                    tierlist = list(config('tierlist').keys())
-                    if tierlist.index(tier) > tierlist.index(tier_past):
-                        embed = discord.Embed(
-                            title="티어 승급!",
-                            description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
-                        )
-                        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
-                    else:
-                        embed = discord.Embed(
-                            title="티어 강등...",
-                            description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
-                        )
-                        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
-                    await self.ctx.send(kv[0].mention, embed=embed)
+                    await self.alert_tier_change(kv[0], tier, tier_past)
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
