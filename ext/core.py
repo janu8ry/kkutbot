@@ -202,7 +202,7 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, **kwargs):  # same as above
-        if kwargs.get('escape_emoji_formatting', False):
+        if not kwargs.get('escape_emoji_formatting', False):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
 
