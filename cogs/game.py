@@ -9,7 +9,8 @@ from discord.ext import commands
 
 from ext.core import Kkutbot, KkutbotContext
 from ext.db import add, config, read, write
-from ext.utils import choose_first_word, get_DU, get_tier, get_word
+from ext.utils import (choose_first_word, get_DU, get_tier, get_winrate,
+                       get_word)
 
 # TODO: 중도 포기 기능 추가
 
@@ -83,6 +84,7 @@ class SoloGame(GameBase):
         if (tier_past := read(self.player, f'game.{mode}.tier')) != tier:
             write(self.player, f'game.{mode}.tier', tier)
             await self.alert_tier_change(self.player, tier, tier_past)
+        write(self.player, f'game.{mode}.winrate', get_winrate(self.player, mode))
         del self
 
 
@@ -169,6 +171,7 @@ class MultiGame(GameBase):
                 if (tier_past := read(kv[0], 'game.guild_multi.tier')) != tier:
                     write(kv[0], 'game.guild_multi.tier', tier)
                     await self.alert_tier_change(kv[0], tier, tier_past)
+                write(kv[0], 'game.guild_multi.winrate', get_winrate(kv[0], "guild_multi"))
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
