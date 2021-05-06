@@ -87,7 +87,3 @@ def choose_first_word(special: bool = False) -> str:
             else:
                 break
     return bot_word
-
-
-if __name__ == "__main__":
-    pass
