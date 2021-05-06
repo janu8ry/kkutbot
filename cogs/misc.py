@@ -98,7 +98,7 @@ class Misc(commands.Cog, name="기타"):
         for x in read(ctx.author, 'mail'):
             if (datetime.now() - x['time']).days <= 14:
                 embed.add_field(name=f"{x['title']} - `{utils.time_convert(datetime.now() - x['time'])} 전`", value=x['value'], inline=False)
-        write(ctx.author, 'mail', list())
+        write(ctx.author, 'mail', [])
         write(ctx.author, 'alert.mail', True)
         await ctx.reply(embed=embed)
 

@@ -46,19 +46,19 @@ def time_convert(time: timedelta) -> str:
 
 def split_string(n: str, unit=2000, t="\n") -> tuple:  # thanks to seojin200403
     n = n.split(t)
-    x = list()
-    r = list()
+    x = []
+    r = []
     for idx, i in enumerate(n):
         x.append(i)
         if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx+1]]]) + len(x) > unit:
             r.append("\n".join(x))
-            x = list()
+            x = []
     return tuple(r)
 
 
 def get_word(_word: str) -> list:
     du = get_DU(_word[-1])
-    return_list = list()
+    return_list = []
     for x in du:
         if x in wordlist:
             return_list += wordlist[x[-1]]

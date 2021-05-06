@@ -68,7 +68,7 @@ class MultiGame:
         self.word = choose_first_word()
         self.used_words = [self.word]
         self.begin_time = time.time()
-        self.final_score = dict()
+        self.final_score = {}
         self.score = 0
 
     @property
@@ -122,7 +122,7 @@ class MultiGame:
 
     async def game_end(self):
         await self.msg.delete()
-        desc = list()
+        desc = []
         self.final_score[self.now_player] = self.score
         self.final_score["zero"] = 0
         rank = sorted(self.final_score.items(), key=operator.itemgetter(1), reverse=True)
@@ -155,7 +155,7 @@ class Game(commands.Cog, name="게임"):
     """끝봇의 메인 기능인 끝말잇기 게임에 대한 카테고리입니다!"""
 
     __slots__ = ("bot", )
-    guild_multi_games = list()
+    guild_multi_games = []
 
     def __init__(self, bot: Kkutbot):
         self.bot = bot
