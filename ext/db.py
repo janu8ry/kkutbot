@@ -98,9 +98,8 @@ def write(target, path, value):
                 db.user.insert_one(main_data)  # create new data
         if (name := _get_name(target)) != read(target, '_name'):
             db.user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
-    elif collection == "guild":
-        if not read(target):
-            db.guild.insert_one({'_id': _get_id(target)})
+    elif (collection == "guild") and (not read(target)):
+        db.guild.insert_one({'_id': _get_id(target)})
 
     if collection:
         db[collection].update_one({'_id': _get_id(target)}, {'$set': {path: value}})
