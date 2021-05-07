@@ -9,10 +9,10 @@ from discord.ext import commands
 from ext.db import config, read
 
 with open('general/wordlist.json', 'r', encoding="utf-8") as f:
-    DU = json.load(f)
+    wordlist = json.load(f)
 
 with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
-    wordlist = json.load(f)
+    DU = json.load(f)
 
 
 def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
