@@ -223,10 +223,10 @@ class Game(commands.Cog, name="게임"):
         :one: 솔로 렝킹전
         -끝봇과 끝말잇기 대결을 합니다.
 
-        :two:서버원들과 친선전
+        :two: 서버원들과 친선전
         -같은 서버에 있는 유저들 여러 명과 끝말잇기 대결을 합니다.
 
-        :three:쿵쿵따
+        :three: 쿵쿵따
         -끝봇과 끝말잇기 대결을 합니다. 하지만 세글자 단어만 사용 가능합니다.
 
         3종류의 모드 추가 개발중...
@@ -239,7 +239,7 @@ class Game(commands.Cog, name="게임"):
             return (emoji_user == ctx.author) and (str(emoji_reaction) in ["1️⃣", "2️⃣", "3️⃣", "❌"]) and (emoji_reaction.message.author.id == self.bot.user.id)
 
         if read(ctx.author, 'points') <= 30:
-            return await ctx.send(f"{ctx.author.mention} {{denyed}} 포인트가 30점 미만이라 플레이 할 수 없습니다.\n"
+            return await ctx.send(f"{ctx.author.mention} {{denyed}} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
                                   f"`ㄲ출석`, `ㄲ지원금`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
         if mode is None:
             embed = discord.Embed(title="끝말잇기", description="끝말잇기 게임의 모드를 선택해 주세요.", color=config('colors.general'))
