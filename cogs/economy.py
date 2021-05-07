@@ -33,7 +33,7 @@ class Economy(commands.Cog, name="경제"):
             embed = discord.Embed(
                 description="{denyed} "
                             f"[이곳]({config('links.koreanbots')})에서 **하트 추가**를 누른 후 사용해 주세요!\n"
-                            "반영까지 1-2분정도 소요 될 수 있습니다.",
+                            "반영까지 1-2분 정도 소요될 수 있습니다.",
                 color=config('colors.error')
             )
             await ctx.reply(embed=embed)
@@ -48,7 +48,7 @@ class Economy(commands.Cog, name="경제"):
         week_daily = []
         week_data = read(ctx.author, 'daily')
         if read(ctx.author, f'daily.{time.localtime().tm_wday}'):
-            msg = "{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도 해 주세요."
+            msg = "{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."
         else:
             add(ctx.author, 'points', 100)
             add(ctx.author, 'daily_times', 1)

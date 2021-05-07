@@ -60,7 +60,7 @@ class SoloGame(GameBase):
         _embed = discord.Embed(title=f"끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"현재 점수: `{self.score}` 점", color=config('colors.help'))
         _embed.add_field(name="단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_DU(self.bot_word))})```", inline=False)
         _embed.add_field(name="남은 시간", value=f"`{round((15 if self.kkd else 10) - (time.time() - self.begin_time), 1)}` 초", inline=False)
-        _embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입하여 규칙을 확인할 수 있습니다.")
+        _embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입력하여 규칙을 확인할 수 있습니다.")
         try:
             return await _msg.reply(desc, embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
         except discord.HTTPException as e:
@@ -139,7 +139,7 @@ class MultiGame(GameBase):
         embed.add_field(name="단어", value=f"```yaml\n{self.word} ({' / '.join(get_DU(self.word))})```")
         embed.add_field(name="누적 점수", value=f"`{self.score}` 점", inline=False)
         embed.add_field(name="플레이어", value=f"`{'`, `'.join([_x.name for _x in self.players if _x not in self.final_score])}`", inline=False)
-        embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입하여 규칙을 확인할 수 있습니다.")
+        embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입력하여 규칙을 확인할 수 있습니다.")
         if self.final_score:
             embed.add_field(name="탈락자", value=f"`{'`, `'.join([_x.name for _x in self.final_score])}`", inline=False)
         return embed
@@ -205,7 +205,8 @@ class Game(commands.Cog, name="게임"):
     async def game(self, ctx: KkutbotContext, mode: int = None):
         """
         **1.게임 방법**
-        상대방이 처음 단어를 제시하면, 플레이어는 상대방이
+        
+        끝봇이 처음 단어를 제시하면, 플레이어는 상대방이
         제시한 단어의 마지막 단어로 시작하는 단어를 10초 안에 입력합니다.
         이를 계속 반복하다가 어느 한쪽이 단어를 잇지 못하게 되면 상대방의 승리!
         이미 사용한 단어, 한글자 단어, 사전에 없는 단어는 사용 불가능합니다.

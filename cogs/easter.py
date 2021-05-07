@@ -9,7 +9,7 @@ from ext.db import config
 
 
 class EasterEgg(commands.Cog, name="이스터에그"):
-    """그런게 없을까?"""
+    """그런 게 없을까?"""
 
     __slots__ = ("bot", )
 
@@ -72,7 +72,7 @@ NodeNotConnected:""",
     @commands.max_concurrency(1)
     async def my_discord(self, ctx: KkutbotContext):
         """?"""
-        return await ctx.send("**그런거 없다**")
+        return await ctx.send("**그런 거 없다**")
 
     @commands.command(name="뱝", usage="ㄲ뱝", aliases=("고래뱝", "뱝뱝", "ㄸ뜌"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)

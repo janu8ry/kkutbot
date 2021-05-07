@@ -103,7 +103,7 @@ async def on_command_completion(ctx: KkutbotContext):
         await ctx.send(
             f"{ctx.author.mention}님, 읽지 않은 메일이 "
             f"`{len([x for x in read(ctx.author, 'mail') if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
-            "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인 해 보세요!"
+            "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
         )
         write(ctx.author, 'alert.mail', True)
 
@@ -129,7 +129,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
     if isinstance(error, commands.errors.BotMissingPermissions):
         await ctx.send(f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한이 필요합니다.")
     elif isinstance(error, commands.errors.MissingPermissions):
-        await ctx.send(f"`{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한을 보유하고 있어야합니다.")
+        await ctx.send(f"`{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한을 보유하고 있어야 합니다.")
     elif isinstance(error, commands.errors.NotOwner):
         await ctx.send(f"명령어 `{ctx.command.name}`을(를) 실행할 권한이 없습니다.")
     elif isinstance(error, commands.errors.NoPrivateMessage):
@@ -152,7 +152,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
         await ctx.send(embed=embed)
     elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument)):
         embed = discord.Embed(
-            title="잘못된 사용법 입니다.",
+            title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
             color=config('colors.general')
         )
@@ -193,7 +193,7 @@ async def on_guild_join(guild: discord.Guild):
                     f" - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!",
         color=config('colors.general')
     )
-    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, 약관에 동의 한것으로 간주됩니다.")
+    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, 약관에 동의한 것으로 간주됩니다.")
     try:
         await announce[0].send(embed=embed)
     except:  # noqa
@@ -229,7 +229,7 @@ async def on_guild_remove(guild: discord.Guild):
     delete(guild)
 
 
-print("로그인 하는 중...")
+print("로그인하는 중...")
 bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 개선, 웹사이트에 추가
 asyncio.run(bot.webhook.close())  # close the webhook session when bot is off
 # asyncio.run(bot.http._HTTPClient__session.close())  # noqa
