@@ -190,7 +190,7 @@ class MultiGame(GameBase):
 
 
 class Game(commands.Cog, name="게임"):
-    """끝봇의 메인 기능인 끝말잇기 게임에 대한 카테고리입니다!"""
+    """끝봇의 메인 기능인 끝말잇기 게임에 대한 카테고리입니다."""
 
     __slots__ = ("bot", )
     guild_multi_games = []
