@@ -191,7 +191,7 @@ class Admin(commands.Cog, name="관리자"):
         )
         await ctx.send("{done} 완료!")
 
-    @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=('차단',))
+    @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=("$차단",))
     @commands.check(is_admin)
     async def block_user(self, ctx: KkutbotContext, user: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
@@ -204,7 +204,7 @@ class Admin(commands.Cog, name="관리자"):
             f"끝봇 공식 커뮤니티에서 정지 해제를 요청 할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
-    @commands.command(name="$정지해제", usage="ㄲ$정지해제 <유저>", aliases=('차단해제',))
+    @commands.command(name="$정지해제", usage="ㄲ$정지해제 <유저>", aliases=("$차단해제",))
     @commands.check(is_admin)
     async def unblock_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 이용 정지 처리를 해제합니다."""
