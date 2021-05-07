@@ -19,6 +19,13 @@ for i in os.listdir('data/user'):
             del data['commands']
         data['game']['rank_solo']['tier'] = get_tier(int(str(i).replace('.bin', '')), 'rank_solo', emoji=False)
         data['game']['rank_multi']['tier'] = "언랭크"
+        data['quest'] = {
+            'status': {
+                'date': 0,
+                'completed': False
+            },
+            'cache': {}
+        }
         for mode in config('modelist').values():
             data['game'][mode]['winrate'] = get_winrate(int(str(i).replace('.bin', '')), mode)
         ls.append(data)
