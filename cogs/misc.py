@@ -71,7 +71,10 @@ class Misc(commands.Cog, name="기타"):
                 '_id': {
                     '$nin': config('bot_whitelist'),
                     '$ne': self.bot.owner_id
-                }  # 'game.rank_solo.tier': {'$nin': ["언랭크", "뉴비"]}
+                },
+                'game.rank_solo.tier': {
+                    '$nin': ["언랭크", "뉴비"]
+                }
         }
         if event in eventlist:
             rank = self.bot.db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
