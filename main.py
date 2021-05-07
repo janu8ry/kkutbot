@@ -65,8 +65,9 @@ async def on_command(ctx: KkutbotContext):
     add(ctx.author, 'command_used', 1)
     write(ctx.author, 'last_command', time.time())
 
-    write(ctx.guild, 'last_command', time.time())
-    add(ctx.guild, 'command_used', 1)
+    if ctx.guild:
+        write(ctx.guild, 'last_command', time.time())
+        add(ctx.guild, 'command_used', 1)
 
     add(None, 'command_used', 1)
     write(None, 'last_command', time.time())
