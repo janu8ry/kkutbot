@@ -25,7 +25,7 @@ class SpecialMemberConverter(Converter):
         except errors.UserNotFound:
             pass
 
-        if argument.isnumeric():  # if argument is user id
+        if argument.isdecimal():  # if argument is user id
             user = ctx.bot.db.user.find_one({'_id': int(argument)})
             return await ctx.bot.fetch_user(user['_id'])
         else:
