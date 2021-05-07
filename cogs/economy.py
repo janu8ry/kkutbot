@@ -20,7 +20,9 @@ class Economy(commands.Cog, name="경제"):
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_start_point(self, ctx: KkutbotContext):
-        """[koreanbots](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받아가세요!"""
+        """[koreanbots](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받습니다.
+        최대 1번만 수령 가능합니다.
+        """
         write(ctx.author, 'alert.start_point', True)
         if await self.bot.if_koreanbots_voted(ctx.author):
             if not read(ctx.author, 'start_point'):
@@ -42,7 +44,9 @@ class Economy(commands.Cog, name="경제"):
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def daily_check(self, ctx: KkutbotContext):
-        """출석체크를 하고 100포인트를 획득합니다."""
+        """출석체크를 하고 100포인트를 획득합니다.
+        일주일동안 매일 출석하면 일요일 출석시 추가 보상을 받을 수 있습니다!
+        """
         write(ctx.author, 'alert.daily', True)
         options = ''
         week_daily = []

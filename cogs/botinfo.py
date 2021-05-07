@@ -16,7 +16,13 @@ class BotInfo(commands.Cog, name="일반"):
     @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ", "ㄷ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext, *, command_name: str = None):
-        """끝봇의 명령어 목록을 확인합니다."""
+        """끝봇의 명령어 목록을 확인합니다.
+
+       **<예시>**
+       ㄲ도움 - 끝봇의 전체 명령어를 확인합니다.
+       ㄲ도움 끝말잇기 - '끝말잇기' 명령어에 대한 도움말을 확인합니다.
+       ㄲ도움 사용자 - '사용자' 카테고리에 대한 도움말을 확인합니다.
+        """
         cog_list = ("일반", "게임", "사용자", "경제", "기타")
         if not command_name:
             embed = discord.Embed(

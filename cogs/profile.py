@@ -21,7 +21,12 @@ class Profile(commands.Cog, name="사용자"):
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
     async def profile(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
-        """대상의 티어, 포인트, 승률 등의 프로필을 확인합니다."""
+        """대상의 티어, 포인트, 승률 등의 프로필을 확인합니다.
+
+        **<예시>**
+        ㄲ프로필 - 자신의 프로필을 확인합니다.
+        ㄲ프로필 @홍길동 - 홍길동의 프로필을 확인합니다.
+        """
         embed = discord.Embed(
             title=e_mk(str(user)),
             description=f"```yaml\n{read(user, 'info_word')}```\n"
@@ -48,7 +53,12 @@ class Profile(commands.Cog, name="사용자"):
     @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def stats(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
-        """대상의 자세한 통계를 확인합니다."""
+        """대상의 자세한 통계를 확인합니다.
+
+        **<예시>**
+        ㄲ통계 - 자신의 통계를 확인합니다.
+        ㄲ통계 @홍길동 - 홍길동의 통계를 확인합니다.
+        """
         embed = discord.Embed(
             title=str(user),
             description=f"가입일 : `{str(read(user, 'register_date'))[:10]}`",
