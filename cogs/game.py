@@ -51,7 +51,7 @@ class SoloGame(GameBase):
         super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
-        self.bot_word = choose_first_word(special=bool(kkd))
+        self.bot_word = choose_first_word(special=kkd)
         self.used_words = [self.bot_word]
 
     async def send_info_embed(self, _msg: Union[discord.Message, KkutbotContext], desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
