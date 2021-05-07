@@ -1,4 +1,5 @@
 import asyncio
+import operator
 import time
 from datetime import datetime
 
@@ -60,11 +61,26 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.send("{done} 완료! 로그아웃 되었습니다.")
         await self.bot.close()
 
-    @commands.command(name="$서버", usage="ㄲ$서버", hidden=True)
+    @commands.command(name="$서버", usage="ㄲ$서버 <키>", hidden=True)
     @commands.is_owner()
-    async def servers(self, ctx: KkutbotContext):
-        """끝봇이 참가중인 서버의 목록을 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)"""
-        for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in self.bot.guilds)):
+    async def servers(self, ctx: KkutbotContext, key: str = "서버"):
+        """끝봇이 참가중인 서버의 목록을 키에 따라 정렬 후 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)
+
+        <키 목록>
+        서버, 유저(멤버), 샤드, 아이디
+        """
+        if key == "서버":
+            callback = lambda guild: read(guild, 'command_used')  # noqa: E731
+        elif key in ("유저", "멤버"):
+            callback = lambda guild: guild.member_count  # noqa: E731
+        elif key == "샤드":
+            callback = lambda guild: guild.shard_id  # noqa: E731
+        elif key == "아이디":
+            callback = lambda guild: guild.id  # noqa: E731
+        else:
+            return await ctx.send(f"`{key}`는 없는 키 입니다.")
+
+        for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
             await ctx.send(content)
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
@@ -72,7 +88,7 @@ class Admin(commands.Cog, name="관리자"):
     async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:  # check public data
-            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in read(None, 'commands').items())):
+            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted(read(None, 'commands').items(), key=operator.itemgetter(1), reverse=True)).items())):
                 await ctx.send(content)
             public_data = read(user).copy()
             del public_data['commands']
