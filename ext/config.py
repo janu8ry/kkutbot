@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import yaml
 
-with open('config.yml') as f:
+with open('config.yml', encoding='utf-8') as f:
     config_data = yaml.load(f, Loader=yaml.FullLoader)  # loads config file
 
 
