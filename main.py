@@ -230,6 +230,6 @@ async def on_guild_remove(guild: discord.Guild):
 
 
 print("로그인하는 중...")
-bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 개선, 웹사이트에 추가
+bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 웹사이트에 추가
 asyncio.run(bot.webhook.close())  # close the webhook session when bot is off
 # asyncio.run(bot.http._HTTPClient__session.close())  # noqa
