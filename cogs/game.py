@@ -72,7 +72,18 @@ class SoloGame(GameBase):
             self.score += 10
         points = (self.score * 5 if self.kkd else self.score * 3) if win else -30
         mode = 'kkd' if self.kkd else 'rank_solo'
-        embed = discord.Embed(title="게임 결과", description=f"**{'승리' if win else '패배'}**  |  {'봇이 대응할 단어를 찾지 못했습니다!' if win else f'대답시간이 {15 if self.kkd else 10}초를 초과했습니다...'}", color=config('colors.general') if win else config('colors.error'))
+        if win:
+            embed = discord.Embed(title="게임 결과",
+                                  description="**승리** | 봇이 대응할 단어를 찾지 못했습니다!",
+                                  color=config('colors.general'))
+        else:
+            embed = discord.Embed(title="게임 결과",
+                                  description=f"**패배** | 응답 시간이 {15 if self.kkd else 10}초를 초과했습니다...",
+                                  color=config('colors.error'))
+            possibles = [i for i in get_word(self.bot_word) if i not in self.used_words]
+            if possibles:
+                random.shuffle(possibles)
+                embed.add_field(name="가능했던 단어", value=', '.join(possibles[:3]))
         embed.add_field(name="점수", value=f"`{self.score}` 점")
         embed.add_field(name="보상", value=f"`{points}` {{points}}")
         await self.ctx.send(self.player.mention, embed=embed)
@@ -282,7 +293,7 @@ class Game(commands.Cog, name="게임"):
                             await game.send_info_embed(msg, f"**{user_word}** (은)는 이미 사용한 단어입니다.")
                             continue
                         elif user_word[0] not in du:
-                            await game.send_info_embed(msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요.")
+                            await game.send_info_embed(msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력해 주세요.")
                             continue
                         elif user_word in get_word(game.bot_word):
                             if (game.score == 0) and (len(get_word(user_word)) == 0):
