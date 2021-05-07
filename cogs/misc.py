@@ -23,7 +23,9 @@ class Misc(commands.Cog, name="기타"):
     @commands.command(name="핑", usage="ㄲ핑")
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def ping(self, ctx: KkutbotContext):
-        """끝봇의 응답 속도를 확인합니다."""
+        """끝봇의 응답 속도를 확인합니다.
+        핑이 지속적으로 400ms 이상일 경우, 관리자에게 제보 부탁드립니다.
+        """
         message = await ctx.send("걸린 시간: `---`ms")
         ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
         await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**')
@@ -49,14 +51,18 @@ class Misc(commands.Cog, name="기타"):
     @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
-        """여러 분야의 TOP 10 랭킹을 확인합니다.
+        """여러 분야의 TOP 15 랭킹을 확인합니다.
+        랭킹에 등재되려면 끝말잇기 '솔로' 모드의 티어가 **브론즈** 이상이여야 합니다.
 
         **<분야>**
         일반 - 포인트, 출석, 메달, 명령어
 
-        게임 - 솔로, 멀티, 쿵쿵따, 온라인, 앞말잇기, 서버
+        게임 - 솔로, 멀티, 쿵쿵따, 온라인, 앞말잇기
 
-        랭킹에 등재되려면 끝말잇기 게임을 20번 이상 플레이해야 합니다."""
+        **<예시>**
+        ㄲ랭킹 - '솔로' 분야의 랭킹을 확인합니다.
+        ㄲ랭킹 쿵쿵따 - '쿵쿵따' 분야의 랭킹을 확인합니다.
+        """
         await ctx.trigger_typing()
         eventlist = {"포인트": 'points', "메달": 'medal', "출석": 'daily_times', "명령어": 'command_used'}
         modelist = {"솔로": 'rank_solo', "멀티": 'rank_multi', "쿵쿵따": 'kkd', "온라인": 'online_multi', "앞말잇기": 'apmal'}
@@ -65,7 +71,10 @@ class Misc(commands.Cog, name="기타"):
                 '_id': {
                     '$nin': config('bot_whitelist'),
                     '$ne': self.bot.owner_id
-                }  # 'game.rank_solo.tier': {'$nin': ["언랭크", "뉴비"]}
+                },
+                'game.rank_solo.tier': {
+                    '$nin': ["언랭크", "뉴비"]
+                }
         }
         if event in eventlist:
             rank = self.bot.db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
@@ -89,7 +98,6 @@ class Misc(commands.Cog, name="기타"):
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다.
-
         수신한지 2주가 지난 미확인 메일은 자동으로 삭제됩니다."""
         if not read(ctx.author, 'mail'):
             embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description="> 읽지 않은 메일이 없습니다.", color=config('colors.general'))
