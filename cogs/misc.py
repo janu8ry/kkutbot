@@ -49,7 +49,7 @@ class Misc(commands.Cog, name="기타"):
     @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
-        """여러 분야의 top10 랭킹을 확입합니다.
+        """여러 분야의 TOP 10 랭킹을 확인합니다.
 
         **<분야>**
         일반 - 포인트, 출석, 메달, 명령어

@@ -6,7 +6,7 @@ from ext.db import config
 
 
 class BotInfo(commands.Cog, name="일반"):
-    """봇의 기본 정보에 대한 카테고리입니다!"""
+    """봇의 기본 정보에 대한 카테고리입니다."""
 
     __slots__ = ("bot", )
 
@@ -16,7 +16,7 @@ class BotInfo(commands.Cog, name="일반"):
     @commands.command(name="도움", usage="ㄲ도움 <명령어/카테고리>", aliases=("도움말", "help", "ㄷㅇ", "ㄷ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext, *, command_name: str = None):
-        """끝봇의 커맨드 목록을 확인합니다."""
+        """끝봇의 명령어 목록을 확인합니다."""
         cog_list = ("일반", "게임", "사용자", "경제", "기타")
         if not command_name:
             embed = discord.Embed(
@@ -110,7 +110,7 @@ class BotInfo(commands.Cog, name="일반"):
     @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def community_invite(self, ctx: KkutbotContext):
-        """끝봇 공식 커뮤니티에 참가하기 위한 초대장 확인합니다."""
+        """끝봇 공식 커뮤니티에 참가하기 위한 초대장을 확인합니다."""
         embed = discord.Embed(title="끝봇 커뮤니티 참가하기",
                               description=f"[끝봇 커뮤니티]({config('links.invite.server')})에 참가하여, \n"
                                           "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n"

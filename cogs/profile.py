@@ -10,7 +10,7 @@ from ext.utils import get_tier, get_winrate
 
 
 class Profile(commands.Cog, name="사용자"):
-    """사용자의 프로필에 관련된 카테고리입니다!"""
+    """사용자의 프로필에 관련된 카테고리입니다."""
 
     __slots__ = ("bot", )
 
@@ -39,12 +39,11 @@ class Profile(commands.Cog, name="사용자"):
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def set_info_word(self, ctx: KkutbotContext, *, info_word: str):
         """프로필의 소개말을 변경합니다. (최대 50자)"""
+        info_word = info_word.replace('`', '')
         if len(info_word) > 50:
             return await ctx.send(f":warning: 50자 이내로 소개말을 작성해주세요. (현재 {len(info_word)}자)")
-        if "`" in info_word:
-            return await ctx.send("{denyed} 일부 문자는 소개말에 사용될 수 없습니다.")
         write(ctx.author, 'info_word', info_word)
-        await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' 로 변경했습니다!")
+        await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' (으)로 변경했습니다!")
 
     @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
@@ -64,7 +63,7 @@ class Profile(commands.Cog, name="사용자"):
                                   f"승률 : `{get_winrate(user, v)}%`")
         embed.add_field(name="기타", value=f"출석 횟수 : `{read(user, 'daily_times')}`\n"
                                          f"명령어 사용 횟수 : `{read(user, 'command_used')}`")
-        embed.set_footer(text="티어 정보는 웹사이트에서 확인 할 수 있어요.                                                                                   ​​​")
+        embed.set_footer(text="티어 정보는 웹사이트에서 확인할 수 있어요.                                                                                   ​​​")
         await ctx.send(embed=embed)
 
 

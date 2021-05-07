@@ -16,7 +16,7 @@ from ext.utils import is_admin, split_string
 
 
 class Admin(commands.Cog, name="관리자"):
-    """관리자 전용 명령어들이 있는 카테고리 입니다."""
+    """관리자 전용 명령어들이 있는 카테고리입니다."""
 
     __slots__ = ("bot", )
 
@@ -78,7 +78,7 @@ class Admin(commands.Cog, name="관리자"):
         elif key == "아이디":
             callback = lambda guild: guild.id  # noqa: E731
         else:
-            return await ctx.send(f"`{key}`는 없는 키 입니다.")
+            return await ctx.send(f"`{key}`(은)는 없는 키 입니다.")
 
         for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
             await ctx.send(content)
@@ -196,12 +196,12 @@ class Admin(commands.Cog, name="관리자"):
     async def block_user(self, ctx: KkutbotContext, user: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
         if read(user, 'banned'):
-            return await ctx.send("{denyed} 이미 정지 된 유저입니다.")
+            return await ctx.send("{denyed} 이미 정지된 유저입니다.")
         write(user, 'banned', True)
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
-            f"끝봇 공식 커뮤니티에서 정지 해제를 요청 할 수 있습니다.\n\n{config('links.invite.server')}")
+            f"끝봇 공식 커뮤니티에서 정지 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$정지해제", usage="ㄲ$정지해제 <유저>", aliases=("$차단해제",))
@@ -211,9 +211,9 @@ class Admin(commands.Cog, name="관리자"):
         if read(user, 'banned'):
             write(user, 'banned', False)
             await ctx.send("{done} 완료!")
-            await user.send("당신은 `끝봇 이용 정지` 처리가 해제 되었습니다. 다음부터는 조심해 주세요!")
+            await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
-            await ctx.send("{denyed} 현재 이용 정지 되지 않은 유저입니다.")
+            await ctx.send("{denyed} 현재 이용 정지되지 않은 유저입니다.")
 
     async def update_user_name(self, target: int, counter: int) -> int:  # update cached username
         username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
@@ -240,7 +240,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$캐시", usage="ㄲ$캐시", hidden=True)
     @commands.is_owner()
     async def add_user_cache(self, ctx: KkutbotContext):
-        """유저 캐시를 리프레시합니다."""
+        """유저 캐시를 새로고침합니다."""
         counter = 0
         users = self.bot.db.user.count_documents({"_name": None})
         msg = await ctx.send(f"진행중... (`{counter}`/`{users}`)")
