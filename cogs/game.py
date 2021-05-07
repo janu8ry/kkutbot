@@ -30,13 +30,15 @@ class GameBase:
         if tierlist.index(tier) > tierlist.index(tier_past):
             embed = discord.Embed(
                 title="티어 승급!",
-                description=f"티어가 **{tier_past}** -> **{tier}** 으로 승급되었습니다! :partying_face:"
+                description=f"**{tier_past}** -> **{tier}** 티어로 승급했습니다! :partying_face:",
+                color=config("colors.help")
             )
             embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.levelup')).url)
         else:
             embed = discord.Embed(
                 title="티어 강등...",
-                description=f"티어가 **{tier_past}** -> **{tier}** 으로 강등되었습니다... :sob:"
+                description=f"**{tier_past}** -> **{tier}** 티어로 강등되었습니다... :sob:",
+                color=config("colors.error")
             )
             embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
         return await self.ctx.send(player.mention, embed=embed)
