@@ -157,6 +157,10 @@ class MultiGame(GameBase):
 
     async def player_out(self):
         embed = discord.Embed(description=f"{self.now_player.mention}님 탈락", color=config('colors.error'))
+        possibles = [i for i in get_word(self.word) if i not in self.used_words]
+        if possibles:
+            random.shuffle(possibles)
+            embed.add_field(name="가능했던 단어", value=', '.join(possibles[:3]))
         await self.ctx.send(embed=embed)
         self.final_score[self.now_player] = self.score
         self.score += 2
