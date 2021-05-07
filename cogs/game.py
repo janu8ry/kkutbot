@@ -12,8 +12,6 @@ from ext.db import add, config, read, write
 from ext.utils import (choose_first_word, get_DU, get_tier, get_winrate,
                        get_word)
 
-# TODO: 중도 포기 기능 추가
-
 
 class GameBase:
     """Base Game Model for many modes."""
@@ -67,19 +65,32 @@ class SoloGame(GameBase):
             if e.code == 50035:
                 return await self.ctx.send(f"{_msg.author.mention}님, {desc}", embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
 
-    async def game_end(self, win: bool = True):
-        if win:
-            self.score += 10
-        points = (self.score * 5 if self.kkd else self.score * 3) if win else -30
+    async def game_end(self, result: str):
         mode = 'kkd' if self.kkd else 'rank_solo'
-        embed = discord.Embed(title="게임 결과", description=f"**{'승리' if win else '패배'}**  |  {'봇이 대응할 단어를 찾지 못했습니다!' if win else f'대답시간이 {15 if self.kkd else 10}초를 초과했습니다...'}", color=config('colors.general') if win else config('colors.error'))
+
+        if result == "승리":
+            self.score += 10
+            points = self.score * 5 if self.kkd else self.score * 3
+            desc = "봇이 대응할 단어를 찾지 못했습니다!"
+            color = config('colors.general')
+            add(self.player, f'game.{mode}.win', 1)
+        elif result == "패배":
+            points = -30
+            desc = f"대답시간이 {15 if self.kkd else 10}초를 초과했습니다..."
+            color = config('colors.error')
+        elif result == "포기":
+            points = -30
+            desc = "게임을 포기했습니다."
+            color = config('colors.error')
+        else:
+            raise commands.BadArgument
+
+        embed = discord.Embed(title="게임 결과", description=f"**{result}**  |  {desc}", color=color)
         embed.add_field(name="점수", value=f"`{self.score}` 점")
         embed.add_field(name="보상", value=f"`{points}` {{points}}")
         await self.ctx.send(self.player.mention, embed=embed)
         add(self.player, 'points', points)
         add(self.player, f'game.{mode}.times', 1)
-        if win:
-            add(self.player, f'game.{mode}.win', 1)
         if self.score > read(self.player, f'game.{mode}.best'):
             write(self.player, f'game.{mode}.best', self.score)
         tier = get_tier(self.player, mode, emoji=False)
@@ -275,11 +286,18 @@ class Game(commands.Cog, name="게임"):
                         msg = await self.bot.wait_for('message', check=check, timeout=10.0 - (time.time() - game.begin_time))
                         user_word = msg.content
                     except asyncio.TimeoutError:
-                        await game.game_end(win=False)
+                        await game.game_end("패배")
                         return
                     else:
                         du = get_DU(game.bot_word)
-                        if user_word in game.used_words:
+                        if user_word in ("ㅈㅈ", "gg", "GG"):
+                            if len(game.used_words) < 10:
+                                await game.send_info_embed(msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                                continue
+                            else:
+                                await game.game_end("포기")
+                                return
+                        elif user_word in game.used_words:
                             await game.send_info_embed(msg, f"**{user_word}** (은)는 이미 사용한 단어입니다.")
                             continue
                         elif user_word[0] not in du:
@@ -297,7 +315,7 @@ class Game(commands.Cog, name="게임"):
                             continue
                     final_list = [x for x in get_word(user_word) if x not in game.used_words]
                     if len(final_list) == 0:  # noqa
-                        await game.game_end(win=True)
+                        await game.game_end("승리")
                         return
                     else:
                         game.bot_word = random.choice(final_list)
@@ -411,11 +429,18 @@ class Game(commands.Cog, name="게임"):
                         msg = await self.bot.wait_for('message', check=check, timeout=10.0 - (time.time() - game.begin_time))
                         user_word = msg.content
                     except asyncio.TimeoutError:
-                        await game.game_end(win=False)
+                        await game.game_end("패배")
                         return
                     else:
                         du = get_DU(game.bot_word)
-                        if user_word in game.used_words:
+                        if user_word in ("ㅈㅈ", "gg", "GG"):
+                            if len(game.used_words) < 10:
+                                await game.send_info_embed(msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                                continue
+                            else:
+                                await game.game_end("포기")
+                                return
+                        elif user_word in game.used_words:
                             await game.send_info_embed(msg, f"**{user_word}** (은)는 이미 사용한 단어입니다.")
                             continue
                         elif user_word[0] not in du:
@@ -436,7 +461,7 @@ class Game(commands.Cog, name="게임"):
                             continue
                     final_list = [x for x in get_word(user_word) if x not in game.used_words and len(x) == 3]
                     if len(final_list) == 0:  # noqa
-                        await game.game_end(win=True)
+                        await game.game_end("패배")
                         return
                     else:
                         game.bot_word = random.choice(final_list)
