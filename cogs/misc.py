@@ -99,11 +99,16 @@ class Misc(commands.Cog, name="기타"):
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다.
         수신한지 2주가 지난 미확인 메일은 자동으로 삭제됩니다."""
-        if not read(ctx.author, 'mail'):
+        mails = read(ctx.author, 'mail')
+        for i in mails:
+            if (datetime.now() - i['time']).days > 14:
+                mails.remove(i)
+
+        if not mails:
             embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description="> 읽지 않은 메일이 없습니다.", color=config('colors.general'))
             return await ctx.reply(embed=embed)
-        embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description=f"> 2주 동안 읽지 않은 메일 `{len(read(ctx.author, 'mail'))}` 개", color=config('colors.general'))
-        for x in read(ctx.author, 'mail'):
+        embed = discord.Embed(title=f"**{ctx.author.name}** 님의 메일함", description=f"> 2주 동안 읽지 않은 메일 `{len(mails)}` 개", color=config('colors.general'))
+        for x in mails:
             if (datetime.now() - x['time']).days <= 14:
                 embed.add_field(name=f"{x['title']} - `{utils.time_convert(datetime.now() - x['time'])} 전`", value=x['value'], inline=False)
         write(ctx.author, 'mail', [])
