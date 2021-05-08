@@ -132,7 +132,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
     elif isinstance(error, commands.errors.MissingPermissions):
         await ctx.send(f"`{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한을 보유하고 있어야 합니다.")
     elif isinstance(error, commands.errors.NotOwner):
-        await ctx.send(f"명령어 `{ctx.command.name}`을(를) 실행할 권한이 없습니다.")
+        return
     elif isinstance(error, commands.errors.NoPrivateMessage):
         await ctx.send("DM으로는 실행할 수 없는 기능입니다.")
     elif isinstance(error, commands.errors.PrivateMessageOnly):
