@@ -84,7 +84,8 @@ class Economy(commands.Cog, name="경제"):
     @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
-        """매일 퀘스트를 클리어하고 보상을 획득합니다."""
+        """매일 퀘스트를 클리어하고 보상을 획득합니다.
+        퀘스트 항목은 0시에 초기화됩니다."""
         if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
             write(ctx.author, 'quest.status', {'date': today, 'completed': []})
             cache = {}
