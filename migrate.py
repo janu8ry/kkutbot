@@ -80,4 +80,16 @@ with open('data/public/commands.bin', 'rb') as f:
             del command_data[k]
 data['commands'] = command_data
 data['_id'] = "general"
+data['quest'] = {
+    'points': {
+        'name': "첫 퀘스트! 10 포인트 모으기",
+        'target': 10,
+        'reward': (2, 'medals')
+    },
+    'game.rank_solo.times': {
+        'name': "솔로 게임 한판 하기",
+        'target': 1,
+        'reward': (3, 'medals')
+    }
+}
 db.general.insert_one(data)

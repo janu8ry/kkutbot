@@ -1,11 +1,12 @@
 import random
 import time
+from datetime import date
 
 import discord
 from discord.ext import commands
 
 from ext.core import Kkutbot, KkutbotContext
-from ext.db import add, config, read, write
+from ext.db import add, append, config, read, write
 
 
 class Economy(commands.Cog, name="경제"):
@@ -80,11 +81,36 @@ class Economy(commands.Cog, name="경제"):
 
         await ctx.reply(f"{msg}\n\n**주간 출석 현황**\n{' '.join(week_daily)}\n\n{options}")
 
-    # @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ, ""과제", "데일리", "미션"), hidden=True)  # todo: 퀘스트 만들기
-    # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    # async def quest(self, ctx: KkutbotContext):
-    #     """매일 퀘스트를 클리어하고 보상을 획득합니다."""
-    #     embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
+    @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
+    @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
+    async def quest(self, ctx: KkutbotContext):
+        """매일 퀘스트를 클리어하고 보상을 획득합니다."""
+        if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
+            write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+            cache = {}
+            for data in read(None, 'quest').keys():
+                cache[data.replace(".", "/")] = read(ctx.author, data)
+            write(ctx.author, 'quest.cache', cache)
+        embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
+        for data, info in read(None, 'quest').items():
+            current = read(ctx.author, data) - read(ctx.author, f'quest.cache.{data.replace(".", "/")}')
+            if current >= info['target']:
+                if data not in read(ctx.author, 'quest.status.completed'):
+                    add(ctx.author, info['reward'][1], info['reward'][0])
+                    append(ctx.author, 'quest.status.completed', data)
+                    desc = f":partying_face: 퀘스트 완료! `+{info['reward'][0]}`{{{info['reward'][1]}}}"
+                else:
+                    desc = "이미 완료한 퀘스트입니다."
+                title = f"~~{info['name']}~~"
+            else:
+                desc = f"진행 상황: {current} / {info['target']} (`{round(current / info['target'] * 100)}`%)"
+                title = info['name']
+            embed.add_field(
+                name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}",
+                value=desc,
+                inline=False
+            )
+        await ctx.send(embed=embed)
 
 
 def setup(bot: Kkutbot):
