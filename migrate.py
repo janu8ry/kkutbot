@@ -27,7 +27,7 @@ for i in os.listdir('data/user'):
         data['quest'] = {
             'status': {
                 'date': 0,
-                'completed': False
+                'completed': []
             },
             'cache': {}
         }

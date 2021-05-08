@@ -109,7 +109,7 @@ default_data:
   quest:
     status:
       date: 0
-      completed: false
+      completed: []
     cache: {}
   game:
     rank_solo:
