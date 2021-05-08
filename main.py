@@ -35,6 +35,7 @@ async def on_ready():
     print(f"'{bot.user.name}'으로 로그인됨")
     print(f"서버수: {len(bot.guilds)}, 유저수: {bot.db.user.count_documents({})}, 미사용 유저수: {bot.db.unused.count_documents({})}")
     print("-" * 75)
+    await bot.update_presence()
 
 
 @bot.event
