@@ -116,3 +116,15 @@ def add(target, path: str, value: int):
 def delete(target):
     """deletes the target data"""
     db[_collection_name(target)].delete_one({'_id': _get_id(target)})
+
+
+def append(target, path: str, value):
+    """appends value to target data(list)"""
+    db[_collection_name(target)].update_one(
+        {'_id': _get_id(target)},
+        {
+            '$push': {
+                path: value
+            }
+        }
+    )
