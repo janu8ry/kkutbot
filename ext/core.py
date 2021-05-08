@@ -61,7 +61,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
-    async def backup(self):  # noqa
+    async def backup(self):
         tmp = "./tmp"
         cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db kkutbot --authenticationDatabase admin -o {tmp}"
         if all([username, password]):
@@ -110,83 +110,6 @@ class KkutbotContext(commands.Context):
                    mention_author=None,
                    escape_emoji_formatting=False
                    ) -> discord.Message:
-        """|coro|
-
-        Sends a message to the destination with the content given.
-
-        The content must be a type that can convert to a string through ``str(content)``.
-        If the content is set to ``None`` (the default), then the ``embed`` parameter must
-        be provided.
-
-        To upload a single file, the ``file`` parameter should be used with a
-        single :class:`~discord.File` object. To upload multiple files, the ``files``
-        parameter should be used with a :class:`list` of :class:`~discord.File` objects.
-        **Specifying both parameters will lead to an exception**.
-
-        If the ``embed`` parameter is provided, it must be of type :class:`~discord.Embed` and
-        it must be a rich embed type.
-
-        Parameters
-        ------------
-        content: :class:`str`
-            The content of the message to send.
-        tts: :class:`bool`
-            Indicates if the message should be sent using text-to-speech.
-        embed: :class:`~discord.Embed`
-            The rich embed for the content.
-        file: :class:`~discord.File`
-            The file to upload.
-        files: List[:class:`~discord.File`]
-            A list of files to upload. Must be a maximum of 10.
-        nonce: :class:`int`
-            The nonce to use for sending this message. If the message was successfully sent,
-            then the message will have a nonce with this value.
-        delete_after: :class:`float`
-            If provided, the number of seconds to wait in the background
-            before deleting the message we just sent. If the deletion fails,
-            then it is silently ignored.
-        allowed_mentions: :class:`~discord.AllowedMentions`
-            Controls the mentions being processed in this message. If this is
-            passed, then the object is merged with :attr:`~discord.Client.allowed_mentions`.
-            The merging behaviour only overrides attributes that have been explicitly passed
-            to the object, otherwise it uses the attributes set in :attr:`~discord.Client.allowed_mentions`.
-            If no object is passed at all then the defaults given by :attr:`~discord.Client.allowed_mentions`
-            are used instead.
-
-            .. versionadded:: 1.4
-
-        reference: Union[:class:`~discord.Message`, :class:`~discord.MessageReference`]
-            A reference to the :class:`~discord.Message` to which you are replying, this can be created using
-            :meth:`~discord.Message.to_reference` or passed directly as a :class:`~discord.Message`. You can control
-            whether this mentions the author of the referenced message using the :attr:`~discord.AllowedMentions.replied_user`
-            attribute of ``allowed_mentions`` or by setting ``mention_author``.
-
-            .. versionadded:: 1.6
-
-        mention_author: Optional[:class:`bool`]
-            If set, overrides the :attr:`~discord.AllowedMentions.replied_user` attribute of ``allowed_mentions``.
-
-            .. versionadded:: 1.6
-
-        escape_emoji_formatting: :class:`bool`
-            If `False`, formats emoji name to custom emoji before sending message, if `True`, sends the raw string.
-
-        Raises
-        --------
-        ~discord.HTTPException
-            Sending the message failed.
-        ~discord.Forbidden
-            You do not have the proper permissions to send the message.
-        ~discord.InvalidArgument
-            The ``files`` list is not of the appropriate size,
-            you specified both ``file`` and ``files``,
-            or the ``reference`` object is not a :class:`~discord.Message`
-            or :class:`~discord.MessageReference`.
-
-        Returns
-        ---------
-        :class:`~discord.Message`
-            The message that was sent."""
         if escape_emoji_formatting is False:
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
