@@ -17,7 +17,7 @@ class Economy(commands.Cog, name="경제"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="지원금", usage="ㄲ지원금", alias=("ㅈㅇㄱ", ))
+    @commands.command(name="지원금", usage="ㄲ지원금", aliases=("ㅈㅇㄱ", ))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_start_point(self, ctx: KkutbotContext):
