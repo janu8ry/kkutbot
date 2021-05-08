@@ -71,7 +71,8 @@ class BotInfo(commands.Cog, name="일반"):
             return await ctx.send("{denyed} 존재하지 않는 명령어 또는 카테고리입니다.")
         embed = discord.Embed(
             title=f"명령어 정보 | {cmd}",
-            description=f"{cmd.help}\n> [상세 도움말]({config('links.blog')}/blog/명령어-{cmd.name})",
+            description=cmd.help,
+            # description=f"{cmd.help}\n> [상세 도움말]({config('links.blog')}/blog/명령어-{cmd.name})",
             color=config('colors.help')
         )
         embed.add_field(name="사용법", value=f"`{cmd.usage}`", inline=False)
