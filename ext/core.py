@@ -124,7 +124,7 @@ class KkutbotContext(commands.Context):
                                   mention_author=mention_author
                                   )
 
-    async def reply(self, content=None, **kwargs):  # same as above
+    async def reply(self, content=None, **kwargs) -> discord.Message:  # same as above
         if not kwargs.get('escape_emoji_formatting', False):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
