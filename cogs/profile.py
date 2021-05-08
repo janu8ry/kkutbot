@@ -40,15 +40,16 @@ class Profile(commands.Cog, name="사용자"):
         embed.set_footer(text=f"더 자세한 정보는 'ㄲ통계' 명령어로 확인할 수 있어요!{' ' * 83}​")
         await ctx.send(embed=embed)
 
-    @commands.command(name="소개말", usage="ㄲ소개말 <할말>", aliases=("ㅅㄱㅁ", "소개설정", "소개변경", "정보수정"))
+    @commands.command(name="소개말", usage="ㄲ소개말 <할말>", aliases=("ㅅㄱㅁ", "소개", "소개설정", "정보수정"))
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def set_info_word(self, ctx: KkutbotContext, *, info_word: str):
-        """프로필의 소개말을 변경합니다. (최대 50자)"""
+        """프로필의 소개말을 변경합니다. (최소 1자, 최대 50자)"""
         info_word = info_word.replace('`', '')
-        if len(info_word) > 50:
-            return await ctx.send(f":warning: 50자 이내로 소개말을 작성해주세요. (현재 {len(info_word)}자)")
-        write(ctx.author, 'info_word', info_word)
-        await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' (으)로 변경했습니다!")
+        if 1 <= len(info_word) <= 50:
+            write(ctx.author, 'info_word', info_word)
+            await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' (으)로 변경했습니다!")
+        else:
+            await ctx.send(f":warning: 50자 이내로 소개말을 작성해주세요. (현재 {len(info_word)}자)")
 
     @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
