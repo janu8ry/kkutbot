@@ -61,7 +61,7 @@ backup_channel: 0000
 emojis:
   starter: 715559187756875807
   silver: 715548873975922788
-  s_medal: 794532325068898334
+  medals: 840383948836175892
   rate: 715834446883979379
   points: 715547592578170880
   m_master: 715558227944931349
@@ -96,7 +96,7 @@ default_data:
   register_date: null
   info_word: 소개말이 없습니다.
   points: 1000
-  token: 0
+  medals: 0
   start_point: false
   daily:
     '0': false

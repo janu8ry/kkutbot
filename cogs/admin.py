@@ -132,7 +132,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 메달을 지급합니다."""
-        add(user, 'medal', amount)
+        add(user, 'medals', amount)
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", hidden=True)

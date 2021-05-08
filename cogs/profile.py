@@ -35,7 +35,7 @@ class Profile(commands.Cog, name="사용자"):
         )
         embed.add_field(name="{points} **포인트**", value=f"{read(user, 'points')}")
         embed.add_field(name="{starter} **승률**", value=f"{get_winrate(user, 'rank_solo')}% | {get_winrate(user, 'rank_multi')}%")
-        embed.add_field(name="{s_medal} **메달**", value=f"{read(user, 'medal')}")
+        embed.add_field(name="{medals} **메달**", value=f"{read(user, 'medals')}")
         embed.set_thumbnail(url=user.avatar_url)
         embed.set_footer(text=f"더 자세한 정보는 'ㄲ통계' 명령어로 확인할 수 있어요!{' ' * 83}​")
         await ctx.send(embed=embed)

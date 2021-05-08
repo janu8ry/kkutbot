@@ -15,6 +15,11 @@ for i in os.listdir('data/user'):
         data['_id'] = data['cache']['id']
         data['_name'] = data['cache']['name']
         del data['cache']
+        if 'medal' in data:
+            del data['medal']
+        if 'token' in data:
+            del data['token']
+        data['medals'] = 0
         if 'commands' in data:
             del data['commands']
         data['game']['rank_solo']['tier'] = get_tier(int(str(i).replace('.bin', '')), 'rank_solo', emoji=False)
