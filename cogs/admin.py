@@ -1,6 +1,7 @@
 import asyncio
 import operator
 import time
+from copy import deepcopy
 from datetime import datetime
 
 import discord
@@ -81,7 +82,7 @@ class Admin(commands.Cog, name="관리자"):
             return await ctx.send(f"`{key}`(은)는 없는 키 입니다.")
 
         for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
-            await ctx.send(content)
+            await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     @commands.check(is_admin)
@@ -89,11 +90,12 @@ class Admin(commands.Cog, name="관리자"):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:  # check public data
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted(read(None, 'commands').items(), key=operator.itemgetter(1), reverse=True)).items())):
-                await ctx.send(content)
-            public_data = read(user).copy()
+                await ctx.send(content, escape_emoji_formatting=True)
+            public_data = deepcopy(read(user))
             del public_data['commands']
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
-                return await ctx.send(content)
+                await ctx.send(content, escape_emoji_formatting=True)
+            return
 
         if not read(user, 'register_date'):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
