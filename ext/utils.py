@@ -25,6 +25,8 @@ def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> 
 
 
 def get_tier(target: Union[int, discord.User, discord.Member], mode: str, emoji: bool = True) -> str:
+    if mode not in ("rank_solo", "rank_multi"):
+        raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
     for k, v in config('tierlist').items():
         if read(target, 'points') >= v['points'] and get_winrate(target, mode) >= v['winrate'] and read(target, f'game.{mode}.times') >= v['times']:

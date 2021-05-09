@@ -13,7 +13,7 @@ from humanize import naturalsize
 from ext.converter import SpecialMemberConverter
 from ext.core import Kkutbot, KkutbotContext
 from ext.db import add, config, delete, read, read_hanmaru, write
-from ext.utils import is_admin, split_string
+from ext.utils import get_tier, get_winrate, is_admin, split_string
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -67,7 +67,7 @@ class Admin(commands.Cog, name="관리자"):
     async def servers(self, ctx: KkutbotContext, key: str = "서버"):
         """끝봇이 참가중인 서버의 목록을 키에 따라 정렬 후 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)
 
-        <키 목록>
+        **<키 목록>**
         서버, 유저(멤버), 샤드, 아이디
         """
         if key == "서버":
@@ -217,11 +217,6 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("{denyed} 현재 이용 정지되지 않은 유저입니다.")
 
-    async def update_user_name(self, target: int, counter: int) -> int:  # update cached username
-        username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
-        write(target, '_name', username)
-        return counter + 1
-
     @commands.command(name="$정지목록", usage="ㄲ$정지목록", aliases=("$차단목록", "$정지리스트", "$차단리스트"))
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
@@ -239,6 +234,22 @@ class Admin(commands.Cog, name="관리자"):
             )
             await ctx.send(embed=embed)
 
+    async def update_user_name(self, target: int):  # update cached username
+        username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
+        write(target, '_name', username)
+
+    @staticmethod
+    async def update_game_winrate(target: int):  # update cached username
+        for gamemode in config('modelist').values():
+            if read(target, f'game.{gamemode}.winrate') != (winrate := get_winrate(target, gamemode)):
+                write(target, f'game.{gamemode}.winrate', winrate)
+
+    @staticmethod
+    async def update_game_tier(target: int):  # update cached username
+        for gamemode in ("rank_solo", "rank_multi"):
+            if read(target, f'game.{gamemode}.tier') != (tier := get_tier(target, gamemode, emoji=False)):
+                write(target, f'game.{gamemode}.tier', tier)
+
     @commands.command(name="$캐시", usage="ㄲ$캐시", hidden=True)
     @commands.is_owner()
     async def add_user_cache(self, ctx: KkutbotContext):
@@ -246,10 +257,12 @@ class Admin(commands.Cog, name="관리자"):
         counter = 0
         users = self.bot.db.user.count_documents({"_name": None})
         msg = await ctx.send(f"진행중... (`{counter}`/`{users}`)")
-        for t in self.bot.db.user.find({"_name": None}):
-            counter = await self.update_user_name(t['_id'], counter)
-            await msg.edit(content=f"진행중... (`{counter}`/`{users}`)")
-        await ctx.send("{done} 완료!")
+        for n, target in enumerate(self.bot.db.user.find({"_name": None})):
+            await self.update_user_name(target['_id'])
+            await self.update_game_winrate(target['_id'])
+            await self.update_game_tier(target['_id'])
+            await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
+        await ctx.send("{done} 캐싱 완료!")
 
     @commands.command(name="$정리", usage="ㄲ$정리")
     async def move_unused_users(self, ctx: KkutbotContext, days: int = 7, command_usage: int = 10, delete_data: str = 'n'):
