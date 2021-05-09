@@ -4,6 +4,7 @@
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5e1c2e0ce394529b1c57f9c8eccc7aa)](https://app.codacy.com/gh/janu8ry/kkutbot?utm_source=github.com&utm_medium=referral&utm_content=janu8ry/kkutbot&utm_campaign=Badge_Grade_Settings)
+[![DeepSource](https://deepsource.io/gh/janu8ry/kkutbot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janu8ry/kkutbot/?ref=repository-badge)
 
 # 소개
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
