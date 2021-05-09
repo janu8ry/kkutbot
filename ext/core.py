@@ -1,4 +1,6 @@
+import json
 import os
+import random
 import shutil
 import zipfile
 from datetime import date
@@ -31,8 +33,9 @@ class Kkutbot(commands.AutoShardedBot):
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
         # self.hanmaru = hanmaru.Handler(self)
         self.scheduler = AsyncIOScheduler()
-        self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
         self.scheduler.add_job(self.reset_daily, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
+        self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
+        self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=2)
         self.scheduler.add_job(self.update_presence, 'interval', seconds=10)
         if not config('test'):
             self.scheduler.add_job(self.backup, 'cron', hour=5, minute=0, second=0)
@@ -88,7 +91,28 @@ class Kkutbot(commands.AutoShardedBot):
     @staticmethod
     async def reset_daily():
         week_daily = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
-        db.user.update_many(None, {'$set': {'daily': week_daily}})
+        db.user.update_many(
+            {},
+            {
+                '$set': {
+                    'daily': week_daily
+                }
+            }
+        )
+
+    @staticmethod
+    async def reset_quest():
+        with open('general/quest.json', 'r', encoding="utf-8") as f:
+            quests = list(json.load(f).items())
+        random.shuffle(quests)
+        quests = dict(quests)
+        k = list(quests.keys())
+        v = list(quests.values())
+        write(None, 'quest', {
+            k[0]: v[0],
+            k[1]: v[1],
+            k[2]: v[2]
+        })
 
 
 class KkutbotContext(commands.Context):
