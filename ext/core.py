@@ -180,6 +180,9 @@ commands.command = command  # replace 'command' decorator in 'discord.ext.comman
 
 class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
+        if kwargs.get('escape_emoji_formatting', False):
+            kwargs['title'] = kwargs['title'].format(**Kkutbot.dict_emojis())
+            kwargs['description'] = kwargs['description'].format(**Kkutbot.dict_emojis())
         super().__init__(**kwargs)
 
     def add_field(self, *, name, value, inline=True, escape_emoji_formatting=False):
