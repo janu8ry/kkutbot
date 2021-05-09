@@ -19,10 +19,10 @@ from ext.db import config, db, dbconfig, password, username, write
 
 
 class Kkutbot(commands.AutoShardedBot):
-    __version__ = "1.7.0-alpha.0"
+    __version__ = "1.7.0-beta.0"
     __slots__ = ("db", "dblpy", "koreanbots", "uniquebots", "webhook", "hanmaru", "scheduler")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
-    version_info = "개발중"
+    version_info = "1차 베타테스트 진행중..."
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
