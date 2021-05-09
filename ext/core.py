@@ -32,6 +32,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.uniquebots = UniqueBotsKR.client(self, config('token.uniquebots'), autopost=not config('test'))  # uniquebots
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
         # self.hanmaru = hanmaru.Handler(self)
+
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.reset_daily, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
         self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
