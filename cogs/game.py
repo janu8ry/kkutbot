@@ -88,6 +88,11 @@ class SoloGame(GameBase):
         embed = discord.Embed(title="게임 결과", description=f"**{result}**  |  {desc}", color=color)
         embed.add_field(name="점수", value=f"`{self.score}` 점")
         embed.add_field(name="보상", value=f"`{points}` {{points}}")
+        if result in ("패배", "포기"):
+            possibles = [i for i in get_word(self.bot_word) if i not in self.used_words]
+            if possibles:
+                random.shuffle(possibles)
+                embed.add_field(name="가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` 등...", inline=False)
         await self.ctx.send(self.player.mention, embed=embed)
         add(self.player, 'points', points)
         add(self.player, f'game.{mode}.times', 1)
