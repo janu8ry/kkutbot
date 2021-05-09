@@ -59,6 +59,7 @@ class SoloGame(GameBase):
         _embed.add_field(name="단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_DU(self.bot_word))})```", inline=False)
         _embed.add_field(name="남은 시간", value=f"`{round((15 if self.kkd else 10) - (time.time() - self.begin_time), 1)}` 초", inline=False)
         _embed.set_footer(text="'ㄲ도움 끝말잇기' 를 입력하여 규칙을 확인할 수 있습니다.")
+        desc = desc.format(**self.ctx.bot.dict_emojis())
         try:
             return await _msg.reply(desc, embed=_embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
         except discord.HTTPException as e:
