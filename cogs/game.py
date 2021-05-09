@@ -98,10 +98,11 @@ class SoloGame(GameBase):
         add(self.player, f'game.{mode}.times', 1)
         if self.score > read(self.player, f'game.{mode}.best'):
             write(self.player, f'game.{mode}.best', self.score)
-        tier = get_tier(self.player, mode, emoji=False)
-        if (tier_past := read(self.player, f'game.{mode}.tier')) != tier:
-            write(self.player, f'game.{mode}.tier', tier)
-            await self.alert_tier_change(self.player, tier, tier_past)
+        if mode == "rank_solo":
+            tier = get_tier(self.player, "rank_solo", emoji=False)
+            if (tier_past := read(self.player, f'game.rank_solo.tier')) != tier:
+                write(self.player, f'game.rank_solo.tier', tier)
+                await self.alert_tier_change(self.player, tier, tier_past)
         write(self.player, f'game.{mode}.winrate', get_winrate(self.player, mode))
         del self
 
@@ -197,6 +198,7 @@ class MultiGame(GameBase):
 
     async def send_info_embed(self, desc: str = "10초 안에 단어를 이어주세요!") -> discord.Message:
         du_word = get_DU(self.word)
+        desc = desc.format(**self.ctx.bot.dict_emojis())
         embed = discord.Embed(
             title=self.word,
             description=f"{round(10 - (time.time() - self.begin_time), 1)}초 안에 `{'` 또는 `'.join(du_word)}` (으)로 시작하는 단어를 이어주세요.",
