@@ -189,10 +189,10 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
         await ctx.send(embed=embed)
         embed.add_field(name="에러 traceback", value=f"""```py
         {original_err}
-        ```""")
+        ```""", inline=False)
         await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
         if config('test'):
-            print(original_err)
+            traceback.print_tb(error.__traceback__)
 
 
 @bot.event
