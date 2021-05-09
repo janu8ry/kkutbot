@@ -1,6 +1,7 @@
 import asyncio
 import os
 import time
+import traceback
 from datetime import datetime, timedelta
 from typing import Type
 
@@ -81,7 +82,7 @@ async def on_message(message: discord.Message):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
         ctx = await bot.get_context(message, cls=KkutbotContext)
-        await bot.invoke(ctx)
+        await bot.invoke(ctx)  # invokes command with custom context
         # await bot.hanmaru.get(ctx)
 
 
@@ -176,11 +177,22 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
+        def traceback_maker(err):
+            _traceback = ''.join(traceback.format_tb(err.__traceback__))
+            return f'{_traceback}{type(err).__name__}: {err}'
+
+        original_err = traceback_maker(error)
+
         embed = discord.Embed(title="에러", color=config('colors.error'))
         embed.add_field(name="에러 코드", value=f"```{error}```")
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
-        await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
         await ctx.send(embed=embed)
+        embed.add_field(name="에러 traceback", value=f"""```py
+        {original_err}
+        ```""")
+        await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
+        if config('test'):
+            print(original_err)
 
 
 @bot.event
