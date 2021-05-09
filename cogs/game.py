@@ -160,12 +160,12 @@ class MultiGame(GameBase):
             embed.add_field(name="탈락자", value=f"`{'`, `'.join([_x.name for _x in self.final_score])}`", inline=False)
         return embed
 
-    async def player_out(self):
-        embed = discord.Embed(description=f"{self.now_player.mention}님 탈락", color=config('colors.error'))
+    async def player_out(self, gg=False):
+        embed = discord.Embed(description=f"{self.now_player.mention}님 {'포기' if gg else '탈락'}", color=config('colors.error'))
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
             random.shuffle(possibles)
-            embed.add_field(name="가능했던 단어", value=', '.join(possibles[:3]))
+            embed.add_field(name="가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` 등...", inline=False)
         await self.ctx.send(embed=embed)
         self.final_score[self.now_player] = self.score
         self.score += 2
@@ -189,10 +189,6 @@ class MultiGame(GameBase):
                     write(kv[0], 'game.guild_multi.best', self.score)
                 if (n + 1) <= round((len(rank) - 1) / 2):
                     add(kv[0], 'game.guild_multi.win', 1)
-                tier = get_tier(kv[0], 'guild_multi', emoji=False)
-                if (tier_past := read(kv[0], 'game.guild_multi.tier')) != tier:
-                    write(kv[0], 'game.guild_multi.tier', tier)
-                    await self.alert_tier_change(kv[0], tier, tier_past)
                 write(kv[0], 'game.guild_multi.winrate', get_winrate(kv[0], "guild_multi"))
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
@@ -358,7 +354,6 @@ class Game(commands.Cog, name="게임"):
                         await ctx.send(f"{m.author}님이 나갔습니다.")
                         if len(game.players) == 0:
                             await ctx.send(f"플레이어 수가 부족하여 {game.host.mention} 님의 게임을 종료합니다.")
-                            await msg.delete()
                             Game.guild_multi_games.remove(ctx.channel.id)
                             del game
                             return
@@ -368,19 +363,16 @@ class Game(commands.Cog, name="게임"):
                             await ctx.send("플레이어 수가 부족하여 게임을 시작할 수 없습니다.")
                         else:
                             await ctx.send(f"{game.host.mention} 님의 게임을 시작합니다.")
-                            await msg.delete()
                             break
 
                 except asyncio.TimeoutError:
                     if len(game.players) < 2:  # noqa
                         await ctx.send(f"플레이어 수가 부족하여 {game.host.mention} 님의 게임을 종료합니다.")
-                        await msg.delete()
                         Game.guild_multi_games.remove(ctx.channel.id)
                         del game
                         return
                     else:
                         await ctx.send(f"대기 시간이 초과되어 {game.host.mention} 님의 게임을 시작합니다.")
-                        await msg.delete()
                         break
 
             await game.update_embed(game.game_embed())
@@ -401,7 +393,19 @@ class Game(commands.Cog, name="게임"):
 
                 else:
                     du = get_DU(game.word)
-                    if user_word in game.used_words:
+                    if user_word in ("ㅈㅈ", "gg", "GG"):
+                        if game.turn < 5:
+                            await game.send_info_embed("{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                            continue
+                        else:
+                            await game.player_out(gg=True)
+                            if len(game.players) - len(game.final_score) == 1:
+                                await game.game_end()
+                                return
+                            else:
+                                await game.update_embed(game.game_embed())
+                                await game.send_info_embed()
+                    elif user_word in game.used_words:
                         await game.send_info_embed(f"***{user_word}*** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
