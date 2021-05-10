@@ -182,9 +182,9 @@ commands.command = command  # replace 'command' decorator in 'discord.ext.comman
 class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
         if not kwargs.get('escape_emoji_formatting', False):
-            if title := kwargs.get('title', None):
+            if title := kwargs.get('title'):
                 kwargs['title'] = title.format(**Kkutbot.dict_emojis())
-            if description := kwargs.get('description', None):
+            if description := kwargs.get('description'):
                 kwargs['description'] = description.format(**Kkutbot.dict_emojis())
         super().__init__(**kwargs)
 
