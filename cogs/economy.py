@@ -96,12 +96,7 @@ class Economy(commands.Cog, name="경제"):
         for data, info in read(None, 'quest').items():
             current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
             if current >= info['target']:
-                if data not in read(ctx.author, 'quest.status.completed'):
-                    add(ctx.author, info['reward'][1], info['reward'][0])
-                    append(ctx.author, 'quest.status.completed', data)
-                    desc = f":partying_face: 퀘스트 완료! `+{info['reward'][0]}`{{{info['reward'][1]}}}"
-                else:
-                    desc = "이미 완료한 퀘스트입니다."
+                desc = "이미 완료한 퀘스트입니다."
                 title = f"~~{info['name']}~~"
             else:
                 desc = f"진행 상황: {current} / {info['target']} (`{round(current / info['target'] * 100)}`%)"
