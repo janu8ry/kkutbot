@@ -90,11 +90,11 @@ class Economy(commands.Cog, name="경제"):
             write(ctx.author, 'quest.status', {'date': today, 'completed': []})
             cache = {}
             for data in read(None, 'quest').keys():
-                cache[data.replace(".", "/")] = read(ctx.author, data)
+                cache[data] = read(ctx.author, data.replace("/", "."))
             write(ctx.author, 'quest.cache', cache)
         embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
         for data, info in read(None, 'quest').items():
-            current = read(ctx.author, data) - read(ctx.author, f'quest.cache.{data.replace(".", "/")}')
+            current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
             if current >= info['target']:
                 if data not in read(ctx.author, 'quest.status.completed'):
                     add(ctx.author, info['reward'][1], info['reward'][0])

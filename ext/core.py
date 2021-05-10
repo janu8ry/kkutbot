@@ -110,9 +110,9 @@ class Kkutbot(commands.AutoShardedBot):
         k = list(quests.keys())
         v = list(quests.values())
         write(None, 'quest', {
-            k[0]: v[0],
-            k[1]: v[1],
-            k[2]: v[2]
+            k[0].replace(".", "/"): v[0],
+            k[1].replace(".", "/"): v[1],
+            k[2].replace(".", "/"): v[2]
         })
 
 
