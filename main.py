@@ -177,22 +177,21 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
-        def traceback_maker(err):
-            _traceback = ''.join(traceback.format_tb(err.__traceback__))
-            return f'{_traceback}{type(err).__name__}: {err}'
-
-        original_err = traceback_maker(error)
+        if not error.__cause__:
+            err = ''.join(traceback.format_exception(type(error), error, error.__traceback__, chain=False))
+        else:
+            err = ''.join(traceback.format_exception(type(error.__cause__), error.__cause__, error.__cause__.__traceback__))
 
         embed = discord.Embed(title="에러", color=config('colors.error'))
         embed.add_field(name="에러 코드", value=f"```{error}```")
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
         await ctx.send(embed=embed)
         embed.add_field(name="에러 traceback", value=f"""```py
-        {original_err}
+        {err}
         ```""", inline=False)
         await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
         if config('test'):
-            traceback.print_tb(error.__traceback__)
+            print(err)
 
 
 @bot.event
