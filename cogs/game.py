@@ -217,7 +217,7 @@ class Game(commands.Cog, name="게임"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="끝말잇기", usage="ㄲ끝말잇기", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
+    @commands.command(name="끝말잇기", usage="ㄲ끝말잇기 <모드>", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
