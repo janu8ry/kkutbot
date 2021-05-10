@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 from ext.core import Kkutbot, KkutbotContext
-from ext.db import add, append, config, read, write
+from ext.db import add, config, read, write
 
 
 class Economy(commands.Cog, name="경제"):
