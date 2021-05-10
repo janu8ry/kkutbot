@@ -101,8 +101,8 @@ class SoloGame(GameBase):
             write(self.player, f'game.{mode}.best', self.score)
         if mode == "rank_solo":
             tier = get_tier(self.player, "rank_solo", emoji=False)
-            if (tier_past := read(self.player, f'game.rank_solo.tier')) != tier:
-                write(self.player, f'game.rank_solo.tier', tier)
+            if (tier_past := read(self.player, 'game.rank_solo.tier')) != tier:
+                write(self.player, 'game.rank_solo.tier', tier)
                 await self.alert_tier_change(self.player, tier, tier_past)
         write(self.player, f'game.{mode}.winrate', get_winrate(self.player, mode))
         del self
