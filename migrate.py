@@ -4,9 +4,31 @@ import shutil
 
 from ext.config import config
 from ext.db import db
-from ext.utils import get_tier, get_winrate
+
+
+def get_winrate(target: dict, _mode: str) -> float:
+    game_times = target['game'][_mode]['times']
+    game_win_times = target['game'][_mode]['win']
+    if 0 in (game_times, game_win_times):
+        return 0
+    else:
+        return round(game_win_times / game_times * 100, 2)
+
+
+def get_tier(target: dict, _mode: str) -> str:
+    if _mode not in ("rank_solo", "rank_multi"):
+        raise TypeError
+    tier = "언랭크"
+    for k, v in config('tierlist').items():  # noqa
+        if target['points'] >= v['points'] and get_winrate(target, _mode) >= v['winrate'] and target['game'][_mode]['times'] >= v['times']:
+            tier = f"{k} {v['emoji']}"
+        else:
+            break
+    return tier.split(" ")[0]
+
 
 os.mkdir('backup')
+
 
 db.user.drop()
 ls = []
@@ -23,8 +45,6 @@ for i in os.listdir('data/user'):
         data['medals'] = 0
         if 'commands' in data:
             del data['commands']
-        data['game']['rank_solo']['tier'] = get_tier(data['_id'], 'rank_solo', emoji=False)
-        data['game']['rank_multi']['tier'] = "언랭크"
         data['quest'] = {
             'status': {
                 'date': 0,
@@ -33,7 +53,9 @@ for i in os.listdir('data/user'):
             'cache': {}
         }
         for mode in config('modelist').values():
-            data['game'][mode]['winrate'] = get_winrate(data['_id'], mode)
+            data['game'][mode]['winrate'] = get_winrate(data, mode)
+        data['game']['rank_solo']['tier'] = get_tier(data, 'rank_solo')
+        data['game']['rank_multi']['tier'] = "언랭크"
         ls.append(data)
 db.user.insert_many(ls)
 
@@ -63,8 +85,6 @@ for i in os.listdir('data/unused'):
         data['medals'] = 0
         if 'commands' in data:
             del data['commands']
-        data['game']['rank_solo']['tier'] = get_tier(data['_id'], 'rank_solo', emoji=False)
-        data['game']['rank_multi']['tier'] = "언랭크"
         data['quest'] = {
             'status': {
                 'date': 0,
@@ -73,7 +93,9 @@ for i in os.listdir('data/unused'):
             'cache': {}
         }
         for mode in config('modelist').values():
-            data['game'][mode]['winrate'] = get_winrate(data['_id'], mode)
+            data['game'][mode]['winrate'] = get_winrate(data, mode)
+        data['game']['rank_solo']['tier'] = get_tier(data, 'rank_solo')
+        data['game']['rank_multi']['tier'] = "언랭크"
         ls.append(data)
 db.unused.insert_many(ls)
 
