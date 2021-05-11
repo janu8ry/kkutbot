@@ -262,7 +262,7 @@ class Admin(commands.Cog, name="관리자"):
 
         users = self.bot.db.user.count_documents({})
         await ctx.send(f"게임 데이터 캐싱 진행중... (`0`/`{users}`)")
-        for n, target in enumerate(self.bot.db.user.find())
+        for n, target in enumerate(self.bot.db.user.find()):
             await self.update_game_winrate(target['_id'])
             await self.update_game_tier(target['_id'])
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
