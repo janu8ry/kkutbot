@@ -197,7 +197,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             with open(path, "rb") as file:
                 paginator = WrappedFilePaginator(file, line_span=line_span, max_size=1985)
                 interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
-                await interface.send_to(ctx)
+                await interface.send_to(ctx, escape_emoji_formatting=True)
         except UnicodeDecodeError:
             return await ctx.send(f"`{path}`: Couldn't determine the encoding of this file.")
         except ValueError as exc:
