@@ -254,15 +254,19 @@ class Admin(commands.Cog, name="관리자"):
     @commands.is_owner()
     async def add_user_cache(self, ctx: KkutbotContext):
         """유저 캐시를 새로고침합니다."""
-        counter = 0
         users = self.bot.db.user.count_documents({"_name": None})
-        msg = await ctx.send(f"진행중... (`{counter}`/`{users}`)")
+        msg = await ctx.send(f"이름 캐싱 진행중... (`0`/`{users}`)")
         for n, target in enumerate(self.bot.db.user.find({"_name": None})):
             await self.update_user_name(target['_id'])
+        await ctx.send("{done} 이름 캐싱 완료!")
+
+        users = self.bot.db.user.count_documents({})
+        await ctx.send(f"게임 데이터 캐싱 진행중... (`0`/`{users}`)")
+        for n, target in enumerate(self.bot.db.user.find())
             await self.update_game_winrate(target['_id'])
             await self.update_game_tier(target['_id'])
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
-        await ctx.send("{done} 캐싱 완료!")
+        await ctx.send("{done} 게임 데이터 캐싱 완료!")
 
     @commands.command(name="$정리", usage="ㄲ$정리")
     async def move_unused_users(self, ctx: KkutbotContext, days: int = 7, command_usage: int = 10, delete_data: str = 'n'):
