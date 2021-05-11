@@ -67,7 +67,7 @@ class BotInfo(commands.Cog, name="일반"):
             )
             return await ctx.send(embed=embed)
         cmd = self.bot.get_command(command_name)
-        if not cmd or (command_name.startswith("$") and (ctx.author.id not in config('admin'))) or self.bot.get_command(command_name).hidden:
+        if not cmd or (command_name.startswith("$") and (ctx.author.id not in config('admin'))) or (self.bot.get_command(command_name).hidden and (ctx.author.id not in config('admin'))):
             return await ctx.send("{denyed} 존재하지 않는 명령어 또는 카테고리입니다.")
         embed = discord.Embed(
             title=f"명령어 정보 | {cmd}",
