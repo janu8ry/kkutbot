@@ -97,19 +97,22 @@ async def on_command_completion(ctx: KkutbotContext):
             cache[data] = read(ctx.author, data.replace("/", "."))
         write(ctx.author, 'quest.cache', cache)
 
+    desc = ""
     for data, info in read(None, 'quest').items():
         current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
         if (current >= info['target']) and (data not in read(ctx.author, 'quest.status.completed')):
             add(ctx.author, info['reward'][1], info['reward'][0])
             append(ctx.author, 'quest.status.completed', data)
-            embed = discord.Embed(
-                title="퀘스트 클리어!",
-                description=f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}",
-                color=config('colors.help')
-            )
-            embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
-            embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
-            await ctx.send(ctx.author.mention, embed=embed)
+            desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    if desc:
+        embed = discord.Embed(
+            title="퀘스트 클리어!",
+            description=desc,
+            color=config('colors.help')
+        )
+        embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
+        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+        await ctx.send(ctx.author.mention, embed=embed)
 
     if not read(ctx.author, 'alert.daily'):
         await ctx.send(
