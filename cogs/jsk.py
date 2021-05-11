@@ -168,7 +168,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
         Lines and linespans are supported by adding '#L12' or '#L12-14' etc to the end of the filename.
         """
 
-        match = self.filepath_regex.search(path)
+        match = self.filepath_regex.search(argument)
 
         if not match:  # should never happen
             return await ctx.send("Couldn't parse this input.")
