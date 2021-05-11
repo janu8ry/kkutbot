@@ -81,7 +81,7 @@ async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
-        if ctx.command.parent.name == "jishaku":
+        if message.content.lstrip("ㄲ").startswith("jsk"):
             cls = commands.Context
         else:
             cls = KkutbotContext
