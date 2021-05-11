@@ -70,6 +70,7 @@ pyenv virtualenv 3.8.9 kkutbot
 
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
+poetry config virtualenvs.create false --local
 pyenv local kkutbot
 poetry install
 nano config.yml # config.yml 수정
