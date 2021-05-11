@@ -161,7 +161,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
         finally:
             scope.clear_intersection(arg_dict)
-            
+
     @Feature.Command(parent="jsk", name="cat")
     async def jsk_cat(self, ctx: commands.Context, argument: str):  # pylint: disable=too-many-locals
         """
