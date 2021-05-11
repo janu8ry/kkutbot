@@ -162,13 +162,13 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             scope.clear_intersection(arg_dict)
             
     @Feature.Command(parent="jsk", name="cat")
-    async def jsk_cat(self, ctx: commands.Context, argument: str):  # pylint: disable=too-many-locals
+    async def jsk_cat(self, ctx: KkutbotContext, argument: str):  # pylint: disable=too-many-locals
         """
         Read out a file, using syntax highlighting if detected.
         Lines and linespans are supported by adding '#L12' or '#L12-14' etc to the end of the filename.
         """
 
-        match = self.__cat_line_regex.search(argument)
+        match = self.filepath_regex.search(path)
 
         if not match:  # should never happen
             return await ctx.send("Couldn't parse this input.")
