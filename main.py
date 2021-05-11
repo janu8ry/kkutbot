@@ -2,7 +2,7 @@ import asyncio
 import os
 import time
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Type
 
 import discord
@@ -89,6 +89,13 @@ async def on_message(message: discord.Message):
 @bot.event
 async def on_command_completion(ctx: KkutbotContext):
     # bot.hanmaru.add_queue(ctx.author.id)
+
+    if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
+        write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+        cache = {}
+        for data in read(None, 'quest').keys():
+            cache[data] = read(ctx.author, data.replace("/", "."))
+        write(ctx.author, 'quest.cache', cache)
 
     for data, info in read(None, 'quest').items():
         current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
