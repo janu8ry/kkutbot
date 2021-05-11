@@ -4,6 +4,7 @@ import os
 import re
 
 import discord
+from discord.ext import commands
 from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 from jishaku.exception_handling import ReplResponseReactor
@@ -15,11 +16,11 @@ from jishaku.repl import AsyncCodeExecutor
 from jishaku.repl.repl_builtins import (http_get_bytes, http_get_json,
                                         http_post_bytes, http_post_json)
 
-from ext.core import Kkutbot, KkutbotContext
+from ext.core import Kkutbot
 from ext.db import add, db, read, read_hanmaru, write
 
 
-def get_var_dict_from_ctx(ctx: KkutbotContext, prefix: str = '_'):
+def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
     """
     Returns the dict to be used in REPL for a given Context.
     """
@@ -56,7 +57,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
     filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
 
     @Feature.Command(parent="jsk", name="poetry")
-    async def jsk_poetry(self, ctx: KkutbotContext, *, argument: codeblock_converter):
+    async def jsk_poetry(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for 'jsk sh poetry'. Invokes the system shell.
         """
@@ -66,7 +67,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
         )
 
     @Feature.Command(parent="jsk", name="pyenv")
-    async def jsk_pyenv(self, ctx: KkutbotContext, *, argument: codeblock_converter):
+    async def jsk_pyenv(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for 'jsk sh pyenv'. Invokes the system shell.
         """
@@ -76,7 +77,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
         )
 
     @Feature.Command(parent="jsk", name="file")
-    async def jsk_file(self, ctx: KkutbotContext, path: str):
+    async def jsk_file(self, ctx: commands.Context, path: str):
         """
         Sends local file to discord channel.
         """
@@ -100,7 +101,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
         return await ctx.send(file=discord.File(path))
 
     @Feature.Command(parent="jsk", name="py", aliases=["python"])
-    async def jsk_python(self, ctx: KkutbotContext, *, argument: codeblock_converter):
+    async def jsk_python(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Direct evaluation of Python code.
         """
@@ -121,9 +122,9 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
                         self.last_result = result  # noqa
 
                         if isinstance(result, discord.File):
-                            send(await ctx.send(file=result, escape_emoji_formatting=True))
+                            send(await ctx.send(file=result))
                         elif isinstance(result, discord.Embed):
-                            send(await ctx.send(embed=result, escape_emoji_formatting=True))
+                            send(await ctx.send(embed=result))
                         elif isinstance(result, PaginatorInterface):
                             send(await result.send_to(ctx))
                         else:
@@ -135,7 +136,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
                                 if result.strip() == '':
                                     result = "\u200b"
 
-                                send(await ctx.send(result.replace(self.bot.http.token, "[token omitted]"), escape_emoji_formatting=True))
+                                send(await ctx.send(result.replace(self.bot.http.token, "[token omitted]")))
 
                             elif len(result) < 50_000:  # File "full content" preview limit
                                 # Discord's desktop and web client now supports an interactive file content
@@ -146,7 +147,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
                                 send(await ctx.send(file=discord.File(
                                     filename="output.py",
                                     fp=io.BytesIO(result.encode('utf-8'))
-                                ), escape_emoji_formatting=True))
+                                )))
 
                             else:
                                 # inconsistency here, results get wrapped in codeblocks when they are too large
@@ -162,7 +163,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             scope.clear_intersection(arg_dict)
             
     @Feature.Command(parent="jsk", name="cat")
-    async def jsk_cat(self, ctx: KkutbotContext, argument: str):  # pylint: disable=too-many-locals
+    async def jsk_cat(self, ctx: commands.Context, argument: str):  # pylint: disable=too-many-locals
         """
         Read out a file, using syntax highlighting if detected.
         Lines and linespans are supported by adding '#L12' or '#L12-14' etc to the end of the filename.
@@ -197,7 +198,7 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
             with open(path, "rb") as file:
                 paginator = WrappedFilePaginator(file, line_span=line_span, max_size=1985)
                 interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
-                await interface.send_to(ctx, escape_emoji_formatting=True)
+                await interface.send_to(ctx)
         except UnicodeDecodeError:
             return await ctx.send(f"`{path}`: Couldn't determine the encoding of this file.")
         except ValueError as exc:
