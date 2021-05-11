@@ -81,7 +81,11 @@ async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
-        ctx = await bot.get_context(message, cls=KkutbotContext)
+        if ctx.command.parent.name == "jishaku":
+            cls = commands.Context
+        else:
+            cls = KkutbotContext
+        ctx = await bot.get_context(message, cls=cls)
         await bot.invoke(ctx)  # invokes command with custom context
         # await bot.hanmaru.get(ctx)
 
