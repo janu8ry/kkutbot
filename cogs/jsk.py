@@ -160,6 +160,48 @@ class CustomJSK(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
         finally:
             scope.clear_intersection(arg_dict)
+            
+    @Feature.Command(parent="jsk", name="cat")
+    async def jsk_cat(self, ctx: commands.Context, argument: str):  # pylint: disable=too-many-locals
+        """
+        Read out a file, using syntax highlighting if detected.
+        Lines and linespans are supported by adding '#L12' or '#L12-14' etc to the end of the filename.
+        """
+
+        match = self.__cat_line_regex.search(argument)
+
+        if not match:  # should never happen
+            return await ctx.send("Couldn't parse this input.")
+
+        path = match.group(1)
+
+        line_span = None
+
+        if match.group(2):
+            start = int(match.group(2))
+            line_span = (start, int(match.group(3) or start))
+
+        if not os.path.exists(path) or os.path.isdir(path):
+            return await ctx.send(f"`{path}`: No file by that name.")
+
+        size = os.path.getsize(path)
+
+        if size <= 0:
+            return await ctx.send(f"`{path}`: Cowardly refusing to read a file with no size stat"
+                                  f" (it may be empty, endless or inaccessible).")
+
+        if size > 128 * (1024 ** 2):
+            return await ctx.send(f"`{path}`: Cowardly refusing to read a file >128MB.")
+
+        try:
+            with open(path, "rb") as file:
+                paginator = WrappedFilePaginator(file, line_span=line_span, max_size=1985)
+                interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
+                await interface.send_to(ctx)
+        except UnicodeDecodeError:
+            return await ctx.send(f"`{path}`: Couldn't determine the encoding of this file.")
+        except ValueError as exc:
+            return await ctx.send(f"`{path}`: Couldn't read this file, {exc}")
 
 
 def setup(bot: Kkutbot):
