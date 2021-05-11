@@ -10,7 +10,7 @@ from jishaku.exception_handling import ReplResponseReactor
 from jishaku.features.baseclass import Feature
 from jishaku.flags import SCOPE_PREFIX
 from jishaku.functools import AsyncSender
-from jishaku.paginators import PaginatorInterface, WrappedPaginator
+from jishaku.paginators import PaginatorInterface, WrappedFilePaginator, WrappedPaginator
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.repl.repl_builtins import (http_get_bytes, http_get_json,
                                         http_post_bytes, http_post_json)
