@@ -435,7 +435,7 @@ class Game(commands.Cog, name="게임"):
             await game.send_info_embed(ctx)
             while True:
                 try:
-                    msg = await self.bot.wait_for('message', check=check, timeout=10.0 - (time.time() - game.begin_time))
+                    msg = await self.bot.wait_for('message', check=check, timeout=15.0 - (time.time() - game.begin_time))
                     user_word = msg.content
                 except asyncio.TimeoutError:
                     await game.game_end("패배")
