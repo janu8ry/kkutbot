@@ -470,7 +470,7 @@ class Game(commands.Cog, name="게임"):
                         continue
                 final_list = [x for x in get_word(user_word) if x not in game.used_words and len(x) == 3]
                 if len(final_list) == 0:  # noqa
-                    await game.game_end("패배")
+                    await game.game_end("승리")
                     return
                 else:
                     game.bot_word = random.choice(final_list)
