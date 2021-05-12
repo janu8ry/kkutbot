@@ -234,7 +234,7 @@ async def on_guild_join(guild: discord.Guild):
                     f" - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!",
         color=config('colors.general')
     )
-    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, 약관에 동의한 것으로 간주됩니다.")
+    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, [약관](https://github.com/janu8ry/kkutbot/blob/master/privacy.md)에 동의한 것으로 간주됩니다.")
     try:
         await announce[0].send(embed=embed)
     except:  # noqa
