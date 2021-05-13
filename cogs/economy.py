@@ -1,6 +1,5 @@
 import random
 import time
-from datetime import date
 
 import discord
 from discord.ext import commands
@@ -86,12 +85,6 @@ class Economy(commands.Cog, name="경제"):
     async def quest(self, ctx: KkutbotContext):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.
         퀘스트 항목은 0시에 초기화됩니다."""
-        if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
-            write(ctx.author, 'quest.status', {'date': today, 'completed': []})
-            cache = {}
-            for data in read(None, 'quest').keys():
-                cache[data] = read(ctx.author, data.replace("/", "."))
-            write(ctx.author, 'quest.cache', cache)
         embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
         for data, info in read(None, 'quest').items():
             current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')

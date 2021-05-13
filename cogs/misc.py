@@ -60,12 +60,12 @@ class Misc(commands.Cog, name="기타"):
         게임 - 솔로, 멀티, 쿵쿵따, 온라인, 앞말잇기
 
         **<예시>**
-        ㄲ랭킹 or ㄲ랭캉 솔로- '솔로' 분야의 랭킹을 확인합니다.
+        ㄲ랭킹 or ㄲ랭킹 솔로- '솔로' 분야의 랭킹을 확인합니다.
         ㄲ랭킹 포인트 - '포인트'가 많은 순서의 랭킹을 확인합니다.
         ㄲ랭킹 쿵쿵따 - '쿵쿵따' 분야의 랭킹을 확인합니다.
         """
         await ctx.trigger_typing()
-        eventlist = {"포인트": 'points', "메달": 'medal', "출석": 'daily_times', "명령어": 'command_used'}
+        eventlist = {"포인트": 'points', "메달": 'medals', "출석": 'daily_times', "명령어": 'command_used'}
         modelist = {"솔로": 'rank_solo', "멀티": 'rank_multi', "쿵쿵따": 'kkd', "온라인": 'online_multi', "앞말잇기": 'apmal'}
         rank_query = {
             'banned': False,

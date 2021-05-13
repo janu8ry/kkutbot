@@ -2,7 +2,7 @@ import asyncio
 import os
 import time
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Type
 
 import discord
@@ -81,7 +81,11 @@ async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
-        ctx = await bot.get_context(message, cls=KkutbotContext)
+        if message.content.lstrip("ㄲ").startswith("jsk"):
+            cls = commands.Context
+        else:
+            cls = KkutbotContext
+        ctx = await bot.get_context(message, cls=cls)
         await bot.invoke(ctx)  # invokes command with custom context
         # await bot.hanmaru.get(ctx)
 
@@ -90,19 +94,29 @@ async def on_message(message: discord.Message):
 async def on_command_completion(ctx: KkutbotContext):
     # bot.hanmaru.add_queue(ctx.author.id)
 
+    if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
+        write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+        cache = {}
+        for data in read(None, 'quest').keys():
+            cache[data] = read(ctx.author, data.replace("/", "."))
+        write(ctx.author, 'quest.cache', cache)
+
+    desc = ""
     for data, info in read(None, 'quest').items():
         current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
         if (current >= info['target']) and (data not in read(ctx.author, 'quest.status.completed')):
             add(ctx.author, info['reward'][1], info['reward'][0])
             append(ctx.author, 'quest.status.completed', data)
-            embed = discord.Embed(
-                title="퀘스트 클리어!",
-                description=f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}",
-                color=config('colors.help')
-            )
-            embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
-            embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
-            await ctx.send(ctx.author.mention, embed=embed)
+            desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    if desc:
+        embed = discord.Embed(
+            title="퀘스트 클리어!",
+            description=desc,
+            color=config('colors.help')
+        )
+        embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
+        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+        await ctx.send(ctx.author.mention, embed=embed)
 
     if not read(ctx.author, 'alert.daily'):
         await ctx.send(
@@ -200,7 +214,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
         embed.add_field(name="에러 코드", value=f"```{error}```")
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
         await ctx.send(embed=embed)
-        embed.add_field(name="에러 traceback", value=f"""```py\n{err}```""", inline=False)
+        embed.add_field(name="에러 traceback", value=f"""```py\n{err}```""", inline=False, escape_emoji_formatting=True)
         await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
         if config('test'):
             print(err)
@@ -220,7 +234,7 @@ async def on_guild_join(guild: discord.Guild):
                     f" - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!",
         color=config('colors.general')
     )
-    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, 약관에 동의한 것으로 간주됩니다.")
+    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, [약관](https://github.com/janu8ry/kkutbot/blob/master/privacy.md)에 동의한 것으로 간주됩니다.")
     try:
         await announce[0].send(embed=embed)
     except:  # noqa

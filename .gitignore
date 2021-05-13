@@ -18,5 +18,6 @@ config.yml
 backup
 tmp
 
-# pyenv virtualenv config
+# virtualenv config
 .python-version
+poetry.toml

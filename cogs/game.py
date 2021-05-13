@@ -90,7 +90,7 @@ class SoloGame(GameBase):
         embed.add_field(name="점수", value=f"`{self.score}` 점")
         embed.add_field(name="보상", value=f"`{points}` {{points}}")
         if result in ("패배", "포기"):
-            possibles = [i for i in get_word(self.bot_word) if i not in self.used_words]
+            possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
             if possibles:
                 random.shuffle(possibles)
                 embed.add_field(name="가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` 등...", inline=False)
@@ -435,7 +435,7 @@ class Game(commands.Cog, name="게임"):
             await game.send_info_embed(ctx)
             while True:
                 try:
-                    msg = await self.bot.wait_for('message', check=check, timeout=10.0 - (time.time() - game.begin_time))
+                    msg = await self.bot.wait_for('message', check=check, timeout=15.0 - (time.time() - game.begin_time))
                     user_word = msg.content
                 except asyncio.TimeoutError:
                     await game.game_end("패배")
@@ -470,7 +470,7 @@ class Game(commands.Cog, name="게임"):
                         continue
                 final_list = [x for x in get_word(user_word) if x not in game.used_words and len(x) == 3]
                 if len(final_list) == 0:  # noqa
-                    await game.game_end("패배")
+                    await game.game_end("승리")
                     return
                 else:
                     game.bot_word = random.choice(final_list)

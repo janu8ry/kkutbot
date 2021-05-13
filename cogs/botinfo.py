@@ -67,7 +67,7 @@ class BotInfo(commands.Cog, name="일반"):
             )
             return await ctx.send(embed=embed)
         cmd = self.bot.get_command(command_name)
-        if not cmd or (command_name.startswith("$") and (ctx.author.id not in config('admin'))) or self.bot.get_command(command_name).hidden:
+        if not cmd or (command_name.startswith("$") and (ctx.author.id not in config('admin'))) or (self.bot.get_command(command_name).hidden and (ctx.author.id not in config('admin'))):
             return await ctx.send("{denyed} 존재하지 않는 명령어 또는 카테고리입니다.")
         embed = discord.Embed(
             title=f"명령어 정보 | {cmd}",
@@ -109,7 +109,8 @@ class BotInfo(commands.Cog, name="일반"):
                                           "끝봇을 당신의 서버에 초대하세요!\n\n"
                                           "끝봇을 초대하려면 해당 서버에서\n"
                                           "**서버 관리하기** (필수), **메시지 관리하기** (선택)\n"
-                                          "권한을 가지고 있어야 합니다.",
+                                          "권한을 가지고 있어야 합니다.\n\n"
+                                          "끝봇을 서버에 초대할 경우, [약관](https://github.com/janu8ry/kkutbot/blob/master/privacy.md)에 동의한 것으로 간주됩니다.",
                               color=config('colors.general')
                               )
         embed.add_field(name="초대 링크", value=f"[끝봇 초대링크 바로가기]({config('links.invite.bot')})")
