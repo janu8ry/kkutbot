@@ -58,25 +58,6 @@ async def reload_commands(ctx: KkutbotContext, *, extension: str = None):
 
 
 @bot.event
-async def on_command(ctx: KkutbotContext):
-    if isinstance(ctx.channel, discord.DMChannel):
-        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}")
-    else:
-        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  {ctx.guild} [`{ctx.guild.id}`]  |  {ctx.channel} [`{ctx.channel.id}`]  |  {ctx.message.content}")
-
-    add(ctx.author, 'command_used', 1)
-    write(ctx.author, 'last_command', time.time())
-
-    if ctx.guild:
-        write(ctx.guild, 'last_command', time.time())
-        add(ctx.guild, 'command_used', 1)
-
-    add(None, 'command_used', 1)
-    write(None, 'last_command', time.time())
-    add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
-
-
-@bot.event
 async def on_message(message: discord.Message):
     if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
@@ -91,8 +72,27 @@ async def on_message(message: discord.Message):
 
 
 @bot.event
+async def on_command(ctx: KkutbotContext):
+    if isinstance(ctx.channel, discord.DMChannel):
+        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  DM [`{ctx.channel.id}`]  |  {ctx.message.content}")
+    else:
+        await bot.log(f"{ctx.author} [`{ctx.author.id}`]  |  {ctx.guild} [`{ctx.guild.id}`]  |  {ctx.channel} [`{ctx.channel.id}`]  |  {ctx.message.content}")
+
+
+@bot.event
 async def on_command_completion(ctx: KkutbotContext):
     # bot.hanmaru.add_queue(ctx.author.id)
+
+    add(ctx.author, 'command_used', 1)
+    write(ctx.author, 'last_command', time.time())
+
+    if ctx.guild:
+        write(ctx.guild, 'last_command', time.time())
+        add(ctx.guild, 'command_used', 1)
+
+    add(None, 'command_used', 1)
+    write(None, 'last_command', time.time())
+    add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
 
     if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
         write(ctx.author, 'quest.status', {'date': today, 'completed': []})
