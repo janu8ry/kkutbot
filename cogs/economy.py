@@ -92,7 +92,7 @@ class Economy(commands.Cog, name="경제"):
                 desc = "이미 완료한 퀘스트입니다."
                 title = f"~~{info['name']}~~"
             else:
-                desc = f"진행 상황: {current} / {info['target']} (`{round(current / info['target'] * 100)}`%)"
+                desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"
                 title = info['name']
             embed.add_field(
                 name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}",

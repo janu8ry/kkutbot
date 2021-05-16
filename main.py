@@ -2,7 +2,7 @@ import asyncio
 import os
 import time
 import traceback
-from datetime import datetime, timedelta, date
+from datetime import date, datetime, timedelta
 from typing import Type
 
 import discord
@@ -214,7 +214,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
         embed.add_field(name="에러 코드", value=f"```{error}```")
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
         await ctx.send(embed=embed)
-        embed.add_field(name="에러 traceback", value=f"""```py\n{err}```""", inline=False, escape_emoji_formatting=True)
+        embed.add_field(name="에러 traceback", value=f"""```py\n{err}```""", inline=False, escape_emoji_formatting=True)  # noqa
         await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
         if config('test'):
             print(err)
