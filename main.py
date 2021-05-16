@@ -104,7 +104,9 @@ async def on_command_completion(ctx: KkutbotContext):
     desc = ""
     for data, info in read(None, 'quest').items():
         current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
-        if (current >= info['target']) and (data not in read(ctx.author, 'quest.status.completed')):
+        if current < 0:
+            write(ctx.author, f'quest.cache.{data}', read(ctx.author, data.replace("/", ".")))
+        elif (current >= info['target']) and (data not in read(ctx.author, 'quest.status.completed')):
             add(ctx.author, info['reward'][1], info['reward'][0])
             append(ctx.author, 'quest.status.completed', data)
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
