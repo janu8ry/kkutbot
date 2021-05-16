@@ -242,7 +242,7 @@ async def on_guild_join(guild: discord.Guild):
     except:  # noqa
         pass
 
-    if guild.me.guild_permissions <= 387136:
+    if guild.me.guild_permissions >= discord.Permissions(387136):
         embed = discord.Embed(
             title="권한이 부족합니다.",
             description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
