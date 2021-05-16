@@ -231,4 +231,4 @@ perms:
   manage_webhooks: 웹후크 관리하기
   manage_emojis: 이모티콘 관리
   use_slash_commands: 빗금 명령어 사용
-  request_to_speak: 발언권 신청
+  request_to_speak: 발언권 요청하기
