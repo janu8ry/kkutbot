@@ -11,11 +11,13 @@ from jishaku.exception_handling import ReplResponseReactor
 from jishaku.features.baseclass import Feature
 from jishaku.flags import SCOPE_PREFIX
 from jishaku.functools import AsyncSender
-from jishaku.paginators import PaginatorInterface, WrappedFilePaginator, WrappedPaginator
+from jishaku.paginators import (PaginatorInterface, WrappedFilePaginator,
+                                WrappedPaginator)
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.repl.repl_builtins import (http_get_bytes, http_get_json,
                                         http_post_bytes, http_post_json)
 
+from ext.config import config
 from ext.core import Kkutbot
 from ext.db import add, db, read, read_hanmaru, write
 
@@ -45,7 +47,8 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
         'read': read,
         'write': write,
         'add': add,
-        'read_hanmaru': read_hanmaru
+        'read_hanmaru': read_hanmaru,
+        'config': config
     }
 
     return {f'{prefix}{k}': v for k, v in raw_var_dict.items()}
