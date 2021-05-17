@@ -1,0 +1,38 @@
+{
+    "언랭크": {
+        "points": 0,
+        "winrate": 0,
+        "times": 0,
+        "emoji": ":sob:"
+    },
+    "뉴비": {
+        "points": 1500,
+        "winrate": 30,
+        "times": 20,
+        "emoji": "<:rate:715834446883979379>"
+    },
+    "브론즈": {
+        "points": 3000,
+        "winrate": 40,
+        "times": 50,
+        "emoji": "<:bronze:715548840643657739>"
+    },
+    "실버": {
+        "points": 5000,
+        "winrate": 55,
+        "times": 75,
+        "emoji": "<:silver:715548873975922788>"
+    },
+    "골드": {
+        "points": 7500,
+        "winrate": 70,
+        "times": 100,
+        "emoji": "<:gold:715548900697702420>"
+    },
+    "마스터": {
+        "points": 10000,
+        "winrate": 80,
+        "times": 200,
+        "emoji": "<:m_master:715558227944931349>"
+    }
+}
