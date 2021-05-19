@@ -86,13 +86,13 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     async def reset_daily_alert():
-        write('general', 'daily', 0)
-        db.user.update_many({'alert.daily': True}, {'$set': {'alert.daily': False}})
+        await write('general', 'daily', 0)
+        await db.user.update_many({'alert.daily': True}, {'$set': {'alert.daily': False}})
 
     @staticmethod
     async def reset_daily():
         week_daily = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
-        db.user.update_many(
+        await db.user.update_many(
             {},
             {
                 '$set': {
@@ -109,7 +109,7 @@ class Kkutbot(commands.AutoShardedBot):
         quests = dict(quests)
         k = list(quests.keys())
         v = list(quests.values())
-        write(None, 'quest', {
+        await write(None, 'quest', {
             k[0].replace(".", "/"): v[0],
             k[1].replace(".", "/"): v[1],
             k[2].replace(".", "/"): v[2]

@@ -22,6 +22,7 @@ dblpy = "^0.4.0"
 dhooks = "^1.1.4"
 aiohttp = {version = "^3.7.3", extras = ["speedups"]}
 jishaku = {git = "https://github.com/Gorialis/jishaku.git"}
+motor = "^2.4.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"

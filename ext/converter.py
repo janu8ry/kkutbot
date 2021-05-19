@@ -26,13 +26,13 @@ class SpecialMemberConverter(Converter):
             pass
 
         if argument.isdecimal():  # if argument is user id
-            user = ctx.bot.db.user.find_one({'_id': int(argument)})
+            user = await ctx.bot.db.user.find_one({'_id': int(argument)})
             return await ctx.bot.fetch_user(user['_id'])
         else:
             if re.match(r"<@!?([0-9]+)>$", argument):  # if argument is mention
                 return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
             else:
-                user = ctx.bot.db.user.find_one({'_name': str(argument)})
+                user = await ctx.bot.db.user.find_one({'_name': str(argument)})
                 if user:
                     return await ctx.bot.fetch_user(user['_id'])
                 else:

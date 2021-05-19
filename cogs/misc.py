@@ -35,8 +35,8 @@ class Misc(commands.Cog, name="기타"):
         if hasattr(user, 'name'):
             username = user.name
         else:
-            if read(user_id, '_name'):
-                username = read(user_id, '_name')
+            if await read(user_id, '_name'):
+                username = await read(user_id, '_name')
             else:
                 username = (await self.bot.fetch_user(user_id)).name
         if len(username) >= 15:
@@ -84,9 +84,9 @@ class Misc(commands.Cog, name="기타"):
             embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
             rank = await asyncio.gather(
 
-                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.winrate", DESCENDING).limit(15), f"game.{modelist[event]}.winrate"),
-                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
-                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
+                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.winrate", DESCENDING).limit(15), f"game.{modelist[event]}.winrate"),
+                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
+                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
             )
             embed.add_field(name="승률", value="\n".join(rank[0]))
             embed.add_field(name="승리수", value="\n".join(rank[1]))
@@ -100,7 +100,7 @@ class Misc(commands.Cog, name="기타"):
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다.
         수신한지 2주가 지난 미확인 메일은 자동으로 삭제됩니다."""
-        mails = read(ctx.author, 'mail')
+        mails = await read(ctx.author, 'mail')
         for i in mails:
             if (datetime.now() - i['time']).days > 14:
                 mails.remove(i)
@@ -112,8 +112,8 @@ class Misc(commands.Cog, name="기타"):
         for x in mails:
             if (datetime.now() - x['time']).days <= 14:
                 embed.add_field(name=f"{x['title']} - `{utils.time_convert(datetime.now() - x['time'])} 전`", value=x['value'], inline=False)
-        write(ctx.author, 'mail', [])
-        write(ctx.author, 'alert.mail', True)
+        await write(ctx.author, 'mail', [])
+        await write(ctx.author, 'alert.mail', True)
         await ctx.reply(embed=embed)
 
 

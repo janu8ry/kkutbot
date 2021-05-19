@@ -23,12 +23,12 @@ class Economy(commands.Cog, name="경제"):
         """[koreanbots](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받습니다.
         최대 1번만 수령 가능합니다.
         """
-        write(ctx.author, 'alert.start_point', True)
+        await write(ctx.author, 'alert.start_point', True)
         if await self.bot.if_koreanbots_voted(ctx.author):
-            if not read(ctx.author, 'start_point'):
-                add(ctx.author, 'points', 300)
+            if not (await read(ctx.author, 'start_point')):
+                await add(ctx.author, 'points', 300)
                 await ctx.reply("+300 {points} 를 받았습니다!")
-                write(ctx.author, 'start_point', True)
+                await write(ctx.author, 'start_point', True)
             else:
                 await ctx.reply("{denyed} 이미 지원금을 받았습니다.")
         else:
@@ -47,21 +47,21 @@ class Economy(commands.Cog, name="경제"):
         """출석체크를 하고 100포인트를 획득합니다.
         일주일동안 매일 출석하면 일요일 출석시 추가 보상을 받을 수 있습니다!
         """
-        write(ctx.author, 'alert.daily', True)
+        await write(ctx.author, 'alert.daily', True)
         options = ''
         week_daily = []
-        week_data = read(ctx.author, 'daily')
-        if read(ctx.author, f'daily.{time.localtime().tm_wday}'):
+        week_data = await read(ctx.author, 'daily')
+        if await read(ctx.author, f'daily.{time.localtime().tm_wday}'):
             msg = "{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."
         else:
-            add(ctx.author, 'points', 100)
-            add(ctx.author, 'daily_times', 1)
-            write(ctx.author, f'daily.{time.localtime().tm_wday}', True)
-            add(None, 'daily', 1)
+            await add(ctx.author, 'points', 100)
+            await add(ctx.author, 'daily_times', 1)
+            await write(ctx.author, f'daily.{time.localtime().tm_wday}', True)
+            await add(None, 'daily', 1)
             msg = "+100 {points} 를 받았습니다!"
             if all(week_data.values()):
                 bonus = random.randint(50, 150)
-                add(ctx.author, 'points', bonus)
+                await add(ctx.author, 'points', bonus)
                 options = f"""
                 {ctx.author.mention}님은 일주일 동안 모두 출석했습니다!
                 
@@ -69,7 +69,7 @@ class Economy(commands.Cog, name="경제"):
                 +{bonus}{{points}}
                 """
 
-        week_data = read(ctx.author, 'daily')
+        week_data = await read(ctx.author, 'daily')
         for i in range(time.localtime().tm_wday + 1):
             if week_data[str(i)]:
                 week_daily.append(":white_check_mark:")
@@ -86,8 +86,8 @@ class Economy(commands.Cog, name="경제"):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.
         퀘스트 항목은 0시에 초기화됩니다."""
         embed = discord.Embed(title="데일리 퀘스트", color=config('colors.help'))
-        for data, info in read(None, 'quest').items():
-            current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
+        for data, info in (await read(None, 'quest')).items():
+            current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f'quest.cache.{data}')
             if current >= info['target']:
                 desc = "이미 완료한 퀘스트입니다."
                 title = f"~~{info['name']}~~"
