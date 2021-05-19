@@ -10,7 +10,7 @@ with open('config.yml', encoding='utf-8') as f:
 for file in os.listdir('general'):
     if file not in ("wordlist.json", "DUlaw.json", "quest.json"):
         with open(f"general/{file}", 'r', encoding="utf-8") as f:
-            config_data[file.rstrip(".json")] = json.load(f)
+            config_data[file[:-5]] = json.load(f)
 
 
 def get_nested_dict(data, path: list):  # get value in nested dictionary
