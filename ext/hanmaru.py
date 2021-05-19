@@ -43,7 +43,7 @@ class Handler:
                 with open(self.fetch_path, 'rb') as f:
                     new_input = pickle.load(f)
                 for k, v in new_input.items():
-                    self.bot.db.hanmaru.update_one({'_id': int(k)}, v, {'upsert': True})  # noqa
+                    await self.bot.db.hanmaru.update_one({'_id': int(k)}, v, {'upsert': True})  # noqa
                 os.remove(self.fetch_path)
 
     def add_queue(self, user: int):  # adds changed user data to queue

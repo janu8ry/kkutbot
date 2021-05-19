@@ -74,7 +74,7 @@ class SoloGame(GameBase):
             points = self.score * 5 if self.kkd else self.score * 3
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config('colors.general')
-            add(self.player, f'game.{mode}.win', 1)
+            await add(self.player, f'game.{mode}.win', 1)
         elif result == "패배":
             points = -30
             desc = f"대답시간이 {15 if self.kkd else 10}초를 초과했습니다..."
@@ -95,16 +95,16 @@ class SoloGame(GameBase):
                 random.shuffle(possibles)
                 embed.add_field(name="가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` 등...", inline=False)
         await self.ctx.send(self.player.mention, embed=embed)
-        add(self.player, 'points', points)
-        add(self.player, f'game.{mode}.times', 1)
-        if self.score > read(self.player, f'game.{mode}.best'):
-            write(self.player, f'game.{mode}.best', self.score)
+        await add(self.player, 'points', points)
+        await add(self.player, f'game.{mode}.times', 1)
+        if self.score > await read(self.player, f'game.{mode}.best'):
+            await write(self.player, f'game.{mode}.best', self.score)
         if mode == "rank_solo":
-            tier = get_tier(self.player, "rank_solo", emoji=False)
-            if (tier_past := read(self.player, 'game.rank_solo.tier')) != tier:
-                write(self.player, 'game.rank_solo.tier', tier)
+            tier = await get_tier(self.player, "rank_solo", emoji=False)
+            if (tier_past := await read(self.player, 'game.rank_solo.tier')) != tier:
+                await write(self.player, 'game.rank_solo.tier', tier)
                 await self.alert_tier_change(self.player, tier, tier_past)
-        write(self.player, f'game.{mode}.winrate', get_winrate(self.player, mode))
+        await write(self.player, f'game.{mode}.winrate', await get_winrate(self.player, mode))
         del self
 
 
@@ -184,14 +184,14 @@ class MultiGame(GameBase):
         for n, kv in enumerate(rank):
             if n < len(rank) - 1:
                 desc.append(f"**{n + 1}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")  # noqa
-                add(kv[0], 'points', int(rank[n + 1][1]) * 2)
-                add(kv[0], 'game.guild_multi.times', 1)
-                write(kv[0], 'last_command', time.time())
-                if int(rank[n + 1][1]) > read(kv[0], 'game.guild_multi.best'):
-                    write(kv[0], 'game.guild_multi.best', self.score)
+                await add(kv[0], 'points', int(rank[n + 1][1]) * 2)
+                await add(kv[0], 'game.guild_multi.times', 1)
+                await write(kv[0], 'last_command', time.time())
+                if int(rank[n + 1][1]) > await read(kv[0], 'game.guild_multi.best'):
+                    await write(kv[0], 'game.guild_multi.best', self.score)
                 if (n + 1) <= round((len(rank) - 1) / 2):
-                    add(kv[0], 'game.guild_multi.win', 1)
-                write(kv[0], 'game.guild_multi.winrate', get_winrate(kv[0], "guild_multi"))
+                    await add(kv[0], 'game.guild_multi.win', 1)
+                await write(kv[0], 'game.guild_multi.winrate', await get_winrate(kv[0], "guild_multi"))
         embed = discord.Embed(title="게임 종료", description="\n".join(desc), color=config('colors.general'))
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
@@ -257,7 +257,7 @@ class Game(commands.Cog, name="게임"):
         def check(_x: Union[discord.Message, KkutbotContext]) -> bool:
             return _x.author == ctx.author and _x.channel == ctx.channel
 
-        if read(ctx.author, 'points') <= 30:
+        if (await read(ctx.author, 'points')) <= 30:
             return await ctx.send(f"{ctx.author.mention} {{denyed}} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
                                   f"`ㄲ출석`, `ㄲ지원금`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
         if mode is None:

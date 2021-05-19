@@ -15,21 +15,21 @@ with open('general/DUlaw.json', 'r', encoding="utf-8") as f:
     DU = json.load(f)
 
 
-def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
-    game_times = read(target, f'game.{mode}.times')
-    game_win_times = read(target, f'game.{mode}.win')
+async def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
+    game_times = await read(target, f'game.{mode}.times')
+    game_win_times = await read(target, f'game.{mode}.win')
     if 0 in (game_times, game_win_times):
         return 0
     else:
         return round(game_win_times / game_times * 100, 2)
 
 
-def get_tier(target: Union[int, discord.User, discord.Member], mode: str, emoji: bool = True) -> str:
+async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, emoji: bool = True) -> str:
     if mode not in ("rank_solo", "rank_multi"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
     for k, v in config('tierlist').items():
-        if read(target, 'points') >= v['points'] and get_winrate(target, mode) >= v['winrate'] and read(target, f'game.{mode}.times') >= v['times']:
+        if (await read(target, 'points')) >= v['points'] and (await get_winrate(target, mode)) >= v['winrate'] and (await read(target, f'game.{mode}.times')) >= v['times']:
             tier = f"{k} {v['emoji']}"
         else:
             break

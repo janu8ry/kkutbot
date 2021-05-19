@@ -29,13 +29,13 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=e_mk(str(user)),
-            description=f"```yaml\n{read(user, 'info_word')}```\n"
-                        f":star: 현 시즌 티어 - **{get_tier(user, 'rank_solo')}** | **{get_tier(user, 'rank_multi')}**\n​",
+            description=f"```yaml\n{await read(user, 'info_word')}```\n"
+                        f":star: 현 시즌 티어 - **{await get_tier(user, 'rank_solo')}** | **{await get_tier(user, 'rank_multi')}**\n​",
             color=config('colors.general')
         )
-        embed.add_field(name="{points} **포인트**", value=f"{read(user, 'points')}")
-        embed.add_field(name="{starter} **승률**", value=f"{get_winrate(user, 'rank_solo')}% | {get_winrate(user, 'rank_multi')}%")
-        embed.add_field(name="{medals} **메달**", value=f"{read(user, 'medals')}")
+        embed.add_field(name="{points} **포인트**", value=f"{await read(user, 'points')}")
+        embed.add_field(name="{starter} **승률**", value=f"{await get_winrate(user, 'rank_solo')}% | {await get_winrate(user, 'rank_multi')}%")
+        embed.add_field(name="{medals} **메달**", value=f"{await read(user, 'medals')}")
         embed.set_thumbnail(url=user.avatar_url)
         embed.set_footer(text=f"더 자세한 정보는 'ㄲ통계' 명령어로 확인할 수 있어요!{' ' * 83}​")
         await ctx.send(embed=embed)
@@ -46,7 +46,7 @@ class Profile(commands.Cog, name="사용자"):
         """프로필의 소개말을 변경합니다. (최소 1자, 최대 50자)"""
         info_word = info_word.replace('`', '')
         if 1 <= len(info_word) <= 50:
-            write(ctx.author, 'info_word', info_word)
+            await write(ctx.author, 'info_word', info_word)
             await ctx.reply(f"{{done}} 소개말을 '{e_mk(e_mt(info_word))}' (으)로 변경했습니다!")
         else:
             await ctx.send(f":warning: 50자 이내로 소개말을 작성해주세요. (현재 {len(info_word)}자)")
@@ -62,18 +62,18 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=str(user),
-            description=f"가입일 : `{str(read(user, 'register_date'))[:10]}`",
+            description=f"가입일 : `{str(await read(user, 'register_date'))[:10]}`",
             color=config('colors.general')
         )
 
         for k, v in config('modelist').items():
             embed.add_field(name=k,
-                            value=f"게임 횟수 : `{read(user, f'game.{v}.times')}`\n"
-                                  f"승리 횟수 : `{read(user, f'game.{v}.win')}`\n"
-                                  f"최고 점수 : `{read(user, f'game.{v}.best')}`\n"
-                                  f"승률 : `{get_winrate(user, v)}%`")
-        embed.add_field(name="기타", value=f"출석 횟수 : `{read(user, 'daily_times')}`\n"
-                                         f"명령어 사용 횟수 : `{read(user, 'command_used')}`")
+                            value=f"게임 횟수 : `{await read(user, f'game.{v}.times')}`\n"
+                                  f"승리 횟수 : `{await read(user, f'game.{v}.win')}`\n"
+                                  f"최고 점수 : `{await read(user, f'game.{v}.best')}`\n"
+                                  f"승률 : `{await get_winrate(user, v)}%`")
+        embed.add_field(name="기타", value=f"출석 횟수 : `{await read(user, 'daily_times')}`\n"
+                                         f"명령어 사용 횟수 : `{await read(user, 'command_used')}`")
         embed.set_footer(text="티어 정보는 웹사이트에서 확인할 수 있어요.                                                                                   ​​​")
         await ctx.send(embed=embed)
 

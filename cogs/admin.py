@@ -40,10 +40,10 @@ class Admin(commands.Cog, name="관리자"):
         embed.add_field(
             name="현황",
             value=f"서버: `{len(self.bot.guilds)}`개\n"
-            f"유저: `{self.bot.db.user.count_documents({})}`명\n"
-            f"미사용 유저: `{self.bot.db.unused.count_documents({})}`명\n"
-            f"활성화: `{self.bot.db.user.count_documents({'last_command': {'$gt': time.time() - 86400 * count}})}`명\n"
-            f"출석 유저 수: `{read(None, 'daily')}`명"
+            f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
+            f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
+            f"활성화: `{await self.bot.db.user.count_documents({'last_command': {'$gt': time.time() - 86400 * count}})}`명\n"
+            f"출석 유저 수: `{await read(None, 'daily')}`명"
         )
         mem = psutil.virtual_memory()
         embed.add_field(
@@ -62,53 +62,54 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.send("{done} 완료! 로그아웃 되었습니다.")
         await self.bot.close()
 
-    @commands.command(name="$서버", usage="ㄲ$서버 <키>", hidden=True)
-    @commands.is_owner()
-    async def servers(self, ctx: KkutbotContext, key: str = "서버"):
-        """끝봇이 참가중인 서버의 목록을 키에 따라 정렬 후 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)
-
-        **<키 목록>**
-        서버, 유저(멤버), 샤드, 아이디
-        """
-        if key == "서버":
-            callback = lambda guild: read(guild, 'command_used')  # noqa: E731
-        elif key in ("유저", "멤버"):
-            callback = lambda guild: guild.member_count  # noqa: E731
-        elif key == "샤드":
-            callback = lambda guild: guild.shard_id  # noqa: E731
-        elif key == "아이디":
-            callback = lambda guild: guild.id  # noqa: E731
-        else:
-            return await ctx.send(f"`{key}`(은)는 없는 키 입니다.")
-
-        for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
-            await ctx.send(content, escape_emoji_formatting=True)
+    # @commands.command(name="$서버", usage="ㄲ$서버 <키>", hidden=True)
+    # @commands.is_owner()
+    # async def servers(self, ctx: KkutbotContext, key: str = "서버"):
+    #     """끝봇이 참가중인 서버의 목록을 키에 따라 정렬 후 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)
+    #
+    #     **<키 목록>**
+    #     서버, 유저(멤버), 샤드, 아이디
+    #     """
+    #     async def callback(guild):
+    #         if key == "서버":
+    #             return await read(guild, 'command_used')
+    #         elif key in ("유저", "멤버"):
+    #             return guild.member_count
+    #         elif key == "샤드":
+    #             return guild.shard_id
+    #         elif key == "아이디":
+    #             return guild.id
+    #         else:
+    #             raise KeyError(f"`{key}`(은)는 없는 키 입니다.")
+    #
+    #     for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{await read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
+    #         await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     @commands.check(is_admin)
     async def user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter = None):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:  # check public data
-            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted(read(None, 'commands').items(), key=operator.itemgetter(1), reverse=True)).items())):
+            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted((await read(None, 'commands')).items(), key=operator.itemgetter(1), reverse=True)).items())):
                 await ctx.send(content, escape_emoji_formatting=True)
-            public_data = deepcopy(read(user))
+            public_data = deepcopy(await read(user))
             del public_data['commands']
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
                 await ctx.send(content, escape_emoji_formatting=True)
             return
 
-        if not read(user, 'register_date'):
+        if not (await read(user, 'register_date')):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read(user).items())):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())):
             await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$마루정보", usage="ㄲ$마루정보 <유저>")
     @commands.check(is_admin)
     async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 한마루 정보를 출력합니다."""
-        if not self.bot.db.hanmaru.find_one({'_id': user.id}):
+        if not (await self.bot.db.hanmaru.find_one({'_id': user.id})):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 한마루의 유저가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read_hanmaru(user).items())):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read_hanmaru(user)).items())):
             await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
@@ -118,31 +119,31 @@ class Admin(commands.Cog, name="관리자"):
         if guild is None:
             guild = ctx.guild
 
-        if not self.bot.db.guild.find_one({'_id': guild.id}):
+        if not (await self.bot.db.guild.find_one({'_id': guild.id})):
             return await ctx.send("해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in read(guild).items())):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(guild)).items())):
             await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
     @commands.check(is_admin)
     async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 포인트를 지급합니다."""
-        add(user, 'points', amount)
+        await add(user, 'points', amount)
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
     @commands.check(is_admin)
     async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: SpecialMemberConverter):
         """관리자 권한으로 메달을 지급합니다."""
-        add(user, 'medals', amount)
+        await add(user, 'medals', amount)
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", hidden=True)
     @commands.is_owner()
     async def delete_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 데이터를 초기화합니다."""
-        if self.bot.db.user.find_one({'_id': user.id}):
-            delete(user)
+        if await self.bot.db.user.find_one({'_id': user.id}):
+            await delete(user)
             await ctx.send("{done} 완료!")
         else:
             await ctx.send("{denyed} 해당 유저는 끝봇의 유저가 아닙니다.")
@@ -166,7 +167,7 @@ class Admin(commands.Cog, name="관리자"):
                 timeout=30
             )
             if m.content == "ㅇ":
-                self.bot.db.user.update_many(
+                await self.bot.db.user.update_many(
                     {},
                     {
                         '$push': {'mail': {'title': title, 'value': desc, 'time': datetime.now()}},
@@ -184,7 +185,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def send_notice(self, ctx: KkutbotContext, user: SpecialMemberConverter(), *, word: str):
         """유저에게 알림을 전송합니다."""
-        self.bot.db.user.update_one(
+        await self.bot.db.user.update_one(
             {'_id': user.id},
             {
                 '$push': {'mail': {'title': "관리자로부터의 알림", 'value': word.lstrip(), 'time': datetime.now()}},
@@ -197,9 +198,9 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def block_user(self, ctx: KkutbotContext, user: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
-        if read(user, 'banned'):
+        if await read(user, 'banned'):
             return await ctx.send("{denyed} 이미 정지된 유저입니다.")
-        write(user, 'banned', True)
+        await write(user, 'banned', True)
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
@@ -210,8 +211,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def unblock_user(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
         """유저의 이용 정지 처리를 해제합니다."""
-        if read(user, 'banned'):
-            write(user, 'banned', False)
+        if await read(user, 'banned'):
+            await write(user, 'banned', False)
             await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
@@ -221,7 +222,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = self.bot.db.user.find({"banned": True})
+        banned_users = await self.bot.db.user.find({"banned": True})
         if not list(banned_users):
             return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
         else:
@@ -235,34 +236,35 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.send(embed=embed)
 
     async def update_user_name(self, target: int):  # update cached username
-        username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
-        write(target, '_name', username)
+        username = (await self.bot.get_user(target) or await self.bot.fetch_user(target)).name
+        await write(target, '_name', username)
 
     @staticmethod
     async def update_game_winrate(target: int):  # update cached username
         for gamemode in config('modelist').values():
-            if read(target, f'game.{gamemode}.winrate') != (winrate := get_winrate(target, gamemode)):
-                write(target, f'game.{gamemode}.winrate', winrate)
+            if (await read(target, f'game.{gamemode}.winrate')) != (winrate := await get_winrate(target, gamemode)):
+                await write(target, f'game.{gamemode}.winrate', winrate)
 
     @staticmethod
     async def update_game_tier(target: int):  # update cached username
         for gamemode in ("rank_solo", "rank_multi"):
-            if read(target, f'game.{gamemode}.tier') != (tier := get_tier(target, gamemode, emoji=False)):
-                write(target, f'game.{gamemode}.tier', tier)
+            if (await read(target, f'game.{gamemode}.tier')) != (tier := await get_tier(target, gamemode, emoji=False)):
+                await write(target, f'game.{gamemode}.tier', tier)
 
     @commands.command(name="$캐시", usage="ㄲ$캐시", hidden=True)
     @commands.is_owner()
     async def add_user_cache(self, ctx: KkutbotContext):
         """유저 캐시를 새로고침합니다."""
-        users = self.bot.db.user.count_documents({"_name": None})
+        users = await self.bot.db.user.count_documents({"_name": None})
         msg = await ctx.send(f"이름 캐싱 진행중... (`0`/`{users}`)")
-        for n, target in enumerate(self.bot.db.user.find({"_name": None})):
+        for n, target in enumerate(await self.bot.db.user.find({"_name": None})):
             await self.update_user_name(target['_id'])
+            await msg.edit(content=f"이름 캐싱 진행중... (`{n + 1}`/`{users}`)")
         await ctx.send("{done} 이름 캐싱 완료!")
 
-        users = self.bot.db.user.count_documents({})
+        users = await self.bot.db.user.count_documents({})
         msg = await ctx.send(f"게임 데이터 캐싱 진행중... (`0`/`{users}`)")
-        for n, target in enumerate(self.bot.db.user.find()):
+        for n, target in enumerate(await self.bot.db.user.find()):
             await self.update_game_winrate(target['_id'])
             await self.update_game_tier(target['_id'])
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
@@ -274,14 +276,14 @@ class Admin(commands.Cog, name="관리자"):
         cleaned = 0
         deleted = 0
         if delete_data == 'y':
-            deleted = self.bot.db.unused.count_documents()
-            self.bot.db.unused.drop()
-        for user in self.bot.db.user.find({
+            deleted = await self.bot.db.unused.count_documents()
+            await self.bot.db.unused.drop()
+        async for user in self.bot.db.user.find({
             'last_command': {'$lt': time.time() - 86400 * days},
             'command_used': {'$lt': command_usage}
         }):
-            self.bot.db.unused.insert_one(user)
-            self.bot.db.user.delete_one({"_id": user['_id']})
+            await self.bot.db.unused.insert_one(user)
+            await self.bot.db.user.delete_one({"_id": user['_id']})
             cleaned += 1
         await ctx.send(f"{{done}} `{cleaned}` 명 데이터 보존 처리, `{deleted}` 명 데이터 삭제 완료!")
 

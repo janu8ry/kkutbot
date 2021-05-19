@@ -89,9 +89,8 @@ class BotInfo(commands.Cog, name="일반"):
             color=config('colors.general')
         )
         desc = {"개발자": f'{(await self.bot.application_info()).owner}\n서진#5826', "개발 언어": f'python 3.8.9\n(discord.py {discord.__version__})',
-                "서버 /사용자 수, 샤드":
-                    f'`{len(self.bot.guilds)}`개/`{self.bot.db.user.count_documents({})}`명, ' +
-                    (f'`{ctx.guild.shard_id + 1}/{self.bot.shard_count}`' if ctx.guild else f'`{self.bot.shard_count}`개'),
+                "서버 /사용자 수":
+                    f'`{len(self.bot.guilds)}`개/`{await self.bot.db.user.count_documents({})}`명',
                 "크레딧": f'[오픈소스 기여자들]({config("links.github")}/graphs/contributors)과,\n프로필 사진을 만들어\n주신 `! Tim23` 님께\n감사드립니다!',
                 "저작권": 'Icon made by `Pixel\nperfect`, `Freepik`,\n`Good Ware`\nfrom [flaticon](https://www.flaticon.com)',
                 "링크": f"[봇 초대하기]({config('links.invite.bot')})\n[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[github]({config('links.github')})"}

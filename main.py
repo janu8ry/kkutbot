@@ -34,7 +34,7 @@ async def on_ready():
             print(f"카테고리 '{cogname[:-3]}'을(를) 불러왔습니다!")
     print("-" * 75)
     print(f"'{bot.user.name}'으로 로그인됨")
-    print(f"서버수: {len(bot.guilds)}, 유저수: {bot.db.user.count_documents({})}, 미사용 유저수: {bot.db.unused.count_documents({})}")
+    print(f"서버수: {len(bot.guilds)}, 유저수: {await bot.db.user.count_documents({})}, 미사용 유저수: {await bot.db.unused.count_documents({})}")
     print("-" * 75)
     await bot.update_presence()
 
@@ -59,7 +59,7 @@ async def reload_commands(ctx: KkutbotContext, *, extension: str = None):
 
 @bot.event
 async def on_message(message: discord.Message):
-    if read(message.author, 'banned') or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
+    if (await read(message.author, 'banned')) or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
         if message.content.lstrip("ㄲ").startswith("jsk"):
@@ -83,32 +83,32 @@ async def on_command(ctx: KkutbotContext):
 async def on_command_completion(ctx: KkutbotContext):
     # bot.hanmaru.add_queue(ctx.author.id)
 
-    add(ctx.author, 'command_used', 1)
-    write(ctx.author, 'last_command', time.time())
+    await add(ctx.author, 'command_used', 1)
+    await write(ctx.author, 'last_command', time.time())
 
     if ctx.guild:
-        write(ctx.guild, 'last_command', time.time())
-        add(ctx.guild, 'command_used', 1)
+        await write(ctx.guild, 'last_command', time.time())
+        await add(ctx.guild, 'command_used', 1)
 
-    add(None, 'command_used', 1)
-    write(None, 'last_command', time.time())
-    add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
+    await add(None, 'command_used', 1)
+    await write(None, 'last_command', time.time())
+    await add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
 
-    if read(ctx.author, 'quest.status.date') != (today := date.today().toordinal()):
-        write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+    if (await read(ctx.author, 'quest.status.date')) != (today := date.today().toordinal()):
+        await write(ctx.author, 'quest.status', {'date': today, 'completed': []})
         cache = {}
-        for data in read(None, 'quest').keys():
-            cache[data] = read(ctx.author, data.replace("/", "."))
-        write(ctx.author, 'quest.cache', cache)
+        for data in (await read(None, 'quest')).keys():
+            cache[data] = await read(ctx.author, data.replace("/", "."))
+        await write(ctx.author, 'quest.cache', cache)
 
     desc = ""
-    for data, info in read(None, 'quest').items():
-        current = read(ctx.author, data.replace("/", ".")) - read(ctx.author, f'quest.cache.{data}')
+    for data, info in (await read(None, 'quest')).items():
+        current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f'quest.cache.{data}'))
         if current < 0:
-            write(ctx.author, f'quest.cache.{data}', read(ctx.author, data.replace("/", ".")))
-        elif (current >= info['target']) and (data not in read(ctx.author, 'quest.status.completed')):
-            add(ctx.author, info['reward'][1], info['reward'][0])
-            append(ctx.author, 'quest.status.completed', data)
+            await write(ctx.author, f'quest.cache.{data}', await read(ctx.author, data.replace("/", ".")))
+        elif (current >= info['target']) and (data not in await read(ctx.author, 'quest.status.completed')):
+            await add(ctx.author, info['reward'][1], info['reward'][0])
+            await append(ctx.author, 'quest.status.completed', data)
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
         embed = discord.Embed(
@@ -120,27 +120,27 @@ async def on_command_completion(ctx: KkutbotContext):
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.send(ctx.author.mention, embed=embed)
 
-    if not read(ctx.author, 'alert.daily'):
+    if not (await read(ctx.author, 'alert.daily')):
         await ctx.send(
             f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!"
         )
-        write(ctx.author, 'alert.daily', True)
+        await write(ctx.author, 'alert.daily', True)
 
-    if not read(ctx.author, 'alert.start_point'):
+    if not (await read(ctx.author, 'alert.start_point')):
         await ctx.send(
             f"{ctx.author.mention}님, 초기 지원금을 받지 않았습니다.\n`ㄲ지원금`을 입력하여 지원금을 받아가세요!"
         )
-        write(ctx.author, 'alert.start_point', True)
+        await write(ctx.author, 'alert.start_point', True)
 
-    if not read(ctx.author, 'alert.mail'):
-        mails = len([x for x in read(ctx.author, 'mail') if (datetime.now() - x['time']).days <= 14])
+    if not (await read(ctx.author, 'alert.mail')):
+        mails = len([x for x in (await read(ctx.author, 'mail')) if (datetime.now() - x['time']).days <= 14])
         if mails > 0:
             await ctx.send(
                 f"{ctx.author.mention}님, 읽지 않은 메일이 "
-                f"`{len([x for x in read(ctx.author, 'mail') if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
+                f"`{len([x for x in (await read(ctx.author, 'mail')) if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
                 "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
             )
-        write(ctx.author, 'alert.mail', True)
+        await write(ctx.author, 'alert.mail', True)
 
 
 @bot.check
@@ -224,7 +224,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
-    write(guild, 'invited', datetime.now())
+    await write(guild, 'invited', datetime.now())
     await bot.log(f"{guild.name}에 봇 새로 초대됨. 현재 {len(bot.guilds)}개 서버 참여중")
     if len(bot.guilds) % 100 == 0:
         await bot.log(f"<@610625541157945344> `{len(bot.guilds)}`서버 달성", nomention=False)
@@ -269,7 +269,7 @@ async def on_guild_join(guild: discord.Guild):
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
     await bot.log(f"{guild.name}에서 봇 추방됨. 현재 {len(bot.guilds)}개 서버 참여중")
-    delete(guild)
+    await delete(guild)
 
 
 print("로그인하는 중...")
