@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 from typing import Type
 
 import discord
-import uvloop
 from discord.ext import commands
 
 from ext.core import Kkutbot, KkutbotContext
@@ -14,8 +13,6 @@ from ext.db import add, append, config, delete, read, write
 from ext.utils import time_convert
 
 os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'  # jishaku config
-
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 bot = Kkutbot(
     command_prefix=commands.when_mentioned_or("ㄲ"),

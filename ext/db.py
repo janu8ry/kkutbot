@@ -1,9 +1,11 @@
 from copy import deepcopy
 from datetime import datetime
 from typing import Optional
+import asyncio
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient
+import uvloop
 
 from ext.config import config
 from ext.config import get_nested_dict as get
@@ -23,9 +25,13 @@ if all([username, password]):  # if both username and password is not None
     db_options['username'] = username
     db_options['password'] = password
 
+loop = uvloop.new_event_loop()
+asyncio.set_event_loop(loop)
+
 client = AsyncIOMotorClient(
     host=dbconfig('ip'),
     port=dbconfig('port'),
+    io_loop=loop,
     **db_options
 )
 
