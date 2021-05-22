@@ -5,7 +5,7 @@ from typing import Optional
 
 import discord
 import uvloop
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from ext.config import config
 from ext.config import get_nested_dict as get
@@ -37,15 +37,21 @@ client = AsyncIOMotorClient(
 
 db = client[dbconfig('db')]  # main database
 
+user = db.user
+guild = db.guild
+general = db.general
+hanmaru = db.hanmaru
+unused = db.unused
 
-def _collection_name(target) -> Optional[str]:
+
+def get_collection(target) -> AsyncIOMotorCollection:
     """returns collection name"""
     if isinstance(target, (discord.User, discord.Member, discord.ClientUser, int)):
-        return "user"
+        return user
     elif isinstance(target, discord.Guild):
-        return "guild"
+        return guild
     else:
-        return None
+        return general
 
 
 def _get_id(target) -> int:
@@ -61,15 +67,15 @@ def _get_name(target) -> str:
 async def read(target, path: str = None):
     """returns value of target"""
     if target:
-        collection = db[_collection_name(target)]
+        collection = get_collection(target)
         main_data = await collection.find_one({'_id': _get_id(target)})
         if not main_data:  # if target is not in db
-            if _collection_name(target) == "user":
+            if collection.name == "user":
                 main_data = deepcopy(config('default_data'))  # returns default user data schema
             else:
                 main_data = {}  # returns empty dict
     else:
-        main_data = await db.general.find_one()
+        main_data = await general.find_one()
 
     if path is None:
         return main_data
@@ -79,7 +85,7 @@ async def read(target, path: str = None):
 
 async def read_hanmaru(target, path: str = None):
     """returns value of target from hanmaru data"""
-    main_data = await db.hanmaru.find_one({'_id': _get_id(target)})
+    main_data = await hanmaru.find_one({'_id': _get_id(target)})
 
     if path is None:
         return main_data
@@ -89,9 +95,9 @@ async def read_hanmaru(target, path: str = None):
 
 async def write(target, path, value):
     """writes value to db"""
-    collection = _collection_name(target)
+    collection = get_collection(target)
 
-    if collection == "user":
+    if collection.name == "user":
         if not (await read(target, 'register_date')):  # if target is not in db
             if data := await db.unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
                 await db.user.insert_one(data)
@@ -121,12 +127,12 @@ async def add(target, path: str, value: int):
 
 async def delete(target):
     """deletes the target data"""
-    await db[_collection_name(target)].delete_one({'_id': _get_id(target)})
+    await db[get_collection(target)].delete_one({'_id': _get_id(target)})
 
 
 async def append(target, path: str, value):
     """appends value to target data(list)"""
-    await db[_collection_name(target)].update_one(
+    await db[get_collection(target)].update_one(
         {'_id': _get_id(target)},
         {
             '$push': {
