@@ -29,6 +29,15 @@ class Admin(commands.Cog, name="관리자"):
     async def kkutbot_status(self, ctx: KkutbotContext, count: float = 7):
         """봇의 현황을 확인합니다."""
         embed = discord.Embed(color=config('colors.general'))
+
+        t1 = time.time()
+        await self.bot.db.general.find_one()
+        t1 = time.time() - t1
+
+        t2 = time.time()
+        await self.bot.db.general.update_one({"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True)
+        t2 = time.time() - t2
+
         embed.add_field(
             name="성능",
             value=f"평균 연결 속도: `{round(self.bot.latency * 1000)}`ms\n"
@@ -51,7 +60,14 @@ class Admin(commands.Cog, name="관리자"):
             value=f"CPU: `{psutil.cpu_percent()}% ({round((psutil.cpu_freq().current / 1000), 2)} GHz)`\n"
                   f"RAM: `{naturalsize(mem.used)} / {naturalsize(mem.total)}`\n"
                   f"온도: `{psutil.sensors_temperatures()['cpu_thermal'][0].current if hasattr(psutil, 'sensors_temperatures') else '측정 불가'}`℃\n"
-                  f"상세 정보: [링크1]({config('links.monitoring.pm2')}) [링크2]({config('links.monitoring.mongo')})"
+                  f"상세 정보: [링크1]({config('links.monitoring.pm2')}) [링크2]({config('links.monitoring.mongo')})",
+            inline=False
+        )
+        embed.add_field(
+            name="DB",
+            value=f"용량: `{naturalsize((await self.bot.db.command('collstats', 'user'))['size'])}`\n"
+                  f"조회 지연시간: `{round(t1 * 1000)}`ms\n"
+                  f"업뎃 지연시간: `{round(t2 * 1000)}`ms"
         )
         await ctx.send(embed=embed)
 
