@@ -79,17 +79,18 @@ NodeNotConnected:""",
     async def byab(self, ctx: KkutbotContext):
         """🐳 안녕하세요!"""
         await ctx.send("""
-        코로나19로 힘든 시기!
-        딩가딩가 놀 수만은 없죠.
-        우리 고래뱝을 쓴다!
-        미친듯이 안켜지지만 어쩔 수 없어요...
-        개발중이라 조금 불안정할 수 있어요!
-        씹덕봇은 아니니까 걱정하지 않으셔도 돼요.
-        망한 것 같지만, 좋은 봇입니다! 초대해봐요
-        **봇 초대 링크**
-        
-        https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=336066630&scope=bot
-        """)
+코로나19로 힘든 시기!
+딩가딩가 놀 수만은 없죠.
+우리 고래뱝을 쓴다!
+미친듯이 안켜지지만 어쩔 수 없어요...
+개발중이라 조금 불안정할 수 있어요!
+씹덕봇은 아니니까 걱정하지 않으셔도 돼요.
+망한 것 같지만, 좋은 봇입니다! 초대해봐요
+
+**봇 초대 링크**
+
+https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=336066630&scope=bot
+""")
 
 
 def setup(bot: Kkutbot):

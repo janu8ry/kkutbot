@@ -99,24 +99,24 @@ async def write(target, path, value):
 
     if collection.name == "user":
         if not (await read(target, 'register_date')):  # if target is not in db
-            if data := await db.unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
-                await db.user.insert_one(data)
-                await db.unused.remove({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
+            if data := await unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
+                await user.insert_one(data)
+                await unused.remove({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
             else:
                 main_data = await read(target)
                 main_data['register_date'] = datetime.now()
                 main_data['_id'] = _get_id(target)
                 main_data['_name'] = _get_name(target)
-                await db.user.insert_one(main_data)  # create new data
+                await user.insert_one(main_data)  # create new data
         if (name := _get_name(target)) != (await read(target, '_name')):
-            await db.user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
-    elif (collection == "guild") and (not await read(target)):
-        await db.guild.insert_one({'_id': _get_id(target)})
+            await user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
+    elif (collection.name == "guild") and (not await read(target)):
+        await guild.insert_one({'_id': _get_id(target)})
 
     if collection:
-        await db[collection].update_one({'_id': _get_id(target)}, {'$set': {path: value}})
+        await collection.update_one({'_id': _get_id(target)}, {'$set': {path: value}})
     else:
-        await db.general.update_one({'_id': "general"}, {'$set': {path: value}})
+        await general.update_one({'_id': "general"}, {'$set': {path: value}})
 
 
 async def add(target, path: str, value: int):
@@ -127,12 +127,12 @@ async def add(target, path: str, value: int):
 
 async def delete(target):
     """deletes the target data"""
-    await db[get_collection(target)].delete_one({'_id': _get_id(target)})
+    await get_collection(target).delete_one({'_id': _get_id(target)})
 
 
 async def append(target, path: str, value):
     """appends value to target data(list)"""
-    await db[get_collection(target)].update_one(
+    await get_collection(target).update_one(
         {'_id': _get_id(target)},
         {
             '$push': {
