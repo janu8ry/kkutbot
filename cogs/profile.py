@@ -74,7 +74,7 @@ class Profile(commands.Cog, name="사용자"):
                                   f"승률 : `{await get_winrate(user, v)}%`")
         embed.add_field(name="기타", value=f"출석 횟수 : `{await read(user, 'daily_times')}`\n"
                                          f"명령어 사용 횟수 : `{await read(user, 'command_used')}`")
-        embed.set_footer(text="티어 정보는 웹사이트에서 확인할 수 있어요.                                                                                   ​​​")
+        embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 83}​​​")
         await ctx.send(embed=embed)
 
 
