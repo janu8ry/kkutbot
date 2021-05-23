@@ -68,6 +68,7 @@ links:
   monitoring:
     pm2: pm2 monitoring url
     mongo: mongoDB monitoring url
+  privacy-policy: https://github.com/janu8ry/kkutbot/blob/master/privacy.md
   koreanbots: koreanbots url
   dbl: top.gg url
   uniquebots: uniquebots url
