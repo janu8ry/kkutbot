@@ -15,7 +15,7 @@ from ext.utils import time_convert
 os.environ['JISHAKU_NO_UNDERSCORE'] = 'true'  # jishaku config
 
 bot = Kkutbot(
-    command_prefix=commands.when_mentioned_or("ㄲ"),
+    command_prefix=commands.when_mentioned_or(config('prefix')),
     help_command=None,  # disables the default help command
     intents=discord.Intents.default(),
     activity=discord.Game("봇 로딩"),

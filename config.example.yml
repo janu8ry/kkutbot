@@ -12,6 +12,9 @@
 # 'true' to run testbot, 'false' to run the main bot.
 test: true
 
+# bot prefix
+prefix: ㄲ
+
 # secret tokens
 token:
   main: main bot token
