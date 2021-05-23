@@ -51,7 +51,10 @@ async def on_shard_ready(shard_id):
 
 @bot.event
 async def on_message(message: discord.Message):
-    if (await read(message.author, 'banned')) or (message.author.bot and (message.author.id not in config('bot_whitelist'))):
+    is_banned = await read(message.author, 'banned')
+    is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
+
+    if is_banned or is_bot:
         return None  # ignore when author is banned or bot(except the bots in whitelist)
     else:
         if message.content.lstrip("ㄲ").startswith("jsk"):
@@ -222,13 +225,17 @@ async def on_guild_join(guild: discord.Guild):
         await bot.log(f"<@610625541157945344> `{len(bot.guilds)}`서버 달성", nomention=False)
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']]
     embed = discord.Embed(
-        description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
-                    "끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다!\n\n"
-                    "- **ㄲ도움** 을 입력하여 끝봇의 도움말을 확인해 보세요!\n"
-                    f" - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!",
+        description=f"""
+**끝봇**을 서버에 초대해 주셔서 감사합니다!
+끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.
+
+- **ㄲ도움** 을 입력하여 끝봇의 도움말을 확인해 보세요!
+- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
+
+끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
+""",
         color=config('colors.general')
     )
-    embed.set_footer(text="끝봇을 해당 서버에 초대하는 경우, [약관](https://github.com/janu8ry/kkutbot/blob/master/privacy.md)에 동의한 것으로 간주됩니다.")
     try:
         await announce[0].send(embed=embed)
     except:  # noqa

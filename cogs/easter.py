@@ -56,7 +56,8 @@ class EasterEgg(commands.Cog, name="이스터에그"):
             raise commands.BadArgument
         embed = discord.Embed(
             title="에러 발생",
-            description="""File "/usr/local/lib/python3.8/site-packages/discord/ext/commands/core.py", line 85, in wrapped
+            description="""
+File "/usr/local/lib/python3.8/site-packages/discord/ext/commands/core.py", line 85, in wrapped
 ret = await coro(*args, **kwargs)
 File "/kkutbot-easter/Cogs/music.py", line 96, in _play
 await self_check.connect_voice(ctx)
@@ -64,7 +65,8 @@ File "/kkutbot-easter/self_check.py", line 20, in connect_voice
 await ctx.bot.audio.connect(ctx.author.voice.channel)
 File "/usr/local/lib/python3.8/site-packages/discodo/client/DPYClient.py", line 200, in connect
 raise NodeNotConnected
-NodeNotConnected:""",
+NodeNotConnected:
+""",
             color=config('colors.error'))
         await ctx.send(embed=embed)
 
