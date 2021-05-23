@@ -230,7 +230,8 @@ async def on_guild_join(guild: discord.Guild):
 끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.
 
 - **ㄲ도움** 을 입력하여 끝봇의 도움말을 확인해 보세요!
-- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
+- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면
+[끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
 
 끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
 """,
@@ -241,27 +242,31 @@ async def on_guild_join(guild: discord.Guild):
     except:  # noqa
         pass
 
-    if guild.me.guild_permissions >= discord.Permissions(387136):
+    essential_perms = (
+        "send_messages",
+        "embed_links",
+        "attach_files",
+        "read_messages",
+        "add_reactions",
+        "external_emojis"
+    )
+
+    missing_perms = [p for p in essential_perms if not dict(guild.me.guild_permissions)[p]]
+
+    if missing_perms:
         embed = discord.Embed(
             title="권한이 부족합니다.",
             description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
             color=config('colors.error'))
-
         embed.add_field(
-            name="필요한 권한 목록",
-            value="""`메시지 보내기`
-                `메시지 관리`
-                `링크 첨부`
-                `파일 첨부`
-                `메시지 기록 보기`
-                `반응 추가하기`
-                `외부 이모티콘 사용하기`"""
+            name="더 필요한 권한 목록",
+            value=f"`{'`, `'.join([config('perms')[p] for p in missing_perms])}`"
         )
         try:
             await announce[0].send(embed=embed)
             owner = await bot.fetch_user(guild.owner_id)
             await owner.send(embed=embed)
-        except:  # noqa
+        except discord.errors.Forbidden:
             pass
 
 
