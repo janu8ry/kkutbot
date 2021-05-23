@@ -33,11 +33,12 @@ class Kkutbot(commands.AutoShardedBot):
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
         # self.hanmaru = hanmaru.Handler(self)
 
+        # schedulers
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.reset_daily, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
         self.scheduler.add_job(self.reset_daily_alert, 'cron', hour=0, minute=0, second=1)
         self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=2)
-        self.scheduler.add_job(self.update_presence, 'interval', seconds=10)
+        self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
         if not config('test'):
             self.scheduler.add_job(self.backup, 'cron', hour=5, minute=0, second=0)
         self.scheduler.start()
