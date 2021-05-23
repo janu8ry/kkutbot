@@ -34,7 +34,12 @@ async def on_ready():
             print(f"카테고리 '{cogname[:-3]}'을(를) 불러왔습니다!")
     print("-" * 75)
     print(f"'{bot.user.name}'으로 로그인됨")
-    print(f"서버수: {len(bot.guilds)}, 유저수: {await bot.db.user.count_documents({})}, 미사용 유저수: {await bot.db.unused.count_documents({})}")
+
+    guilds = len(bot.guilds)
+    users = await bot.db.user.count_documents({})
+    unused = await bot.db.unused.count_documents({})
+
+    print(f"서버수: {guilds}, 유저수: {users}, 미사용 유저수: {unused}")
     print("-" * 75)
     await bot.update_presence()
 
@@ -42,19 +47,6 @@ async def on_ready():
 @bot.event
 async def on_shard_ready(shard_id):
     print(f"{shard_id}번 샤드 준비 완료!")
-
-
-@bot.command(name="$리로드", usage="ㄲ리로드 <카테고리>", aliases=("$ㄹ", ))
-@commands.is_owner()
-async def reload_commands(ctx: KkutbotContext, *, extension: str = None):
-    """카테고리를 다시 로딩합니다."""
-    if extension is None:
-        for cogname in os.listdir("cogs"):
-            if cogname.endswith(".py"):
-                bot.try_reload(cogname[:-3])
-    else:
-        bot.try_reload(extension)
-    await ctx.send("{done} 완료!")
 
 
 @bot.event
