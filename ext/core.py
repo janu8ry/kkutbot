@@ -9,7 +9,6 @@ from typing import Type
 import dbl
 import discord
 import koreanbots
-import UniqueBotsKR
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dhooks import Webhook
 from discord.ext import commands
@@ -27,9 +26,8 @@ class Kkutbot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.db = db  # mongoDB
-        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))   # top.gg
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))  # koreanbots
-        self.uniquebots = UniqueBotsKR.client(self, config('token.uniquebots'), autopost=not config('test'))  # uniquebots
+        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))   # top.gg
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
         # self.hanmaru = hanmaru.Handler(self)
 

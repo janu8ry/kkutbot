@@ -77,14 +77,6 @@ optional = false
 python-versions = ">=3.5.3"
 
 [[package]]
-name = "asyncio"
-version = "3.4.3"
-description = "reference implementation of PEP 3156"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "attrs"
 version = "21.2.0"
 description = "Classes Without Boilerplate"
@@ -508,18 +500,6 @@ python-versions = "*"
 pytz = "*"
 
 [[package]]
-name = "uniquebotskr"
-version = "1.3"
-description = "UniqueBots를 위한 비공식 파이썬 API 레퍼입니다."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-aiohttp = "*"
-asyncio = "*"
-
-[[package]]
 name = "uvloop"
 version = "0.15.2"
 description = "Fast implementation of asyncio event loop on top of libuv"
@@ -555,7 +535,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "961f6a947b6c2eed24150edcc39493093babada26206c3f0f0b2b11306d783c2"
+content-hash = "13eaed5cb409acb8412e7670cf21f38f216a6647e4aedaf009680fd2ec942683"
 
 [metadata.files]
 aiodns = [
@@ -612,12 +592,6 @@ astunparse = [
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
     {file = "async_timeout-3.0.1-py3-none-any.whl", hash = "sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3"},
-]
-asyncio = [
-    {file = "asyncio-3.4.3-cp33-none-win32.whl", hash = "sha256:b62c9157d36187eca799c378e572c969f0da87cd5fc42ca372d92cdb06e7e1de"},
-    {file = "asyncio-3.4.3-cp33-none-win_amd64.whl", hash = "sha256:c46a87b48213d7464f22d9a497b9eef8c1928b68320a2fa94240f969f6fec08c"},
-    {file = "asyncio-3.4.3-py3-none-any.whl", hash = "sha256:c4d18b22701821de07bd6aea8b53d21449ec0ec5680645e5317062ea21817d2d"},
-    {file = "asyncio-3.4.3.tar.gz", hash = "sha256:83360ff8bc97980e4ff25c964c7bd3923d333d177aa4f7fb736b019f26c7cb41"},
 ]
 attrs = [
     {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},
@@ -1058,10 +1032,6 @@ typing-extensions = [
 tzlocal = [
     {file = "tzlocal-2.1-py2.py3-none-any.whl", hash = "sha256:e2cb6c6b5b604af38597403e9852872d7f534962ae2954c7f35efcb1ccacf4a4"},
     {file = "tzlocal-2.1.tar.gz", hash = "sha256:643c97c5294aedc737780a49d9df30889321cbe1204eac2c2ec6134035a92e44"},
-]
-uniquebotskr = [
-    {file = "UniqueBotsKR-1.3-py3-none-any.whl", hash = "sha256:e2c1ce7d92092e17c166b518e158d8c338a85cbc529c0e0a0ada00516652dd2d"},
-    {file = "UniqueBotsKR-1.3.tar.gz", hash = "sha256:3229ef0d5cb437223f42b0bed08bbff695692f0eadd8408dd3d71263e8daeb0b"},
 ]
 uvloop = [
     {file = "uvloop-0.15.2-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:19fa1d56c91341318ac5d417e7b61c56e9a41183946cc70c411341173de02c69"},

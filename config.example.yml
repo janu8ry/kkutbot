@@ -21,7 +21,6 @@ token:
   test: test bot token
   koreanbots: koreanbots api token
   dbl: top.gg api token
-  uniquebots: uniquebots api token
 
 # list of bot ids that can use kkutbot.
 bot_whitelist:
