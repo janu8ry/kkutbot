@@ -70,7 +70,7 @@ class Kkutbot(commands.AutoShardedBot):
         cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db {dbconfig('db')} -o {tmp}"
         if all([username, password]):
             cmd += f" --authenticationDatabase admin -u {username} -p {password}"
-        subprocess.run(cmd, shell=True)
+        subprocess.run(cmd, check=True, shell=True)
         today = date.today().strftime("%Y-%m-%d")
         fp = os.path.join(os.getcwd(), 'backup', f'backup-{today}.zip')
         with zipfile.ZipFile(fp, 'w') as archive:
