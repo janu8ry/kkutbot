@@ -104,12 +104,15 @@ class BotInfo(commands.Cog, name="일반"):
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
         embed = discord.Embed(title="끝봇 초대하기",
-                              description="끝봇을 사용하고 싶다면 아래 링크를 통해\n"
-                                          "끝봇을 당신의 서버에 초대하세요!\n\n"
-                                          "끝봇을 초대하려면 해당 서버에서\n"
-                                          "**서버 관리하기** (필수), **메시지 관리하기** (선택)\n"
-                                          "권한을 가지고 있어야 합니다.\n\n"
-                                          "끝봇을 서버에 초대할 경우, [약관](https://github.com/janu8ry/kkutbot/blob/master/privacy.md)에 동의한 것으로 간주됩니다.",
+                              description=f"""
+끝봇을 사용하고 싶다면 아래 링크를 통해
+끝봇을 당신의 서버에 초대하세요!
+
+**서버 관리하기** (필수), **메시지 관리하기** (선택)
+권한을 가지고 있어야 합니다.
+
+끝봇을 서버에 초대할 경우, [약관]{config('links.privacy-policy')}에 동의한 것으로 간주됩니다.
+""",
                               color=config('colors.general')
                               )
         embed.add_field(name="초대 링크", value=f"[끝봇 초대링크 바로가기]({config('links.invite.bot')})")
