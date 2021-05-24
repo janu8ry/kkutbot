@@ -1,7 +1,7 @@
 import json
 import os
 import random
-import shutil
+import subprocess
 import zipfile
 from datetime import date
 from typing import Type
@@ -66,17 +66,16 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def backup(self):
         tmp = "./tmp"
-        cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db kkutbot --authenticationDatabase admin -o {tmp}"
+        cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db kkutbot -o {tmp}"
         if all([username, password]):
             cmd += f" --authenticationDatabase admin -u {username} -p {password}"
-        os.system(cmd)
+        subprocess.call(cmd, shell=True)
         today = date.today().strftime("%Y-%m-%d")
         fp = os.path.join(os.getcwd(), 'backup', f'backup-{today}.zip')
         with zipfile.ZipFile(fp, 'w') as archive:
             for folder, _, files in os.walk(tmp):
                 for file in files:
                     archive.write(os.path.join(folder, file), os.path.relpath(os.path.join(folder, file), '.'), compress_type=zipfile.ZIP_DEFLATED)
-        shutil.rmtree(tmp)
         await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
 
     @staticmethod
