@@ -111,7 +111,7 @@ class BotInfo(commands.Cog, name="일반"):
 **서버 관리하기** (필수), **메시지 관리하기** (선택)
 권한을 가지고 있어야 합니다.
 
-끝봇을 서버에 초대할 경우, [약관]{config('links.privacy-policy')}에 동의한 것으로 간주됩니다.
+끝봇을 서버에 초대할 경우, [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
 """,
                               color=config('colors.general')
                               )
