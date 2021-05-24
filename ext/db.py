@@ -1,7 +1,6 @@
 import asyncio
 from copy import deepcopy
 from datetime import datetime
-from typing import Optional
 
 import discord
 import uvloop
@@ -93,7 +92,7 @@ async def read_hanmaru(target, path: str = None):
     return get(main_data, path.split('.'))
 
 
-async def write(target, path, value):
+async def write(target, path: str, value):
     """writes value to db"""
     collection = get_collection(target)
 
