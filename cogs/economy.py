@@ -1,5 +1,6 @@
 import random
 import time
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -20,17 +21,18 @@ class Economy(commands.Cog, name="경제"):
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_heart_reward(self, ctx: KkutbotContext):
-        """[한국 디스코드봇 리스트](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받습니다.
-        한달에 한번씩만 수령 가능합니다.
+        """[한국 디스코드봇 리스트](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 포인트를 받습니다.
+        하루에 한번씩만 수령 가능합니다.
         """
-        await write(ctx.author, 'alert.heart_reward', True)
+        await write(ctx.author, 'alert.heart', True)
         if await self.bot.if_koreanbots_voted(ctx.author):
-            if not (await read(ctx.author, 'heart_reward')):
-                await add(ctx.author, 'points', 300)
-                await ctx.reply("+300 {points} 를 받았습니다!")
-                await write(ctx.author, 'heart_reward', True)
+            if (today := datetime.today().toordinal()) != (await read(ctx.author, 'last_reward')):
+                points = random.randint(50, 150)
+                await add(ctx.author, 'points', points)
+                await ctx.reply(f"+{points} {{points}} 를 받았습니다!")
+                await write(ctx.author, 'last_reward', today)
             else:
-                await ctx.reply("{denyed} 이미 지원금을 받았습니다.")
+                await ctx.reply("{denyed} 이미 지원금을 받았습니다.\n내일 하트 다시 수령 가능합니다!")
         else:
             embed = discord.Embed(
                 description="{denyed} "
