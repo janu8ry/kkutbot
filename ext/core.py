@@ -29,7 +29,7 @@ class Kkutbot(commands.AutoShardedBot):
         super().__init__(**kwargs)
         self.db = db  # mongoDB
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))  # koreanbots
-        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))   # top.gg
+        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))  # top.gg
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
         # self.hanmaru = hanmaru.Handler(self)
 
@@ -50,12 +50,11 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     async def if_koreanbots_voted(user: discord.User) -> bool:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                    f'https://koreanbots.dev/api/v2/bots/703956235900420226/vote?userID={user.id}',
-                    headers={"Authorization": config('token.koreanbots')}
-            ) as response:
-                data = await response.json()
+        async with aiohttp.ClientSession() as session, session.get(
+                f'https://koreanbots.dev/api/v2/bots/703956235900420226/vote?userID={user.id}',
+                headers={"Authorization": config('token.koreanbots')}
+        ) as response:
+            data = await response.json()
         return data['data']['voted']
         # try:
         #     voteinfo = await self.koreanbots.getVote(user.id)
@@ -128,6 +127,7 @@ class Kkutbot(commands.AutoShardedBot):
 
 class KkutbotContext(commands.Context):
     """Custom Context object for kkutbot."""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -167,6 +167,7 @@ class KkutbotContext(commands.Context):
 
 class KkutbotCommand(commands.Command):
     """Custom Commands object for kkutbot."""
+
     def __init__(self, func, **kwargs):
         super().__init__(func, **kwargs)
 
