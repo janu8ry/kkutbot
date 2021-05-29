@@ -16,7 +16,7 @@ class Economy(commands.Cog, name="경제"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="지원금", usage="ㄲ지원금", aliases=("ㅈㅇㄱ", ))
+    @commands.command(name="포인트", usage="ㄲ포인트", aliases=("ㅍㅇㅌ", "지원금", "ㅈㅇㄱ"))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_heart_reward(self, ctx: KkutbotContext):
