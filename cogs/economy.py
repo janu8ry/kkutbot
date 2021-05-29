@@ -19,16 +19,16 @@ class Economy(commands.Cog, name="경제"):
     @commands.command(name="지원금", usage="ㄲ지원금", aliases=("ㅈㅇㄱ", ))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
-    async def get_heart_reward(self, ctx: KkutbotContext):
-        """[koreanbots](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받습니다.
-        최대 1번만 수령 가능합니다.
+    async def get_start_point(self, ctx: KkutbotContext):
+        """[한국 디스코드봇 리스트](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 지원금을 받습니다.
+        한달에 한번씩만 수령 가능합니다.
         """
-        await write(ctx.author, 'alert.heart_reward', True)
+        await write(ctx.author, 'alert.start_point', True)
         if await self.bot.if_koreanbots_voted(ctx.author):
-            if not (await read(ctx.author, 'heart_reward')):
+            if not (await read(ctx.author, 'start_point')):
                 await add(ctx.author, 'points', 300)
                 await ctx.reply("+300 {points} 를 받았습니다!")
-                await write(ctx.author, 'heart_reward', True)
+                await write(ctx.author, 'start_point', True)
             else:
                 await ctx.reply("{denyed} 이미 지원금을 받았습니다.")
         else:
