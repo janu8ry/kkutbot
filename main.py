@@ -239,7 +239,7 @@ async def on_guild_join(guild: discord.Guild):
     )
     try:
         await announce[0].send(embed=embed)
-    except:  # noqa
+    except discord.errors.Forbidden:
         pass
 
     essential_perms = (
