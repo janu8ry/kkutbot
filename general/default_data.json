@@ -5,7 +5,7 @@
     "info_word": "소개말이 없습니다.",
     "points": 1000,
     "medals": 0,
-    "heart_reward": false,
+    "last_reward": 0,
     "daily": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
     "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
     "game": {
