@@ -100,7 +100,7 @@ async def write(target, path: str, value):
         if not (await read(target, 'register_date')):  # if target is not in db
             if data := await unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
                 await user.insert_one(data)
-                await unused.remove({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
+                await unused.delete_one({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
             else:
                 main_data = await read(target)
                 main_data['register_date'] = datetime.now()
