@@ -7,6 +7,7 @@ import zipfile
 from datetime import date
 from typing import Type
 
+import aiohttp
 import dbl
 import discord
 import koreanbots
@@ -47,13 +48,21 @@ class Kkutbot(commands.AutoShardedBot):
             msg = discord.utils.escape_mentions(msg)
         await self.webhook.send(msg, embed=embed)
 
-    async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        try:
-            voteinfo = await self.koreanbots.getVote(user.id)
-        except koreanbots.NotFound:
-            return False
-        else:
-            return voteinfo.response['voted']
+    @staticmethod
+    async def if_koreanbots_voted(user: discord.User) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    f'https://koreanbots.dev/api/v2/bots/703956235900420226/vote?userID={user.id}',
+                    headers={"Authorization": config('token.koreanbots')}
+            ) as response:
+                data = await response.json()
+        return data['data']['voted']
+        # try:
+        #     voteinfo = await self.koreanbots.getVote(user.id)
+        # except koreanbots.NotFound:
+        #     return False
+        # else:
+        #     return voteinfo.response['voted']
 
     def try_reload(self, name: str):
         name = f"cogs.{name}"
@@ -88,6 +97,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def reset_daily_alert():
         await write('general', 'daily', 0)
         await db.user.update_many({'alert.daily': True}, {'$set': {'alert.daily': False}})
+        await db.user.update_many({'alert.heart': True}, {'$set': {'alert.heart': False}})
 
     @staticmethod
     async def reset_daily():
