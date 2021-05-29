@@ -121,11 +121,11 @@ async def on_command_completion(ctx: KkutbotContext):
         )
         await write(ctx.author, 'alert.daily', True)
 
-    if not (await read(ctx.author, 'alert.start_point')):
+    if not (await read(ctx.author, 'alert.heart')):
         await ctx.send(
             f"{ctx.author.mention}님, 초기 지원금을 받지 않았습니다.\n`ㄲ지원금`을 입력하여 지원금을 받아가세요!"
         )
-        await write(ctx.author, 'alert.start_point', True)
+        await write(ctx.author, 'alert.heart', True)
 
     if not (await read(ctx.author, 'alert.mail')):
         mails = len([x for x in (await read(ctx.author, 'mail')) if (datetime.now() - x['time']).days <= 14])
