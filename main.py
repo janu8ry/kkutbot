@@ -55,14 +55,14 @@ async def on_message(message: discord.Message):
     is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
 
     if is_banned or is_bot:
-        return None  # ignore when author is banned or bot(except the bots in whitelist)
+        return None
     else:
         if message.content.lstrip("ㄲ").startswith("jsk"):
             cls = commands.Context
         else:
             cls = KkutbotContext
         ctx = await bot.get_context(message, cls=cls)
-        await bot.invoke(ctx)  # invokes command with custom context
+        await bot.invoke(ctx)
         # await bot.hanmaru.get(ctx)
 
 
@@ -140,7 +140,7 @@ async def on_command_completion(ctx: KkutbotContext):
 
 @bot.check
 async def check(ctx: KkutbotContext):
-    if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:  # if kkutbot has no permission to send message
+    if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:
         try:
             embed = discord.Embed(
                 title="오류",
@@ -278,5 +278,5 @@ async def on_guild_remove(guild: discord.Guild):
 
 print("로그인하는 중...")
 bot.run(config(f"token.{'test' if config('test') else 'main'}"))  # todo: 모든 명령어 도움말 웹사이트에 추가
-asyncio.run(bot.webhook.close())  # close the webhook session when bot is off
+asyncio.run(bot.webhook.close())
 # asyncio.run(bot.http._HTTPClient__session.close())  # noqa
