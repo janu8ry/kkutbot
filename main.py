@@ -1,4 +1,3 @@
-import asyncio
 import os
 import time
 import traceback
@@ -176,7 +175,7 @@ async def on_command_error(ctx: KkutbotContext, error: Type[commands.CommandErro
             return await ctx.reinvoke()
         embed = discord.Embed(
             title="잠깐!",
-            description=f"`{time_convert(timedelta(seconds=round(error.retry_after, 1)))}` 후에 다시 시도해 주세요.",
+            description=f"`{time_convert(round(error.retry_after, 1))}` 후에 다시 시도해 주세요.",
             color=config('colors.error')
         )
         await ctx.send(embed=embed)

@@ -36,7 +36,9 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
     return tier if emoji else tier.split(" ")[0]
 
 
-def time_convert(time: timedelta) -> str:
+def time_convert(time: Union[int, float, timedelta]) -> str:
+    if isinstance(time, (int, float)):
+        time = timedelta(seconds=time)
     if time.days > 0:
         return f"{time.days}일"
     if time.seconds >= 3600:
