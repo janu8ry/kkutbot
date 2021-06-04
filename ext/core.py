@@ -15,7 +15,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dhooks import Webhook
 from discord.ext import commands
 
-# from ext import hanmaru
 from ext.db import config, db, dbconfig, password, username, write
 
 
@@ -31,7 +30,6 @@ class Kkutbot(commands.AutoShardedBot):
         self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))
         self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))
         self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))
-        # self.hanmaru = hanmaru.Handler(self)
 
         # schedulers
         self.scheduler = AsyncIOScheduler()

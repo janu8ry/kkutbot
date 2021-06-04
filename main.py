@@ -1,7 +1,7 @@
 import os
 import time
 import traceback
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Type
 
 import discord
@@ -62,7 +62,6 @@ async def on_message(message: discord.Message):
             cls = KkutbotContext
         ctx = await bot.get_context(message, cls=cls)
         await bot.invoke(ctx)
-        # await bot.hanmaru.get(ctx)
 
 
 @bot.event
@@ -75,8 +74,6 @@ async def on_command(ctx: KkutbotContext):
 
 @bot.event
 async def on_command_completion(ctx: KkutbotContext):
-    # bot.hanmaru.add_queue(ctx.author.id)
-
     await add(ctx.author, 'command_used', 1)
     await write(ctx.author, 'last_command', time.time())
 
