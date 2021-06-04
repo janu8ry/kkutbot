@@ -48,7 +48,7 @@ def time_convert(time: Union[int, float, timedelta]) -> str:
     return f"{time.seconds}초"
 
 
-def split_string(n: str, unit=2000, t="\n") -> tuple:  # thanks to seojin200403
+def split_string(n: str, unit=2000, t="\n") -> tuple:
     n = n.split(t)
     x = []
     r = []

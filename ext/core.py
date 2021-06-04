@@ -27,10 +27,10 @@ class Kkutbot(commands.AutoShardedBot):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = db  # mongoDB
-        self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))  # koreanbots
-        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))  # top.gg
-        self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))  # logger webhook
+        self.db = db
+        self.koreanbots = koreanbots.Client(self, config('token.koreanbots'), postCount=not config('test'))
+        self.dblpy = dbl.DBLClient(self, config('token.dbl'), autopost=not config('test'))
+        self.webhook = Webhook.Async(config(f'webhook.{"test" if config("test") else "main"}'))
         # self.hanmaru = hanmaru.Handler(self)
 
         # schedulers
@@ -159,7 +159,7 @@ class KkutbotContext(commands.Context):
                                   mention_author=mention_author
                                   )
 
-    async def reply(self, content=None, **kwargs) -> discord.Message:  # same as above
+    async def reply(self, content=None, **kwargs) -> discord.Message:
         if not kwargs.get('escape_emoji_formatting', False):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
@@ -179,7 +179,7 @@ def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
         if isinstance(func, commands.Command):
             raise TypeError('Callback is already a command.')
         if ('user' in func.__annotations__) and (attrs.get('rest_is_raw') is not False):
-            rest_is_raw = attrs.pop('rest_is_raw', True)  # toggle 'rest_is_raw' option when command uses SpecialMemberConverter
+            rest_is_raw = attrs.pop('rest_is_raw', True)
         else:
             rest_is_raw = attrs.pop('rest_is_raw', False)
         return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)

@@ -20,7 +20,7 @@ db_options = {}
 username = dbconfig('user')
 password = dbconfig('password')
 
-if all([username, password]):  # if both username and password is not None
+if all([username, password]):
     db_options['username'] = username
     db_options['password'] = password
 
@@ -34,7 +34,7 @@ client = AsyncIOMotorClient(
     **db_options
 )
 
-db = client[dbconfig('db')]  # main database
+db = client[dbconfig('db')]
 
 user = db.user
 guild = db.guild
@@ -68,11 +68,11 @@ async def read(target, path: str = None):
     if target:
         collection = get_collection(target)
         main_data = await collection.find_one({'_id': _get_id(target)})
-        if not main_data:  # if target is not in db
+        if not main_data:
             if collection.name == "user":
-                main_data = deepcopy(config('default_data'))  # returns default user data schema
+                main_data = deepcopy(config('default_data'))
             else:
-                main_data = {}  # returns empty dict
+                main_data = {}
     else:
         main_data = await general.find_one()
 
@@ -97,16 +97,16 @@ async def write(target, path: str, value):
     collection = get_collection(target)
 
     if collection.name == "user":
-        if not (await read(target, 'register_date')):  # if target is not in db
-            if data := await unused.find_one({'_id': _get_id(target)}):  # if target is in 'unused' collection
+        if not (await read(target, 'register_date')):
+            if data := await unused.find_one({'_id': _get_id(target)}):
                 await user.insert_one(data)
-                await unused.delete_one({'_id': _get_id(target)})  # move data from 'unsued' collection to 'user' collection
+                await unused.delete_one({'_id': _get_id(target)})
             else:
                 main_data = await read(target)
                 main_data['register_date'] = datetime.now()
                 main_data['_id'] = _get_id(target)
                 main_data['_name'] = _get_name(target)
-                await user.insert_one(main_data)  # create new data
+                await user.insert_one(main_data)
         if (name := _get_name(target)) != (await read(target, '_name')):
             await user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
     elif (collection.name == "guild") and (not await read(target)):

@@ -5,7 +5,7 @@ from typing import Optional, Union
 import yaml
 
 with open('config.yml', encoding='utf-8') as f:
-    config_data = yaml.load(f, Loader=yaml.FullLoader)  # loads config file
+    config_data = yaml.load(f, Loader=yaml.FullLoader)
 
 for file in os.listdir('general'):
     if file not in ("wordlist.json", "DUlaw.json", "quest.json"):
@@ -13,7 +13,8 @@ for file in os.listdir('general'):
             config_data[file[:-5]] = json.load(f)
 
 
-def get_nested_dict(data, path: list):  # get value in nested dictionary
+def get_nested_dict(data, path: list):
+    """get value in nested dictionary"""
     for i in path:
         data = data.get(i, None)
     return data

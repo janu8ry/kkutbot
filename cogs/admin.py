@@ -251,18 +251,18 @@ class Admin(commands.Cog, name="관리자"):
             )
             await ctx.send(embed=embed)
 
-    async def update_user_name(self, target: int):  # update cached username
+    async def update_user_name(self, target: int):
         username = (await self.bot.get_user(target) or await self.bot.fetch_user(target)).name
         await write(target, '_name', username)
 
     @staticmethod
-    async def update_game_winrate(target: int):  # update cached username
+    async def update_game_winrate(target: int):
         for gamemode in config('modelist').values():
             if (await read(target, f'game.{gamemode}.winrate')) != (winrate := await get_winrate(target, gamemode)):
                 await write(target, f'game.{gamemode}.winrate', winrate)
 
     @staticmethod
-    async def update_game_tier(target: int):  # update cached username
+    async def update_game_tier(target: int):
         for gamemode in ("rank_solo", "rank_multi"):
             if (await read(target, f'game.{gamemode}.tier')) != (tier := await get_tier(target, gamemode, emoji=False)):
                 await write(target, f'game.{gamemode}.tier', tier)

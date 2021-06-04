@@ -13,7 +13,7 @@ class SpecialMemberConverter(Converter):
     async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
         argument = argument.lstrip()
 
-        if not argument:  # return author when argument is empty
+        if not argument:
             return ctx.author
 
         try:
@@ -33,7 +33,7 @@ class SpecialMemberConverter(Converter):
                 return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
             else:
                 user = await ctx.bot.db.user.find_one({'_name': str(argument)})
-                if user:
+                if user:  # if argument is user name
                     return await ctx.bot.fetch_user(user['_id'])
                 else:
                     raise errors.BadArgument

@@ -183,7 +183,7 @@ class MultiGame(GameBase):
         rank = sorted(self.final_score.items(), key=operator.itemgetter(1), reverse=True)
         for n, kv in enumerate(rank):
             if n < len(rank) - 1:
-                desc.append(f"**{n + 1}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")  # noqa
+                desc.append(f"**{n + 1}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")
                 await add(kv[0], 'points', int(rank[n + 1][1]) * 2)
                 await add(kv[0], 'game.guild_multi.times', 1)
                 await write(kv[0], 'last_command', time.time())
