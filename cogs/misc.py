@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands.errors import BadArgument
 from discord.utils import escape_markdown as e_mk
-from pymongo import DESCENDING, cursor
+from motor.motor_asyncio import AsyncIOMotorCursor
 
 from ext import utils
 from ext.core import Kkutbot, KkutbotContext
@@ -43,8 +43,8 @@ class Misc(commands.Cog, name="기타"):
             username = username[:12] + "..."
         return username
 
-    async def format_rank(self, rank: cursor.Cursor, query: str) -> list:
-        rank = list(rank)
+    async def format_rank(self, rank: AsyncIOMotorCursor, query: str) -> list:
+        rank = await rank.to_list(length=15)
         names = await asyncio.gather(*[self.get_user_name(i['_id']) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
@@ -78,15 +78,19 @@ class Misc(commands.Cog, name="기타"):
             }
         }
         if event in eventlist:
-            rank = self.bot.db.user.find(rank_query).sort(eventlist[event], DESCENDING).limit(15)
-            embed = discord.Embed(title=f"랭킹 top 15 | {event}", description="\n".join(await self.format_rank(rank, eventlist[event])), color=config('colors.help'))
+            rank = self.bot.db.user.find(rank_query).sort(eventlist[event], -1)
+            embed = discord.Embed(
+                title=f"랭킹 top 15 | {event}",
+                description="\n".join(await self.format_rank(rank, eventlist[event])),
+                color=config('colors.help')
+            )
         elif event in modelist:
             embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
             rank = await asyncio.gather(
 
-                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.winrate", DESCENDING).limit(15), f"game.{modelist[event]}.winrate"),
-                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.win", DESCENDING).limit(15), f"game.{modelist[event]}.win"),
-                self.format_rank((await self.bot.db.user.find(rank_query)).sort(f"game.{modelist[event]}.best", DESCENDING).limit(15), f"game.{modelist[event]}.best")
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.winrate", -1), f"game.{modelist[event]}.winrate"),
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.win", -1), f"game.{modelist[event]}.win"),
+                self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.best", -1), f"game.{modelist[event]}.best")
             )
             embed.add_field(name="승률", value="\n".join(rank[0]))
             embed.add_field(name="승리수", value="\n".join(rank[1]))
