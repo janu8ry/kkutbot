@@ -19,7 +19,7 @@ from jishaku.repl.repl_builtins import (http_get_bytes, http_get_json,
 
 from ext.config import config
 from ext.core import Kkutbot
-from ext.db import add, db, read, read_hanmaru, write
+from ext.db import add, db, read, write
 
 
 def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
@@ -47,7 +47,6 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
         'read': read,
         'write': write,
         'add': add,
-        'read_hanmaru': read_hanmaru,
         'config': config
     }
 
