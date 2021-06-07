@@ -108,7 +108,7 @@ async def write(target, path: str, value):
                 main_data['_name'] = _get_name(target)
                 await user.insert_one(main_data)
         if (name := _get_name(target)) != (await read(target, '_name')):
-            await user.update_one({'id': _get_id(target)}, {'$set': {'_name': name}})
+            await user.update_one({'_id': _get_id(target)}, {'$set': {'_name': name}})
     elif (collection.name == "guild") and (not await read(target)):
         await guild.insert_one({'_id': _get_id(target)})
 
