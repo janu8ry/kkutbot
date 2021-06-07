@@ -91,7 +91,7 @@ rm -rf tmp
 
 # 연락하기
 
-개발자 디스코드: ``sonix18#3825``    
+개발자 디스코드: ``ㅇㅋ#3825``    
 끝봇 이메일: [kkutbot@gmail.com](mailto:kkutbot@gmail.com)    
 [![discord](https://discordapp.com/api/guilds/702761942217130005/embed.png?style=banner2)](https://discord.gg/z8tRzwf)
 
