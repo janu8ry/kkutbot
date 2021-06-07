@@ -119,7 +119,7 @@ async def on_command_completion(ctx: KkutbotContext):
 
     if not (await read(ctx.author, 'alert.heart')):
         await ctx.send(
-            f"{ctx.author.mention}님, 초기 지원금을 받지 않았습니다.\n`ㄲ지원금`을 입력하여 지원금을 받아가세요!"
+            f"{ctx.author.mention}님, 일일 포인트를 받지 않았습니다.\n`ㄲ포인트`을 입력하여 일일 포인트를 받아가세요!"
         )
         await write(ctx.author, 'alert.heart', True)
 
