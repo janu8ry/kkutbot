@@ -25,7 +25,7 @@ class Admin(commands.Cog, name="관리자"):
         self.bot = bot
 
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"), hidden=True)
-    @commands.is_owner()
+    @commands.check(is_admin)
     async def kkutbot_status(self, ctx: KkutbotContext, count: float = 7):
         """봇의 현황을 확인합니다."""
         embed = discord.Embed(color=config('colors.general'))
@@ -202,7 +202,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=("$차단",))
-    @commands.check(is_admin)
+    @commands.is_owner()
     async def block_user(self, ctx: KkutbotContext, user: SpecialMemberConverter(), days: int = 1, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
         if await read(user, 'banned'):
@@ -278,6 +278,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.send("{done} 게임 데이터 캐싱 완료!")
 
     @commands.command(name="$정리", usage="ㄲ$정리")
+    @commands.is_owner()
     async def move_unused_users(self, ctx: KkutbotContext, days: int = 7, command_usage: int = 10, delete_data: str = 'n'):
         """미사용 유저들을 정리합니다."""
         cleaned = 0
