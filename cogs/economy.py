@@ -61,7 +61,7 @@ class Economy(commands.Cog, name="경제"):
             await write(ctx.author, f'daily.{time.localtime().tm_wday}', True)
             await add(None, 'daily', 1)
             msg = "+100 {points} 를 받았습니다!"
-            if all(await read(ctx.author, 'daily')):
+            if all(week_data.values()):
                 bonus = random.randint(50, 150)
                 await add(ctx.author, 'points', bonus)
                 options = f"""
