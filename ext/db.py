@@ -82,16 +82,6 @@ async def read(target, path: str = None):
     return get(main_data, path.split('.'))
 
 
-async def read_hanmaru(target, path: str = None):
-    """returns value of target from hanmaru data"""
-    main_data = await hanmaru.find_one({'_id': _get_id(target)})
-
-    if path is None:
-        return main_data
-
-    return get(main_data, path.split('.'))
-
-
 async def write(target, path: str, value):
     """writes value to db"""
     collection = get_collection(target)

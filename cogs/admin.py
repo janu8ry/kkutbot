@@ -12,7 +12,7 @@ from humanize import naturalsize
 
 from ext.converter import SpecialMemberConverter
 from ext.core import Kkutbot, KkutbotContext
-from ext.db import add, config, delete, read, read_hanmaru, write
+from ext.db import add, config, delete, read, write
 from ext.utils import get_tier, get_winrate, is_admin, split_string
 
 
@@ -117,15 +117,6 @@ class Admin(commands.Cog, name="관리자"):
         if not (await read(user, 'register_date')):
             return await ctx.send(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())):
-            await ctx.send(content, escape_emoji_formatting=True)
-
-    @commands.command(name="$마루정보", usage="ㄲ$마루정보 <유저>")
-    @commands.check(is_admin)
-    async def hanmaru_user_info(self, ctx: KkutbotContext, *, user: SpecialMemberConverter()):
-        """유저의 한마루 정보를 출력합니다."""
-        if not (await self.bot.db.hanmaru.find_one({'_id': user.id})):
-            return await ctx.send(f"`{getattr(user, 'name', None)}`님은 한마루의 유저가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read_hanmaru(user)).items())):
             await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
