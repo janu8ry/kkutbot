@@ -31,7 +31,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
         run: |
-          poetry add flake8
+          pip3 install flake8
           poetry install
       - name: Lint with flake8
         run: |
