@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install flake8
-          if [ -f pyproject.toml ]; then poetry install; fi
+          poetry install
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
