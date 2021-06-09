@@ -253,7 +253,7 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "humanize"
-version = "3.6.0"
+version = "3.7.1"
 description = "Python humanize utilities"
 category = "main"
 optional = false
@@ -304,25 +304,19 @@ description = "A discord.py extension including useful tools for bot development
 category = "main"
 optional = false
 python-versions = ">=3.8.0"
-develop = false
 
 [package.dependencies]
-braceexpand = ">=0.1.5"
-"discord.py" = ">=1.5.0"
-humanize = "*"
+braceexpand = ">=0.1.7"
+"discord.py" = ">=1.7.2"
+humanize = ">=3.7.0"
 import-expression = ">=1.0.0,<2.0.0"
 
 [package.extras]
-docs = ["sphinx (>=3.1.2)", "sphinxcontrib-asyncio"]
+docs = ["sphinx (>=3.5.4)", "sphinxcontrib-asyncio"]
 procinfo = ["psutil"]
-test = ["coverage", "flake8", "isort", "pylint", "pytest", "pytest-cov", "pytest-mock"]
-voice = ["discord.py[voice] (>=1.5.0)", "youtube-dl"]
-
-[package.source]
-type = "git"
-url = "https://github.com/Gorialis/jishaku.git"
-reference = "master"
-resolved_reference = "873f863052a663efab3b6184d2516e03bf16bcf9"
+publish = ["jinja2"]
+test = ["click", "coverage", "flake8", "isort", "pylint", "pytest", "pytest-cov", "pytest-mock"]
+voice = ["discord.py[voice] (>=1.7.2)", "youtube-dl"]
 
 [[package]]
 name = "koreanbots"
@@ -535,7 +529,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "13eaed5cb409acb8412e7670cf21f38f216a6647e4aedaf009680fd2ec942683"
+content-hash = "bbe9cb92efc1ebb7a9b7f564a668c7b770d86e978fb3a2bf0a921b1bf2c6c668"
 
 [metadata.files]
 aiodns = [
@@ -745,8 +739,8 @@ discord = [
     {file = "discord.py-1.7.2.tar.gz", hash = "sha256:114e76cd27362fb919abf7f001a2dbdc77c9a67cff74ed6a89aecd6582ee298e"},
 ]
 humanize = [
-    {file = "humanize-3.6.0-py3-none-any.whl", hash = "sha256:6d9bee57f856418302b5d11d7229bc401882d800962a19fd6dcdd83672cb15e6"},
-    {file = "humanize-3.6.0.tar.gz", hash = "sha256:a31704cf41f023e268032c4813c6482573320150a0d986f76b245e0451bb89e1"},
+    {file = "humanize-3.7.1-py3-none-any.whl", hash = "sha256:a0dca9eb010dd1fab61819acaea54be344a4c22c77261f72ac4dbee183dd9a59"},
+    {file = "humanize-3.7.1.tar.gz", hash = "sha256:b8e7878f3063174b212bb82b9e5bee3b24bc47931e44df0bd34bcb1d8e0acf2f"},
 ]
 idna = [
     {file = "idna-3.1-py3-none-any.whl", hash = "sha256:5205d03e7bcbb919cc9c19885f9920d622ca52448306f2377daede5cf3faac16"},
@@ -760,7 +754,12 @@ isort = [
     {file = "isort-5.8.0-py3-none-any.whl", hash = "sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d"},
     {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
 ]
-jishaku = []
+jishaku = [
+    {file = "jishaku-2.0.0-py3-none-any.whl", hash = "sha256:276e186e6ef99a23cb667efe64a0ae2de9e49f7cfd10f5fbfe4db4eb30379183"},
+    {file = "jishaku-2.0.0-py3.8.egg", hash = "sha256:9e31e43117c14cd785ec8578dde524bf00d94186cd0178d61759183c8d706319"},
+    {file = "jishaku-2.0.0-py3.9.egg", hash = "sha256:1e3626c85b60c93ed32798ea32291b23e5b39031e7c48f903fb896437e7c0a78"},
+    {file = "jishaku-2.0.0.tar.gz", hash = "sha256:7ac6fd1f2a048fae78299b800be555aec012631e40c96438f7d9201538b09c0c"},
+]
 koreanbots = [
     {file = "koreanbots-0.2.3-py3-none-any.whl", hash = "sha256:7cd7650ea90ee3d9bf256d74ccc4d14bcc8e62ab6d645e8702d9dc22a1b1f5b3"},
 ]
