@@ -51,4 +51,4 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
       - name: Lint commit message
         run: |
-          git log | gitlint
+          git log | gitlint --ignore-stdin
