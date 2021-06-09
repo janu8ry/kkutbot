@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          pip3 install flake8, gitlint
+          pip3 install flake8 gitlint
           poetry install
       - name: Lint with flake8
         run: |
