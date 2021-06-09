@@ -41,7 +41,6 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          pip3 install flake8
           poetry install
       - name: Lint with flake8
         run: |
@@ -49,3 +48,15 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
+      - name: git configuration
+        run: |
+          git config --local user.email "github-actions@users.noreply.github.com"
+          git config --local user.name "github-actions"
+      - name: Sort with isort
+        run: |
+          isort . --gitignore
+          git commit -m "chore: isort" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
