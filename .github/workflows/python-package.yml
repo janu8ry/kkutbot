@@ -54,6 +54,7 @@ jobs:
           git config --local user.name "github-actions"
       - name: Sort with isort
         run: |
+          echo "$(where isort)"
           isort . --gitignore
           git commit -m "chore: isort" -a
       - name: Push changes
