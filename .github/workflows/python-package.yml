@@ -44,19 +44,17 @@ jobs:
           poetry install
       - name: Lint with flake8
         run: |
-          echo "$(where flake8)"
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
+          ./.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
+          ./.venv/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
       - name: git configuration
         run: |
           git config --local user.email "github-actions@users.noreply.github.com"
           git config --local user.name "github-actions"
       - name: Sort with isort
         run: |
-          echo "$(where isort)"
-          isort . --gitignore
+          ./.venv/bin/isort . --gitignore
           git commit -m "chore: isort" -a
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
