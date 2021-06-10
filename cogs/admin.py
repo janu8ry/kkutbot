@@ -230,7 +230,7 @@ class Admin(commands.Cog, name="관리자"):
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
         banned_users = self.bot.db.user.find({"banned": True})
-        if not banned_users.to_list():
+        if not banned_users.to_list(None):
             return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
         else:
             desc = ""
