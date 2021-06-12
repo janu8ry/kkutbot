@@ -4,8 +4,8 @@ import traceback
 from datetime import date, datetime
 from typing import Type
 
-import discord
 from discord.ext import commands
+import discord
 
 from ext.core import Kkutbot, KkutbotContext
 from ext.db import add, append, config, delete, read, write
