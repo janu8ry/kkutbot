@@ -11,7 +11,7 @@ on:
       - rewrite
 
 jobs:
-  lint & format:
+  lint-format:
 
     runs-on: ubuntu-latest
     strategy:
