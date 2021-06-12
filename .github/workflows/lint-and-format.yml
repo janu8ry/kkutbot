@@ -50,9 +50,7 @@ jobs:
           ./.venv/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
       - name: Sort with isort
         run: |
-          echo "${{ github.event.action }}"
           ./.venv/bin/isort . --gitignore
-          git commit -m "chore: isort" -a
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
