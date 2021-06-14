@@ -44,7 +44,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [ ] 웹사이트 개발, 상세 도움말 / 티어 정보 작성
 
 # 봇 실행하기
-끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE) 를 꼭 지켜주세요.
+끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
 
 ## 요구사항
 - python 3.8
@@ -79,12 +79,12 @@ python3 main.py
 
 ## DB 백업
 매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.zip` 형태로 압축되어 백업되고,   
-`config.yml` 에 지정한 백업용 디스코드 채널에도 공유됩니다.
+`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
 ### 복구하기
 
 ```shell
-unzip backup/backup-xxxx-xx-xx.zip  # 압축해제  tmp 디렉토리 생성
+unzip backup/backup-xxxx-xx-xx.zip  # 압축 해제  tmp 디렉토리 생성
 mongorestore -h dbhost:dbport --db kkutbot --authenticationDatabase admin -u dbuser -p dbpasswd tmp/kkutbot --drop
 rm -rf tmp
 ```

@@ -19,12 +19,13 @@ humanize = "^3.3.0"
 dblpy = "^0.4.0"
 dhooks = "^1.1.4"
 aiohttp = {version = "^3.7.3", extras = ["speedups"]}
-jishaku = {git = "https://github.com/Gorialis/jishaku.git"}
 uvloop = "^0.15.2"
 motor = "^2.4.0"
+jishaku = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"
+flake8 = "^3.9.2"
 
 [tool.poetry.urls]
 "Invite Bot" = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"

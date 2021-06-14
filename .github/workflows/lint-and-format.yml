@@ -1,0 +1,60 @@
+name: Python package
+
+on:
+  push:
+    branches:
+      - master
+      - rewrite
+  pull_request:
+    branches:
+      - master
+      - rewrite
+
+jobs:
+  lint-format:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        uses: snok/install-poetry@v1.1.6
+        with:
+          version: 1.1.6
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cache-poetry
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          poetry install
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          ./.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          ./.venv/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=200 --statistics --exclude ./.venv
+      - name: Sort with isort
+        if: github.event.pusher.name != 'janu8ry'
+        run: |
+          ./.venv/bin/isort . --gitignore
+      - name: Push changes
+        if: github.event.pusher.name != 'janu8ry'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "refactor: isort"
+          commit_user_name: Isort Action
