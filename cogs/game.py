@@ -343,7 +343,7 @@ class Game(commands.Cog, name="게임"):
                 try:
                     m = await self.bot.wait_for('message', check=lambda _y: _y.content in ("참가", "나가기", "시작") and _y.channel == ctx.channel, timeout=120.0)
                     if m.content == "참가" and m.author not in game.players:
-                        if read(m.author, 'banned'):
+                        if await read(m.author, 'banned'):
                             await ctx.send("{denyed} 차단된 유저는 게임에 참가할 수 없습니다.")
                         else:
                             game.players.append(m.author)
