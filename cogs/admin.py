@@ -229,12 +229,12 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = await self.bot.db.user.find({"banned": True})
-        if not list(banned_users):
+        banned_users = self.bot.db.user.find({"banned": True})
+        if not banned_users.to_list(None):
             return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
         else:
             desc = ""
-            for t in banned_users:
+            async for t in banned_users:
                 desc += f"**{t['_name']}** - `{t['_id']}`\n"
             embed = discord.Embed(
                 title="정지 유저 목록",
