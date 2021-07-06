@@ -142,6 +142,3 @@ class UserModel:
             mails=data.get('mails'),
             alerts=AlertModel.from_dict(data.get('alerts'))
         )
-
-
-
