@@ -11,6 +11,8 @@ repository = "https://github.com/janu8ry/kkutbot"
 [tool.poetry.dependencies]
 python = "^3.9"
 PyYAML = "^5.4.1"
+motor = "^2.4.0"
+uvloop = "^0.15.2"
 
 [tool.poetry.dev-dependencies]
 
