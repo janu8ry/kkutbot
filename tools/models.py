@@ -151,3 +151,13 @@ class GuildModel:
     invited: int = None
     latest_usage: int = None
     command_used: int = 0
+
+
+@dataclass
+class GeneralModel:
+    id: str = "general"
+    attendance: int = 0
+    command_used: int = 0
+    latest_command = None
+    commands: dict = field(default_factory=dict)
+    quests: dict = field(default_factory=dict)
