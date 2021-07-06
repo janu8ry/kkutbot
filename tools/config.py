@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Optional, List, Any
+from typing import List, Any
 
 import yaml
 
