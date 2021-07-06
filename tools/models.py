@@ -1,10 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass
 class UserQuestStatusModel:
-    date: int
-    completed: list
+    date: int = 0
+    completed: list = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -13,8 +14,8 @@ class UserQuestStatusModel:
 
 @dataclass
 class UserQuestModel:
-    status: UserQuestStatusModel
-    cache: dict
+    status: UserQuestStatusModel = UserQuestStatusModel()
+    cache: dict = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -26,10 +27,10 @@ class UserQuestModel:
 
 @dataclass
 class BaseGameModel:
-    times: int
-    win: int
-    best: int
-    winrate: int
+    times: int = 0
+    win: int = 0
+    best: int = 0
+    winrate: int = 0
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -38,7 +39,7 @@ class BaseGameModel:
 
 @dataclass
 class BaseRankGameModel(BaseGameModel):
-    tier: str
+    tier: str = "언랭크"
 
 
 @dataclass
@@ -73,12 +74,12 @@ class ApmalGameModel(BaseGameModel):
 
 @dataclass
 class UserGameStatusModel:
-    rank_solo: SoloRankGameModel
-    rank_online: OnlineRankGameModel
-    kkd: KkdGameModel
-    guild_multi: GuildGameModel
-    online_multi: MultiOnlineGameModel
-    apmal: ApmalGameModel
+    rank_solo: SoloRankGameModel = SoloRankGameModel()
+    rank_online: OnlineRankGameModel = OnlineRankGameModel()
+    kkd: KkdGameModel = KkdGameModel()
+    guild_multi: GuildGameModel = GuildGameModel()
+    online_multi: MultiOnlineGameModel = MultiOnlineGameModel()
+    apmal: ApmalGameModel = ApmalGameModel()
 
     @classmethod
     def from_dict(cls, data):
@@ -94,9 +95,9 @@ class UserGameStatusModel:
 
 @dataclass
 class AlertModel:
-    daily: bool
-    heart: bool
-    mail: bool
+    daily: bool = False
+    heart: bool = False
+    mail: bool = True
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -105,22 +106,22 @@ class AlertModel:
 
 @dataclass
 class UserModel:
-    id: int
-    name: str
-    registered: int
-    info: str
-    points: int
-    medals: int
-    latest_reward: int
-    attendance: list
-    quest: UserQuestModel
-    game: UserGameStatusModel
-    attendance_times: int
-    command_used: int
-    banned: bool
-    latest_usage: int
-    mails: list
-    alerts: AlertModel
+    id: int = None
+    name: str = None
+    registered: datetime = None
+    info: str = "소개말이 없습니다."
+    points: int = 1000
+    medals: int = 0
+    latest_reward: int = 0
+    attendance: list = field(default_factory=list)
+    quest: UserQuestModel = UserQuestModel()
+    game: UserGameStatusModel = UserGameStatusModel()
+    attendance_times: int = 0
+    command_used: int = 0
+    banned: bool = False
+    latest_usage: int = None
+    mails: list = field(default_factory=list)
+    alerts: AlertModel = AlertModel()
 
     @classmethod
     def from_dict(cls, data: dict):
