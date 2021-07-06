@@ -143,3 +143,11 @@ class UserModel:
             mails=data.get('mails'),
             alerts=AlertModel.from_dict(data.get('alerts'))
         )
+
+
+@dataclass
+class GuildModel:
+    id: int = None
+    invited: int = None
+    latest_usage: int = None
+    command_used: int = 0
