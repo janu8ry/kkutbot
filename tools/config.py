@@ -32,12 +32,12 @@ def get_nested_dict(data: dict, path: List[str]) -> Any:
     return data
 
 
-def config(query: Optional[str] = None) -> Any:
+def config(query: str) -> Any:
     """
     gets value in 'config.yml' file
     Parameters
     ----------
-    query : Optional[str]
+    query : str
     Returns
     -------
     Any
