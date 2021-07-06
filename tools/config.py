@@ -9,7 +9,7 @@ with open('config.yml', encoding='utf-8') as f:
 
 for file in os.listdir('data'):
     if file not in ("wordlist.json", "DUlaw.json", "quest.json"):
-        with open(f"data/{file}", 'r', encoding="utf-8") as f:
+        with open(f'data/{file}', 'r', encoding='utf-8') as f:
             config_data[file[:-5]] = json.load(f)
 
 
