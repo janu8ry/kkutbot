@@ -9,7 +9,7 @@ with open('config.yml', encoding='utf-8') as f:
 
 for file in os.listdir('data'):
     if file not in ("wordlist.json", "DUlaw.json", "quest.json"):
-        with open(f'data/{file}', 'r', encoding='utf-8') as f:
+        with open(f"data/{file}", 'r', encoding='utf-8') as f:
             config_data[file[:-5]] = json.load(f)
 
 
@@ -29,6 +29,25 @@ def get_nested_dict(data: dict, path: List[str]) -> Any:
     """
     for i in path:
         data = data.get(i, None)
+    return data
+
+
+def get_nested_property(data: Any, path: List[str]) -> Any:
+    """
+    gets property in nested dataclass.
+    Parameters
+    ----------
+    data : Any
+        Target dataclass to get value
+    path : list[str]
+        list of properties to get value
+    Returns
+    -------
+    Any
+        value in targeted dataclass
+    """
+    for i in path:
+        data = data.getattr(i, None)
     return data
 
 
