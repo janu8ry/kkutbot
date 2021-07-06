@@ -2,8 +2,7 @@ version = 1
 
 exclude_patterns = [
     "migrate.py",
-    ".github/**",
-    "ext/hanmaru.py"
+    ".github/**"
 ]
 
 [[analyzers]]
