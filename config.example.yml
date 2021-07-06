@@ -1,39 +1,22 @@
-#################################################################
-# +-----------------------------------------------------------+ #
-# |                    kkutbot config file                    | #
-# +-----------------------------------------------------------+ #
-#################################################################
-
-# kkutbot configuration file.
-# encoding: utf-8
-
-
 # run configuration
 # 'true' to run testbot, 'false' to run the main bot.
-test: true
+test: false
 
 # bot prefix
-prefix: ㄲ
+prefix:
+  main: ㄲ
+  test: ㅌㄲ
 
 # secret tokens
 token:
   main: main bot token
   test: test bot token
-  koreanbots: koreanbots api token
-  dbl: top.gg api token
-
-# list of bot ids that can use kkutbot.
-bot_whitelist:
-  - 00000
+  koreanbots: koreanbots token
+  dbl: top.gg token
 
 # list of admin ids that can use admin commands.
 admin:
-  - 00000
-
-# webhook url for logging command usages
-webhook:
-  main: https://discord.com/api/webhooks/channel_id/token
-  test: https://discord.com/api/webhooks/channel_id/token
+  -
 
 # embed colors
 colors:
@@ -44,32 +27,31 @@ colors:
 # mongodb configuration
 mongo:
   main:
-    ip: mongoDB server ip
+    ip: ip address
     port: 27017
     db: kkutbot
-    user: mongoDB username  # 'null' if you are not using auth
-    password: mongoDB passwd  # 'null' if you are not using auth
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
   test:
-    ip: 127.0.0.1
+    ip: ip address
     port: 27017
     db: kkuttest
-    user: mongoDB username  # 'null' if you are not using auth
-    password: mongoDB passwd  # 'null' if you are not using auth
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
 
 # mongodb backup channel id
-backup_channel: 0000
+backup_channel:
 
 # useful links
 links:
   invite:
-    bot: bot invite url
-    server: support server url
+    bot: bot invite oauth url
+    server: support server invite url
   monitoring:
-    pm2: pm2 monitoring url
-    mongo: mongoDB monitoring url
-  privacy-policy: https://github.com/janu8ry/kkutbot/blob/master/privacy.md
-  koreanbots: koreanbots url
-  dbl: top.gg url
-  uniquebots: uniquebots url
-  github: github repository url
-  blog: blog(homepage) url
+    pm2:
+    mongo:
+  privacy-policy:
+  koreanbots:
+  topgg:
+  github:
+  blog:

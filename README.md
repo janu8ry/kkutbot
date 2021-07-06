@@ -1,93 +1,27 @@
-# 디스코드봇, 끝봇
-[![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg)](https://koreanbots.dev/bots/703956235900420226)
-[![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226)
-[![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
-[![python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f5e1c2e0ce394529b1c57f9c8eccc7aa)](https://app.codacy.com/gh/janu8ry/kkutbot?utm_source=github.com&utm_medium=referral&utm_content=janu8ry/kkutbot&utm_campaign=Badge_Grade_Settings)
-[![DeepSource](https://deepsource.io/gh/janu8ry/kkutbot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janu8ry/kkutbot/?ref=repository-badge)
+# 신나는 리라이팅
 
-# 소개
-끝봇은 재미를 위한 한국 디스코드 봇입니다.
-주 기능은 **끝말잇기**입니다.   
-끝봇은 인증된 봇으로, 걱정 없이 사용하실 수 있습니다.    
-끝봇의 접두사는 ``ㄲ`` 입니다!
-
-**[![봇 초대하기](https://img.shields.io/badge/%EB%B4%87%20%EC%B4%88%EB%8C%80%ED%95%98%EA%B8%B0-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=126016&scope=bot)**
+**전부 새로 작성 예정**
 
 
-## 정보
-- 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
-- 개발 언어: python 3.8.9 ([discord.py 1.7.2](https://discordpy.readthedocs.io/en/latest/index.html))
-- 버전: 1.7.1
-- 데이터베이스: mongoDB  
-- 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
-- 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
+## 계획
+- 로깅:
+    - 기본 로깅은 파이썬 내장 logging 사용
+    - 로그 파일 날짜별 분리, colorlog 또는 rich로 하이라이팅
+    - 에러 로깅은 sentry 사용 
+- 백업:
+    - tar,gz 압축 사용
+    - tempfile 활용
+- 기타:
+    - koreanbots, top.gg용 sdk 직접 작성
+    - dotmap 또는 nested dataclass 사용
+- 개발환경:
+    - python 3.9.5
+    - poetry
+    - docker
 
 
 # 기여하기
 이슈 등록이나 PR은 언제나 환영입니다!
-
-## 건의사항
-Issue 등록 또는 서포트 서버의 `#건의사항` 채널
-## 버그제보
-Issue 등록 또는 서포트 서버의 `#버그제보` 채널
-
-버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
-
-# Update Todo
-- [x] 새로운 지원금 시스템 (koreanbots v2 대비)
-- [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
-- [ ] 티어별 난이도 조정
-- [ ] 주간 퀘스트
-- [ ] 한방단어 입력시 즉시 판정
-- [ ] 출석 방식 개편
-- [ ] 웹사이트 개발, 상세 도움말 / 티어 정보 작성
-
-# 봇 실행하기
-끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
-
-## 요구사항
-- python 3.8
-- git
-- mongoDB 4.4
-- [poetry](https://python-poetry.org)
-- [pyenv](https://github.com/pyenv/pyenv), [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) (선택)
-
-### poetry 가상환경 사용 (기본)
-```shell
-git clone https://github.com/janu8ry/kkutbot.git
-cd kkutbot
-poetry install
-nano config.yml # config.yml 수정
-poetry shell
-python3 main.py
-```
-
-### pyenv 가상환경 사용 (추천)
-```shell
-pyenv install 3.8.9
-pyenv virtualenv 3.8.9 kkutbot
-
-git clone https://github.com/janu8ry/kkutbot.git
-cd kkutbot
-poetry config virtualenvs.create false --local
-pyenv local kkutbot
-poetry install
-nano config.yml # config.yml 수정
-python3 main.py
-```
-
-## DB 백업
-매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.zip` 형태로 압축되어 백업되고,   
-`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
-
-### 복구하기
-
-```shell
-unzip backup/backup-xxxx-xx-xx.zip  # 압축 해제  tmp 디렉토리 생성
-mongorestore -h dbhost:dbport --db kkutbot --authenticationDatabase admin -u dbuser -p dbpasswd tmp/kkutbot --drop
-rm -rf tmp
-```
 
 # 연락하기
 
