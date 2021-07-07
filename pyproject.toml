@@ -13,6 +13,8 @@ python = "^3.9"
 PyYAML = "^5.4.1"
 motor = "^2.4.0"
 uvloop = "^0.15.2"
+"discord.py" = "^1.7.3"
+aiohttp = {extras = ["speedups"], version = "^3.7.4"}
 
 [tool.poetry.dev-dependencies]
 
