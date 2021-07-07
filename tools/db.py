@@ -2,13 +2,13 @@ import logging
 import asyncio
 from datetime import datetime
 from typing import Optional, Union, Any
+from copy import deepcopy
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 import uvloop
 
-from config import config, get_nested_property
-from models import UserModel, GuildModel, GeneralModel
+from .config import config, get_nested_dict
 
 
 logger = logging.getLogger('kkutbot')
@@ -133,16 +133,16 @@ async def read(target, path: Optional[str] = None) -> Any:
         main_data = await collection.find_one({'_id': _get_id(target)})
         if not main_data:
             if collection.name == "user":
-                main_data = UserModel()
+                main_data = deepcopy(config("default_data.user"))
             elif collection.name == "guild":
-                main_data = GuildModel()
+                main_data = deepcopy(config("default_data.guild"))
     else:
-        main_data = GeneralModel()
+        main_data = deepcopy(config("default_data.general"))
 
     if path is None:
         return main_data
 
-    return get_nested_property(main_data, path.split('.'))
+    return get_nested_dict(main_data, path.split('.'))
 
 
 async def write(target, path: str, value):
