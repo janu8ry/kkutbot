@@ -21,3 +21,6 @@ tmp
 # virtualenv config
 .python-version
 poetry.toml
+
+# test file
+test.py
