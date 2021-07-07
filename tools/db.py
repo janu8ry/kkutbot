@@ -6,7 +6,11 @@ from copy import deepcopy
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
-import uvloop
+
+try:
+    import uvloop
+except ImportError:
+    uvloop = None
 
 from .config import config, get_nested_dict
 
@@ -38,8 +42,11 @@ if all([
     db_options['username'] = username
     db_options['password'] = password
 
-loop = uvloop.new_event_loop()
-asyncio.set_event_loop(loop)
+if uvloop:
+    loop = uvloop.new_event_loop()
+    asyncio.set_event_loop(loop)
+else:
+    loop = asyncio.get_event_loop()
 
 client = AsyncIOMotorClient(
     host=dbconfig('ip'),
