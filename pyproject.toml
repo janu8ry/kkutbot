@@ -15,6 +15,7 @@ motor = "^2.4.0"
 uvloop = "^0.15.2"
 "discord.py" = "^1.7.3"
 aiohttp = {extras = ["speedups"], version = "^3.7.4"}
+rich = "^10.5.0"
 
 [tool.poetry.dev-dependencies]
 
