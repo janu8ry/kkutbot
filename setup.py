@@ -67,12 +67,8 @@ def mode2():
 
 
 if __name__ == "__main__":
-    mode = ""
-    if len(sys.argv) == 2:
-        mode = sys.argv[1]
     while True:
-        if mode:
-            mode = input("""
+        mode = input("""
   끝봇 설정
 ============
 1. DB 업데이트
