@@ -1,0 +1,40 @@
+# Jetbrains IDE config
+.idea
+
+# virtualenv
+venv
+.venv
+
+# macOS
+.DS_Store
+
+# cache
+__pycache__
+
+# secret config file
+config.yml
+
+# directory for bd backup
+backup
+tmp
+
+# config files
+.python-version
+poetry.toml
+setup.py
+config.example.yml
+
+# test file
+test.py
+
+# git & ci
+.github/
+.deepsource.toml
+README.md
+LICENSE
+.gitignore
+.git/
+
+# logs & backup
+logs/
+backup/
