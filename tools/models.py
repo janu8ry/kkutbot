@@ -22,9 +22,9 @@ class UserQuestModel:
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
-            status=UserQuestStatusModel.from_dict(data=data.get('status')),
-            cache=data.get('cache')
-            )
+            status=UserQuestStatusModel.from_dict(data=data.get("status")),
+            cache=data.get("cache"),
+        )
 
 
 @dataclass
@@ -86,12 +86,12 @@ class UserGameStatusModel:
     @classmethod
     def from_dict(cls, data):
         return cls(
-            rank_solo=SoloRankGameModel.from_dict(data.get('rank_solo')),
-            rank_online=OnlineRankGameModel.from_dict(data.get('rank_online')),
-            kkd=KkdGameModel.from_dict(data.get('kkd')),
-            guild_multi=GuildGameModel.from_dict(data.get('guild_multi')),
-            online_multi=MultiOnlineGameModel.from_dict(data.get('online_multi')),
-            apmal=ApmalGameModel.from_dict(data.get('apmal'))
+            rank_solo=SoloRankGameModel.from_dict(data.get("rank_solo")),
+            rank_online=OnlineRankGameModel.from_dict(data.get("rank_online")),
+            kkd=KkdGameModel.from_dict(data.get("kkd")),
+            guild_multi=GuildGameModel.from_dict(data.get("guild_multi")),
+            online_multi=MultiOnlineGameModel.from_dict(data.get("online_multi")),
+            apmal=ApmalGameModel.from_dict(data.get("apmal")),
         )
 
 
@@ -128,22 +128,22 @@ class UserModel:
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
-            id=data.get('_id'),
-            name=data.get('name'),
-            registered=data.get('registered'),
-            info=data.get('info'),
-            points=data.get('points'),
-            medals=data.get('medals'),
-            latest_reward=data.get('latest_reward'),
-            attendance=data.get('attendance'),
-            quest=UserQuestModel.from_dict(data.get('quest')),
-            game=UserGameStatusModel.from_dict(data.get('game')),
-            attendance_times=data.get('attendance_times'),
-            command_used=data.get('command_used'),
-            banned=data.get('banned'),
-            latest_usage=data.get('latest_usage'),
-            mails=data.get('mails'),
-            alerts=AlertModel.from_dict(data.get('alerts'))
+            id=data.get("_id"),
+            name=data.get("name"),
+            registered=data.get("registered"),
+            info=data.get("info"),
+            points=data.get("points"),
+            medals=data.get("medals"),
+            latest_reward=data.get("latest_reward"),
+            attendance=data.get("attendance"),
+            quest=UserQuestModel.from_dict(data.get("quest")),
+            game=UserGameStatusModel.from_dict(data.get("game")),
+            attendance_times=data.get("attendance_times"),
+            command_used=data.get("command_used"),
+            banned=data.get("banned"),
+            latest_usage=data.get("latest_usage"),
+            mails=data.get("mails"),
+            alerts=AlertModel.from_dict(data.get("alerts")),
         )
 
 
