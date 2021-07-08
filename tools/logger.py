@@ -32,7 +32,7 @@ def setup_logger():
 
     file_handler = TimedRotatingFileHandler(
         filename=os.path.join("logs", "latest.log"),
-        # when="midnight"
+        when="midnight",
         encoding="utf-8"
     )
     file_handler.setFormatter(
