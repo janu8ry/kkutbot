@@ -4,12 +4,12 @@ from typing import Any, List
 
 import yaml
 
-with open('config.yml', encoding='utf-8') as f:
+with open("config.yml", encoding="utf-8") as f:
     config_data = yaml.load(f, Loader=yaml.FullLoader)
 
-for file in os.listdir('data'):
+for file in os.listdir("data"):
     if file not in ("wordlist.json", "DUlaw.json", "quest.json"):
-        with open(f"data/{file}", 'r', encoding='utf-8') as f:
+        with open(f"data/{file}", "r", encoding="utf-8") as f:
             config_data[file[:-5]] = json.load(f)
 
 
@@ -65,4 +65,4 @@ def config(query: str) -> Any:
     if not query:
         return config_data
     else:
-        return get_nested_dict(config_data, query.split('.'))
+        return get_nested_dict(config_data, query.split("."))

@@ -14,8 +14,8 @@ except ImportError:
 
 from .config import config, get_nested_dict
 
-logger = logging.getLogger('kkutbot')
-MODE = "test" if config('test') else "main"
+logger = logging.getLogger("kkutbot")
+MODE = "test" if config("test") else "main"
 
 
 def dbconfig(query: str):
@@ -29,17 +29,14 @@ def dbconfig(query: str):
     Any
         value about db configuration in 'config.yml' file
     """
-    return config(f'mongo.{MODE}.{query}')
+    return config(f"mongo.{MODE}.{query}")
 
 
 db_options = {}
 
-if all([
-    username := dbconfig('user'),
-    password := dbconfig('password')
-]):
-    db_options['username'] = username
-    db_options['password'] = password
+if all([username := dbconfig("user"), password := dbconfig("password")]):
+    db_options["username"] = username
+    db_options["password"] = password
 
 if uvloop:
     loop = uvloop.new_event_loop()
@@ -48,16 +45,13 @@ else:
     loop = asyncio.get_event_loop()
 
 client = AsyncIOMotorClient(
-    host=dbconfig('ip'),
-    port=dbconfig('port'),
-    io_loop=loop,
-    **db_options
+    host=dbconfig("ip"), port=dbconfig("port"), io_loop=loop, **db_options
 )
 
 logger.info("mongoDB에 연결됨")
 
 
-db = client[dbconfig('db')]
+db = client[dbconfig("db")]
 
 
 def get_collection(target) -> AsyncIOMotorCollection:
@@ -98,7 +92,7 @@ def _get_id(target) -> Union[int, str]:
     """
     if target is None:
         return "general"
-    return getattr(target, 'id', target)
+    return getattr(target, "id", target)
 
 
 def _get_name(target) -> str:
@@ -115,7 +109,7 @@ def _get_name(target) -> str:
     Union[int, str]
         target name
     """
-    return getattr(target, 'name', None)
+    return getattr(target, "name", None)
 
 
 async def read(target, path: Optional[str] = None) -> Any:
@@ -136,7 +130,7 @@ async def read(target, path: Optional[str] = None) -> Any:
     """
     if target:
         collection = get_collection(target)
-        main_data = await collection.find_one({'_id': _get_id(target)})
+        main_data = await collection.find_one({"_id": _get_id(target)})
         if not main_data:
             if collection.name == "user":
                 main_data = deepcopy(config("default_data.user"))
@@ -148,7 +142,7 @@ async def read(target, path: Optional[str] = None) -> Any:
     if path is None:
         return main_data
 
-    return get_nested_dict(main_data, path.split('.'))
+    return get_nested_dict(main_data, path.split("."))
 
 
 async def write(target, path: str, value):
@@ -167,22 +161,22 @@ async def write(target, path: str, value):
     collection = get_collection(target)
 
     if collection.name == "user":
-        if not (await read(target, 'registered')):
-            if data := await db.unused.find_one({'_id': _get_id(target)}):
+        if not (await read(target, "registered")):
+            if data := await db.unused.find_one({"_id": _get_id(target)}):
                 await db.user.insert_one(data)
-                await db.unused.delete_one({'_id': _get_id(target)})
+                await db.unused.delete_one({"_id": _get_id(target)})
             else:
                 main_data = await read(target)
-                main_data['register_date'] = datetime.now()
-                main_data['_id'] = _get_id(target)
-                main_data['name'] = _get_name(target)
+                main_data["register_date"] = datetime.now()
+                main_data["_id"] = _get_id(target)
+                main_data["name"] = _get_name(target)
                 await db.user.insert_one(main_data)
-        if (name := _get_name(target)) != (await read(target, 'name')):
-            await db.user.update_one({'_id': _get_id(target)}, {'$set': {'name': name}})
+        if (name := _get_name(target)) != (await read(target, "name")):
+            await db.user.update_one({"_id": _get_id(target)}, {"$set": {"name": name}})
     elif (collection.name == "guild") and (not await read(target)):
-        await db.guild.insert_one({'_id': _get_id(target)})
+        await db.guild.insert_one({"_id": _get_id(target)})
 
-    await collection.update_one({'_id': _get_id(target)}, {'$set': {path: value}})
+    await collection.update_one({"_id": _get_id(target)}, {"$set": {path: value}})
 
 
 async def add(target, path: str, value: int):
@@ -211,7 +205,7 @@ async def delete(target):
     target
         targeted object to delete in DB
     """
-    await get_collection(target).delete_one({'_id': _get_id(target)})
+    await get_collection(target).delete_one({"_id": _get_id(target)})
 
 
 async def append(target, path: str, value):
@@ -228,10 +222,5 @@ async def append(target, path: str, value):
         value to append to target(list)
     """
     await get_collection(target).update_one(
-        {'_id': _get_id(target)},
-        {
-            '$push': {
-                path: value
-            }
-        }
+        {"_id": _get_id(target)}, {"$push": {path: value}}
     )

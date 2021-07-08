@@ -9,7 +9,7 @@ from rich.logging import RichHandler
 
 def rotator(source, dest: str):
     dest = dest[5:]
-    logs = [f for f in os.listdir('logs') if f.startswith(dest[:-4])]
+    logs = [f for f in os.listdir("logs") if f.startswith(dest[:-4])]
     if f"{dest}.gz" in logs:
         dest = f"{dest[:-4]}({len(logs)}).log"
     with open(source, "rb") as rf:
@@ -23,7 +23,7 @@ def namer(_):
 
 
 def setup_logger():
-    logger = logging.getLogger('kkutbot')
+    logger = logging.getLogger("kkutbot")
     logger.setLevel(logging.DEBUG)
 
     stream_handler = RichHandler(rich_tracebacks=True)
@@ -31,14 +31,11 @@ def setup_logger():
     stream_handler.setLevel(logging.INFO)
 
     file_handler = TimedRotatingFileHandler(
-        filename=os.path.join("logs", "latest.log"),
-        when="midnight",
-        encoding="utf-8"
+        filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8"
     )
     file_handler.setFormatter(
         logging.Formatter(
-            fmt="[%(asctime)s] [%(levelname)s] %(message)s",
-            datefmt="%H:%M:%S"
+            fmt="[%(asctime)s] [%(levelname)s] %(message)s", datefmt="%H:%M:%S"
         )
     )
 
