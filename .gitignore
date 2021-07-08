@@ -1,22 +1,25 @@
 # Jetbrains IDE config
-.idea
+.idea/
 
 # virtualenv
-venv
-.venv
+venv/
+.venv/
 
 # macOS
 .DS_Store
 
 # cache
-__pycache__
+**/__pycache__/
 
 # secret config file
 config.yml
 
 # directory for bd backup
-backup
-tmp
+backup/
+tmp/
+
+# logging
+logs/
 
 # virtualenv config
 .python-version

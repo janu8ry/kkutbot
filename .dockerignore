@@ -29,6 +29,9 @@ config.example.yml
 # test file
 test.py
 
+# logging
+logs/
+
 # git & ci
 .github/
 .deepsource.toml
