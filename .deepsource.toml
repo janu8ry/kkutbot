@@ -1,7 +1,7 @@
 version = 1
 
 exclude_patterns = [
-    "migrate.py",
+    "setup.py",
     ".github/**"
 ]
 
