@@ -109,4 +109,3 @@ class Client:
             await self.koreanbots_update()
             await self.topgg_update()
             await asyncio.sleep(60)
-
