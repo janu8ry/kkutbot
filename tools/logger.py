@@ -2,19 +2,24 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
 import gzip
+import time
 
 from rich.logging import RichHandler
 
 
-def rotator(source, dest):
+def rotator(source, dest: str):
+    dest = dest[5:]
+    logs = [f for f in os.listdir('logs') if f.startswith(dest[:-4])]
+    if f"{dest}.gz" in logs:
+        dest = f"{dest[:-4]}({len(logs)}).log"
     with open(source, "rb") as rf:
-        with gzip.open(f"{dest}.log.gz", "wb") as wf:
+        with gzip.open(f"logs/{dest}.gz", "wb") as wf:
             wf.write(rf.read())
     os.remove(source)
 
 
-def namer(name):
-    return name + ".log.gz"
+def namer(_):
+    return os.path.join("logs", time.strftime("%Y-%m-%d") + ".log")
 
 
 def setup_logger():
@@ -27,7 +32,7 @@ def setup_logger():
 
     file_handler = TimedRotatingFileHandler(
         filename=os.path.join("logs", "logs.log"),
-        when="midnight",
+        # when="midnight"
         encoding="utf-8"
     )
     file_handler.setFormatter(
@@ -43,4 +48,4 @@ def setup_logger():
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
 
-
+    logger.info("로깅 설정 완료!")
