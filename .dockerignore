@@ -19,6 +19,8 @@ backup
 tmp
 
 # config files
+pyproject.toml
+poetry.lock
 .python-version
 poetry.toml
 setup.py

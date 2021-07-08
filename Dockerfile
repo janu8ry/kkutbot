@@ -2,11 +2,9 @@ FROM python:3.9.5-slim-buster AS builder
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
+COPY requirements.txt ./
 
-RUN pip install --no-cache-dir poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-root --no-dev
+RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.9.5-slim-buster
 
