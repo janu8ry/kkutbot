@@ -3,7 +3,6 @@
 
 # virtualenv
 venv/
-.venv/
 
 # macOS
 .DS_Store
@@ -14,16 +13,10 @@ venv/
 # secret config file
 config.yml
 
-# directory for bd backup
-backup/
-tmp/
-
-# logging
+# logs & backup
 logs/
-
-# virtualenv config
-.python-version
-poetry.toml
+tmp/
+backup/
 
 # test file
 test.py

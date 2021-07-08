@@ -3,7 +3,6 @@
 
 # virtualenv
 venv
-.venv
 
 # macOS
 .DS_Store
@@ -19,18 +18,11 @@ backup
 tmp
 
 # config files
-pyproject.toml
-poetry.lock
-.python-version
-poetry.toml
 setup.py
 config.example.yml
 
 # test file
 test.py
-
-# logging
-logs/
 
 # git & ci
 .github/
