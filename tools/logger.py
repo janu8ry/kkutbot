@@ -24,7 +24,7 @@ def setup_logger():
 
     stream_handler = RichHandler(rich_tracebacks=True)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
-    stream_handler.setLevel(logging.INFO)
+    stream_handler.setLevel(logging.DEBUG + 3)
 
     file_handler = TimedRotatingFileHandler(
         filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8"
@@ -40,5 +40,26 @@ def setup_logger():
 
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
+
+    logging.addLevelName(logging.DEBUG + 5, "COMMAND")
+
+    def command(self, msg, *args, **kwargs):
+        self.log(logging.DEBUG + 5, msg, *args, **kwargs)
+
+    logging.Logger.command = command
+
+    logging.addLevelName(logging.DEBUG + 3, "INVITE")
+
+    def invite(self, msg, *args, **kwargs):
+        self.log(logging.DEBUG + 3, msg, *args, **kwargs)
+
+    logging.Logger.invited = invite
+
+    logging.addLevelName(logging.DEBUG + 4, "LEAVE")
+
+    def leave(self, msg, *args, **kwargs):
+        self.log(logging.DEBUG + 4, msg, *args, **kwargs)
+
+    logging.Logger.leave = leave
 
     logger.info("로깅 설정 완료!")
