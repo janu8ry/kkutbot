@@ -1,8 +1,8 @@
-import logging
 import asyncio
-from datetime import datetime
-from typing import Optional, Union, Any
+import logging
 from copy import deepcopy
+from datetime import datetime
+from typing import Any, Optional, Union
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
@@ -13,7 +13,6 @@ except ImportError:
     uvloop = None
 
 from .config import config, get_nested_dict
-
 
 logger = logging.getLogger('kkutbot')
 MODE = "test" if config('test') else "main"
