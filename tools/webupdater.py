@@ -1,3 +1,8 @@
+"""
+original code made by https://github.com/eunwoo1104
+repo: https://github.com/eunwoo1104/light-koreanbots
+"""
+
 import asyncio
 import logging
 
