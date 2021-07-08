@@ -1,6 +1,6 @@
-discord.py = ^1.7.3
-motor = ^2.4.0
-PyYAML = ^5.4.1
-rich = ^10.5.0
-uvloop = 0.15.2
-aiohttp[speedups] = 3.7.4
+discord.py == 1.7.3
+motor == 2.4.0
+PyYAML == 5.4.1
+rich == 10.5.0
+uvloop == 0.15.2
+aiohttp[speedups] == 3.7.4
