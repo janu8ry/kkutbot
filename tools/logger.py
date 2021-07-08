@@ -8,12 +8,8 @@ from rich.logging import RichHandler
 
 
 def rotator(source, dest: str):
-    dest = dest[5:]
-    logs = [f for f in os.listdir("logs") if f.startswith(dest[:-4])]
-    if f"{dest}.gz" in logs:
-        dest = f"{dest[:-4]}({len(logs)}).log"
     with open(source, "rb") as rf:
-        with gzip.open(f"logs/{dest}.gz", "wb") as wf:
+        with gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
             wf.write(rf.read())
     os.remove(source)
 
