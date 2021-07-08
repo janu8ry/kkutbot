@@ -31,7 +31,7 @@ def setup_logger():
     stream_handler.setLevel(logging.INFO)
 
     file_handler = TimedRotatingFileHandler(
-        filename=os.path.join("logs", "logs.log"),
+        filename=os.path.join("logs", "latest.log"),
         # when="midnight"
         encoding="utf-8"
     )
