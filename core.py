@@ -10,7 +10,7 @@ import aiohttp
 
 from tools import webupdater
 from tools.config import config
-from tools.db import dbconfig, username, password
+from tools.db import db, dbconfig, username, password
 
 
 logger = logging.getLogger("kkutbot")
@@ -19,6 +19,39 @@ logger = logging.getLogger("kkutbot")
 class KkutbotContext(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    async def send(self,
+                   content=None,
+                   *,
+                   tts=False,
+                   embed=None,
+                   file=None,
+                   files=None,
+                   delete_after=None,
+                   nonce=None,
+                   allowed_mentions=None,
+                   reference=None,
+                   mention_author=None,
+                   escape_emoji_formatting=False
+                   ) -> discord.Message:
+        if escape_emoji_formatting is False:
+            content = content.format(**self.bot.dict_emojis()) if content else None
+        return await super().send(content=content,
+                                  tts=tts,
+                                  embed=embed,
+                                  file=file,
+                                  files=files,
+                                  delete_after=delete_after,
+                                  nonce=nonce,
+                                  allowed_mentions=allowed_mentions,
+                                  reference=reference,
+                                  mention_author=mention_author
+                                  )
+
+    async def reply(self, content=None, **kwargs) -> discord.Message:
+        if not kwargs.get('escape_emoji_formatting', False):
+            content = content.format(**self.bot.dict_emojis()) if content else None
+        return await super().reply(content=content, **kwargs)
 
 
 class Kkutbot(commands.AutoShardedBot):
@@ -43,6 +76,7 @@ class Kkutbot(commands.AutoShardedBot):
             topgg_token=config("token.topgg"),
             post=not config("test")
         )
+        self.db = db
 
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
