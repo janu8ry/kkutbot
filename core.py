@@ -85,9 +85,6 @@ class Kkutbot(commands.AutoShardedBot):
             self.scheduler.add_job(self.backup, 'cron', hour=5, minute=0, second=0)
         self.scheduler.start()
 
-    async def get_context(self, message: discord.Message, *, cls=KkutbotContext) -> KkutbotContext:
-        return await super().get_context(message=message, cls=cls)
-
     def run_bot(self):
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
 
