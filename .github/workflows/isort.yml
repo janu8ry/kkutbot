@@ -25,7 +25,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache pip
-        id: cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
@@ -33,12 +32,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           pip3 install -r dev-requirements.txt
       - name: Sort with isort
         run: |
-          $(which isort) . --gitignore
+          isort . --gitignore
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
