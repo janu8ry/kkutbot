@@ -29,14 +29,16 @@ class Kkutbot(commands.AutoShardedBot):
             bot=self,
             koreanbots_token=config("token.koreanbots"),
             topgg_token=config("token.topgg"),
-            post=not config("test")
+            post=not config("test"),
         )
 
         self.scheduler = AsyncIOScheduler()
-        self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
+        self.scheduler.add_job(self.update_presence, "interval", minutes=1)
         self.scheduler.start()
 
-    async def get_context(self, message: discord.Message, *, cls=KkutbotContext) -> KkutbotContext:
+    async def get_context(
+        self, message: discord.Message, *, cls=KkutbotContext
+    ) -> KkutbotContext:
         return await super().get_context(message=message, cls=cls)
 
     def try_reload(self, name: str):
@@ -47,7 +49,9 @@ class Kkutbot(commands.AutoShardedBot):
             self.load_extension(name)
 
     async def update_presence(self):
-        await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
+        await self.change_presence(
+            activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기")
+        )
 
     def reload_all(self):
         for cogname in os.listdir("cogs"):
@@ -57,4 +61,4 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     def dict_emojis():
-        return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
+        return {k: f"<:{k}:{v}>" for k, v in config("emojis").items()}
