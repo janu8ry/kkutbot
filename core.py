@@ -2,6 +2,7 @@ import os
 import logging
 import subprocess
 from datetime import date
+from typing import Type
 
 import discord
 from discord.ext import commands
@@ -129,3 +130,19 @@ class Kkutbot(commands.AutoShardedBot):
         subprocess.run(cmd, check=True, shell=True)
         os.remove(fp)
         await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
+
+
+def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
+    def decorator(func):
+        if isinstance(func, commands.Command):
+            raise TypeError('Callback is already a command.')
+        if ('user' in func.__annotations__) and (attrs.get('rest_is_raw') is not False):
+            rest_is_raw = attrs.pop('rest_is_raw', True)
+        else:
+            rest_is_raw = attrs.pop('rest_is_raw', False)
+        return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
+
+    return decorator
+
+
+commands.command = command
