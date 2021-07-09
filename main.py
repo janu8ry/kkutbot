@@ -22,8 +22,9 @@ async def on_ready():
     users = await bot.db.user.count_documents({})
     unused = await bot.db.unused.count_documents({})
 
-    logger.info(f"'{bot.user.name}'으로 로그인됨\n"
-                f"서버수: {guilds}, 유저수: {users}, 미사용 유저수: {unused}")
+    logger.info(
+        f"'{bot.user.name}'으로 로그인됨\n" f"서버수: {guilds}, 유저수: {users}, 미사용 유저수: {unused}"
+    )
 
     await bot.update_presence()
 
@@ -40,7 +41,9 @@ async def on_message(message: discord.Message):
     if message.author.bot:  # or is_banned:
         return None
     else:
-        if message.content.lstrip(config(f"prefix.{'test' if config('test') else 'main'}")).startswith("jsk"):
+        if message.content.lstrip(
+            config(f"prefix.{'test' if config('test') else 'main'}")
+        ).startswith("jsk"):
             cls = commands.Context
         else:
             cls = core.KkutbotContext
@@ -67,7 +70,8 @@ async def check(ctx: core.KkutbotContext):
             embed = discord.Embed(
                 title="오류",
                 description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"
-                            f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.", color=config('colors.error')
+                f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
+                color=config("colors.error"),
             )
             await ctx.author.send(embed=embed)
         except discord.Forbidden:
@@ -77,11 +81,17 @@ async def check(ctx: core.KkutbotContext):
 
 
 @bot.event
-async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError]):
+async def on_command_error(
+    ctx: core.KkutbotContext, error: Type[commands.CommandError]
+):
     if isinstance(error, commands.errors.BotMissingPermissions):
-        await ctx.send(f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한이 필요합니다.")
+        await ctx.send(
+            f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한이 필요합니다."
+        )
     elif isinstance(error, commands.errors.MissingPermissions):
-        await ctx.send(f"`{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한을 보유하고 있어야 합니다.")
+        await ctx.send(
+            f"`{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_perms)}` 권한을 보유하고 있어야 합니다."
+        )
     elif isinstance(error, commands.errors.NotOwner):
         return
     elif isinstance(error, commands.errors.NoPrivateMessage):
@@ -102,13 +112,17 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
     #         color=config('colors.error')
     #     )
     #     await ctx.send(embed=embed)
-    elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument)):
+    elif isinstance(
+        error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument)
+    ):
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
-            color=config('colors.general')
+            color=config("colors.general"),
         )
-        embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}' 을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
+        embed.set_footer(
+            text=f"명령어 'ㄲ도움 {ctx.command.name}' 을(를) 사용하여 자세한 설명을 확인할 수 있습니다."
+        )
         await ctx.send(embed=embed)
     elif isinstance(error, commands.errors.MaxConcurrencyReached):
         if ctx.author.id == bot.owner_id:
@@ -144,7 +158,11 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
 async def on_guild_join(guild: discord.Guild):
     # await write(guild, 'invited', datetime.now())
     logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}개)")
-    announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']]
+    announce = [
+        ch
+        for ch in guild.text_channels
+        if dict(ch.permissions_for(guild.me))["send_messages"]
+    ]
     embed = discord.Embed(
         description=f"""
 **끝봇**을 서버에 초대해 주셔서 감사합니다!
@@ -154,7 +172,7 @@ async def on_guild_join(guild: discord.Guild):
 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
 끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
 """,
-        color=config('colors.general')
+        color=config("colors.general"),
     )
     try:
         await announce[0].send(embed=embed)
@@ -167,19 +185,22 @@ async def on_guild_join(guild: discord.Guild):
         "attach_files",
         "read_messages",
         "add_reactions",
-        "external_emojis"
+        "external_emojis",
     )
 
-    missing_perms = [p for p in essential_perms if not dict(guild.me.guild_permissions)[p]]
+    missing_perms = [
+        p for p in essential_perms if not dict(guild.me.guild_permissions)[p]
+    ]
 
     if missing_perms:
         embed = discord.Embed(
             title="권한이 부족합니다.",
             description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
-            color=config('colors.error'))
+            color=config("colors.error"),
+        )
         embed.add_field(
             name="더 필요한 권한 목록",
-            value=f"`{'`, `'.join([config('perms')[p] for p in missing_perms])}`"
+            value=f"`{'`, `'.join([config('perms')[p] for p in missing_perms])}`",
         )
         try:
             await announce[0].send(embed=embed)
