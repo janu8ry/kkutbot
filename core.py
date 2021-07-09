@@ -4,6 +4,7 @@ import logging
 import discord
 from discord.ext import commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import aiohttp
 
 from tools import webupdater
 from tools.config import config
@@ -58,3 +59,13 @@ class Kkutbot(commands.AutoShardedBot):
     @staticmethod
     def dict_emojis():
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
+
+    @staticmethod
+    async def if_koreanbots_voted(user: discord.User) -> bool:
+        async with aiohttp.ClientSession() as session, \
+                session.get(
+                    f'https://koreanbots.dev/api/v2/bots/703956235900420226/vote?userID={user.id}',
+                    headers={"Authorization": config('token.koreanbots')}
+                ) as response:
+            data = await response.json()
+        return data['data']['voted']
