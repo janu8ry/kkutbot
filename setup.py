@@ -13,13 +13,10 @@ async def mode1():
             "register_date": "registered",
             "info_word": "info",
             "last_reward": "latest_reward",
-            "daily_times": "attendance_times",
+            "daily_times": "reward_times",
             "last_command": "latest_usage",
             "mail": "mails",
             "alert": "alerts"
-        },
-        "$set": {
-            "attendance": []
         },
         "$unset": {
             "daily": 1
@@ -32,14 +29,11 @@ async def mode1():
             "register_date": "registered",
             "info_word": "info",
             "last_reward": "latest_reward",
-            "daily_times": "attendance_times",
+            "daily_times": "reward_times",
             "last_command": "latest_usage",
             "mail": "mails",
             "alert": "alerts",
             "game.rank_multi": "game.rank_online"
-        },
-        "$set": {
-            "attendance": []
         },
         "$unset": {
             "daily": 1
