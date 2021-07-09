@@ -22,13 +22,13 @@ def before_send(event, _):
     return event
 
 
-sentry_sdk.init(
-    config("sentry_dsn"),
-    release=bot.__version__,
-    before_send=before_send
-)
-
-ignore_logger("kkutbot")
+if not config("test"):
+    sentry_sdk.init(
+        config("sentry_dsn"),
+        release=bot.__version__,
+        before_send=before_send
+    )
+    ignore_logger("kkutbot")
 
 
 @bot.event
@@ -151,7 +151,8 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
         await ctx.send(embed=embed)
         logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}")
-        sentry_sdk.capture_exception(error)
+        if not config("test"):
+            sentry_sdk.capture_exception(error)
 
 
 @bot.event

@@ -105,7 +105,8 @@ class Kkutbot(commands.AutoShardedBot):
                 self.try_reload(cogname[:-3])
 
     async def on_error(self, event_method, *args, **kwargs):
-        raise
+        if not config("test"):
+            raise
 
     @staticmethod
     def dict_emojis():
