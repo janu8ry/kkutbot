@@ -11,7 +11,7 @@ on:
       - rewrite
 
 jobs:
-  lint-format:
+  isort:
 
     runs-on: ubuntu-latest
     strategy:
