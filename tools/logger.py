@@ -60,7 +60,7 @@ def setup_logger():
     def invite(self, msg, *args, **kwargs):
         self.log(logging.DEBUG + 3, msg, *args, **kwargs)
 
-    logging.Logger.invited = invite
+    logging.Logger.invite = invite
 
     logging.addLevelName(logging.DEBUG + 4, "LEAVE")
 
