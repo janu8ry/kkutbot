@@ -4,3 +4,4 @@ PyYAML == 5.4.1
 rich == 10.5.0
 uvloop == 0.15.2
 aiohttp[speedups] == 3.7.4
+APScheduler == 3.7.0
