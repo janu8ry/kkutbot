@@ -23,11 +23,15 @@ def namer(_):
 def setup_logger():
     logger = logging.getLogger("kkutbot")
     logger.setLevel(logging.DEBUG)
-    console = Console(theme=Theme({
-        "logging.level.command": "green",
-        "logging.level.invite": "gold1",
-        "logging.level.leave": "magenta"
-    }))
+    console = Console(
+        theme=Theme(
+            {
+                "logging.level.command": "green",
+                "logging.level.invite": "gold1",
+                "logging.level.leave": "magenta",
+            }
+        )
+    )
 
     stream_handler = RichHandler(rich_tracebacks=True, console=console)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
@@ -38,7 +42,8 @@ def setup_logger():
     )
     file_handler.setFormatter(
         logging.Formatter(
-            fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s", datefmt="%H:%M:%S"
+            fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
+            datefmt="%H:%M:%S",
         )
     )
 
