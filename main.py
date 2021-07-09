@@ -1,9 +1,12 @@
 import logging
 from typing import Type
+import traceback
 
 import discord
 from discord.ext import commands
-from rich import traceback
+from rich.traceback import install as rich_install
+import sentry_sdk
+from sentry_sdk.integrations.logging import ignore_logger
 
 import core
 from tools.logger import setup_logger
@@ -12,6 +15,20 @@ from tools.config import config
 logger = logging.getLogger("kkutbot")
 
 bot = core.Kkutbot()
+
+
+def before_send(event, _):
+    logger.debug("sentry에 에러 보고중...")
+    return event
+
+
+sentry_sdk.init(
+    config("sentry_dsn"),
+    release=bot.__version__,
+    before_send=before_send
+)
+
+ignore_logger("kkutbot")
 
 
 @bot.event
@@ -124,20 +141,17 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
-        # if not error.__cause__:
-        #     err = ''.join(traceback.format_exception(type(error), error, error.__traceback__, chain=False))
-        # else:
-        #     err = ''.join(traceback.format_exception(type(error.__cause__), error.__cause__, error.__cause__.__traceback__))
-        #
-        # embed = discord.Embed(title="에러", color=config('colors.error'))
-        # embed.add_field(name="에러 코드", value=f"```{error}```")
-        # embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
-        # await ctx.send(embed=embed)
-        # embed.add_field(name="에러 traceback", value=f"""```py\n{err}```""", inline=False, escape_emoji_formatting=True)  # noqa
-        # await bot.log(f"에러 발생함. \n명령어: {ctx.command.name}", embed=embed)
-        # if config('test'):
-        #   print(err)
-        pass
+        if error.__cause__:
+            error = error.__cause__
+
+        error_log = ''.join(traceback.format_exception(type(error), error, error.__traceback__, chain=False))
+
+        embed = discord.Embed(title="에러", color=config('colors.error'))
+        embed.add_field(name="에러 코드", value=f"```{error}```")
+        embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
+        await ctx.send(embed=embed)
+        logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}")
+        sentry_sdk.capture_exception(error)
 
 
 @bot.event
@@ -196,6 +210,6 @@ async def on_guild_remove(guild: discord.Guild):
 
 
 if __name__ == "__main__":
-    traceback.install()
+    rich_install()
     setup_logger()
     bot.run_bot()

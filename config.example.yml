@@ -18,6 +18,9 @@ token:
 admin:
   -
 
+# sentry dsn for logging errors
+sentry_dsn: sentry dsn
+
 # embed colors
 colors:
   general: 0x4374D9
