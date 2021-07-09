@@ -1,16 +1,16 @@
 import logging
-from typing import Type
 import traceback
+from typing import Type
 
 import discord
+import sentry_sdk
 from discord.ext import commands
 from rich.traceback import install as rich_install
-import sentry_sdk
 from sentry_sdk.integrations.logging import ignore_logger
 
 import core
-from tools.logger import setup_logger
 from tools.config import config
+from tools.logger import setup_logger
 
 logger = logging.getLogger("kkutbot")
 

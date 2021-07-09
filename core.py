@@ -1,18 +1,17 @@
-import os
 import logging
+import os
 import subprocess
 from datetime import date
 from typing import Type
 
-import discord
-from discord.ext import commands
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import aiohttp
+import discord
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from discord.ext import commands
 
 from tools import webupdater
 from tools.config import config
-from tools.db import db, dbconfig, username, password
-
+from tools.db import db, dbconfig, password, username
 
 logger = logging.getLogger("kkutbot")
 

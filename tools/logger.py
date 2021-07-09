@@ -4,8 +4,8 @@ import os
 import time
 from logging.handlers import TimedRotatingFileHandler
 
-from rich.logging import RichHandler
 from rich.console import Console
+from rich.logging import RichHandler
 from rich.theme import Theme
 
 
