@@ -6,8 +6,7 @@
         "info": "소개말이 없습니다.",
         "points": 1000,
         "medals": 0,
-        "latest_reward": 0,
-        "attendance": [],
+        "latest_reward": null,
         "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
         "game": {
             "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
@@ -17,12 +16,12 @@
             "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
             "apmal": {"times": 0, "win": 0, "best": 0, "winrate": 0}
         },
-        "attendance_times": 0,
+        "reward_times": 0,
         "command_used": 0,
         "banned": false,
         "latest_command": null,
         "mails": [],
-        "alerts": {"daily": false, "heart": false, "mail": true}
+        "alerts": {"daily": null, "heart": null, "mail": null}
     },
     "guild": {
         "_id": null,

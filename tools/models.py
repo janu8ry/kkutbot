@@ -97,9 +97,9 @@ class UserGameStatusModel:
 
 @dataclass
 class AlertModel:
-    daily: bool = False
-    heart: bool = False
-    mail: bool = True
+    daily: int = None
+    heart: int = None
+    mail: int = None
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -114,11 +114,10 @@ class UserModel:
     info: str = "소개말이 없습니다."
     points: int = 1000
     medals: int = 0
-    latest_reward: int = 0
-    attendance: list = field(default_factory=list)
+    latest_reward: int = None
     quest: UserQuestModel = UserQuestModel()
     game: UserGameStatusModel = UserGameStatusModel()
-    attendance_times: int = 0
+    reward_times: int = 0
     command_used: int = 0
     banned: bool = False
     latest_usage: int = None
@@ -135,10 +134,9 @@ class UserModel:
             points=data.get("points"),
             medals=data.get("medals"),
             latest_reward=data.get("latest_reward"),
-            attendance=data.get("attendance"),
             quest=UserQuestModel.from_dict(data.get("quest")),
             game=UserGameStatusModel.from_dict(data.get("game")),
-            attendance_times=data.get("attendance_times"),
+            reward_times=data.get("attendance_times"),
             command_used=data.get("command_used"),
             banned=data.get("banned"),
             latest_usage=data.get("latest_usage"),
