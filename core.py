@@ -1,5 +1,7 @@
 import os
 import logging
+import subprocess
+from datetime import date
 
 import discord
 from discord.ext import commands
@@ -8,6 +10,7 @@ import aiohttp
 
 from tools import webupdater
 from tools.config import config
+from tools.db import dbconfig, username, password
 
 
 logger = logging.getLogger("kkutbot")
@@ -24,8 +27,16 @@ class Kkutbot(commands.AutoShardedBot):
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
-    def __init__(self, **kwargs):
-        super().__init__(self, **kwargs)
+    def __init__(self):
+        super().__init__(
+            command_prefix=commands.when_mentioned_or(config(f"prefix.{'test' if config('test') else 'main'}")),
+            help_command=None,  # disables the default help command
+            intents=discord.Intents.default(),
+            activity=discord.Game("봇 로딩"),
+            owner_id=610625541157945344,
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+            strip_after_prefix=True  # allows 'ㄲ ' prefix
+        )
         self.webclient = webupdater.Client(
             bot=self,
             koreanbots_token=config("token.koreanbots"),
@@ -35,10 +46,15 @@ class Kkutbot(commands.AutoShardedBot):
 
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
+        if not config('test'):
+            self.scheduler.add_job(self.backup, 'cron', hour=5, minute=0, second=0)
         self.scheduler.start()
 
     async def get_context(self, message: discord.Message, *, cls=KkutbotContext) -> KkutbotContext:
         return await super().get_context(message=message, cls=cls)
+
+    def run_bot(self):
+        super().run(config(f"token.{'test' if config('test') else 'main'}"))
 
     def try_reload(self, name: str):
         name = f"cogs.{name}"
@@ -69,3 +85,13 @@ class Kkutbot(commands.AutoShardedBot):
                 ) as response:
             data = await response.json()
         return data['data']['voted']
+
+    async def backup(self):
+        today = date.today().strftime("%Y-%m-%d")
+        fp = os.path.join(os.getcwd(), "backup", f"{today}.archive")
+        cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db {dbconfig('db')} --gzip --archive={fp}"
+        if all([username, password]):
+            cmd += f" --authenticationDatabase admin -u {username} -p {password}"
+        subprocess.run(cmd, check=True, shell=True)
+        os.remove(fp)
+        await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
