@@ -97,6 +97,7 @@ class Kkutbot(commands.AutoShardedBot):
             self.reload_extension(name)
         except commands.ExtensionNotLoaded:
             self.load_extension(name)
+        logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
@@ -105,7 +106,6 @@ class Kkutbot(commands.AutoShardedBot):
         for cogname in os.listdir("cogs"):
             if cogname.endswith(".py"):
                 self.try_reload(cogname[:-3])
-                logger.info(f"카테고리 '{cogname[:-3]}'을(를) 불러왔습니다!")
 
     @staticmethod
     def dict_emojis():
@@ -122,13 +122,19 @@ class Kkutbot(commands.AutoShardedBot):
         return data['data']['voted']
 
     async def backup(self):
+        logger.debug("DB 백업 준비중...")
         today = date.today().strftime("%Y-%m-%d")
         fp = os.path.join(os.getcwd(), "backup", f"{today}.archive")
         cmd = f"mongodump -h {dbconfig('ip')}:{dbconfig('port')} --db {dbconfig('db')} --gzip --archive={fp}"
         if all([username, password]):
             cmd += f" --authenticationDatabase admin -u {username} -p {password}"
-        subprocess.run(cmd, check=True, shell=True)
+        try:
+            subprocess.run(cmd, check=True, shell=True)
+        except subprocess.CalledProcessError as error:
+            logger.error(f"DB 백업에 실패했습니다.\n에러 내용: {error}")
+            return
         os.remove(fp)
+        logger.debug("DB 백업 완료!")
         await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
 
 
