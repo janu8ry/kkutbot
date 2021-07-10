@@ -38,7 +38,7 @@ jobs:
           pip3 install -r dev-requirements.txt
       - name: Sort with isort
         run: |
-          isort . --gitignore
+          $HOME/.local/bin/isort . --gitignore
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
