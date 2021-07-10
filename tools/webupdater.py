@@ -56,7 +56,10 @@ class Client:
 
         headers = {"Authorization": self.koreanbots_token}
 
-        body = {"servers": len(self.bot.guilds)}
+        body = {
+            "servers": len(self.bot.guilds),
+            "shards": self.bot.shard_count
+        }
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -86,14 +89,14 @@ class Client:
 
         body = {
             "server_count": len(self.bot.guilds),
-            "shard_count": self.bot.shard_count,
+            "shard_count": self.bot.shard_count
         }
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f"{self.BASEURL['topgg']}/{self.bot.user.id}/stats",
                 headers=headers,
-                json=body,
+                json=body
             ) as raw_resp:
                 resp = await raw_resp.json()
                 if resp["code"] == 200:
