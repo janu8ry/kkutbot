@@ -1,18 +1,14 @@
 # Jetbrains IDE config
-.idea
+.idea/
 
 # virtualenv
-venv
+venv/
 
 # macOS
 .DS_Store
 
 # cache
-__pycache__
-
-# directory for bd backup
-backup
-tmp
+**/__pycache__/
 
 # config files
 setup.py
@@ -20,6 +16,9 @@ config.example.yml
 
 # test file
 test.py
+
+# pip
+dev-requirements.txt
 
 # git & ci
 .github/

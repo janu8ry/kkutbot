@@ -15,7 +15,6 @@ config.yml
 
 # logs & backup
 logs/
-tmp/
 backup/
 
 # test file
