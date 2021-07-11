@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip3 install -r isort
+          pip3 install isort
       - name: Sort with isort
         run: |
           isort . --gitignore
