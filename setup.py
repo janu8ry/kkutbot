@@ -16,7 +16,8 @@ async def mode1():
             "daily_times": "reward_times",
             "last_command": "latest_usage",
             "mail": "mails",
-            "alert": "alerts"
+            "alert": "alerts",
+            "game.rank_multi": "game.rank_online"
         },
         "$unset": {
             "daily": 1
