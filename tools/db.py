@@ -4,7 +4,8 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional, Union
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
+from motor.motor_asyncio import (AsyncIOMotorClient,  # noqa
+                                 AsyncIOMotorCollection)
 
 try:
     import uvloop

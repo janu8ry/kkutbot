@@ -1,7 +1,7 @@
+import asyncio
+import inspect
 from dataclasses import dataclass
 from datetime import datetime
-import inspect
-import asyncio
 
 from .db import write
 
