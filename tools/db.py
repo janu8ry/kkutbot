@@ -117,7 +117,7 @@ async def write(id_: Union[int, str], col: str, path: str, value, name: Optional
                 main_data["_id"] = id_
                 main_data["name"] = name
                 await db.user.insert_one(main_data)
-        if name != (await read(id_, "user", "name")):
+        if name and name != (await read(id_, "user", "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
     elif (col == "guild") and (not await read(id_, "guild", "invited")):
         main_data = await read(id_, "guild")
