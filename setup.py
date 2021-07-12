@@ -12,15 +12,17 @@ async def mode1():
             "_name": "name",
             "register_date": "registered",
             "info_word": "info",
-            "last_reward": "latest_reward",
+            "last_vote": "latest_reward",
             "daily_times": "reward_times",
             "last_command": "latest_usage",
             "mail": "mails",
+            "alert.daily": "alert.reward",
             "alert": "alerts",
             "game.rank_multi": "game.rank_online"
         },
         "$unset": {
-            "daily": 1
+            "daily": 1,
+            "alerts.start_point": 1
         }
     })
 
@@ -29,15 +31,17 @@ async def mode1():
             "_name": "name",
             "register_date": "registered",
             "info_word": "info",
-            "last_reward": "latest_reward",
+            "last_vote": "latest_reward",
             "daily_times": "reward_times",
             "last_command": "latest_usage",
             "mail": "mails",
+            "alert.daily": "alert.reward",
             "alert": "alerts",
             "game.rank_multi": "game.rank_online"
         },
         "$unset": {
-            "daily": 1
+            "daily": 1,
+            "alerts.start_point": 1
         }
     })
 

@@ -21,7 +21,7 @@
         "banned": false,
         "latest_command": null,
         "mails": [],
-        "alerts": {"daily": null, "heart": null, "mail": null}
+        "alerts": {"reward": null, "mail": null}
     },
     "guild": {
         "_id": null,
