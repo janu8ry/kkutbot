@@ -4,8 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional, Union
 
-import discord
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
 try:
     import uvloop
@@ -54,72 +53,16 @@ logger.info("mongoDB에 연결됨")
 db = client[dbconfig("db")]
 
 
-def get_collection(target) -> AsyncIOMotorCollection:
-    """
-    returns proper collection of the target
-
-    Arguments
-    ---------
-    target
-        targeted object to get collection
-
-    Returns
-    -------
-    AsyncIOMotorCollection
-        proper collection of the target
-    """
-    if isinstance(target, (discord.User, discord.Member, discord.ClientUser, int)):
-        return db.user
-    elif isinstance(target, discord.Guild):
-        return db.guild
-    elif target is None:
-        return db.general
-
-
-def _get_id(target) -> Union[int, str]:
-    """
-    returns target id
-
-    Arguments
-    ---------
-    target
-        targeted object to get id
-
-    Returns
-    -------
-    Union[int, str]
-        target id
-    """
-    if target is None:
-        return "general"
-    return getattr(target, "id", target)
-
-
-def _get_name(target) -> str:
-    """
-    returns target name
-
-    Arguments
-    ---------
-    target
-        targeted object to get name
-
-    Returns
-    -------
-    Union[int, str]
-        target name
-    """
-    return getattr(target, "name", None)
-
-
-async def read(target, path: Optional[str] = None) -> Any:
+async def read(id_: Union[int, str], col: str, path: Optional[str] = None) -> Any:
     """
     reads target info
 
     Arguments
     ---------
-    target
-        targeted object to read info
+    id_: Union[int, str]
+        target id to read info
+    col: str
+        mongoDB collection to get id
     path: Optional[str]
         data path in nested dictionary
 
@@ -128,16 +71,16 @@ async def read(target, path: Optional[str] = None) -> Any:
     Any
         target's info
     """
-    if target:
-        collection = get_collection(target)
-        main_data = await collection.find_one({"_id": _get_id(target)})
-        if not main_data:
-            if collection.name == "user":
-                main_data = deepcopy(config("default_data.user"))
-            elif collection.name == "guild":
-                main_data = deepcopy(config("default_data.guild"))
-    else:
-        main_data = deepcopy(config("default_data.general"))
+    main_data = await db[col].find_one({"_id": id_})
+    if not main_data:
+        if col == "user":
+            main_data = deepcopy(config("default_data.user"))
+        elif col == "guild":
+            main_data = deepcopy(config("default_data.guild"))
+        elif col == "general":
+            main_data = deepcopy(config("default_data.general"))
+        else:
+            raise ValueError
 
     if path is None:
         return main_data
@@ -145,82 +88,94 @@ async def read(target, path: Optional[str] = None) -> Any:
     return get_nested_dict(main_data, path.split("."))
 
 
-async def write(target, path: str, value):
+async def write(id_: Union[int, str], col: str, path: str, value, name: Optional[str] = None):
     """
     writes value to target
 
     Arguments
     ---------
-    target
-        targeted object to write value
+    id_: Union[int, str]
+        target id to read info
+    col: str
+        mongoDB collection to get id
     path: Optional[str]
         data path in nested dictionary
     value
         value to write into DB
+    name: Optional[str]
+        name of user when col == "user"
     """
-    collection = get_collection(target)
 
-    if collection.name == "user":
-        if not (await read(target, "registered")):
-            if data := await db.unused.find_one({"_id": _get_id(target)}):
+    if col == "user":
+        if not (await read(id_, "user", "registered")):
+            if data := await db.unused.find_one({"_id": id_}):
                 await db.user.insert_one(data)
-                await db.unused.delete_one({"_id": _get_id(target)})
+                await db.unused.delete_one({"_id": id_})
             else:
-                main_data = await read(target)
+                main_data = await read(id_, "user")
                 main_data["register_date"] = datetime.now()
-                main_data["_id"] = _get_id(target)
-                main_data["name"] = _get_name(target)
+                main_data["_id"] = id_
+                main_data["name"] = name
                 await db.user.insert_one(main_data)
-        if (name := _get_name(target)) != (await read(target, "name")):
-            await db.user.update_one({"_id": _get_id(target)}, {"$set": {"name": name}})
-    elif (collection.name == "guild") and (not await read(target)):
-        await db.guild.insert_one({"_id": _get_id(target)})
+        if name != (await read(id_, "user", "name")):
+            await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
+    elif (col == "guild") and (not await read(id_, "guild", "invited")):
+        main_data = await read(id_, "guild")
+        main_data["invited"] = datetime.now()
+        main_data["_id"] = id_
+        await db.guild.insert_one(main_data)
 
-    await collection.update_one({"_id": _get_id(target)}, {"$set": {path: value}})
+    await db[col].update_one({"_id": id_}, {"$set": {path: value}})
 
 
-async def add(target, path: str, value: int):
+async def add(id_: Union[int, str], col: str, path: str, value: int):
     """
     adds value to target
 
     Arguments
     ---------
-    target
-        targeted object to add value
+    id_: Union[int, str]
+        target id to read info
+    col: str
+        mongoDB collection to get id
     path: str
         data path in nested dictionary
     value: int
         value to add to target
     """
-    data_before = (await read(target, path)) or 0
-    await write(target, path, data_before + value)
+    data_before = (await read(id_, col, path)) or 0
+    await write(id_, col, path, data_before + value)
 
 
-async def delete(target):
+async def delete(id_: Union[int, str], col: str):
     """
     removes target in DB
 
     Arguments
     ---------
-    target
-        targeted object to delete in DB
+    id_: Union[int, str]
+        target id to read info
+    col: str
+        mongoDB collection to get id
     """
-    await get_collection(target).delete_one({"_id": _get_id(target)})
+    await db[col].delete_one({"_id": id_})
 
 
-async def append(target, path: str, value):
+async def append(id_: Union[int, str], col: str, path: str, value):
     """
     appends value to target data(list)
 
     Arguments
     ---------
-    target
-        targeted object to append value
+    id_: Union[int, str]
+        target id to read info
+    col: str
+        mongoDB collection to get id
     path: str
         data path in nested dictionary
     value: int
         value to append to target(list)
     """
-    await get_collection(target).update_one(
-        {"_id": _get_id(target)}, {"$push": {path: value}}
+    await db[col].update_one(
+        {"_id": id_}, {"$push": {path: value}}
     )
