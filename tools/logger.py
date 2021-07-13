@@ -9,14 +9,14 @@ from rich.logging import RichHandler
 from rich.theme import Theme
 
 
-def rotator(source, dest: str):
+def rotator(source: str, dest: str):
     with open(source, "rb") as rf:
         with gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
             wf.write(rf.read())
     os.remove(source)
 
 
-def namer(_):
+def namer(_) -> str:
     return os.path.join("logs", time.strftime("%Y-%m-%d") + ".log")
 
 

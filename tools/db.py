@@ -2,9 +2,8 @@ import asyncio
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Literal, TypeAlias
 
-from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
 from motor.motor_asyncio import AsyncIOMotorClient
 
 try:
@@ -17,8 +16,10 @@ from .config import config, get_nested_dict
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
+coltype: TypeAlias = Literal["user", "guild", "general"]
 
-def dbconfig(query: str):
+
+def dbconfig(query: str) -> Any:
     """
     gets about db configuration value in 'config.yml' file
     Parameters
@@ -44,17 +45,17 @@ if uvloop:
 else:
     loop = asyncio.get_event_loop()
 
-client = AsyncIOMotorClient(
+_client = AsyncIOMotorClient(
     host=dbconfig("ip"), port=dbconfig("port"), io_loop=loop, **db_options
 )
 
 logger.info("mongoDB에 연결됨")
 
 
-db = client[dbconfig("db")]
+db = _client[dbconfig("db")]
 
 
-async def read(id_: Union[int, str], col: str, path: Optional[str] = None) -> Any:
+async def read(id_: Union[int, str], col: coltype, path: Optional[str] = None) -> Any:
     """
     reads target info
 
@@ -89,7 +90,7 @@ async def read(id_: Union[int, str], col: str, path: Optional[str] = None) -> An
     return get_nested_dict(main_data, path.split("."))
 
 
-async def write(id_: Union[int, str], col: str, path: str, value, name: Optional[str] = None):
+async def write(id_: Union[int, str], col: coltype, path: str, value, name: Optional[str] = None):
     """
     writes value to target
 
@@ -129,7 +130,7 @@ async def write(id_: Union[int, str], col: str, path: str, value, name: Optional
     await db[col].update_one({"_id": id_}, {"$set": {path: value}})
 
 
-async def delete(id_: Union[int, str], col: str):
+async def delete(id_: Union[int, str], col: coltype):
     """
     removes target in DB
 

@@ -28,13 +28,7 @@ class Client:
         whether to automaticly post server count to two websites
     """
 
-    def __init__(
-        self,
-        bot: commands.AutoShardedBot,
-        koreanbots_token: str,
-        topgg_token: str,
-        post: bool = True,
-    ):
+    def __init__(self, bot: commands.AutoShardedBot, koreanbots_token: str, topgg_token: str, post: bool = True):
         self.bot = bot
         self.koreanbots_token = koreanbots_token
         self.topgg_token = topgg_token
@@ -42,7 +36,7 @@ class Client:
         self.before = 0
         self.BASEURL = {
             "koreanbots": "https://api.koreanbots.dev/v2/bots",
-            "topgg": "https://top.gg/api/bots/",
+            "topgg": "https://top.gg/api/bots/"
         }
         if post:
             self.loop.create_task(self.update_all())
@@ -65,7 +59,7 @@ class Client:
             async with session.post(
                 f"{self.BASEURL['koreanbots']}/{self.bot.user.id}/stats",
                 headers=headers,
-                json=body,
+                json=body
             ) as raw_resp:
                 resp = await raw_resp.json()
                 if resp["code"] == 200:
