@@ -3,6 +3,7 @@ import time
 import traceback
 from datetime import date, datetime
 from typing import Type
+import os
 
 import discord
 import sentry_sdk
@@ -14,6 +15,9 @@ import core
 from tools.config import config
 from tools.db import delete
 from tools.logger import setup_logger
+
+os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
+os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
 
 logger = logging.getLogger("kkutbot")
 
