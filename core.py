@@ -56,7 +56,7 @@ class KkutbotContext(commands.Context):
 
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "2.0.0-alpha"
-    __slots__ = ()
+    __slots__ = ("webclient", "db", "scheduler")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
@@ -151,9 +151,6 @@ def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
     return decorator
 
 
-commands.command = command
-
-
 class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
         if not kwargs.get('escape_emoji_formatting', False):
@@ -168,6 +165,3 @@ class KkutbotEmbed(discord.Embed):
             name = name.format(**Kkutbot.dict_emojis()) if name else None
             value = value.format(**Kkutbot.dict_emojis()) if value else None
         return super().add_field(name=name, value=value, inline=inline)
-
-
-discord.Embed = KkutbotEmbed
