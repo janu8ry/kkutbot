@@ -134,7 +134,7 @@ class Kkutbot(commands.AutoShardedBot):
         return from_dict(GuildModel, data)
 
     @staticmethod
-    async def get_generla_data():
+    async def get_general_data():
         data = await read("general", "general")
         data["_col"] = "general"
         data["_path"] = ""
