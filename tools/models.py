@@ -16,7 +16,7 @@ class BaseModel:
     def __setattr__(self, key, value):
         if not inspect.stack()[1].function == "__init__":
             asyncio.get_event_loop().create_task(
-                write(self._id, self._col, f"{self._path}.{key}", value)  # noqa
+                write(self._id, self._col, self._path + key, value)  # noqa
             )
         super().__setattr__(key, value)
 
@@ -25,14 +25,14 @@ class BaseModel:
 class UserQuestStatusModel(BaseModel):
     date: int
     completed: list
-    _path: str = "quest.status"
+    _path: str = "quest.status."
 
 
 @dataclass
 class UserQuestModel(BaseModel):
     status: UserQuestStatusModel
     cache: dict
-    _path: str = "quest"
+    _path: str = "quest."
 
 
 @dataclass
@@ -50,32 +50,32 @@ class BaseRankGameModel(BaseGameModel):
 
 @dataclass
 class SoloRankGameModel(BaseRankGameModel):
-    _path: str = "game.rank_solo"
+    _path: str = "game.rank_solo."
 
 
 @dataclass
 class OnlineRankGameModel(BaseRankGameModel):
-    _path: str = "game.rank_online"
+    _path: str = "game.rank_online."
 
 
 @dataclass
 class KkdGameModel(BaseGameModel):
-    _path: str = "game.kkd"
+    _path: str = "game.kkd."
 
 
 @dataclass
 class GuildGameModel(BaseGameModel):
-    _path: str = "game.guild_multi"
+    _path: str = "game.guild_multi."
 
 
 @dataclass
 class MultiOnlineGameModel(BaseGameModel):
-    _path: str = "game.online_multi"
+    _path: str = "game.online_multi."
 
 
 @dataclass
 class ApmalGameModel(BaseGameModel):
-    _path: str = "game.apmal"
+    _path: str = "game.apmal."
 
 
 @dataclass
@@ -86,14 +86,14 @@ class UserGameStatusModel(BaseModel):
     guild_multi: GuildGameModel
     online_multi: MultiOnlineGameModel
     apmal: ApmalGameModel
-    _path: str = "game"
+    _path: str = "game."
 
 
 @dataclass
 class AlertModel(BaseModel):
     reward: int
     mail: int
-    _path: str = "alerts"
+    _path: str = "alerts."
 
 
 @dataclass
@@ -116,7 +116,7 @@ class UserModel(BaseModel):
 
 
 @dataclass
-class GuildModel:
+class GuildModel(BaseModel):
     _id: int
     invited: int
     latest_usage: float
@@ -124,7 +124,7 @@ class GuildModel:
 
 
 @dataclass
-class GeneralModel:
+class GeneralModel(BaseModel):
     _id: str
     attendance: int
     command_used: int
