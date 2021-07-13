@@ -4,8 +4,8 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional, Union
 
-from motor.motor_asyncio import (AsyncIOMotorClient,  # noqa
-                                 AsyncIOMotorCollection)
+from motor.motor_asyncio import (AsyncIOMotorClient,
+                                 AsyncIOMotorCollection)  # noqa
 
 try:
     import uvloop
@@ -129,25 +129,6 @@ async def write(id_: Union[int, str], col: str, path: str, value, name: Optional
     await db[col].update_one({"_id": id_}, {"$set": {path: value}})
 
 
-async def add(id_: Union[int, str], col: str, path: str, value: int):
-    """
-    adds value to target
-
-    Arguments
-    ---------
-    id_: Union[int, str]
-        target id to read info
-    col: str
-        mongoDB collection to get id
-    path: str
-        data path in nested dictionary
-    value: int
-        value to add to target
-    """
-    data_before = (await read(id_, col, path)) or 0
-    await write(id_, col, path, data_before + value)
-
-
 async def delete(id_: Union[int, str], col: str):
     """
     removes target in DB
@@ -160,23 +141,3 @@ async def delete(id_: Union[int, str], col: str):
         mongoDB collection to get id
     """
     await db[col].delete_one({"_id": id_})
-
-
-async def append(id_: Union[int, str], col: str, path: str, value):
-    """
-    appends value to target data(list)
-
-    Arguments
-    ---------
-    id_: Union[int, str]
-        target id to read info
-    col: str
-        mongoDB collection to get id
-    path: str
-        data path in nested dictionary
-    value: int
-        value to append to target(list)
-    """
-    await db[col].update_one(
-        {"_id": id_}, {"$push": {path: value}}
-    )
