@@ -55,22 +55,22 @@ class Client:
             "shards": self.bot.shard_count
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{self.BASEURL['koreanbots']}/{self.bot.user.id}/stats",
-                headers=headers,
-                json=body
-            ) as raw_resp:
-                resp = await raw_resp.json()
-                if resp["code"] == 200:
-                    self.before = len(self.bot.guilds)
-                    logger.info("한국 디스코드봇 리스트에 성공적으로 서버수를 업데이트 했습니다.")
-                elif resp["code"] == 429:
-                    logger.debug("한국 디스코드봇 리스트 서버수 업데이트 건너뜀. (레이트리밋)")
-                else:
-                    logger.error(
-                        f"한국 디스코드봇 리스트 서버수 업데이트에 실패했습니다. 에러 코드: {resp['code']}, 내용: {resp['message']}"
-                    )
+        async with aiohttp.ClientSession() as session, \
+                session.post(
+                    f"{self.BASEURL['koreanbots']}/{self.bot.user.id}/stats",
+                    headers=headers,
+                    json=body
+                ) as raw_resp:
+            resp = await raw_resp.json()
+            if resp["code"] == 200:
+                self.before = len(self.bot.guilds)
+                logger.info("한국 디스코드봇 리스트에 성공적으로 서버수를 업데이트 했습니다.")
+            elif resp["code"] == 429:
+                logger.debug("한국 디스코드봇 리스트 서버수 업데이트 건너뜀. (레이트리밋)")
+            else:
+                logger.error(
+                    f"한국 디스코드봇 리스트 서버수 업데이트에 실패했습니다. 에러 코드: {resp['code']}, 내용: {resp['message']}"
+                )
 
     async def topgg_update(self):
         """
@@ -86,22 +86,22 @@ class Client:
             "shard_count": self.bot.shard_count
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{self.BASEURL['topgg']}/{self.bot.user.id}/stats",
-                headers=headers,
-                json=body
-            ) as raw_resp:
-                resp = await raw_resp.json()
-                if resp["code"] == 200:
-                    self.before = len(self.bot.guilds)
-                    logger.info("top.gg에 성공적으로 서버수를 업데이트 했습니다.")
-                elif resp["code"] == 429:
-                    logger.debug("top.gg 서버수 업데이트 건너뜀. (레이트리밋)")
-                else:
-                    logger.error(
-                        f"top.gg 서버수 업데이트에 실패했습니다. 에러 코드: {resp['code']}, 내용: {resp['message']}"
-                    )
+        async with aiohttp.ClientSession() as session, \
+                session.post(
+                    f"{self.BASEURL['topgg']}/{self.bot.user.id}/stats",
+                    headers=headers,
+                    json=body
+                ) as raw_resp:
+            resp = await raw_resp.json()
+            if resp["code"] == 200:
+                self.before = len(self.bot.guilds)
+                logger.info("top.gg에 성공적으로 서버수를 업데이트 했습니다.")
+            elif resp["code"] == 429:
+                logger.debug("top.gg 서버수 업데이트 건너뜀. (레이트리밋)")
+            else:
+                logger.error(
+                    f"top.gg 서버수 업데이트에 실패했습니다. 에러 코드: {resp['code']}, 내용: {resp['message']}"
+                )
 
     async def update_all(self):
         await self.bot.wait_until_ready()

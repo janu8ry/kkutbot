@@ -10,9 +10,8 @@ from rich.theme import Theme
 
 
 def rotator(source: str, dest: str):
-    with open(source, "rb") as rf:
-        with gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
-            wf.write(rf.read())
+    with open(source, "rb") as rf, gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
+        wf.write(rf.read())
     os.remove(source)
 
 
