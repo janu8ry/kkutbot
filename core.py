@@ -5,13 +5,15 @@ from datetime import date
 from typing import Type
 
 import aiohttp
+from dacite import from_dict
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext import commands
 
 from tools import webupdater
 from tools.config import config
-from tools.db import db, dbconfig, password, username
+from tools.db import db, dbconfig, password, username, read
+from tools.models import UserModel, GuildModel, GeneralModel
 
 logger = logging.getLogger("kkutbot")
 
@@ -106,6 +108,38 @@ class Kkutbot(commands.AutoShardedBot):
     async def on_error(self, event_method, *args, **kwargs):
         if not config("test"):
             raise
+
+    @staticmethod
+    async def get_user_data(user: discord.User):
+        data = await read(user.id, "user")
+        for v in data.values():
+            if isinstance(v, dict):
+                v["_id"] = data["_id"]
+                v["_col"] = "user"
+                for t in v.values():
+                    if isinstance(t, dict):
+                        t["_id"] = data["_id"]
+                        t["_col"] = "user"
+        data["_col"] = "user"
+        data["_path"] = ""
+
+        return from_dict(UserModel, data)
+
+    @staticmethod
+    async def get_guild_data(user: discord.Guild):
+        data = await read(user.id, "guild")
+        data["_col"] = "guild"
+        data["_path"] = ""
+
+        return from_dict(GuildModel, data)
+
+    @staticmethod
+    async def get_generla_data():
+        data = await read("general", "general")
+        data["_col"] = "general"
+        data["_path"] = ""
+
+        return from_dict(GeneralModel, data)
 
     @staticmethod
     def dict_emojis():
