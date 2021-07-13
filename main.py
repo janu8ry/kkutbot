@@ -1,8 +1,8 @@
 import logging
-import traceback
-from typing import Type
 import time
+import traceback
 from datetime import date, datetime
+from typing import Type
 
 import discord
 import sentry_sdk
@@ -12,8 +12,8 @@ from sentry_sdk.integrations.logging import ignore_logger
 
 import core
 from tools.config import config
-from tools.logger import setup_logger
 from tools.db import delete
+from tools.logger import setup_logger
 
 logger = logging.getLogger("kkutbot")
 
