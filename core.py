@@ -5,15 +5,15 @@ from datetime import date
 from typing import Type
 
 import aiohttp
-from dacite import from_dict
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from dacite import from_dict
 from discord.ext import commands
 
 from tools import webupdater
 from tools.config import config
-from tools.db import db, dbconfig, password, username, read
-from tools.models import UserModel, GuildModel, GeneralModel
+from tools.db import db, dbconfig, password, read, username
+from tools.models import GeneralModel, GuildModel, UserModel
 
 logger = logging.getLogger("kkutbot")
 
