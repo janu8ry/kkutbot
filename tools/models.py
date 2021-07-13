@@ -20,6 +20,13 @@ class BaseModel:
             )
         super().__setattr__(key, value)
 
+    @classmethod
+    def from_path(cls, path: str):
+        data = cls
+        for i in path.split("."):
+            data = getattr(data, i)
+        return data
+
 
 @dataclass
 class UserQuestStatusModel(BaseModel):
