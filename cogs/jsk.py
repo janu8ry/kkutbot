@@ -24,7 +24,7 @@ class CustomJSK(*STANDARD_FEATURES, OPTIONAL_FEATURES):
         return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "pip3 " + argument.content))
 
     @Feature.Command(parent="jsk", name="docker")
-    async def jsk_poetry(self, ctx: commands.Context, *, argument: codeblock_converter):
+    async def jsk_docker(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for 'jsk sh docker'. Invokes the system shell.
         """
