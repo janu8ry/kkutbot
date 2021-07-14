@@ -10,7 +10,7 @@ from jishaku.features.baseclass import Feature
 import core
 
 
-class CustomJSK(*STANDARD_FEATURES, OPTIONAL_FEATURES):
+class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
     """jishaku의 커스텀 확장 명령어들이 있는 카테고리입니다."""
 
     filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
