@@ -120,6 +120,7 @@ class UserModel(BaseModel):
     latest_usage: float
     mails: list
     alerts: AlertModel
+    _path = ""
 
 
 @dataclass
@@ -128,6 +129,7 @@ class GuildModel(BaseModel):
     invited: int
     latest_usage: float
     command_used: int
+    _path = ""
 
 
 @dataclass
@@ -138,3 +140,4 @@ class GeneralModel(BaseModel):
     latest_command: float
     commands: dict
     quests: dict
+    _path = ""
