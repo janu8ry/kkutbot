@@ -1,9 +1,9 @@
 import logging
+import os
 import time
 import traceback
 from datetime import date, datetime
 from typing import Type
-import os
 
 import discord
 import sentry_sdk
