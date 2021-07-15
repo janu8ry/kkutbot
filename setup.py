@@ -53,7 +53,7 @@ async def mode1():
 
     await db.general.update_one({"_id": "general"}, {
         "$rename": {
-            "daily": "attendance",
+            "daily": "reward",
             "last_command": "latest_usage",
             "quest": "quests"
         }
