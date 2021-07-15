@@ -170,7 +170,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
     #         color=config('colors.error')
     #     )
     #     await ctx.send(embed=embed)
-    elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument)):
+    elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument, commands.errors.TooManyArguments)):
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
