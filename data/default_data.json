@@ -19,7 +19,7 @@
         "reward_times": 0,
         "command_used": 0,
         "banned": false,
-        "latest_command": null,
+        "latest_usage": null,
         "mails": [],
         "alerts": {"reward": null, "mail": null}
     },
@@ -33,7 +33,7 @@
         "_id": "general",
         "attendance": 0,
         "command_used": 0,
-        "latest_command": null,
+        "latest_usage": null,
         "commands": {},
         "quests": {}
     }
