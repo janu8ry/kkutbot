@@ -3,9 +3,9 @@ import logging
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Literal, Optional, Union
-from typing_extensions import TypeAlias
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from typing_extensions import TypeAlias
 
 try:
     import uvloop
