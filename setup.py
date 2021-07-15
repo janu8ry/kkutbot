@@ -47,14 +47,14 @@ async def mode1():
 
     await db.guild.update_many({}, {
         "$rename": {
-            "last_usage": "latest_usage"
+            "last_command": "latest_usage"
         }
     })
 
     await db.general.update_one({"_id": "general"}, {
         "$rename": {
             "daily": "attendance",
-            "last_usage": "latest_usage",
+            "last_command": "latest_usage",
             "quest": "quests"
         }
     })

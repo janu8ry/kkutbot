@@ -136,7 +136,7 @@ class GuildModel(BaseModel):
 @dataclass
 class GeneralModel(BaseModel):
     _id: Optional[str]
-    attendance: int
+    reward: int
     command_used: int
     latest_command: Optional[float]
     commands: dict
