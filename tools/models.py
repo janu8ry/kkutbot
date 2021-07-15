@@ -48,7 +48,7 @@ class BaseGameModel(BaseModel):
     times: int
     win: int
     best: int
-    winrate: int
+    winrate: float
 
 
 @dataclass
