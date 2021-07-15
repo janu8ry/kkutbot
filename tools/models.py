@@ -2,6 +2,7 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 from .db import write
 
@@ -10,7 +11,7 @@ __all__ = ("UserModel", "GuildModel", "GeneralModel")
 
 @dataclass
 class BaseModel:
-    _id: int
+    _id: Optional[int]
     _col: str
 
     def __setattr__(self, key, value):
@@ -98,26 +99,26 @@ class UserGameStatusModel(BaseModel):
 
 @dataclass
 class AlertModel(BaseModel):
-    reward: int
-    mail: int
+    reward: Optional[int]
+    mail: Optional[int]
     _path: str = "alerts."
 
 
 @dataclass
 class UserModel(BaseModel):
-    _id: int
-    name: str
-    registered: datetime
+    _id: Optional[int]
+    name: Optional[str]
+    registered: Optional[datetime]
     info: str
     points: int
     medals: int
-    latest_reward: int
+    latest_reward: Optional[int]
     quest: UserQuestModel
     game: UserGameStatusModel
     reward_times: int
     command_used: int
     banned: bool
-    latest_usage: float
+    latest_usage: Optional[float]
     mails: list
     alerts: AlertModel
     _path = ""
@@ -125,19 +126,19 @@ class UserModel(BaseModel):
 
 @dataclass
 class GuildModel(BaseModel):
-    _id: int
-    invited: int
-    latest_usage: float
+    _id: Optional[int]
+    invited: Optional[int]
+    latest_usage: Optional[float]
     command_used: int
     _path = ""
 
 
 @dataclass
 class GeneralModel(BaseModel):
-    _id: str
+    _id: Optional[str]
     attendance: int
     command_used: int
-    latest_command: float
+    latest_command: Optional[float]
     commands: dict
     quests: dict
     _path = ""
