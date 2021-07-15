@@ -105,10 +105,6 @@ class Kkutbot(commands.AutoShardedBot):
             if cogname.endswith(".py"):
                 self.try_reload(cogname[:-3])
 
-    async def on_error(self, event_method, *args, **kwargs):
-        if not config("test"):
-            raise
-
     @staticmethod
     async def get_user_data(user: discord.User):
         data = await read(user.id, "user")

@@ -6,14 +6,12 @@ from datetime import date, datetime
 from typing import Type
 
 import discord
-import sentry_sdk
 from discord.ext import commands
 from rich.traceback import install as rich_install
-from sentry_sdk.integrations.logging import ignore_logger
 
 import core
 from tools.config import config
-from tools.db import delete
+from tools.db import delete, read
 from tools.logger import setup_logger
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
@@ -22,20 +20,6 @@ os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
 logger = logging.getLogger("kkutbot")
 
 bot = core.Kkutbot()
-
-
-def before_send(event, _):
-    logger.debug("sentry에 에러 보고중...")
-    return event
-
-
-if not config("test"):
-    sentry_sdk.init(
-        config("sentry_dsn"),
-        release=bot.__version__,
-        before_send=before_send
-    )
-    ignore_logger("kkutbot")
 
 
 @bot.event
@@ -59,9 +43,9 @@ async def on_shard_ready(shard_id):
 
 @bot.event
 async def on_message(message: discord.Message):
-    userdata = await bot.get_user_data(message.author)
+    is_banned = await read(message.author.id, "user", "banned")
 
-    if message.author.bot or userdata.banned:
+    if message.author.bot or is_banned:
         return None
     else:
         if message.content.lstrip(config(f"prefix.{'test' if config('test') else 'main'}")).startswith("jsk"):
@@ -218,8 +202,6 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
         await ctx.send(embed=embed)
         logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}")
-        if not config("test"):
-            sentry_sdk.capture_exception(error)
 
 
 @bot.event
