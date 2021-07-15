@@ -11,7 +11,7 @@ from rich.traceback import install as rich_install
 
 import core
 from tools.config import config
-from tools.db import delete, read
+from tools.db import delete
 from tools.logger import setup_logger
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
@@ -43,9 +43,9 @@ async def on_shard_ready(shard_id):
 
 @bot.event
 async def on_message(message: discord.Message):
-    is_banned = await read(message.author.id, "user", "banned")
+    userdata = await bot.get_user_data(message.author)
 
-    if message.author.bot or is_banned:
+    if message.author.bot or userdata.banned:
         return None
     else:
         if message.content.lstrip(config(f"prefix.{'test' if config('test') else 'main'}")).startswith("jsk"):
