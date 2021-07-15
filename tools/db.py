@@ -122,7 +122,7 @@ async def write(id_: Union[int, str], col: coltype, path: str, value, name: Opti
                 await db.user.insert_one(main_data)
         if name and name != (await read(id_, "user", "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
-    elif (col == "guild") and (not await read(id_, "guild", "invited")):
+    elif (col == "guild") and (await read(id_, "guild") == deepcopy(config("default_data.guild"))):
         main_data = await read(id_, "guild")
         main_data["invited"] = datetime.now()
         main_data["_id"] = id_
