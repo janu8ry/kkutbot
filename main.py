@@ -72,48 +72,48 @@ async def on_command_completion(ctx: core.KkutbotContext):
     general.latest_command = time.time()
     general.commands[ctx.command.qualified_name.replace('$', '_')] += 1
 
-    if userdata.quest.status.date != (today := date.today().toordinal()):
-        userdata.quest.status.date = today
-        userdata.quest.status.completed = []
-        cache = {}
-        for data in general.quests.keys():
-            cache[data] = userdata.from_path(data.replace("/", "."))
-        userdata.quest.cache = cache
-
-    desc = ""
-    for data, info in general.quests.items():
-        current = userdata.from_path(data.replace("/", ".")) - userdata.from_path(f"$quest.cache.{data}")
-        if current < 0:
-            setattr(userdata.quest.cache, "data", userdata.from_path(data.replace("/", ".")))
-        elif (current >= info['target']) and (data not in userdata.quest.status.completed):
-            setattr(userdata, info['reward'][1], userdata.from_path(info['reward'][1]) + info['reward'][0])
-            userdata.quest.status.completed = userdata.quest.status.completed.append(data)
-            desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
-    if desc:
-        embed = discord.Embed(
-            title="퀘스트 클리어!",
-            description=desc,
-            color=config('colors.help')
-        )
-        embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
-        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
-        await ctx.send(ctx.author.mention, embed=embed)
-
-    if not userdata.alerts.reward:
-        await ctx.send(
-            f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하고 보상을 받아가세요!"
-        )
-        userdata.alerts.reward = True
-
-    if not userdata.alerts.mail:
-        mails = len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])
-        if mails > 0:
-            await ctx.send(
-                f"{ctx.author.mention}님, 읽지 않은 메일이 "
-                f"`{len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
-                "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
-            )
-        userdata.alerts.mail = True
+    # if userdata.quest.status.date != (today := date.today().toordinal()):
+    #     userdata.quest.status.date = today
+    #     userdata.quest.status.completed = []
+    #     cache = {}
+    #     for data in general.quests.keys():
+    #         cache[data] = userdata.from_path(data.replace("/", "."))
+    #     userdata.quest.cache = cache
+    #
+    # desc = ""
+    # for data, info in general.quests.items():
+    #     current = userdata.from_path(data.replace("/", ".")) - userdata.from_path(f"$quest.cache.{data}")
+    #     if current < 0:
+    #         setattr(userdata.quest.cache, "data", userdata.from_path(data.replace("/", ".")))
+    #     elif (current >= info['target']) and (data not in userdata.quest.status.completed):
+    #         setattr(userdata, info['reward'][1], userdata.from_path(info['reward'][1]) + info['reward'][0])
+    #         userdata.quest.status.completed = userdata.quest.status.completed.append(data)
+    #         desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    # if desc:
+    #     embed = discord.Embed(
+    #         title="퀘스트 클리어!",
+    #         description=desc,
+    #         color=config('colors.help')
+    #     )
+    #     embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
+    #     embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+    #     await ctx.send(ctx.author.mention, embed=embed)
+    #
+    # if not userdata.alerts.reward:
+    #     await ctx.send(
+    #         f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하고 보상을 받아가세요!"
+    #     )
+    #     userdata.alerts.reward = True
+    #
+    # if not userdata.alerts.mail:
+    #     mails = len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])
+    #     if mails > 0:
+    #         await ctx.send(
+    #             f"{ctx.author.mention}님, 읽지 않은 메일이 "
+    #             f"`{len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
+    #             "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
+    #         )
+    #     userdata.alerts.mail = True
 
 
 @bot.event
