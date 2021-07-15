@@ -64,7 +64,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned_or(config(f"prefix.{'test' if config('test') else 'main'}")),
+            command_prefix=config(f"prefix.{'test' if config('test') else 'main'}"),
             help_command=None,  # disables the default help command
             intents=discord.Intents.default(),
             activity=discord.Game("봇 로딩"),

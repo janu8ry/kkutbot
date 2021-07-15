@@ -48,7 +48,7 @@ async def on_message(message: discord.Message):
     if message.author.bot or userdata.banned:
         return None
     else:
-        if message.content.lstrip(config(f"prefix.{'test' if config('test') else 'main'}")).startswith("jsk"):
+        if message.content.lstrip(bot.command_prefix).startswith("jsk"):
             cls = commands.Context
         else:
             cls = core.KkutbotContext
