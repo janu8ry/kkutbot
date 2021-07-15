@@ -63,7 +63,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
     userdata.latest_usage = time.time()
 
     if ctx.guild:
-        guilddata = await bot.get_guild_data(ctx.author)
+        guilddata = await bot.get_guild_data(ctx.guild)
         guilddata.latest_usage = time.time()
         guilddata.command_used += 1
 
