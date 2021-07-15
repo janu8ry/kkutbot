@@ -2,7 +2,8 @@ import asyncio
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Literal, Optional, TypeAlias, Union
+from typing import Any, Literal, Optional, Union
+from typing_extensions import TypeAlias
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
