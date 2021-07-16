@@ -6,4 +6,4 @@ uvloop == 0.15.2
 aiohttp[speedups] == 3.7.4
 APScheduler == 3.7.0
 dacite == 1.6.0
-jishaku == 2.1.0
+jishaku[procinfo] == 2.1.0
