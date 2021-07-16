@@ -3,8 +3,8 @@ import re
 import sys
 
 import discord
-import psutil
 import jishaku.repl.repl_builtins
+import psutil
 from discord.ext import commands
 from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
@@ -13,8 +13,8 @@ from jishaku.features.root_command import natural_size
 from jishaku.modules import package_version
 
 import core
-from tools.db import db, read, write
 from tools.config import config
+from tools.db import db, read, write
 
 
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
