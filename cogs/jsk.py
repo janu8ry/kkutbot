@@ -29,33 +29,33 @@ from tools.db import db, read, write
 logger = logging.getLogger("kkutbot")
 
 
-def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
+def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
     """
     Returns the dict to be used in REPL for a given Context.
     """
 
     raw_var_dict = {
-        'author': ctx.author,
-        'bot': ctx.bot,
-        'channel': ctx.channel,
-        'ctx': ctx,
-        'find': discord.utils.find,
-        'get': discord.utils.get,
-        'guild': ctx.guild,
-        'http_get_bytes': jishaku.repl.repl_builtins.http_get_bytes,
-        'http_get_json': jishaku.repl.repl_builtins.http_get_json,
-        'http_post_bytes': jishaku.repl.repl_builtins.http_post_bytes,
-        'http_post_json': jishaku.repl.repl_builtins.http_post_json,
-        'message': ctx.message,
-        'msg': ctx.message,
-        'db': db,
-        'read': read,
-        'write': write,
-        'config': config,
-        'logger': logger
+        "author": ctx.author,
+        "bot": ctx.bot,
+        "channel": ctx.channel,
+        "ctx": ctx,
+        "find": discord.utils.find,
+        "get": discord.utils.get,
+        "guild": ctx.guild,
+        "http_get_bytes": jishaku.repl.repl_builtins.http_get_bytes,
+        "http_get_json": jishaku.repl.repl_builtins.http_get_json,
+        "http_post_bytes": jishaku.repl.repl_builtins.http_post_bytes,
+        "http_post_json": jishaku.repl.repl_builtins.http_post_json,
+        "message": ctx.message,
+        "msg": ctx.message,
+        "db": db,
+        "read": read,
+        "write": write,
+        "config": config,
+        "logger": logger
     }
 
-    return {f'{prefix}{k}': v for k, v in raw_var_dict.items()}
+    return {f"{prefix}{k}": v for k, v in raw_var_dict.items()}
 
 
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
@@ -130,7 +130,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
     @Feature.Command(parent="jsk", name="pip")
     async def jsk_pip(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
-        Shortcut for 'jsk sh pip3'. Invokes the system shell.
+        Shortcut for "jsk sh pip3". Invokes the system shell.
         """
 
         return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "pip3 " + argument.content))
@@ -138,7 +138,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
     @Feature.Command(parent="jsk", name="docker")
     async def jsk_docker(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
-        Shortcut for 'jsk sh docker'. Invokes the system shell.
+        Shortcut for "jsk sh docker". Invokes the system shell.
         """
 
         return await ctx.invoke(
@@ -202,26 +202,26 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
                                 result = repr(result)
 
                             if len(result) <= 2000:
-                                if result.strip() == '':
+                                if result.strip() == "":
                                     result = "\u200b"
 
                                 send(await ctx.send(result.replace(self.bot.http.token, "[token omitted]")))
 
                             elif len(result) < 50_000 and not ctx.author.is_on_mobile() and not JISHAKU_FORCE_PAGINATOR:  # File "full content" preview limit
-                                # Discord's desktop and web client now supports an interactive file content
+                                # Discord"s desktop and web client now supports an interactive file content
                                 #  display for files encoded in UTF-8.
                                 # Since this avoids escape issues and is more intuitive than pagination for
                                 #  long results, it will now be prioritized over PaginatorInterface if the
                                 #  resultant content is below the filesize threshold
                                 send(await ctx.send(file=discord.File(
                                     filename="output.py",
-                                    fp=io.BytesIO(result.encode('utf-8'))
+                                    fp=io.BytesIO(result.encode("utf-8"))
                                 )))
 
                             else:
                                 # inconsistency here, results get wrapped in codeblocks when they are too large
-                                #  but don't if they're not. probably not that bad, but noting for later review
-                                paginator = WrappedPaginator(prefix='```py', suffix='```', max_size=1985)
+                                #  but don"t if they"re not. probably not that bad, but noting for later review
+                                paginator = WrappedPaginator(prefix="```py", suffix="```", max_size=1985)
 
                                 paginator.add_line(result)
 
@@ -239,11 +239,11 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
         Reports any extensions that failed to load.
         """
 
-        paginator = WrappedPaginator(prefix='', suffix='')
+        paginator = WrappedPaginator(prefix="", suffix="")
 
-        # 'jsk reload' on its own just reloads jishaku
-        if ctx.invoked_with == 'reload' and not extensions:
-            extensions = [['jishaku']]
+        # "jsk reload" on its own just reloads jishaku
+        if ctx.invoked_with == "reload" and not extensions:
+            extensions = [["jishaku"]]
 
         for extension in itertools.chain(*extensions):
             method, icon = (
@@ -256,7 +256,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
                 method(extension)
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
             except Exception as exc:  # pylint: disable=broad-except
-                traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
+                traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
 
                 paginator.add_line(
                     f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```",
