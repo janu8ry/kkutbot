@@ -5,19 +5,19 @@
 
 ## 계획
 - 로깅:
-    - 기본 로깅은 파이썬 내장 logging 사용
-    - 로그 파일 날짜별 분리, colorlog 또는 rich로 하이라이팅
-    - 에러 로깅은 sentry 사용 
+    - ~~기본 로깅은 파이썬 내장 logging 사용~~ (완료)
+    - ~~로그 파일 날짜별 분리, colorlog 또는 rich로 하이라이팅~~ (완료)
+    - ~~에러 로깅은 sentry 사용~~ (취소됨)
 - 백업:
-    - tar,gz 압축 사용
-    - tempfile 활용
+    - ~~tar.gz 압축 사용~~ (gz압축, 완료)
+    - ~~tempfile 활용~~ (취소됨)
 - 기타:
     - koreanbots, top.gg용 sdk 직접 작성
-    - dotmap 또는 nested dataclass 사용
+    - ~~dotmap 또는 nested dataclass 사용~~ (완료)
 - 개발환경:
     - python 3.9.5
-    - poetry
-    - docker
+    - ~~poetry~~ (취소됨)
+    - ~~docker~~ (완료)
 
 
 # 기여하기
