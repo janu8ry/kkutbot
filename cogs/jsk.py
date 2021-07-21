@@ -7,8 +7,8 @@ import traceback
 import logging
 
 import discord
-import psutil
 import jishaku.repl.repl_builtins
+import psutil
 from discord.ext import commands
 from jishaku.flags import SCOPE_PREFIX, JISHAKU_FORCE_PAGINATOR, JISHAKU_USE_BRAILLE_J
 from jishaku.repl import AsyncCodeExecutor
@@ -22,8 +22,8 @@ from jishaku.features.root_command import natural_size
 from jishaku.modules import package_version, ExtensionConverter
 
 import core
-from tools.db import db, read, write
 from tools.config import config
+from tools.db import db, read, write
 
 logger = logging.getLogger("kkutbot")
 
