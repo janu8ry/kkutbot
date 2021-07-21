@@ -50,7 +50,8 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
         'db': db,
         'read': read,
         'write': write,
-        'config': config
+        'config': config,
+        'logger': logger
     }
 
     return {f'{prefix}{k}': v for k, v in raw_var_dict.items()}
