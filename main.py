@@ -70,7 +70,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
     general = await bot.get_general_data()
     general.command_used += 1
     general.latest_command = time.time()
-    general.commands[ctx.command.qualified_name.replace('$', '_')] += 1
+    # general.commands[ctx.command.qualified_name.replace('$', '_')] += 1
 
     # if userdata.quest.status.date != (today := date.today().toordinal()):
     #     userdata.quest.status.date = today
