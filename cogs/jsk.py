@@ -1,20 +1,59 @@
 import os.path
 import re
 import sys
+import io
+import itertools
+import traceback
+import logging
 
 import discord
 import psutil
 import jishaku.repl.repl_builtins
 from discord.ext import commands
+from jishaku.flags import SCOPE_PREFIX, JISHAKU_FORCE_PAGINATOR, JISHAKU_USE_BRAILLE_J
+from jishaku.repl import AsyncCodeExecutor
+from jishaku.functools import AsyncSender
+from jishaku.exception_handling import ReplResponseReactor
+from jishaku.paginators import PaginatorInterface, WrappedPaginator
 from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 from jishaku.features.baseclass import Feature
 from jishaku.features.root_command import natural_size
-from jishaku.modules import package_version
+from jishaku.modules import package_version, ExtensionConverter
 
 import core
 from tools.db import db, read, write
 from tools.config import config
+
+logger = logging.getLogger("kkutbot")
+
+
+def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = '_'):
+    """
+    Returns the dict to be used in REPL for a given Context.
+    """
+
+    raw_var_dict = {
+        'author': ctx.author,
+        'bot': ctx.bot,
+        'channel': ctx.channel,
+        'ctx': ctx,
+        'find': discord.utils.find,
+        'get': discord.utils.get,
+        'guild': ctx.guild,
+        'http_get_bytes': jishaku.repl.repl_builtins.http_get_bytes,
+        'http_get_json': jishaku.repl.repl_builtins.http_get_json,
+        'http_post_bytes': jishaku.repl.repl_builtins.http_post_bytes,
+        'http_post_json': jishaku.repl.repl_builtins.http_post_json,
+        'message': ctx.message,
+        'msg': ctx.message,
+        'db': db,
+        'read': read,
+        'write': write,
+        'config': config
+    }
+
+    return {f'{prefix}{k}': v for k, v in raw_var_dict.items()}
 
 
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
@@ -127,6 +166,117 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
             return await ctx.send(f"`{path}`: Cowardly refusing to read a file >128MB.")
 
         return await ctx.send(file=discord.File(path))
+
+    @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
+    async def jsk_python(self, ctx: commands.Context, *, argument: codeblock_converter):
+        """
+        Direct evaluation of Python code.
+        """
+
+        arg_dict = get_var_dict_from_ctx(ctx, SCOPE_PREFIX)
+        arg_dict["_"] = self.last_result
+
+        scope = self.scope
+
+        try:
+            async with ReplResponseReactor(ctx.message):
+                with self.submit(ctx):
+                    executor = AsyncCodeExecutor(argument.content, scope, arg_dict=arg_dict)
+                    async for send, result in AsyncSender(executor):
+                        if result is None:
+                            continue
+
+                        self.last_result = result  # noqa
+
+                        if isinstance(result, discord.File):
+                            send(await ctx.send(file=result))
+                        elif isinstance(result, discord.Embed):
+                            send(await ctx.send(embed=result))
+                        elif isinstance(result, PaginatorInterface):
+                            send(await result.send_to(ctx))
+                        else:
+                            if not isinstance(result, str):
+                                # repr all non-strings
+                                result = repr(result)
+
+                            if len(result) <= 2000:
+                                if result.strip() == '':
+                                    result = "\u200b"
+
+                                send(await ctx.send(result.replace(self.bot.http.token, "[token omitted]")))
+
+                            elif len(result) < 50_000 and not ctx.author.is_on_mobile() and not JISHAKU_FORCE_PAGINATOR:  # File "full content" preview limit
+                                # Discord's desktop and web client now supports an interactive file content
+                                #  display for files encoded in UTF-8.
+                                # Since this avoids escape issues and is more intuitive than pagination for
+                                #  long results, it will now be prioritized over PaginatorInterface if the
+                                #  resultant content is below the filesize threshold
+                                send(await ctx.send(file=discord.File(
+                                    filename="output.py",
+                                    fp=io.BytesIO(result.encode('utf-8'))
+                                )))
+
+                            else:
+                                # inconsistency here, results get wrapped in codeblocks when they are too large
+                                #  but don't if they're not. probably not that bad, but noting for later review
+                                paginator = WrappedPaginator(prefix='```py', suffix='```', max_size=1985)
+
+                                paginator.add_line(result)
+
+                                interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
+                                send(await interface.send_to(ctx))
+
+        finally:
+            scope.clear_intersection(arg_dict)
+
+    @Feature.Command(parent="jsk", name="load", aliases=["reload", "ㄹ"])
+    async def jsk_load(self, ctx: commands.Context, *extensions: ExtensionConverter):
+        """
+        Loads or reloads the given extension names.
+
+        Reports any extensions that failed to load.
+        """
+
+        paginator = WrappedPaginator(prefix='', suffix='')
+
+        # 'jsk reload' on its own just reloads jishaku
+        if ctx.invoked_with == 'reload' and not extensions:
+            extensions = [['jishaku']]
+
+        for extension in itertools.chain(*extensions):
+            method, icon = (
+                (self.bot.reload_extension, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
+                if extension in self.bot.extensions else
+                (self.bot.load_extension, "\N{INBOX TRAY}")
+            )
+
+            try:
+                method(extension)
+                logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
+            except Exception as exc:  # pylint: disable=broad-except
+                traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
+
+                paginator.add_line(
+                    f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```",
+                    empty=True
+                )
+            else:
+                paginator.add_line(f"{icon} `{extension}`", empty=True)
+
+        for page in paginator.pages:
+            await ctx.send(page)
+
+    @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "ㅈ"])
+    async def jsk_shutdown(self, ctx: commands.Context):
+        """
+        Logs this bot out.
+        """
+
+        ellipse_character = "\N{BRAILLE PATTERN DOTS-356}" if JISHAKU_USE_BRAILLE_J else "\N{HORIZONTAL ELLIPSIS}"
+
+        await ctx.send(f"Logging out now{ellipse_character}")
+        logger.info("봇이 정상적으로 종료되었습니다!")
+        await ctx.bot.close()
 
 
 def setup(bot: core.Kkutbot):
