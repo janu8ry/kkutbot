@@ -17,9 +17,6 @@ config.example.yml
 # test file
 test.py
 
-# pip
-dev-requirements.txt
-
 # git & ci
 .github/
 .deepsource.toml
