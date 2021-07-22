@@ -74,4 +74,8 @@ def setup_logger():
 
     logging.Logger.leave = leave
 
+    dpy_logger = logging.getLogger("discord")
+    dpy_logger.addHandler(stream_handler)
+    dpy_logger.setLevel(logging.DEBUG)
+
     logger.info("로깅 설정 완료!")
