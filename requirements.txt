@@ -7,3 +7,4 @@ aiohttp[speedups] == 3.7.4
 APScheduler == 3.7.0
 dacite == 1.6.0
 jishaku[procinfo] == 2.1.0
+koreanbots == 1.1.0

@@ -4,13 +4,12 @@ import subprocess
 from datetime import date
 from typing import Type
 
-import aiohttp
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dacite import from_dict
 from discord.ext import commands
+from koreanbots import Koreanbots
 
-from tools import webupdater
 from tools.config import config
 from tools.db import db, dbconfig, password, read, username
 from tools.models import GeneralModel, GuildModel, UserModel
@@ -72,11 +71,10 @@ class Kkutbot(commands.AutoShardedBot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True  # allows 'ㄲ ' prefix
         )
-        self.webclient = webupdater.Client(
-            bot=self,
-            koreanbots_token=config("token.koreanbots"),
-            topgg_token=config("token.topgg"),
-            post=not config("test")
+        self.koreanbots = Koreanbots(
+            self,
+            config("token.koreanbots"),
+            run_task=not config("test")
         )
         self.db = db
 
@@ -141,15 +139,9 @@ class Kkutbot(commands.AutoShardedBot):
     def dict_emojis():
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
 
-    @staticmethod
-    async def if_koreanbots_voted(user: discord.User) -> bool:
-        async with aiohttp.ClientSession() as session, \
-                session.get(
-                    f'https://koreanbots.dev/api/v2/bots/703956235900420226/vote?userID={user.id}',
-                    headers={"Authorization": config('token.koreanbots')}
-                ) as response:
-            data = await response.json()
-        return data['data']['voted']
+    async def if_koreanbots_voted(self, user: discord.User) -> bool:
+        data = await self.koreanbots.is_voted(user.id, self.user.id)
+        return data.voted
 
     async def backup(self):
         logger.debug("DB 백업 준비중...")
