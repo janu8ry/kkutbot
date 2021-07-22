@@ -45,6 +45,7 @@ def setup_logger():
             datefmt="%H:%M:%S",
         )
     )
+    file_handler.setLevel(logging.DEBUG)
 
     file_handler.rotator = rotator
     file_handler.namer = namer
