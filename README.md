@@ -12,12 +12,14 @@
     - ~~tar.gz 압축 사용~~ (gz압축, 완료)
     - ~~tempfile 활용~~ (취소됨)
 - 기타:
-    - koreanbots, top.gg용 sdk 직접 작성
+    - ~~koreanbots, top.gg용 sdk 직접 작성~~ (취소됨)
     - ~~dotmap 또는 nested dataclass 사용~~ (완료)
 - 개발환경:
-    - python 3.9.5
+    - python 3.9.6
     - ~~poetry~~ (취소됨)
     - ~~docker~~ (완료)
+- 신기능:
+    - 서버별 커스텀 접두사
 
 
 # 기여하기
