@@ -3,6 +3,8 @@
 
 # virtualenv
 venv/
+.venv/
+.python-version
 
 # macOS
 .DS_Store
