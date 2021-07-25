@@ -35,7 +35,7 @@ class KkutbotContext(commands.Context):
                    mention_author=None,
                    escape_emoji_formatting=False
                    ) -> discord.Message:
-        if escape_emoji_formatting is False:
+        if (escape_emoji_formatting is False) and (getattr(self.command, "name") != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
                                   tts=tts,
@@ -50,7 +50,7 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, **kwargs) -> discord.Message:
-        if not kwargs.get('escape_emoji_formatting', False):
+        if (not kwargs.get('escape_emoji_formatting', False)) and (getattr(self.command, "name") != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
 
@@ -102,6 +102,9 @@ class Kkutbot(commands.AutoShardedBot):
         for cogname in os.listdir("cogs"):
             if cogname.endswith(".py"):
                 self.try_reload(cogname[:-3])
+
+    async def get_context(self, message, *, cls=KkutbotContext):
+        return await super().get_context(message, cls=cls)
 
     @staticmethod
     async def get_user_data(user: discord.User):
