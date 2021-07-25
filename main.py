@@ -42,21 +42,6 @@ async def on_shard_ready(shard_id):
 
 
 @bot.event
-async def on_message(message: discord.Message):
-    userdata = await bot.get_user_data(message.author)
-
-    if message.author.bot or userdata.banned:
-        return None
-    else:
-        if message.content.lstrip(bot.command_prefix).startswith("jsk"):
-            cls = commands.Context
-        else:
-            cls = core.KkutbotContext
-        ctx = await bot.get_context(message, cls=cls)
-        await bot.invoke(ctx)
-
-
-@bot.event
 async def on_command_completion(ctx: core.KkutbotContext):
     userdata = await bot.get_user_data(ctx.author)
     userdata.command_used += 1
@@ -129,7 +114,12 @@ async def on_command(ctx: core.KkutbotContext):
 
 
 @bot.check
-async def check(ctx: core.KkutbotContext):
+async def check(ctx: core.KkutbotContext) -> bool:
+    userdata = await bot.get_user_data(ctx.author)
+
+    if userdata.banned:
+        return False
+
     if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:
         try:
             embed = discord.Embed(
@@ -141,6 +131,7 @@ async def check(ctx: core.KkutbotContext):
         except discord.Forbidden:
             pass
         return False
+
     return True
 
 
