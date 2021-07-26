@@ -29,7 +29,7 @@ jobs:
           pip3 install isort
       - name: Sort with isort
         run: |
-          isort . --gitignore
+          isort . -v
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
