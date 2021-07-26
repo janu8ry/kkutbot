@@ -6,6 +6,7 @@ from typing import Optional
 
 from .db import write
 
+
 __all__ = ("UserModel", "GuildModel", "GeneralModel")
 
 

@@ -2,7 +2,10 @@ import logging
 import os
 import time
 import traceback
-from datetime import date, datetime
+from datetime import (
+    date,
+    datetime
+)
 from typing import Type
 
 import discord
@@ -13,6 +16,7 @@ import core
 from tools.config import config
 from tools.db import delete
 from tools.logger import setup_logger
+
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
 os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
