@@ -11,19 +11,8 @@ from discord.ext import commands
 from koreanbots import Koreanbots
 
 from tools.config import config
-from tools.db import (
-    db,
-    dbconfig,
-    password,
-    read,
-    username
-)
-from tools.models import (
-    GeneralModel,
-    GuildModel,
-    UserModel
-)
-
+from tools.db import db, dbconfig, password, read, username
+from tools.models import GeneralModel, GuildModel, UserModel
 
 logger = logging.getLogger("kkutbot")
 
