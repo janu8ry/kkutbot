@@ -2,27 +2,17 @@ import asyncio
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import (
-    Any,
-    Literal,
-    Optional,
-    Union
-)
+from typing import Any, Literal, Optional, Union
 from typing_extensions import TypeAlias
 
 from motor.motor_asyncio import AsyncIOMotorClient
-
 
 try:
     import uvloop
 except ImportError:
     uvloop = None
 
-from .config import (
-    config,
-    get_nested_dict
-)
-
+from .config import config, get_nested_dict
 
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
