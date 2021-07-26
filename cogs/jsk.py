@@ -10,21 +10,41 @@ import discord
 import jishaku.repl.repl_builtins
 import psutil
 from discord.ext import commands
-from jishaku.codeblocks import Codeblock, codeblock_converter
-from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
+from jishaku.codeblocks import (
+    Codeblock,
+    codeblock_converter
+)
+from jishaku.cog import (
+    OPTIONAL_FEATURES,
+    STANDARD_FEATURES
+)
 from jishaku.exception_handling import ReplResponseReactor
 from jishaku.features.baseclass import Feature
 from jishaku.features.root_command import natural_size
-from jishaku.flags import (JISHAKU_FORCE_PAGINATOR, JISHAKU_USE_BRAILLE_J,
-                           SCOPE_PREFIX)
+from jishaku.flags import (
+    JISHAKU_FORCE_PAGINATOR,
+    JISHAKU_USE_BRAILLE_J,
+    SCOPE_PREFIX
+)
 from jishaku.functools import AsyncSender
-from jishaku.modules import ExtensionConverter, package_version
-from jishaku.paginators import PaginatorInterface, WrappedPaginator
+from jishaku.modules import (
+    ExtensionConverter,
+    package_version
+)
+from jishaku.paginators import (
+    PaginatorInterface,
+    WrappedPaginator
+)
 from jishaku.repl import AsyncCodeExecutor
 
 import core
 from tools.config import config
-from tools.db import db, read, write
+from tools.db import (
+    db,
+    read,
+    write
+)
+
 
 logger = logging.getLogger("kkutbot")
 
