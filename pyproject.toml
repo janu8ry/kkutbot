@@ -10,7 +10,7 @@ repository = "https://github.com/janu8ry/kkutbot"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-"discord.py" = "^1.7.3"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git", extras = ["speed"]}
 motor = "^2.5.0"
 PyYAML = "^5.4.1"
 rich = "^10.6.0"
