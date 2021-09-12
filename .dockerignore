@@ -10,14 +10,20 @@ venv/
 .DS_Store
 
 # cache
-**/__pycache__/
+__pycache__/
+*.py[cod]
+*$py.class
 
-# config files
-setup.py
+# C extensions
+*.so
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# example files
 config.example.yml
-
-# test file
-test.py
 
 # git & ci
 .github/

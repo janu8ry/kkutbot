@@ -10,7 +10,17 @@ venv/
 .DS_Store
 
 # cache
-**/__pycache__/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # secret config file
 config.yml
@@ -18,6 +28,3 @@ config.yml
 # logs & backup
 logs/
 backup/
-
-# test file
-test.py
