@@ -1,6 +1,7 @@
 # 신나는 리라이팅
 
 **전부 새로 작성 예정**
+-> 는 이걸 다시 작성 예정 ^^^^^
 
 
 ## 계획
@@ -15,8 +16,8 @@
     - ~~koreanbots, top.gg용 sdk 직접 작성~~ (취소됨)
     - ~~dotmap 또는 nested dataclass 사용~~ (완료)
 - 개발환경:
-    - python 3.9.6
-    - ~~poetry~~ (취소됨)
+    - python 3.9.7
+    - ~~poetry~~ (완료)
     - ~~docker~~ (완료)
 - 신기능:
     - 서버별 커스텀 접두사
@@ -27,7 +28,7 @@
 
 # 연락하기
 
-개발자 디스코드: ``ㅇㅋ#3825``    
+개발자 디스코드: ``so#2375``    
 끝봇 이메일: [kkutbot@gmail.com](mailto:kkutbot@gmail.com)    
 [![discord](https://discordapp.com/api/guilds/702761942217130005/embed.png?style=banner2)](https://discord.gg/z8tRzwf)
 
