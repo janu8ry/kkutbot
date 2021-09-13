@@ -19,6 +19,8 @@ services:
     volumes:
       - /var/lib/mongodb:/data/db
       - ./mongod.conf:/etc/mongod.conf
+    env_file:
+      - mongo.env
   mgob:
     image: stefanprodan/mgob:latest
     restart: always
@@ -26,7 +28,7 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./mgob.yml:/config/mgob.yml
+      - ./mgob.example.yml:/config/mgob.example.yml
       - ./backup:/storage
       - ./mgob_tmp:/tmp
       - ./mgob_data:/data
