@@ -9,7 +9,6 @@ services:
     restart: always
     container_name: "kkutbot"
     volumes:
-      - ./backup:/kkutbot/backup
       - ./logs:/kkutbot/logs
   mongo:
     image: mongo:latest
@@ -20,3 +19,14 @@ services:
     volumes:
       - /var/lib/mongodb:/data/db
       - ./mongod.conf:/etc/mongod.conf
+  mgob:
+    image: stefanprodan/mgob:latest
+    restart: always
+    container_name: "kkutbot-mgob"
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./mgob.yml:/config/mgob.yml
+      - ./backup:/storage
+      - ./mgob_tmp:/tmp
+      - ./mgob_data:/data
