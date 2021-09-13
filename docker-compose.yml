@@ -1,0 +1,22 @@
+# docker-compose.yml
+
+version: "3"
+
+services:
+  kkutbot:
+    build: .
+    image: kkutbot:latest
+    restart: always
+    container_name: "kkutbot"
+    volumes:
+      - ./backup:/kkutbot/backup
+      - ./logs:/kkutbot/logs
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: "kkutbot-mongo"
+    ports:
+      - "27017:27017"
+    volumes:
+      - /var/lib/mongodb:/data/db
+      - ./mongod.conf:/etc/mongod.conf
