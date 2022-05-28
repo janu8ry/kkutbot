@@ -1,5 +1,5 @@
 # 디스코드봇, 끝봇
-[![koreanbots](https://api.koreanbots.dev/widget/bots/votes/703956235900420226.svg)](https://koreanbots.dev/bots/703956235900420226)
+[![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/703956235900420226)
 [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226)
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/)
