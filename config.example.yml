@@ -18,8 +18,10 @@ token:
 admin:
   -
 
-# sentry dsn for logging errors
-sentry_dsn: sentry dsn
+# webhook url for logging
+webhook:
+  main:
+  test:
 
 # embed colors
 colors:
