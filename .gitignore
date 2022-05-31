@@ -1,0 +1,32 @@
+# Jetbrains IDE config
+.idea/
+
+# virtualenv
+venv/
+.venv/
+.python-version
+
+# macOS
+.DS_Store
+
+# cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# secret config file
+config.yml
+mongo.env
+mgob.yml
+
+# logs & backup
+logs/
+backup/
