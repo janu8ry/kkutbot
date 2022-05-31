@@ -1,0 +1,60 @@
+# run configuration
+# 'true' to run testbot, 'false' to run the main bot.
+test: false
+
+# bot prefix
+prefix:
+  main: ㄲ
+  test: ㅌㄲ
+
+# secret tokens
+token:
+  main: main bot token
+  test: test bot token
+  koreanbots: koreanbots token
+  topgg: top.gg token
+
+# list of admin ids that can use admin commands.
+admin:
+  -
+
+# sentry dsn for logging errors
+sentry_dsn: sentry dsn
+
+# embed colors
+colors:
+  general: 0x4374D9
+  error: 0xCC3D3D
+  help: 0x47C83E
+
+# mongodb configuration
+mongo:
+  main:
+    ip: ip address
+    port: 27017
+    db: kkutbot
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
+  test:
+    ip: ip address
+    port: 27017
+    db: kkuttest
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
+
+# mongodb backup channel id
+backup_channel:
+
+# useful links
+links:
+  invite:
+    bot: bot invite oauth url
+    server: support server invite url
+  monitoring:
+    pm2:
+    mongo:
+  privacy-policy:
+  koreanbots:
+  topgg:
+  github:
+  blog:
