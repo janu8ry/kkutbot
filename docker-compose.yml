@@ -20,3 +20,14 @@ services:
       - /var/lib/mongodb:/data/db
     env_file:
       - mongo.env
+  mgob:
+    image: stefanprodan/mgob:latest
+    restart: always
+    container_name: "kkutbot-mgob"
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./mgob.yml:/config/mgob.yml
+      - ./backup:/storage
+      - ./mgob_tmp:/tmp
+      - ./mgob_data:/data

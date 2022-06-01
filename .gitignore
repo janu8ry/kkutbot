@@ -30,3 +30,5 @@ mgob.yml
 # logs & backup
 logs/
 backup/
+mgob_tmp/
+mgob_data/
