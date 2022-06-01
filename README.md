@@ -5,13 +5,12 @@
 
 ## 계획
 - 로깅:
-    - 기본 로깅은 파이썬 내장 logging 사용
-    - 로그 파일 날짜별 분리, rich로 하이라이팅
-    - ~~에러 로깅은 sentry 사용~~ (취소됨)
+    - ~~기본 로깅은 파이썬 내장 logging 사용~~ (완료)
+    - ~~로그 파일 날짜별 분리, rich로 하이라이팅~~ (완료)
 - 백업:
     - ~~tar.gz 압축 사용~~ (취소됨)
     - ~~tempfile 활용~~ (취소됨)
-    - mongob 사용
+    - ~~mongob 사용~~ (완료)
 - 기타:
     - ~~koreanbots, top.gg용 sdk 직접 작성~~ (취소됨)
     - ~~dotmap 또는 nested dataclass 사용~~ (취소됨)
