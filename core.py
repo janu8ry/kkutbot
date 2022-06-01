@@ -38,7 +38,7 @@ class KkutbotContext(commands.Context):
             suppress_embeds=False,
             ephemeral=False,
             escape_emoji_formatting=False
-            ) -> discord.Message:
+    ) -> discord.Message:
         if (escape_emoji_formatting is False) and (getattr(self.command, "name") != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
@@ -132,6 +132,9 @@ def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
     return decorator
 
 
+commands.command = command
+
+
 class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
         if not kwargs.get('escape_emoji_formatting', False):
@@ -146,3 +149,6 @@ class KkutbotEmbed(discord.Embed):
             name = name.format(**Kkutbot.dict_emojis()) if name else None
             value = value.format(**Kkutbot.dict_emojis()) if value else None
         return super().add_field(name=name, value=value, inline=inline)
+
+
+discord.Embed = KkutbotEmbed
