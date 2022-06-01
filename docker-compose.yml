@@ -10,7 +10,6 @@ services:
     container_name: "kkutbot"
     volumes:
       - ./logs:/kkutbot/logs
-      - ./backup:./backup
   mongo:
     image: mongo:latest
     restart: always
