@@ -10,6 +10,16 @@ repository = "https://github.com/janu8ry/kkutbot"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git", extras = ["speed"]}
+motor = "^3.0.0"
+aiohttp = {extras = ["sppedups"], version = "^3.8.1"}
+koreanbots = "^2.1.0"
+topggpy = "^1.4.0"
+PyYAML = "^6.0"
+rich = "^12.4.4"
+uvloop = "^0.16.0"
+APScheduler = "^3.9.1"
+jishaku = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 
