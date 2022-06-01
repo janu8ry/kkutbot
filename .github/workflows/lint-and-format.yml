@@ -3,12 +3,12 @@ name: Python package
 on:
   push:
     branches:
-      - master
-      - rewrite
+      - main
+      - "2.0"
   pull_request:
     branches:
-      - master
-      - rewrite
+      - main
+      - "2.0"
 
 jobs:
   lint-format:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -25,9 +25,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install poetry
-        uses: snok/install-poetry@v1.1.6
+        uses: snok/install-poetry@v1
         with:
-          version: 1.1.6
+          version: 1.3.1
           virtualenvs-create: true
           virtualenvs-in-project: true
       - name: Load cached venv
