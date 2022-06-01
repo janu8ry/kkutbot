@@ -12,7 +12,7 @@ token:
   main: main bot token
   test: test bot token
   koreanbots: koreanbots token
-  topgg: top.gg token
+  dbl: top.gg token
 
 # list of admin ids that can use admin commands.
 admin:
