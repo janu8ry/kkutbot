@@ -1,0 +1,25 @@
+{
+    "_id": null,
+    "_name": null,
+    "register_date": null,
+    "info_word": "소개말이 없습니다.",
+    "points": 1000,
+    "medals": 0,
+    "last_reward": 0,
+    "daily": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
+    "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
+    "game": {
+        "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+        "rank_online": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+        "long": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+        "kkd": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+        "guild_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+        "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0}
+    },
+    "daily_times": 0,
+    "command_used": 0,
+    "banned": false,
+    "last_command": null,
+    "mail": [],
+    "alert": {"daily": false, "heart": false, "mail": true}
+}

@@ -1,0 +1,78 @@
+{
+    "game.rank_solo.win": {
+            "name": "솔로 게임 10판 승리하기",
+            "target": 10,
+            "reward": [3, "medals"]
+        },
+    "game.kkd.win": {
+            "name": "쿵쿵따 10판 승리하기",
+            "target": 10,
+            "reward": [5, "medals"]
+        },
+    "game.guild_multi.win": {
+            "name": "서버원들과의 멀티플레이 10판 승리하기",
+            "target": 10,
+            "reward": [50, "points"]
+        },
+    "points": {
+            "name": "하루동안 200포인트 모으기",
+            "target": 200,
+            "reward": [5, "medals"]
+        },
+    "game.rank_solo.times": {
+            "name": "솔로 모드 15판 플레이하기",
+            "target": 15,
+            "reward": [3, "medals"]
+        },
+    "game.guild_multi.times": {
+            "name": "서버원들과 멀티플레이 5판 플레이하기",
+            "target": 5,
+            "reward": [2, "medals"]
+        },
+    "game.kkd.times": {
+            "name": "쿵쿵따 7판 플레이하기",
+            "target": 7,
+            "reward": [2, "medals"]
+        },
+    "game.rank_solo.best": {
+            "name": "솔로 모드 최고기록 경신하기",
+            "target": 1,
+            "reward": [10, "medals"]
+        },
+    "game.kkd.best": {
+            "name": "쿵쿵따 모드 최고기록 경신하기",
+            "target": 1,
+            "reward": [10, "medals"]
+        },
+    "game.guild_multi.best": {
+            "name": "솔로 모드 최고기록 경신하기",
+            "target": 1,
+            "reward": [10, "medals"]
+        },
+    "command_used": {
+            "name": "명령어 50회 이상 사용하기",
+            "target": 50,
+            "reward": [50, "points"]
+        },
+    "medals": {
+            "name": "메달 5개 이상 수집하기",
+            "target": 5,
+            "reward": [100, "points"]
+        },
+    "game.rank_solo.winrate": {
+            "name": "솔로 모드 승률 1% 올리기",
+            "target": 1,
+            "reward": [10, "medals"]
+        },
+    "game.kkd.winrate": {
+            "name": "쿵쿵따 승률 1% 올리기",
+            "target": 1,
+            "reward": [7, "medals"]
+        },
+    "game.guild_multi.winrate": {
+            "name": "서버원들과의 멀티플레이 모드 승률 1% 올리기",
+            "target": 1,
+            "reward": [5, "medals"]
+        }
+
+}
