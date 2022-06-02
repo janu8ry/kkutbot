@@ -1,25 +1,41 @@
 {
-    "_id": null,
-    "name": null,
-    "registered": null,
-    "info": "소개말이 없습니다.",
-    "points": 1000,
-    "medals": 0,
-    "latest_reward": null,
-    "daily": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
-    "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
-    "game": {
-        "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
-        "rank_online": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
-        "long": {"times": 0, "win": 0, "best": 0, "winrate": 0},
-        "kkd": {"times": 0, "win": 0, "best": 0, "winrate": 0},
-        "guild_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
-        "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0}
+    "user": {
+        "_id": null,
+        "name": null,
+        "registered": null,
+        "info": "소개말이 없습니다.",
+        "points": 1000,
+        "medals": 0,
+        "latest_reward": null,
+        "daily": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
+        "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
+        "game": {
+            "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+            "rank_online": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+            "long": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "kkd": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "guild_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0}
+        },
+        "attendance": 0,
+        "command_used": 0,
+        "banned": false,
+        "latest_usage": null,
+        "mails": [],
+        "alerts": {"attendance": false, "reward": false, "mails": true}
     },
-    "attendance": 0,
-    "command_used": 0,
-    "banned": false,
-    "latest_usage": null,
-    "mails": [],
-    "alerts": {"attendance": false, "reward": false, "mails": true}
+    "guild": {
+        "_id": null,
+        "invited": null,
+        "latest_usage": null,
+        "command_used": 0
+    },
+    "general": {
+        "_id": "general",
+        "reward": 0,
+        "command_used": 0,
+        "latest_usage": null,
+        "commands": {},
+        "quests": {}
+    }
 }
