@@ -179,10 +179,11 @@ async def write(target: TargetObject, path: str, value):
                 main_data["_id"] = id_
                 main_data["name"] = name
                 await db.user.insert_one(main_data)
-        mails: list = await read(target, "mails")
+        mails = await read(target, "mails")
         for mail in deepcopy(mails):
             if (datetime.now() - mail['time']).days > 14:
                 mails.remove(mail)
+        await write(target, "mails", mails)
         if name and name != (await read(target, "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
     elif (collection.name == "guild") and (await read(target) == deepcopy(config("default_data.guild"))):
