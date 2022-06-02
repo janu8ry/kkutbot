@@ -1,3 +1,5 @@
+import asyncio
+
 from tools.db import db
 
 
@@ -41,3 +43,6 @@ async def main():
             "alerts.start_point": 1
         }
     })
+
+
+asyncio.get_event_loop().run_until_complete(main())
