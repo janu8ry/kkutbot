@@ -19,7 +19,7 @@ logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
 coltype: TypeAlias = Literal["user", "guild", "general", "unused"]
-TargetObject: TypeAlias = [discord.User, discord.Member, discord.ClientUser, discord.Guild, int, str]
+TargetObject: TypeAlias = Optional[discord.User, discord.Member, discord.ClientUser, discord.Guild, int, str]
 
 
 def dbconfig(query: str) -> Any:
