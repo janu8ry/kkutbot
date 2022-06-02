@@ -46,5 +46,22 @@ async def main():
         }
     })
 
+    await db.guild.update_many({}, {
+        "$rename": {
+            "last_command": "latest_usage"
+        }
+    })
+
+    await db.general.update_one({"_id": "general"}, {
+        "$rename": {
+            "daily": "attendance",
+            "last_command": "latest_usage",
+            "quest": "quests"
+        },
+        "$set": {
+            "reward": 0
+        }
+    })
+
 
 asyncio.get_event_loop().run_until_complete(main())
