@@ -107,9 +107,6 @@ class Kkutbot(commands.AutoShardedBot):
             if cogname.endswith(".py"):
                 self.try_reload(cogname[:-3])
 
-    async def get_context(self, message, *, cls=KkutbotContext):
-        return await super().get_context(message, cls=cls)
-
     @staticmethod
     def dict_emojis():
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
