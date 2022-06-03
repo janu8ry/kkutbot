@@ -3,10 +3,11 @@ import logging
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Literal, Optional
-from typing_extensions import TypeAlias
 
 import discord
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
+from motor.motor_asyncio import (AsyncIOMotorClient,  # noqa
+                                 AsyncIOMotorCollection)
+from typing_extensions import TypeAlias
 
 try:
     import uvloop

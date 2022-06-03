@@ -11,7 +11,7 @@ from rich.traceback import install as rich_install
 
 import core
 from tools.config import config
-from tools.db import read, add, write, delete
+from tools.db import add, delete, read, write
 from tools.logger import setup_logger
 from tools.utils import time_convert
 
