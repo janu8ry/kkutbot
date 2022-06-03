@@ -25,6 +25,11 @@ jishaku = "^2.5.0"
 isort = "^5.10.1"
 flake8 = "^4.0.1"
 
+[tool.isort]
+skip_gitignore = "True"
+line_length = "120"
+extra_standard_library = ["typing_extensions"]
+
 [tool.poetry.urls]
 Invite = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"
 discord = "https://discord.gg/z8tRzwf"
