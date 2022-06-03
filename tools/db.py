@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import Any, Literal, Optional
 
 import discord
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
+from motor.motor_asyncio import (AsyncIOMotorClient,  # noqa
+                                 AsyncIOMotorCollection)
 from typing_extensions import TypeAlias
 
 try:
