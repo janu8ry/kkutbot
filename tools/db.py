@@ -6,8 +6,7 @@ from typing import Any, Literal, Optional
 from typing_extensions import TypeAlias
 
 import discord
-from motor.motor_asyncio import AsyncIOMotorClient  # noqa
-from motor.motor_asyncio import AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
 try:
     import uvloop
