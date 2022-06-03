@@ -23,6 +23,7 @@ jishaku = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"
+flake8 = "^4.0.1"
 
 [tool.poetry.urls]
 Invite = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"
