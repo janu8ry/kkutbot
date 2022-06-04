@@ -80,8 +80,8 @@ class Kkutbot(commands.AutoShardedBot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True  # allows 'ㄲ ' prefix
         )
-        self.dbl = None
         self.koreanbots = None
+        self.dbl = None
         self.db = db
 
         self.scheduler = AsyncIOScheduler()
