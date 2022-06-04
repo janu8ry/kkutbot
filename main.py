@@ -13,7 +13,7 @@ import core
 from tools.config import config
 from tools.db import add, delete, read, write
 from tools.logger import setup_logger
-from tools.utils import get_dbl_client, time_convert
+from tools.utils import time_convert
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
 os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
@@ -35,9 +35,6 @@ async def on_ready():
                 f"서버수: {guilds}, 유저수: {users}, 미사용 유저수: {unused}")
 
     await bot.update_presence()
-
-    dbl_client = await get_dbl_client(bot)
-    bot.dbl = dbl_client
 
 
 @bot.event

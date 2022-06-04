@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from typing import Type
@@ -8,6 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext import commands
 from koreanbots import Koreanbots
 from koreanbots.integrations.discord import DiscordpyKoreanbots
+from topgg import DBLClient
 
 from tools.config import config
 from tools.db import db
@@ -80,13 +80,17 @@ class Kkutbot(commands.AutoShardedBot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True  # allows 'ㄲ ' prefix
         )
-        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.dbl = None
+        self.koreanbots = None
         self.db = db
 
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
         self.scheduler.start()
+
+    def setup_hook(self) -> None:
+        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
+        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=True)
 
     def run_bot(self):
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
