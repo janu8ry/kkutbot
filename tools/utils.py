@@ -1,5 +1,10 @@
 from datetime import timedelta
-from typing import Union
+from typing import Union, Type
+
+from topgg import DBLClient
+from discord.ext.commands import AutoShardedBot
+
+from .config import config  # noqa
 
 
 def time_convert(time: Union[int, float, timedelta]) -> str:
@@ -12,3 +17,7 @@ def time_convert(time: Union[int, float, timedelta]) -> str:
     if time.seconds >= 60:
         return f"{time.seconds // 60}분"
     return f"{time.seconds}초"
+
+
+async def get_dbl_client(bot: AutoShardedBot):
+    return DBLClient(bot, config("token.dbl"), autopost=not config("test"), post_shard_count=True)
