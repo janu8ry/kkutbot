@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from copy import deepcopy
 from datetime import datetime
@@ -7,11 +6,6 @@ from typing_extensions import TypeAlias
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
-
-try:
-    import uvloop
-except ImportError:
-    uvloop = None
 
 from .config import config, get_nested_dict  # noqa
 
@@ -42,14 +36,8 @@ if all([username := dbconfig("user"), password := dbconfig("password")]):
     db_options["username"] = username
     db_options["password"] = password
 
-if uvloop:
-    loop = uvloop.new_event_loop()
-    asyncio.set_event_loop(loop)
-else:
-    loop = asyncio.get_event_loop()
-
 _client = AsyncIOMotorClient(
-    host=dbconfig("ip"), port=dbconfig("port"), io_loop=loop, **db_options
+    host=dbconfig("ip"), port=dbconfig("port"), **db_options
 )
 
 logger.info("mongoDB에 연결됨")
