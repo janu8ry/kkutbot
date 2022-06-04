@@ -110,7 +110,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"ㄲ도움 | {len(self.guilds)} 서버에서 끝말잇기"))
 
-    def reload_all(self):
+    async def reload_all(self):
         for cogname in os.listdir("cogs"):
             if cogname.endswith(".py"):
                 await self.try_reload(cogname[:-3])

@@ -25,7 +25,7 @@ bot = core.Kkutbot()
 
 @bot.event
 async def on_ready():
-    bot.reload_all()
+    await bot.reload_all()
 
     guilds = len(bot.guilds)
     users = await bot.db.user.count_documents({})
