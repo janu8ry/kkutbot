@@ -171,7 +171,7 @@ async def write(target: TargetObject, path: str, value):
         for mail in deepcopy(mails):
             if (datetime.now() - mail['time']).days > 14:
                 mails.remove(mail)
-        await write(target, "mails", mails)
+        await db.user.update_one({"_id": id_}, {"$set": {"mails": mails}})
         if name and name != (await read(target, "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
     elif (collection.name == "guild") and not (await read(target, "invited")):
