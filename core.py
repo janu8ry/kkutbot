@@ -90,7 +90,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     def setup_hook(self) -> None:
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
-        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=True)
+        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 
     def run_bot(self):
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
