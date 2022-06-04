@@ -126,12 +126,12 @@ async def read(target: TargetObject, path: Optional[str] = None) -> Any:
                 main_data = deepcopy(config("default_data.user"))
             elif collection.name == "guild":
                 main_data = deepcopy(config("default_data.guild"))
-            elif collection.name == "general":
-                main_data = deepcopy(config("default_data.general"))
             else:
                 raise ValueError
     else:
         main_data = await db.general.find_one()
+        if not main_data:
+            main_data = deepcopy(config("default_data.general"))
 
     if path is None:
         return main_data
