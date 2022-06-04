@@ -1,8 +1,8 @@
 from datetime import timedelta
-from typing import Union, Type
+from typing import Type, Union
 
-from topgg import DBLClient
 from discord.ext.commands import AutoShardedBot
+from topgg import DBLClient
 
 from .config import config  # noqa
 

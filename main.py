@@ -13,7 +13,7 @@ import core
 from tools.config import config
 from tools.db import add, delete, read, write
 from tools.logger import setup_logger
-from tools.utils import time_convert, get_dbl_client
+from tools.utils import get_dbl_client, time_convert
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
 os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
