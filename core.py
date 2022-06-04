@@ -99,12 +99,12 @@ class Kkutbot(commands.AutoShardedBot):
     def run_bot(self):
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
 
-    def try_reload(self, name: str):
+    async def try_reload(self, name: str):
         name = f"cogs.{name}"
         try:
-            self.reload_extension(name)
+            await self.reload_extension(name)
         except commands.ExtensionNotLoaded:
-            self.load_extension(name)
+            await self.load_extension(name)
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self):
@@ -113,7 +113,7 @@ class Kkutbot(commands.AutoShardedBot):
     def reload_all(self):
         for cogname in os.listdir("cogs"):
             if cogname.endswith(".py"):
-                self.try_reload(cogname[:-3])
+                await self.try_reload(cogname[:-3])
 
     @staticmethod
     def dict_emojis():
