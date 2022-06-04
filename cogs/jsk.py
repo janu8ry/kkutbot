@@ -3,10 +3,11 @@ import logging
 import os.path
 import re
 import sys
-import typing
 import traceback
+import typing
 
 import discord
+import jishaku.repl.repl_builtins
 import psutil
 from discord.ext import commands
 from jishaku.codeblocks import Codeblock, codeblock_converter
@@ -19,7 +20,6 @@ from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.types import ContextA
-import jishaku.repl.repl_builtins
 
 try:
     from importlib.metadata import distribution, packages_distributions
