@@ -64,6 +64,10 @@ class KkutbotContext(commands.Context):
         return await super().reply(content=content, **kwargs)
 
 
+intents = discord.Intents.default()
+intents.message_content = True
+
+
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "2.0.0-alpha"
     __slots__ = ("webclient", "db", "scheduler")
@@ -73,12 +77,12 @@ class Kkutbot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
             command_prefix=config(f"prefix.{'test' if config('test') else 'main'}"),
-            help_command=None,  # disables the default help command
-            intents=discord.Intents.default(),
+            help_command=None,
+            intents=intents,
             activity=discord.Game("봇 로딩"),
             owner_id=610625541157945344,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
-            strip_after_prefix=True  # allows 'ㄲ ' prefix
+            strip_after_prefix=True
         )
         self.koreanbots = None
         self.dbl = None
