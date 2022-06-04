@@ -88,7 +88,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
         self.scheduler.start()
 
-    def setup_hook(self) -> None:
+    async def setup_hook(self) -> None:
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 
