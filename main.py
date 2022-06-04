@@ -285,6 +285,7 @@ async def on_guild_remove(guild: discord.Guild):
 
 
 if __name__ == "__main__":
-    rich_install()
+    if not config("test"):
+        rich_install()
     setup_logger()
     bot.run_bot()
