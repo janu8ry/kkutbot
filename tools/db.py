@@ -13,7 +13,7 @@ try:
 except ImportError:
     uvloop = None
 
-from config import config, get_nested_dict
+from .config import config, get_nested_dict  # noqa
 
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
