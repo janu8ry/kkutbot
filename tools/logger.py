@@ -20,6 +20,8 @@ def namer(_) -> str:
 
 
 def setup_logger():
+    if "logs" not in os.listdir():
+        os.mkdir("logs")
     logger = logging.getLogger("kkutbot")
     logger.setLevel(logging.DEBUG)
     console = Console(
