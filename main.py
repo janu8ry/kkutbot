@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 import traceback
 from datetime import datetime
@@ -14,9 +13,6 @@ from tools.config import config
 from tools.db import add, delete, read, write
 from tools.logger import setup_logger
 from tools.utils import time_convert
-
-os.environ["JISHAKU_NO_UNDERSCORE"] = "true"
-os.environ["JISHAKU_FORCE_PAGINATOR"] = "true"
 
 logger = logging.getLogger("kkutbot")
 
@@ -149,10 +145,10 @@ async def on_command_completion(ctx: core.KkutbotContext):
 
 @bot.check
 async def check(ctx: core.KkutbotContext) -> bool:
-    if read(ctx.author, "banned"):
+    if await read(ctx.author, "banned"):
         return False
 
-    if ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).send_messages:
+    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
         try:
             embed = discord.Embed(
                 title="오류",
