@@ -9,7 +9,7 @@ with open("config.yml", encoding="utf-8") as f:
 
 for file in os.listdir("schema"):
     if file not in ("wordlist.json", "transition.json", "quests.json"):
-        with open(f"data/{file}", "r", encoding="utf-8") as f:
+        with open(f"schema/{file}", "r", encoding="utf-8") as f:
             config_data[file[:-5]] = json.load(f)
 
 
