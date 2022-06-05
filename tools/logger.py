@@ -8,6 +8,8 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
 
+from .config import config  # noqa
+
 
 def rotator(source: str, dest: str):
     with open(source, "rb") as rf, gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
@@ -34,7 +36,7 @@ def setup_logger():
         )
     )
 
-    stream_handler = RichHandler(rich_tracebacks=True, console=console)
+    stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG + 3)
 
