@@ -174,9 +174,9 @@ class Admin(commands.Cog, name="관리자"):
     @commands.is_owner()
     async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: int = 1, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
-        if await read(user, 'banned'):
+        if await read(user, 'isbanned'):
             return await ctx.send("{denyed} 이미 정지된 유저입니다.")
-        await write(user, 'banned', True)
+        await write(user, 'isbanned', True)
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
@@ -187,8 +187,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def unblock_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
-        if await read(user, 'banned'):
-            await write(user, 'banned', False)
+        if await read(user, 'isbanned'):
+            await write(user, 'isbanned', False)
             await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
@@ -198,7 +198,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = self.bot.db.user.find({"banned": True})
+        banned_users = self.bot.db.user.find({"isbanned": True})
         if not banned_users.to_list(None):
             return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
         else:

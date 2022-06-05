@@ -19,7 +19,8 @@
         },
         "attendance": 0,
         "command_used": 0,
-        "banned": false,
+        "isbanned": false,
+        "banned_time": 0,
         "latest_usage": null,
         "mails": [],
         "alerts": {"attendance": false, "reward": false, "mails": true}

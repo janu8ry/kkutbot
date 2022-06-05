@@ -39,7 +39,7 @@ async def on_shard_ready(shard_id):
 
 @bot.event
 async def on_message(message: discord.Message):
-    is_banned = await read(message.author, 'banned')
+    is_banned = await read(message.author, 'isbanned')
     is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
 
     if is_banned or is_bot:
@@ -129,7 +129,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
 
 @bot.check
 async def check(ctx: core.KkutbotContext) -> bool:
-    if await read(ctx.author, "banned"):
+    if await read(ctx.author, "isbanned"):
         return False
 
     if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
