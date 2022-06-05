@@ -13,13 +13,13 @@ class ConfirmSend(discord.ui.View):
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = True
         await interaction.response.send_message("공지 전송 완료!")
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = False
         await interaction.response.send_message("공지 전송이 취소되었습니다.")
         self.stop()
@@ -55,7 +55,7 @@ class SendAnnouncement(discord.ui.View):
         self.value = None
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         await interaction.response.send_modal(AnnouncementInput(timeout=120))
         self.value = True
         self.stop()
