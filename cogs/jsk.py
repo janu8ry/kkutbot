@@ -103,33 +103,31 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
             ""
         ]
 
-        # detect if [procinfo] feature is installed
-        if psutil:
-            try:
-                proc = psutil.Process()
+        try:
+            proc = psutil.Process()
 
-                with proc.oneshot():
-                    try:
-                        mem = proc.memory_full_info()
-                        summary.append(f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
-                                       f"`{natural_size(mem.vms)}`의 가상 메모리, "
-                                       f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다.")
-                    except psutil.AccessDenied:
-                        pass
+            with proc.oneshot():
+                try:
+                    mem = proc.memory_full_info()
+                    summary.append(f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
+                                   f"`{natural_size(mem.vms)}`의 가상 메모리, "
+                                   f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다.")
+                except psutil.AccessDenied:
+                    pass
 
-                    try:
-                        name = proc.name()
-                        pid = proc.pid
-                        thread_count = proc.num_threads()
+                try:
+                    name = proc.name()
+                    pid = proc.pid
+                    thread_count = proc.num_threads()
 
-                        summary.append(f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다.")
-                    except psutil.AccessDenied:
-                        pass
+                    summary.append(f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다.")
+                except psutil.AccessDenied:
+                    pass
 
-                    summary.append("")  # blank line
-            except psutil.AccessDenied:
-                summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
                 summary.append("")  # blank line
+        except psutil.AccessDenied:
+            summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
+            summary.append("")  # blank line
 
         cache_summary = f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.user.count_documents({})}`명의 사용자"
 
