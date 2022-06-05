@@ -108,8 +108,7 @@ class Kkutbot(commands.AutoShardedBot):
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self):
-        prefix = config(f"prefix.{'test' if config('test') else 'main'}")
-        await self.change_presence(activity=discord.Game(f"{prefix}도움 | {len(self.guilds)} 서버에서 활동"))
+        await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
 
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
