@@ -39,7 +39,7 @@ class KkutbotContext(commands.Context):
             ephemeral=False,
             escape_emoji_formatting=False
     ) -> discord.Message:
-        if (escape_emoji_formatting is False) and (getattr(self.command, "name") != "jishaku"):
+        if (escape_emoji_formatting is False) and (self.command.name != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
                                   tts=tts,
@@ -59,7 +59,7 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, **kwargs) -> discord.Message:
-        if (not kwargs.get('escape_emoji_formatting', False)) and (getattr(self.command, "name") != "jishaku"):
+        if (not kwargs.get('escape_emoji_formatting', False)) and (self.command.name != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().reply(content=content, **kwargs)
 
