@@ -18,10 +18,10 @@ from jishaku.features.root_command import natural_size
 from jishaku.flags import Flags
 from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
-from jishaku.repl import AsyncCodeExecutor
-from jishaku.types import ContextA
-from jishaku.shell import ShellReader
 from jishaku.paginators import PaginatorInterface, WrappedPaginator
+from jishaku.repl import AsyncCodeExecutor
+from jishaku.shell import ShellReader
+from jishaku.types import ContextA
 
 try:
     from importlib.metadata import distribution, packages_distributions
