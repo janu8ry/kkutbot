@@ -94,7 +94,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
 
         summary = [
             f"Jishaku `{package_version('jishaku')}`",
-            f"`{dist_version}`"
+            f"{dist_version}",
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
             f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, "
             f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
@@ -120,7 +120,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
                         pid = proc.pid
                         thread_count = proc.num_threads()
 
-                        summary.append(f"Running on PID {pid} (`{name}`) with {thread_count} thread(s).")
+                        summary.append(f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다.")
                     except psutil.AccessDenied:
                         pass
 
@@ -129,7 +129,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
                 summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
                 summary.append("")  # blank line
 
-        cache_summary = f"{len(self.bot.guilds)}개의 서버와 {await self.bot.db.user.count_documents({})}명의 사용자"
+        cache_summary = f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.user.count_documents({})}`명의 사용자"
 
         if len(self.bot.shards) > 20:
             summary.append(
@@ -138,13 +138,13 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
             )
         else:
             summary.append(
-                f"샤드 수는 {self.bot.shard_count}개이며,"
+                f"샤드 수는 `{self.bot.shard_count}`개이며,"
                 f" {cache_summary}와 활동하고 있습니다."
             )
 
         # pylint: disable=protected-access
         if self.bot._connection.max_messages:  # noqa
-            message_cache = f"메시지 캐시가 {self.bot._connection.max_messages}로 제한되어있습니다."  # noqa
+            message_cache = f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
         else:
             message_cache = "메시지 캐시가 비활성화 되어있습니다."
 
@@ -155,17 +155,19 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
         }
 
         *group, last = (
-            f"{intent.replace('_', ' ')} 인텐트는 {remarks.get(getattr(self.bot.intents, intent, None))}"
+            f"{intent.replace('_', ' ')} 인텐트: `{'활성화' if remarks.get(getattr(self.bot.intents, intent, None)) == 'enabled' else '비활성화'}`"
             for intent in
             ('presences', 'members', 'message_content')
         )
 
-        summary.append(f"{message_cache}, {', '.join(group)}, 그리고 {last}.")
+        summary.append(message_cache)
+        summary.append(f"{', '.join(group)}, {last}.")
+        summary.append("")  # blank line
 
         # pylint: enable=protected-access
 
         # Show websocket latency in milliseconds
-        summary.append(f"평균 웹소켓 지연시간: {round(self.bot.latency * 1000, 2)}ms")
+        summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
 
         await ctx.send("\n".join(summary))
 
