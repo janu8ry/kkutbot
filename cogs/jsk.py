@@ -20,6 +20,8 @@ from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.types import ContextA
+from jishaku.shell import ShellReader
+from jishaku.paginators import PaginatorInterface, WrappedPaginator
 
 try:
     from importlib.metadata import distribution, packages_distributions
@@ -171,23 +173,54 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
 
         await ctx.send("\n".join(summary))
 
+    @Feature.Command(parent="jsk", name="shell", aliases=["bash", "sh", "powershell", "ps1", "ps", "cmd", "terminal", "실행", "ㅅ"])
+    async def jsk_shell(self, ctx: ContextA, *, argument: codeblock_converter):  # type: ignore
+        """
+        Executes statements in the system shell.
+        This uses the system shell as defined in $SHELL, or `/bin/bash` otherwise.
+        Execution can be cancelled by closing the paginator.
+        """
+
+        if typing.TYPE_CHECKING:
+            argument: Codeblock = argument  # type: ignore
+
+        async with ReplResponseReactor(ctx.message):
+            with self.submit(ctx):
+                with ShellReader(argument.content, escape_ansi=not Flags.use_ansi(ctx)) as reader:
+                    prefix = "```" + reader.highlight
+
+                    paginator = WrappedPaginator(prefix=prefix, max_size=1975)
+                    paginator.add_line(f"{reader.ps1} {argument.content}\n")
+
+                    interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
+                    self.bot.loop.create_task(interface.send_to(ctx))
+
+                    async for line in reader:
+                        if interface.closed:
+                            return
+                        await interface.add_line(line)
+
+                await interface.add_line(f"\n[status] Return code {reader.close_code}")
+
     @Feature.Command(parent="jsk", name="poetry", aliases=["ㅍㅌ"])
     async def jsk_pip(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for "jsk sh poetry". Invokes the system shell.
         """
+        if typing.TYPE_CHECKING:
+            argument: Codeblock = argument  # type: ignore
 
-        return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "poetry " + argument.content))
+        return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "poetry " + argument.content))  # type: ignore
 
     @Feature.Command(parent="jsk", name="docker")
     async def jsk_docker(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for "jsk sh docker". Invokes the system shell.
         """
+        if typing.TYPE_CHECKING:
+            argument: Codeblock = argument  # type: ignore
 
-        return await ctx.invoke(
-            self.jsk_shell, argument=Codeblock(argument.language, "docker " + argument.content)
-        )
+        return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "docker " + argument.content))  # type: ignore
 
     @Feature.Command(parent="jsk", name="file", aliases=["파일", "ㅍㅇ"])
     async def jsk_file(self, ctx: commands.Context, path: str):
