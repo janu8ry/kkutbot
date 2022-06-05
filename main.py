@@ -46,7 +46,8 @@ async def on_message(message: discord.Message):
     if is_banned or is_bot:
         return None
     else:
-        if message.content.lstrip("ㄲ").startswith("jsk"):
+        cmd = message.content.lstrip(bot.command_prefix)
+        if cmd.startswith("jsk") or cmd.startswith("ㅈ"):
             cls = commands.Context
         else:
             cls = core.KkutbotContext
