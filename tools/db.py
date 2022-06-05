@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, Union
 from typing_extensions import TypeAlias
 
 import discord
@@ -13,7 +13,7 @@ logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
 coltype: TypeAlias = Literal["user", "guild", "general", "unused"]
-TargetObject: TypeAlias = [discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
+TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
 
 
 def dbconfig(query: str) -> Any:
