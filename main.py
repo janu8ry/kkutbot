@@ -12,7 +12,6 @@ import core
 from tools.config import config
 from tools.db import add, delete, read, write
 from tools.logger import setup_logger
-from tools.utils import time_convert
 
 logger = logging.getLogger("kkutbot")
 
@@ -171,7 +170,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             return await ctx.reinvoke()
         embed = discord.Embed(
             title="잠깐!",
-            description=f"`{time_convert(round(error.retry_after, 1))}` 후에 다시 시도해 주세요.",
+            description=f"<t:{time.time() + round(error.retry_after, 1)}:R>에 다시 시도해 주세요.",
             color=config('colors.error')
         )
         await ctx.send(embed=embed)
