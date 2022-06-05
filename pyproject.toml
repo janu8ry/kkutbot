@@ -38,7 +38,6 @@ pretty = true
 strict = true
 plugins = ""
 
-
 [tool.poetry.urls]
 Invite = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"
 discord = "https://discord.gg/z8tRzwf"
