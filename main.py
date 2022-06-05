@@ -106,22 +106,6 @@ async def on_command_completion(ctx: core.KkutbotContext):
     #     embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
     #     embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
     #     await ctx.send(ctx.author.mention, embed=embed)
-    #
-    # if not userdata.alerts.reward:
-    #     await ctx.send(
-    #         f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하고 보상을 받아가세요!"
-    #     )
-    #     userdata.alerts.reward = True
-    #
-    # if not userdata.alerts.mail:
-    #     mails = len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])
-    #     if mails > 0:
-    #         await ctx.send(
-    #             f"{ctx.author.mention}님, 읽지 않은 메일이 "
-    #             f"`{len([x for x in userdata.mails if (datetime.now() - x['time']).days <= 14])}`개 있습니다.\n"
-    #             "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
-    #         )
-    #     userdata.alerts.mail = True
     if not (await read(ctx.author, 'alerts.attendance')):
         await ctx.send(
             f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!"
