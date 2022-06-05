@@ -151,7 +151,7 @@ class Kkutbot(commands.AutoShardedBot):
         return data.voted
 
 
-def command(name: str = None, cls: Type[commands.Command] = None, **attrs):
+def command(name: str = None, cls: Type[commands.Command] = commands.Command, **attrs):
     def decorator(func):
         if isinstance(func, commands.Command):
             raise TypeError('Callback is already a command.')
