@@ -12,7 +12,7 @@ from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import add, config, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string
-from tools.views import SendAnnouncement
+from tools.views import SendAnnouncement, SendNotice
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -163,18 +163,12 @@ class Admin(commands.Cog, name="관리자"):
         view = SendAnnouncement()
         await ctx.send("버튼 눌러 공지 작성하기", view=view)
 
-    @commands.command(name="$알림", usage="ㄲ$알림 <유저> <내용>")
+    @commands.command(name="$알림", usage="ㄲ$알림 <유저>")
     @commands.check(is_admin)
-    async def send_notice(self, ctx: KkutbotContext, user: KkutbotUserConverter(), *, word: str):  # noqa
+    async def send_notice(self, ctx: KkutbotContext, user: KkutbotUserConverter()):  # noqa
         """유저에게 알림을 전송합니다."""
-        await self.bot.db.user.update_one(
-            {'_id': user.id},
-            {
-                '$push': {'mail': {'title': "관리자로부터의 알림", 'value': word.lstrip(), 'time': datetime.now()}},
-                '$set': {'alert.mail': False}
-            }
-        )
-        await ctx.send("{done} 완료!")
+        view = SendNotice(target=user.id)
+        await ctx.send("버튼 눌러 알림 보내기", view=view)
 
     @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=("$차단",))
     @commands.is_owner()
