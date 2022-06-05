@@ -52,10 +52,8 @@ links:
   invite:
     bot: bot invite oauth url
     server: support server invite url
-  monitoring:
-    pm2:
-    mongo:
   privacy-policy:
+  terms-of-service:
   koreanbots:
   topgg:
   github:
