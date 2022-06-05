@@ -31,7 +31,7 @@
         "command_used": 0
     },
     "general": {
-        "_id": "general",
+        "_id": null,
         "attendance": 0,
         "reward": 0,
         "command_used": 0,

@@ -177,6 +177,9 @@ async def write(target: TargetObject, path: str, value):
     elif (collection.name == "guild") and ((main_data := await read(target)) == deepcopy(config("default_data.guild"))):
         main_data["_id"] = id_
         await db.guild.insert_one(main_data)
+    elif (collection.name == "general") and ((main_data := await read(target)) == deepcopy(config("default_data.general"))):
+        main_data["_id"] = "general"
+        await db.general.insert_one(main_data)
 
     await collection.update_one({"_id": id_}, {"$set": {path: value}})
 
