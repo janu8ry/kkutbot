@@ -93,7 +93,8 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
             dist_version = f'unknown `{discord.__version__}`'
 
         summary = [
-            f"Jishaku `{package_version('jishaku')}`, discord.py `{dist_version}`, "
+            f"Jishaku `{package_version('jishaku')}`",
+            f"`{dist_version}`"
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
             f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, "
             f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
@@ -255,7 +256,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
 
         # 'jsk reload' on its own just reloads jishaku
         if ctx.invoked_with == 'reload' and not extensions:
-            extensions = [['jishaku']]
+            extensions = [['cogs.jsk']]
+        elif ctx.invoked_with == 'ㄹ' and not extensions:
+            extensions = [[f"cogs.{cogname[:-3]}" for cogname in os.listdir("cogs") if cogname.endswith(".py")]]
 
         for extension in itertools.chain(*extensions):
             method, icon = (
@@ -263,6 +266,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
                 if extension in self.bot.extensions else
                 (self.bot.load_extension, "\N{INBOX TRAY}")
             )
+
+            await discord.utils.maybe_coroutine(method, extension)
+            logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
 
             try:
                 await discord.utils.maybe_coroutine(method, extension)
