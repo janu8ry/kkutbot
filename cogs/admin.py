@@ -170,7 +170,7 @@ class Admin(commands.Cog, name="관리자"):
         view = SendNotice(target=user.id)
         await ctx.send("버튼 눌러 알림 보내기", view=view)
 
-    @commands.command(name="$정지", usage="ㄲ$정지 <유저> <사유>", aliases=("$차단",))
+    @commands.command(name="$차단", usage="ㄲ$차단 <유저> <사유>", aliases=("$정지",))
     @commands.is_owner()
     async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: int = 1, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
@@ -183,7 +183,7 @@ class Admin(commands.Cog, name="관리자"):
             f"끝봇 공식 커뮤니티에서 정지 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
-    @commands.command(name="$정지해제", usage="ㄲ$정지해제 <유저>", aliases=("$차단해제",))
+    @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
     @commands.check(is_admin)
     async def unblock_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
