@@ -10,7 +10,7 @@ from koreanbots.integrations.discord import DiscordpyKoreanbots
 from topgg import DBLClient
 
 from tools.config import config
-from tools.db import db
+from tools.db import db, write
 
 logger = logging.getLogger("kkutbot")
 
@@ -90,6 +90,8 @@ class Kkutbot(commands.AutoShardedBot):
 
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
+        self.scheduler.add_job(self.reset_attendance, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
+        self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=1)
         self.scheduler.start()
 
     async def setup_hook(self) -> None:
@@ -109,6 +111,17 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
+
+    @staticmethod
+    async def reset_alerts():
+        await write('general', 'attendance', 0)
+        await db.user.update_many({'alerts.attendance': True}, {'$set': {'alerts.attendance': False}})
+        await db.user.update_many({'alerts.reward': True}, {'$set': {'alert.reward': False}})
+
+    @staticmethod
+    async def reset_attendance():
+        weekly_attendance = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
+        await db.user.update_many({}, {'$set': {'daily': weekly_attendance}})
 
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
