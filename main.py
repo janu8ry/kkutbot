@@ -253,7 +253,7 @@ async def on_guild_join(guild: discord.Guild):
         "read_messages",
         "add_reactions",
         "external_emojis",
-        "use_slash_commands"
+        "use_application_commands"
     )
 
     missing_perms = [p for p in essential_perms if not dict(guild.me.guild_permissions)[p]]
