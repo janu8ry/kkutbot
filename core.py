@@ -123,6 +123,20 @@ class Kkutbot(commands.AutoShardedBot):
         weekly_attendance = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
         await db.user.update_many({}, {'$set': {'daily': weekly_attendance}})
 
+    # @staticmethod
+    # async def reset_quest():
+    #     with open('schema/quests.json', 'r', encoding="utf-8") as f:
+    #         quests = list(json.load(f).items())
+    #     random.shuffle(quests)
+    #     quests = dict(quests)
+    #     k = list(quests.keys())
+    #     v = list(quests.values())
+    #     await write(None, 'quest', {
+    #         k[0].replace(".", "/"): v[0],
+    #         k[1].replace(".", "/"): v[1],
+    #         k[2].replace(".", "/"): v[2]
+    #     })
+
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
             if cogname.endswith(".py"):
