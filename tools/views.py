@@ -7,7 +7,7 @@ from tools.db import db
 from .config import config  # noqa
 
 
-class ConfirmSend(discord.ui.View):
+class ConfirmSendAnnouncement(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.value = None
@@ -36,7 +36,7 @@ class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
             color=config('colors.help')
         )
         embed.add_field(name=f"{self.a_title.value} - `1초 전`", value=self.description.value)
-        view = ConfirmSend()
+        view = ConfirmSendAnnouncement()
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
