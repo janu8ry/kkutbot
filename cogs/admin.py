@@ -8,8 +8,8 @@ import psutil
 from discord.ext import commands
 from humanize import naturalsize
 
-from tools.converter import KkutbotUserConverter
 from core import Kkutbot, KkutbotContext
+from tools.converter import KkutbotUserConverter
 from tools.db import add, config, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string
 from tools.views import SendAnnouncement
