@@ -171,7 +171,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
 
         await ctx.send("\n".join(summary))
 
-    @Feature.Command(parent="jsk", name="poetry")
+    @Feature.Command(parent="jsk", name="poetry", aliases=["ㅍㅌ"])
     async def jsk_pip(self, ctx: commands.Context, *, argument: codeblock_converter):
         """
         Shortcut for "jsk sh poetry". Invokes the system shell.
@@ -189,7 +189,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
             self.jsk_shell, argument=Codeblock(argument.language, "docker " + argument.content)
         )
 
-    @Feature.Command(parent="jsk", name="file", aliases=["파일"])
+    @Feature.Command(parent="jsk", name="file", aliases=["파일", "ㅍㅇ"])
     async def jsk_file(self, ctx: commands.Context, path: str):
         """
         Sends local file to discord channel.
@@ -288,7 +288,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES):
         for page in paginator.pages:
             await ctx.send(page)
 
-    @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "ㅈㄹ"])
+    @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"])
     async def jsk_shutdown(self, ctx: ContextA):
         """
         Logs this bot out.
