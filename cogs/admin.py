@@ -156,7 +156,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
 
-    @commands.command(name="$공지", usage="ㄲ$공지 <제목> | <내용>", hidden=True)
+    @commands.command(name="$공지", usage="ㄲ$공지")
     @commands.check(is_admin)
     async def announce_users(self, ctx: KkutbotContext):
         """끝봇의 유저들에게 공지를 전송합니다."""
