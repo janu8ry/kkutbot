@@ -23,11 +23,21 @@ jishaku = {extras = ["procinfo"], version = "^2.5.0"}
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"
 flake8 = "^4.0.1"
+mypy = "^0.960"
 
 [tool.isort]
 skip_gitignore = "True"
 line_length = "150"
 extra_standard_library = ["typing_extensions"]
+
+[tool.mypy]
+python-version = 3.9
+exclude = ".venv"
+ignore_missing_imports = true
+pretty = true
+strict = true
+plugins = ""
+
 
 [tool.poetry.urls]
 Invite = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"
