@@ -276,7 +276,7 @@ async def on_guild_join(guild: discord.Guild):
 
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
-    logger.leave(f"'{guild.name}'에서 추방됨. (총 {len(bot.guilds)}개)")
+    logger.leave(f"'{guild.name}'에서 추방됨. (총 {len(bot.guilds)}서버)")
     await delete(guild)
 
 
