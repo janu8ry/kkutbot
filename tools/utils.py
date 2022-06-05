@@ -1,6 +1,8 @@
 from datetime import timedelta
 from typing import Union
 
+from discord.ext import commands
+
 from .config import config  # noqa
 
 
@@ -14,3 +16,7 @@ def time_convert(time: Union[int, float, timedelta]) -> str:
     if time.seconds >= 60:
         return f"{time.seconds // 60}분"
     return f"{time.seconds}초"
+
+
+def is_admin(ctx: commands.Context) -> bool:
+    return ctx.author.id in config('admin')
