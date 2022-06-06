@@ -23,7 +23,7 @@ class Admin(commands.Cog, name="관리자"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"), hidden=True)
+    @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
     @commands.check(is_admin)
     async def kkutbot_status(self, ctx: KkutbotContext, count: float = 7):
         """봇의 현황을 확인합니다."""
@@ -171,7 +171,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.send("버튼 눌러 알림 보내기", view=view)
 
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <사유>", aliases=("$정지",))
-    @commands.is_owner()
+    @commands.check(is_admin)
     async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: int = 1, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
         if await read(user, 'isbanned'):
@@ -248,7 +248,7 @@ class Admin(commands.Cog, name="관리자"):
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
         await ctx.send("{done} 게임 데이터 캐싱 완료!")
 
-    @commands.command(name="$정리", usage="ㄲ$정리")
+    @commands.command(name="$정리", usage="ㄲ$정리", hidden=True)
     @commands.is_owner()
     async def move_unused_users(self, ctx: KkutbotContext, days: int = 7, command_usage: int = 10, delete_data: str = 'n'):
         """미사용 유저들을 정리합니다."""
