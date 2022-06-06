@@ -192,17 +192,19 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$차단목록", usage="ㄲ$정지목록", aliases=("$정지목록", "$정지리스트", "$차단리스트"))
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = self.bot.db.user.find({"banned.isbanned": True})
-        if not banned_users.to_list(None):
+        banned_users = await (self.bot.db.user.find({"banned.isbanned": True})).to_list(None)
+        if not banned_users:
             return await ctx.send("{help} 현재 차단된 유저가 없습니다.")
         else:
             embed = discord.Embed(
-                title="정지 유저 목록"
+                title="차단 유저 목록",
+                color=config("colors.help")
             )
-            async for user in banned_users:
+            for user in banned_users:
+                print(banned_users)
                 embed.add_field(
                     name=f"**{user['name']}** - `{user['_id']}`\n",
-                    value=f"차단기간: {user['banned.period']}, 차단사유: {user['banned.reason']}"
+                    value=f"차단기간: `{user['banned']['period']}`일, 차단사유: {user['banned']['reason']}"
                 )
             await ctx.send(embed=embed)
 
