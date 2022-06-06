@@ -172,8 +172,8 @@ class Admin(commands.Cog, name="관리자"):
         await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason.lstrip()})
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
-            f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{banned_since}> \n\n"
-            f"차단 해제: <t:{banned_since + 86400 * days}> (<t:{banned_since + 86400 * days}:R>)"
+            f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{round(banned_since)}> \n\n"
+            f"차단 해제: <t:{round(banned_since + 86400 * days)}> (<t:{round(banned_since + 86400 * days)}:R>)"
             f"끝봇 공식 커뮤니티에서 차단 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
