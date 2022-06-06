@@ -1,5 +1,7 @@
+import datetime
 import logging
 import os
+from datetime import datetime, timezone
 from typing import Type
 
 import discord
@@ -70,7 +72,7 @@ intents.message_content = True
 
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "2.0.0-alpha"
-    __slots__ = ("koreanbots", "dbl", "db", "scheduler")
+    __slots__ = ("koreanbots", "dbl", "db", "scheduler", "started_at")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
@@ -87,6 +89,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.koreanbots = None
         self.dbl = None
         self.db = db
+        self.started_at = None
 
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
@@ -95,6 +98,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.start()
 
     async def setup_hook(self) -> None:
+        self.started_at = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 

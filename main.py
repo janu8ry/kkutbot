@@ -149,6 +149,20 @@ async def check(ctx: core.KkutbotContext) -> bool:
 
 
 @bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.message.created_at < bot.started_at:
+        types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
+        await interaction.response.send_message(
+            embed=discord.Embed(
+                description=f"이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n"
+                            f"명령어를 새로 입력해주세요.",
+                color=config("colors.error")
+            ),
+            ephemeral=True
+        )
+
+
+@bot.event
 async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError]):
     if isinstance(error, commands.errors.BotMissingPermissions):
         await ctx.send(f"`{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
