@@ -160,14 +160,14 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def announce_users(self, ctx: KkutbotContext):
         """끝봇의 유저들에게 공지를 전송합니다."""
-        view = SendAnnouncement()
+        view = SendAnnouncement(ctx=ctx)
         await ctx.send("버튼 눌러 공지 작성하기", view=view)
 
     @commands.command(name="$알림", usage="ㄲ$알림 <유저>")
     @commands.check(is_admin)
     async def send_notice(self, ctx: KkutbotContext, user: KkutbotUserConverter()):  # noqa
         """유저에게 알림을 전송합니다."""
-        view = SendNotice(target=user.id)
+        view = SendNotice(ctx=ctx, target=user.id)
         await ctx.send("버튼 눌러 알림 보내기", view=view)
 
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <사유>", aliases=("$정지",))
@@ -177,9 +177,11 @@ class Admin(commands.Cog, name="관리자"):
         if await read(user, 'isbanned'):
             return await ctx.send("{denyed} 이미 정지된 유저입니다.")
         await write(user, 'isbanned', True)
+        await write(user, "banned_time", days)
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
-            f"사유: `{reason.lstrip()}` \n\n차단 일시: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
+            f"사유: `{reason.lstrip()}` \n\n차단 시작: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
+            f"차단 해제: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}"
             f"끝봇 공식 커뮤니티에서 정지 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 

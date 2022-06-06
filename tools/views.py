@@ -1,15 +1,36 @@
 from datetime import datetime
 
 import discord
+from discord.ext import commands
 
 from tools.db import db
 
 from .config import config  # noqa
 
 
-class ConfirmSendAnnouncement(discord.ui.View):
-    def __init__(self):
-        super().__init__()
+class CustomView(discord.ui.View):
+    def __init__(self, ctx, author_only=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ctx = ctx
+        self.author_only = author_only
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if self.author_only:
+            if interaction.user != self.ctx.author:
+                await interaction.response.send_message(
+                    embed=discord.Embed(
+                        description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.",
+                        color=config("colors.error")
+                    ),
+                    ephemeral=True
+                )
+                return False
+        return True
+
+
+class ConfirmSendAnnouncement(CustomView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
@@ -29,6 +50,11 @@ class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
     a_title = discord.ui.TextInput(label='공지 제목', required=True)
     description = discord.ui.TextInput(label='공지 본문', style=discord.TextStyle.long, required=True)
 
+    def __init__(self, timeout: float, ctx: commands.Context):
+        super().__init__(timeout=timeout)
+        self.value = None
+        self.ctx = ctx
+
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title=f"**{interaction.user.name}** 님의 메일함",
@@ -36,7 +62,7 @@ class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
             color=config('colors.help')
         )
         embed.add_field(name=f"{self.a_title.value} - `1초 전`", value=self.description.value)
-        view = ConfirmSendAnnouncement()
+        view = ConfirmSendAnnouncement(ctx=self.ctx)
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
@@ -49,21 +75,22 @@ class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
             )
 
 
-class SendAnnouncement(discord.ui.View):
-    def __init__(self):
-        super().__init__()
+class SendAnnouncement(CustomView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
         self.value = None
+        self.ctx = ctx
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(AnnouncementInput(timeout=120))
+        await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx, timeout=120))
         self.value = True
         self.stop()
 
 
-class ConfirmSendNotice(discord.ui.View):
-    def __init__(self):
-        super().__init__()
+class ConfirmSendNotice(CustomView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
@@ -82,10 +109,11 @@ class ConfirmSendNotice(discord.ui.View):
 class NoticeInput(discord.ui.Modal, title='알림 보내기'):
     msg = discord.ui.TextInput(label='알림 내용', style=discord.TextStyle.long, required=True)
 
-    def __init__(self, timeout: float, target: int):
+    def __init__(self, timeout: float, ctx: commands.Context, target: int):
         super().__init__(timeout=timeout)
         self.value = None
         self.target = target
+        self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
@@ -94,7 +122,7 @@ class NoticeInput(discord.ui.Modal, title='알림 보내기'):
             color=config('colors.help')
         )
         embed.add_field(name=f"관리자로부터의 알림 - `1초 전`", value=self.msg.value)
-        view = ConfirmSendNotice()
+        view = ConfirmSendNotice(ctx=self.ctx)
         await interaction.response.send_message("**<알림 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
@@ -107,14 +135,15 @@ class NoticeInput(discord.ui.Modal, title='알림 보내기'):
             )
 
 
-class SendNotice(discord.ui.View):
-    def __init__(self, target: int):
-        super().__init__()
+class SendNotice(CustomView):
+    def __init__(self, ctx: commands.Context, target: int):
+        super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target
+        self.ctx = ctx
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(NoticeInput(timeout=120, target=self.target))
+        await interaction.response.send_modal(NoticeInput(timeout=120, ctx=self.ctx, target=self.target))
         self.value = True
         self.stop()
