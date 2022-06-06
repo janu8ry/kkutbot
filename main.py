@@ -79,14 +79,14 @@ async def on_command(ctx: core.KkutbotContext):
 @bot.event
 async def on_command_completion(ctx: core.KkutbotContext):
     await add(ctx.author, 'command_used', 1)
-    await write(ctx.author, 'latest_usage', time.time())
+    await write(ctx.author, 'latest_usage', round(time.time()))
 
     if ctx.guild:
-        await write(ctx.guild, 'latest_usage', time.time())
+        await write(ctx.guild, 'latest_usage', round(time.time()))
         await add(ctx.guild, 'command_used', 1)
 
     await add(None, 'command_used', 1)
-    await write(None, 'latest_usage', time.time())
+    await write(None, 'latest_usage', round(time.time()))
     await add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
 
     # if userdata.quest.status.date != (today := date.today().toordinal()):

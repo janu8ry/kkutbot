@@ -25,7 +25,7 @@ class Admin(commands.Cog, name="관리자"):
         return is_admin(ctx)
 
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
-    async def kkutbot_status(self, ctx: KkutbotContext, count: float = 7):
+    async def kkutbot_status(self, ctx: KkutbotContext, count: int = 7):
         """봇의 현황을 확인합니다."""
         embed = discord.Embed(color=config('colors.general'))
 
@@ -50,7 +50,7 @@ class Admin(commands.Cog, name="관리자"):
             value=f"서버: `{len(self.bot.guilds)}`개\n"
                   f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
                   f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
-                  f"활성화: `{await self.bot.db.user.count_documents({'latest_command': {'$gte': time.time() - 86400 * count}})}`명\n"
+                  f"활성화: `{await self.bot.db.user.count_documents({'latest_command': {'$gte': round(time.time() - 86400 * count)}})}`명\n"
                   f"출석 유저 수: `{await read(None, 'attendance')}`명"
         )
         embed.add_field(
