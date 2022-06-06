@@ -3,7 +3,6 @@ import time
 from copy import deepcopy
 
 import discord
-import psutil
 from discord.ext import commands
 from humanize import naturalsize
 
@@ -52,15 +51,7 @@ class Admin(commands.Cog, name="관리자"):
                   f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
                   f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
                   f"활성화: `{await self.bot.db.user.count_documents({'last_command': {'$gte': time.time() - 86400 * count}})}`명\n"
-                  f"출석 유저 수: `{await read(None, 'daily')}`명"
-        )
-        mem = psutil.virtual_memory()
-        embed.add_field(
-            name="호스팅",
-            value=f"CPU: `{psutil.cpu_percent()}% ({round((psutil.cpu_freq().current / 1000), 2)} GHz)`\n"
-                  f"RAM: `{naturalsize(mem.used)} / {naturalsize(mem.total)}`\n"
-                  f"온도: `{psutil.sensors_temperatures()['cpu_thermal'][0].current if hasattr(psutil, 'sensors_temperatures') else '측정 불가'}`℃\n",
-            inline=False
+                  f"출석 유저 수: `{await read(None, 'attendance')}`명"
         )
         embed.add_field(
             name="DB",
