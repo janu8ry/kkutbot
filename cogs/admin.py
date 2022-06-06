@@ -169,7 +169,7 @@ class Admin(commands.Cog, name="관리자"):
         if await read(user, 'banned.isbanned'):
             return await ctx.send("{denyed} 이미 차단된 유저입니다.")
         banned_since = time.time()
-        await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason})
+        await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason.lstrip()})
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{banned_since}> \n\n"
