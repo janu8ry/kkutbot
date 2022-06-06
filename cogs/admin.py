@@ -50,7 +50,7 @@ class Admin(commands.Cog, name="관리자"):
             value=f"서버: `{len(self.bot.guilds)}`개\n"
                   f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
                   f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
-                  f"활성화: `{await self.bot.db.user.count_documents({'last_command': {'$gte': time.time() - 86400 * count}})}`명\n"
+                  f"활성화: `{await self.bot.db.user.count_documents({'latest_command': {'$gte': time.time() - 86400 * count}})}`명\n"
                   f"출석 유저 수: `{await read(None, 'attendance')}`명"
         )
         embed.add_field(
@@ -211,7 +211,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @staticmethod
     async def update_game_tier(target: int):
-        for gamemode in ("rank_solo", "rank_multi"):
+        for gamemode in ("rank_solo", "rank_online"):
             if (await read(target, f'game.{gamemode}.tier')) != (tier := await get_tier(target, gamemode, emoji=False)):
                 await write(target, f'game.{gamemode}.tier', tier)
 
@@ -242,7 +242,7 @@ class Admin(commands.Cog, name="관리자"):
             deleted = await self.bot.db.unused.count_documents()
             await self.bot.db.unused.drop()
         async for user in self.bot.db.user.find({
-            'last_command': {'$lt': time.time() - 86400 * days},
+            'latest_usage': {'$lt': time.time() - 86400 * days},
             'command_used': {'$lt': command_usage}
         }):
             await self.bot.db.unused.insert_one(user)
