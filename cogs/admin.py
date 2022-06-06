@@ -135,9 +135,9 @@ class Admin(commands.Cog, name="관리자"):
         await add(user, 'medals', amount)
         await ctx.send("{done} 완료!")
 
-    @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", hidden=True)
-    @commands.is_owner()
-    async def delete_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
+    @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
+    @commands.check(is_admin)
+    async def delete_userdata(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 데이터를 초기화합니다."""
         if await self.bot.db.user.find_one({'_id': user.id}):
             await delete(user)
@@ -145,9 +145,9 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("{denyed} 해당 유저는 끝봇의 유저가 아닙니다.")
 
-    @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>", hidden=True)
-    @commands.is_owner()
-    async def delete_user(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
+    @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
+    @commands.check(is_admin)
+    async def delete_guilddata(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
         """유저의 데이터를 초기화합니다."""
         if await self.bot.db.guild.find_one({'_id': guild.id}):
             await delete(guild)
@@ -195,7 +195,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("{denyed} 현재 차단되지 않은 유저입니다.")
 
-    @commands.command(name="$차단목록", usage="ㄲ$정지목록", aliases=("$차단목록", "$정지리스트", "$차단리스트"))
+    @commands.command(name="$차단목록", usage="ㄲ$정지목록", aliases=("$정지목록", "$정지리스트", "$차단리스트"))
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
@@ -229,8 +229,8 @@ class Admin(commands.Cog, name="관리자"):
             if (await read(target, f'game.{gamemode}.tier')) != (tier := await get_tier(target, gamemode, emoji=False)):
                 await write(target, f'game.{gamemode}.tier', tier)
 
-    @commands.command(name="$캐시", usage="ㄲ$캐시", hidden=True)
-    @commands.is_owner()
+    @commands.command(name="$캐시", usage="ㄲ$캐시")
+    @commands.check(is_admin)
     async def add_user_cache(self, ctx: KkutbotContext):
         """유저 캐시를 새로고침합니다."""
         users = await self.bot.db.user.count_documents({"name": None})
@@ -248,8 +248,8 @@ class Admin(commands.Cog, name="관리자"):
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
         await ctx.send("{done} 게임 데이터 캐싱 완료!")
 
-    @commands.command(name="$정리", usage="ㄲ$정리", hidden=True)
-    @commands.is_owner()
+    @commands.command(name="$정리", usage="ㄲ$정리")
+    @commands.check(is_admin)
     async def move_unused_users(self, ctx: KkutbotContext, days: int = 7, command_usage: int = 10, delete_data: str = 'n'):
         """미사용 유저들을 정리합니다."""
         cleaned = 0
