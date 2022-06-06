@@ -176,10 +176,7 @@ class Admin(commands.Cog, name="관리자"):
         if await read(user, 'banned.isbanned'):
             return await ctx.send("{denyed} 이미 차단된 유저입니다.")
         banned_since = time.time()
-        await write(user, 'banned.isbanned', True)
-        await write(user, "banned.since", banned_since)
-        await write(user, "banned.period", days)
-        await write(user, "banned.reason", reason)
+        await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason})
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{banned_since}> \n\n"
@@ -192,10 +189,7 @@ class Admin(commands.Cog, name="관리자"):
     async def unblock_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
         if await read(user, 'banned.isbanned'):
-            await write(user, 'banned.isbanned', False)
-            await write(user, "banned.since", 0)
-            await write(user, "banned.period", 0)
-            await write(user, "banned.reason", None)
+            await write(user, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
             await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
