@@ -47,7 +47,6 @@ async def on_message(message: discord.Message):
         banned_period = await read(message.author, "banned.period")
         if time.time() - banned_since >= banned_period * 86400:
             await write(message.author, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
-            await message.channel.send("{done} 완료!")
             await message.author.send(
                 f"당신은 <t:{round(banned_since + 86400 * banned_period)}> 부터 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!"
             )

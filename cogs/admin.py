@@ -11,7 +11,7 @@ from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import add, config, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string
-from tools.views import SendAnnouncement, SendNotice
+from tools.views import SendAnnouncement, SendNotice, ServerInvite
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -174,7 +174,9 @@ class Admin(commands.Cog, name="관리자"):
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{round(banned_since)}> \n\n"
             f"차단 해제: <t:{round(banned_since + 86400 * days)}> (<t:{round(banned_since + 86400 * days)}:R>)\n\n"
-            f"끝봇 공식 커뮤니티에서 차단 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
+            f"끝봇 공식 커뮤니티에서 차단 해제를 요청할 수 있습니다.",
+            view=ServerInvite()
+        )
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
