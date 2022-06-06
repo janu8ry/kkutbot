@@ -39,7 +39,7 @@ async def on_shard_ready(shard_id):
 
 @bot.event
 async def on_message(message: discord.Message):
-    is_banned = await read(message.author, 'isbanned')
+    is_banned = await read(message.author, 'banned.isbanned')
     is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
 
     if is_banned or is_bot:

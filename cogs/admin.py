@@ -1,7 +1,6 @@
 import operator
 import time
 from copy import deepcopy
-from datetime import datetime
 
 import discord
 import psutil
@@ -170,18 +169,20 @@ class Admin(commands.Cog, name="관리자"):
         view = SendNotice(ctx=ctx, target=user.id)
         await ctx.send("버튼 눌러 알림 보내기", view=view)
 
-    @commands.command(name="$차단", usage="ㄲ$차단 <유저> <사유>", aliases=("$정지",))
+    @commands.command(name="$차단", usage="ㄲ$차단 <유저> <기간(일)> <사유>", aliases=("$정지",))
     @commands.check(is_admin)
-    async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: int = 1, *, reason: str = "없음"):  # noqa
+    async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
-        if await read(user, 'isbanned'):
+        if await read(user, 'banned.isbanned'):
             return await ctx.send("{denyed} 이미 정지된 유저입니다.")
-        await write(user, 'isbanned', True)
-        await write(user, "banned_time", days)
+        banned_since = time.time()
+        await write(user, 'banned.isbanned', True)
+        await write(user, "banned.since", banned_since)
+        await write(user, "banned.period", days)
         await user.send(
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
-            f"사유: `{reason.lstrip()}` \n\n차단 시작: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')} \n\n"
-            f"차단 해제: {datetime.now().strftime('%Y/%m/%d %H:%M:%S')}"
+            f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{banned_since}> \n\n"
+            f"차단 해제: <t:{banned_since + 86400 * days}> (<t:{banned_since + 86400 * days}:R>)"
             f"끝봇 공식 커뮤니티에서 정지 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
@@ -189,8 +190,10 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def unblock_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
-        if await read(user, 'isbanned'):
-            await write(user, 'isbanned', False)
+        if await read(user, 'banned.isbanned'):
+            await write(user, 'banned.isbanned', False)
+            await write(user, "banned.since", 0)
+            await write(user, "banned.period", 0)
             await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
@@ -200,13 +203,13 @@ class Admin(commands.Cog, name="관리자"):
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = self.bot.db.user.find({"isbanned": True})
+        banned_users = self.bot.db.user.find({"banned.isbanned": True})
         if not banned_users.to_list(None):
             return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
         else:
             desc = ""
             async for t in banned_users:
-                desc += f"**{t['_name']}** - `{t['_id']}`\n"
+                desc += f"**{t['name']}** - `{t['_id']}`\n"
             embed = discord.Embed(
                 title="정지 유저 목록",
                 description=desc
@@ -215,7 +218,7 @@ class Admin(commands.Cog, name="관리자"):
 
     async def update_user_name(self, target: int):
         username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
-        await write(target, '_name', username)
+        await write(target, 'name', username)
 
     @staticmethod
     async def update_game_winrate(target: int):
@@ -233,9 +236,9 @@ class Admin(commands.Cog, name="관리자"):
     @commands.is_owner()
     async def add_user_cache(self, ctx: KkutbotContext):
         """유저 캐시를 새로고침합니다."""
-        users = await self.bot.db.user.count_documents({"_name": None})
+        users = await self.bot.db.user.count_documents({"name": None})
         msg = await ctx.send(f"이름 캐싱 진행중... (`0`/`{users}`)")
-        for n, target in enumerate(await self.bot.db.user.find({"_name": None})):
+        for n, target in enumerate(await self.bot.db.user.find({"name": None})):
             await self.update_user_name(target['_id'])
             await msg.edit(content=f"이름 캐싱 진행중... (`{n + 1}`/`{users}`)")
         await ctx.send("{done} 이름 캐싱 완료!")
