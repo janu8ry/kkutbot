@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from tools.db import db
+from tools.utils import disable_buttons
 
 from .config import config  # noqa
 
@@ -34,15 +35,17 @@ class ConfirmSendAnnouncement(CustomView):
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = True
-        await interaction.response.send_message("공지 전송 완료!")
+        await interaction.channel.send("공지 전송 완료!")
+        await disable_buttons(interaction, view=self)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = False
-        await interaction.response.send_message("공지 전송이 취소되었습니다.")
+        await interaction.channel.send("공지 전송이 취소되었습니다.")
+        await disable_buttons(interaction, view=self)
         self.stop()
 
 
@@ -82,7 +85,7 @@ class SendAnnouncement(CustomView):
         self.ctx = ctx
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx, timeout=120))
         self.value = True
         self.stop()
@@ -94,15 +97,17 @@ class ConfirmSendNotice(CustomView):
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = True
-        await interaction.response.send_message("알림 전송 완료!")
+        await interaction.channel.send("알림 전송 완료!")
+        await disable_buttons(interaction, view=self)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         self.value = False
-        await interaction.response.send_message("알림 전송이 취소되었습니다.")
+        await interaction.channel.send("알림 전송이 취소되었습니다.")
+        await disable_buttons(interaction, view=self)
         self.stop()
 
 
@@ -143,7 +148,7 @@ class SendNotice(CustomView):
         self.ctx = ctx
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         await interaction.response.send_modal(NoticeInput(timeout=120, ctx=self.ctx, target=self.target))
         self.value = True
         self.stop()

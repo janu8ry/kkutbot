@@ -56,3 +56,10 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
         else:
             break
     return tier if emoji else tier.split(" ")[0]
+
+
+async def disable_buttons(interaction: discord.Interaction, view: discord.ui.View):
+    for item in view.children:
+        if isinstance(item, discord.ui.Button):
+            item.disabled = True
+    await interaction.response.edit_message(view=view)
