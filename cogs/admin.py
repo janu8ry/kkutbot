@@ -174,7 +174,7 @@ class Admin(commands.Cog, name="관리자"):
     async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
         if await read(user, 'banned.isbanned'):
-            return await ctx.send("{denyed} 이미 정지된 유저입니다.")
+            return await ctx.send("{denyed} 이미 차단된 유저입니다.")
         banned_since = time.time()
         await write(user, 'banned.isbanned', True)
         await write(user, "banned.since", banned_since)
@@ -183,7 +183,7 @@ class Admin(commands.Cog, name="관리자"):
             f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{banned_since}> \n\n"
             f"차단 해제: <t:{banned_since + 86400 * days}> (<t:{banned_since + 86400 * days}:R>)"
-            f"끝봇 공식 커뮤니티에서 정지 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
+            f"끝봇 공식 커뮤니티에서 차단 해제를 요청할 수 있습니다.\n\n{config('links.invite.server')}")
         await ctx.send("{done} 완료!")
 
     @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
@@ -197,15 +197,15 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.send("{done} 완료!")
             await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
-            await ctx.send("{denyed} 현재 이용 정지되지 않은 유저입니다.")
+            await ctx.send("{denyed} 현재 차단되지 않은 유저입니다.")
 
-    @commands.command(name="$정지목록", usage="ㄲ$정지목록", aliases=("$차단목록", "$정지리스트", "$차단리스트"))
+    @commands.command(name="$차단목록", usage="ㄲ$정지목록", aliases=("$차단목록", "$정지리스트", "$차단리스트"))
     @commands.check(is_admin)
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
         banned_users = self.bot.db.user.find({"banned.isbanned": True})
         if not banned_users.to_list(None):
-            return await ctx.send("{help} 현재 정지된 유저가 없습니다.")
+            return await ctx.send("{help} 현재 차단된 유저가 없습니다.")
         else:
             desc = ""
             async for t in banned_users:
