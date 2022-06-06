@@ -19,7 +19,7 @@
         },
         "attendance": 0,
         "command_used": 0,
-        "banned": {"isbanned":  false, "since":  0, "period":  0},
+        "banned": {"isbanned": false, "since": 0, "period": 0, "reason": null},
         "latest_usage": null,
         "mails": [],
         "alerts": {"attendance": false, "reward": false, "mails": true}
