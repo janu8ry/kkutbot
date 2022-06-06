@@ -171,7 +171,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <기간(일)> <사유>", aliases=("$정지",))
     @commands.check(is_admin)
-    async def block_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
+    async def ban_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
         if await read(user, 'banned.isbanned'):
             return await ctx.send("{denyed} 이미 차단된 유저입니다.")
@@ -186,12 +186,12 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
     @commands.check(is_admin)
-    async def unblock_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
+    async def unban_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
         if await read(user, 'banned.isbanned'):
             await write(user, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
             await ctx.send("{done} 완료!")
-            await user.send("당신은 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
+            await user.send("당신은 관리자에 의해 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
         else:
             await ctx.send("{denyed} 현재 차단되지 않은 유저입니다.")
 
