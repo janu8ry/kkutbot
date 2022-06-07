@@ -142,6 +142,16 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
 
+    @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=["$탈퇴", "$나가기"])
+    async def leave_guild(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
+        """서버를 나갑니다."""
+        if await self.bot.db.guild.find_one({'_id': guild.id}):
+            await guild.leave()
+            await delete(guild)
+            await ctx.send("{done} 완료!")
+        else:
+            await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
+
     @commands.command(name="$공지", usage="ㄲ$공지")
     async def announce_users(self, ctx: KkutbotContext):
         """끝봇의 유저들에게 공지를 전송합니다."""
