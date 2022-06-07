@@ -109,7 +109,9 @@ class Admin(commands.Cog, name="관리자"):
 
         if not (await self.bot.db.guild.find_one({'_id': guild.id})):
             return await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(guild)).items())):
+        guild_data = await read(guild)
+        guild_data["name"] = guild.name
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
             await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
