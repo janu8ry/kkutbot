@@ -50,7 +50,8 @@ class Admin(commands.Cog, name="관리자"):
             value=f"서버: `{len(self.bot.guilds)}`개\n"
                   f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
                   f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
-                  f"활성화: `{await self.bot.db.user.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`명\n"
+                  f"활성화 유저: `{await self.bot.db.user.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`명\n"
+                  f"활성화 유저: `{await self.bot.db.guild.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`서버\n"
                   f"출석 유저 수: `{await read(None, 'attendance')}`명"
         )
         embed.add_field(
@@ -60,29 +61,6 @@ class Admin(commands.Cog, name="관리자"):
                   f"업뎃 지연시간: `{round(t2 * 1000)}`ms"
         )
         await ctx.send(embed=embed)
-
-    # @commands.command(name="$서버", usage="ㄲ$서버 <키>", hidden=True)
-    # @commands.is_owner()
-    # async def servers(self, ctx: KkutbotContext, key: str = "서버"):
-    #     """끝봇이 참가중인 서버의 목록을 키에 따라 정렬 후 확인합니다. (비공개 서버에서 사용시 TOS 위반이 아님)
-    #
-    #     **<키 목록>**
-    #     서버, 유저(멤버), 샤드, 아이디
-    #     """
-    #     async def callback(guild):
-    #         if key == "서버":
-    #             return await read(guild, 'command_used')
-    #         elif key in ("유저", "멤버"):
-    #             return guild.member_count
-    #         elif key == "샤드":
-    #             return guild.shard_id
-    #         elif key == "아이디":
-    #             return guild.id
-    #         else:
-    #             raise KeyError(f"`{key}`(은)는 없는 키 입니다.")
-    #
-    #     for content in split_string("\n".join(f"{e_mk(g.name)[:10]} [`{g.id}`]  |  멤버: `{g.member_count}`명 | 샤드: `{g.shard_id}`번 | 명령어: `{await read(g, 'command_used') or 0}`회" for g in sorted(self.bot.guilds, key=callback, reverse=True))):
-    #         await ctx.send(content, escape_emoji_formatting=True)
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     async def user_info(self, ctx: KkutbotContext, *, user: KkutbotUserConverter() = None):  # noqa
