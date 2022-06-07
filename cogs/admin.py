@@ -87,8 +87,14 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     async def user_info(self, ctx: KkutbotContext, *, user: KkutbotUserConverter() = None):  # noqa
         """유저의 (상세)정보를 출력합니다."""
-        if user is None:  # check public data
-            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted((await read(None, 'commands')).items(), key=operator.itemgetter(1), reverse=True)).items())):
+        if user is None:
+            cmd_data = await read(None, 'commands')
+            for k, v in cmd_data.copy().items():
+                if k.startswith("jishaku "):
+                    cmd_data["jishaku"] += v
+                    del cmd_data[k]
+            sorted_data = sorted(cmd_data.items(), key=operator.itemgetter(1), reverse=True)
+            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted_data).items())):
                 await ctx.send(content, escape_emoji_formatting=True)
             public_data = deepcopy(await read(user))
             del public_data['commands']
