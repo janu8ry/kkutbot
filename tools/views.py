@@ -2,6 +2,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
 
 from tools.db import db
 from tools.utils import disable_buttons
@@ -162,3 +163,85 @@ class ServerInvite(discord.ui.View):
                 label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config("links.invite.server")
             )
         )
+
+
+class ConfirmModifyData(CustomView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
+        self.value = None
+
+    @discord.ui.button(label='수정하기', style=discord.ButtonStyle.green)
+    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+        self.value = True
+        await interaction.channel.send("데이터 수정 완료!")
+        await disable_buttons(interaction, view=self)
+        self.stop()
+
+    @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+        self.value = False
+        await interaction.channel.send("데이터 수정이 취소되었습니다.")
+        await disable_buttons(interaction, view=self)
+        self.stop()
+
+
+class DataInput(discord.ui.Modal, title="데이터 수정하기"):
+    data_target = discord.ui.TextInput(label='타깃 아이디', required=True)
+    data_path = discord.ui.TextInput(label='수정할 데이터 경로', required=True)
+    data_value = discord.ui.TextInput(label='수정할 값', style=discord.TextStyle.long, required=True)
+
+    def __init__(self, timeout: float, ctx: commands.Context, collection: AsyncIOMotorCollection):
+        super().__init__(timeout=timeout)
+        self.value = None
+        self.colection = collection
+        self.ctx = ctx
+
+    async def on_submit(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="데이터 수정 확인",
+            description=f"수정 대상: {self.colection.name} - {self.data_target.value}",
+            color=config('colors.help')
+        )
+        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
+        view = ConfirmModifyData(ctx=self.ctx)
+        await interaction.response.send_message(embed=embed, view=view)
+        await view.wait()
+        if view.value:
+            final_data = self.data_value.value.strip()
+            if final_data == "True":
+                final_data = True
+            elif final_data == "False":
+                final_data = False
+            elif final_data.isdecimal():
+                final_data = int(self.data_value.value)
+            await self.colection.update_one(
+                {'_id': int(self.data_target.value)},
+                {
+                    '$set': {self.data_path.value: final_data}
+                }
+            )
+
+
+class ModifyData(CustomView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
+        self.value = None
+        self.ctx = ctx
+
+    @discord.ui.button(label='유저', style=discord.ButtonStyle.green)
+    async def modify_user(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.user))
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='서버', style=discord.ButtonStyle.red)
+    async def modify_guild(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.guild))
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='일반', style=discord.ButtonStyle.blurple)
+    async def modify_general(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.general))
+        self.value = True
+        self.stop()

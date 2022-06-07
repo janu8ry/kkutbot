@@ -10,7 +10,7 @@ from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import add, config, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string
-from tools.views import SendAnnouncement, SendNotice, ServerInvite
+from tools.views import SendAnnouncement, SendNotice, ServerInvite, ModifyData
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -125,6 +125,12 @@ class Admin(commands.Cog, name="관리자"):
         """관리자 권한으로 메달을 지급합니다."""
         await add(user, 'medals', amount)
         await ctx.send("{done} 완료!")
+
+    @commands.command(name="$정보수정", usage="ㄲ$정보수정")
+    async def modify_data(self, ctx: KkutbotContext):  # noqa
+        """대상의 정보를 수정합니다."""
+        view = ModifyData(ctx=ctx)
+        await ctx.send(view=view)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
     async def delete_userdata(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
