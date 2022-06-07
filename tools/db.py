@@ -68,7 +68,7 @@ def get_collection(target: TargetObject) -> AsyncIOMotorCollection:
         return db.general
 
 
-def _get_id(target: TargetObject) -> int:
+def _get_id(target: TargetObject) -> Union[int, str]:
     """
     returns target id
 
@@ -82,7 +82,10 @@ def _get_id(target: TargetObject) -> int:
     int
         target's id
     """
-    return getattr(target, 'id', target)
+    if target:
+        return getattr(target, 'id', target)
+    else:
+        return "general"
 
 
 def _get_name(target: TargetObject) -> str:
