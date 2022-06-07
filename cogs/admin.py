@@ -10,7 +10,7 @@ from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import add, config, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string
-from tools.views import SendAnnouncement, SendNotice, ServerInvite, ModifyData
+from tools.views import ModifyData, SendAnnouncement, SendNotice, ServerInvite
 
 
 class Admin(commands.Cog, name="관리자"):
