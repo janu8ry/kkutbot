@@ -10,11 +10,12 @@ from tools.utils import disable_buttons
 from .config import config  # noqa
 
 
-class CustomView(discord.ui.View):
+class DefaultView(discord.ui.View):
     def __init__(self, ctx, author_only=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ctx = ctx
         self.author_only = author_only
+        self.timeout = 5
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.author_only:
@@ -30,7 +31,13 @@ class CustomView(discord.ui.View):
         return True
 
 
-class ConfirmSendAnnouncement(CustomView):
+class DefaultModal(discord.ui.Modal):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.timeout = 5
+
+
+class ConfirmSendAnnouncement(DefaultView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -50,12 +57,12 @@ class ConfirmSendAnnouncement(CustomView):
         self.stop()
 
 
-class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
+class AnnouncementInput(DefaultModal, title='공지 작성하기'):
     a_title = discord.ui.TextInput(label='공지 제목', required=True)
     description = discord.ui.TextInput(label='공지 본문', style=discord.TextStyle.long, required=True)
 
-    def __init__(self, timeout: float, ctx: commands.Context):
-        super().__init__(timeout=timeout)
+    def __init__(self, ctx: commands.Context):
+        super().__init__()
         self.value = None
         self.ctx = ctx
 
@@ -79,7 +86,7 @@ class AnnouncementInput(discord.ui.Modal, title='공지 작성하기'):
             )
 
 
-class SendAnnouncement(CustomView):
+class SendAnnouncement(DefaultView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -87,12 +94,12 @@ class SendAnnouncement(CustomView):
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
     async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx, timeout=120))
+        await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx))
         self.value = True
         self.stop()
 
 
-class ConfirmSendNotice(CustomView):
+class ConfirmSendNotice(DefaultView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -112,11 +119,11 @@ class ConfirmSendNotice(CustomView):
         self.stop()
 
 
-class NoticeInput(discord.ui.Modal, title='알림 보내기'):
+class NoticeInput(DefaultModal, title='알림 보내기'):
     msg = discord.ui.TextInput(label='알림 내용', style=discord.TextStyle.long, required=True)
 
-    def __init__(self, timeout: float, ctx: commands.Context, target: int):
-        super().__init__(timeout=timeout)
+    def __init__(self, ctx: commands.Context, target: int):
+        super().__init__()
         self.value = None
         self.target = target
         self.ctx = ctx
@@ -141,7 +148,7 @@ class NoticeInput(discord.ui.Modal, title='알림 보내기'):
             )
 
 
-class SendNotice(CustomView):
+class SendNotice(DefaultView):
     def __init__(self, ctx: commands.Context, target: int):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -150,7 +157,7 @@ class SendNotice(CustomView):
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
     async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(NoticeInput(timeout=120, ctx=self.ctx, target=self.target))
+        await interaction.response.send_modal(NoticeInput(ctx=self.ctx, target=self.target))
         self.value = True
         self.stop()
 
@@ -195,7 +202,7 @@ class HelpMenu(discord.ui.View):
         )
 
 
-class ConfirmModifyData(CustomView):
+class ConfirmModifyData(DefaultView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -220,8 +227,8 @@ class DataInput(discord.ui.Modal, title="데이터 수정하기"):
     data_path = discord.ui.TextInput(label='수정할 데이터 경로', required=True)
     data_value = discord.ui.TextInput(label='수정할 값', style=discord.TextStyle.long, required=True)
 
-    def __init__(self, timeout: float, ctx: commands.Context, collection: AsyncIOMotorCollection):
-        super().__init__(timeout=timeout)
+    def __init__(self, ctx: commands.Context, collection: AsyncIOMotorCollection):
+        super().__init__()
         self.value = None
         self.colection = collection
         self.ctx = ctx
@@ -252,7 +259,7 @@ class DataInput(discord.ui.Modal, title="데이터 수정하기"):
             )
 
 
-class ModifyData(CustomView):
+class ModifyData(DefaultView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
@@ -260,18 +267,18 @@ class ModifyData(CustomView):
 
     @discord.ui.button(label='유저', style=discord.ButtonStyle.green)
     async def modify_user(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.user))
+        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.user))
         self.value = True
         self.stop()
 
     @discord.ui.button(label='서버', style=discord.ButtonStyle.red)
     async def modify_guild(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.guild))
+        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.guild))
         self.value = True
         self.stop()
 
     @discord.ui.button(label='일반', style=discord.ButtonStyle.blurple)
     async def modify_general(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(timeout=120, ctx=self.ctx, collection=db.general))
+        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.general))
         self.value = True
         self.stop()
