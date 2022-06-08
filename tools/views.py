@@ -17,6 +17,7 @@ class DefaultView(discord.ui.View):
         self.ctx = ctx
         self.author_only = author_only
         self.timeout = 5
+        self.message: Optional[discord.Message] = None
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.author_only:
@@ -30,6 +31,12 @@ class DefaultView(discord.ui.View):
                 )
                 return False
         return True
+
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+        if self.message:
+            await self.message.edit(view=self)
 
 
 class DefaultModal(discord.ui.Modal):
@@ -92,7 +99,6 @@ class SendAnnouncement(DefaultView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.ctx = ctx
-        self.message: Optional[discord.Message] = None
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
     async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
