@@ -114,7 +114,7 @@ class Admin(commands.Cog, name="관리자"):
     async def modify_data(self, ctx: KkutbotContext):  # noqa
         """대상의 정보를 수정합니다."""
         view = ModifyData(ctx=ctx)
-        await ctx.send(view=view)
+        view.message = await ctx.reply(view=view, mention_author=False)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
     async def delete_userdata(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
