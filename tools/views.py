@@ -200,12 +200,12 @@ class HelpMenu(discord.ui.View):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config("links.invite.server")
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
             )
         )
         self.add_item(
             discord.ui.Button(
-                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
+                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config("links.invite.server")
             )
         )
         self.add_item(
