@@ -165,6 +165,36 @@ class ServerInvite(discord.ui.View):
         )
 
 
+class BotInvite(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
+            )
+        )
+
+
+class HelpMenu(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config("links.invite.server")
+            )
+        )
+        self.add_item(
+            discord.ui.Button(
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
+            )
+        )
+        self.add_item(
+            discord.ui.Button(
+                label="하트 누르기", style=discord.ButtonStyle.red, url=f"{config('links.koreanbots')}/vote"
+            )
+        )
+
+
 class ConfirmModifyData(CustomView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
