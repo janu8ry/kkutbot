@@ -16,7 +16,7 @@ class DefaultView(discord.ui.View):
         super().__init__(*args, **kwargs)
         self.ctx = ctx
         self.author_only = author_only
-        self.timeout = 5
+        self.timeout = 120
         self.message: Optional[discord.Message] = None
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -42,7 +42,7 @@ class DefaultView(discord.ui.View):
 class DefaultModal(discord.ui.Modal):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.timeout = 5
+        self.timeout = 120
 
 
 class ConfirmSendAnnouncement(DefaultView):
