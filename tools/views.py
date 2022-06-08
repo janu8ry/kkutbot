@@ -34,7 +34,8 @@ class DefaultView(discord.ui.View):
 
     async def on_timeout(self) -> None:
         for item in self.children:
-            item.disabled = True
+            if not getattr(item, "url", None):
+                item.disabled = True
         if self.message:
             await self.message.edit(view=self)
 
@@ -195,9 +196,9 @@ class BotInvite(discord.ui.View):
         )
 
 
-class HelpMenu(discord.ui.View):
-    def __init__(self):
-        super().__init__()
+class HelpMenu(DefaultView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
         self.add_item(
             discord.ui.Button(
                 label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
