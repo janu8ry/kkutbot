@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -91,10 +92,13 @@ class SendAnnouncement(DefaultView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.ctx = ctx
+        self.message: Optional[discord.Message] = None
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
-    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx))
+        button.disabled = True
+        await self.message.edit(view=self)
         self.value = True
         self.stop()
 
@@ -154,10 +158,13 @@ class SendNotice(DefaultView):
         self.value = None
         self.target = target
         self.ctx = ctx
+        self.message: Optional[discord.Message] = None
 
     @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
-    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(NoticeInput(ctx=self.ctx, target=self.target))
+        button.disabled = True
+        await self.message.edit(view=self)
         self.value = True
         self.stop()
 

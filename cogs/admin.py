@@ -148,13 +148,13 @@ class Admin(commands.Cog, name="관리자"):
     async def announce_users(self, ctx: KkutbotContext):
         """끝봇의 유저들에게 공지를 전송합니다."""
         view = SendAnnouncement(ctx=ctx)
-        await ctx.send("버튼 눌러 공지 작성하기", view=view)
+        view.message = await ctx.reply("버튼 눌러 공지 작성하기", view=view, mention_author=False)
 
     @commands.command(name="$알림", usage="ㄲ$알림 <유저>")
     async def send_notice(self, ctx: KkutbotContext, user: KkutbotUserConverter()):  # noqa
         """유저에게 알림을 전송합니다."""
         view = SendNotice(ctx=ctx, target=user.id)
-        await ctx.send("버튼 눌러 알림 보내기", view=view)
+        view.message = await ctx.reply("버튼 눌러 알림 보내기", view=view, mention_author=False)
 
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <기간(일)> <사유>", aliases=("$정지",))
     async def ban_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
