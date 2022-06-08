@@ -113,8 +113,13 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$정보수정", usage="ㄲ$정보수정")
     async def modify_data(self, ctx: KkutbotContext):  # noqa
         """대상의 정보를 수정합니다."""
+        embed = discord.Embed(
+            title="데이터 수정하기",
+            description="데이터를 수정할 대상의 유형을 선택해 주세요.",
+            color=config("colors.help")
+        )
         view = ModifyData(ctx=ctx)
-        view.message = await ctx.reply(view=view, mention_author=False)
+        view.message = await ctx.reply(embed=embed, view=view, mention_author=False)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
     async def delete_userdata(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
