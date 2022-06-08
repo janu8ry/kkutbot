@@ -161,7 +161,7 @@ async def check(ctx: core.KkutbotContext) -> bool:
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
     kst = timezone(timedelta(hours=9))
-    interaction_created = time.mktime(interaction.message.created_at.replace(tzinfo=kst).timetuple())
+    interaction_created = time.mktime(interaction.message.created_at.astimezone(kst).timetuple())
     if interaction_created < bot.started_at:
         types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
         await interaction.response.send_message(
