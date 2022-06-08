@@ -1,7 +1,6 @@
-import datetime
 import logging
 import os
-from datetime import datetime, timezone
+import time
 from typing import Type
 
 import discord
@@ -98,7 +97,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.start()
 
     async def setup_hook(self) -> None:
-        self.started_at = datetime.utcnow().replace(tzinfo=timezone.utc)
+        self.started_at = round(time.time())
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 

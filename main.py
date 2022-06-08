@@ -1,7 +1,7 @@
 import logging
 import time
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Type
 
 import discord
@@ -160,7 +160,9 @@ async def check(ctx: core.KkutbotContext) -> bool:
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
-    if interaction.message.created_at < bot.started_at:
+    kst = timezone(timedelta(hours=9))
+    interaction_created = time.mktime(interaction.message.created_at.replace(tzinfo=kst).timetuple())
+    if interaction_created < bot.started_at:
         types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
         await interaction.response.send_message(
             embed=discord.Embed(
