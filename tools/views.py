@@ -219,6 +219,7 @@ class HelpDropdown(discord.ui.Select):
         cog_data = self.ctx.bot.get_cog(self.values[0])
         embed = discord.Embed(
             title=f"{{help}} {self.values[0]} 명령어 도움말",
+            description=cog_data.description,
             color=config("colors.help")
         )
         for cmd in cog_data.get_commands():
