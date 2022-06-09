@@ -301,7 +301,6 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             )
 
             await discord.utils.maybe_coroutine(method, extension)
-            logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
 
             try:
                 await discord.utils.maybe_coroutine(method, extension)
