@@ -12,7 +12,7 @@ from .config import config  # noqa
 
 
 class DefaultView(discord.ui.View):
-    def __init__(self, ctx, author_only=False, *args, **kwargs):
+    def __init__(self, ctx, *args, author_only=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.ctx = ctx
         self.author_only = author_only
@@ -20,16 +20,15 @@ class DefaultView(discord.ui.View):
         self.message: Optional[discord.Message] = None
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if self.author_only:
-            if interaction.user != self.ctx.author:
-                await interaction.response.send_message(
-                    embed=discord.Embed(
-                        description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.",
-                        color=config("colors.error")
-                    ),
-                    ephemeral=True
-                )
-                return False
+        if self.author_only and (interaction.user != self.ctx.author):
+            await interaction.response.send_message(
+                embed=discord.Embed(
+                    description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.",
+                    color=config("colors.error")
+                ),
+                ephemeral=True
+            )
+            return False
         return True
 
     async def on_timeout(self) -> None:
@@ -145,7 +144,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
             description="> 1주일간 읽지 않은 메일 `1` 개",
             color=config('colors.help')
         )
-        embed.add_field(name=f"관리자로부터의 알림 - `1초 전`", value=self.msg.value)
+        embed.add_field(name="관리자로부터의 알림 - `1초 전`", value=self.msg.value)
         view = ConfirmSendNotice(ctx=self.ctx)
         await interaction.response.send_message("**<알림 미리보기>**", embed=embed, view=view)
         await view.wait()

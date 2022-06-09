@@ -27,7 +27,7 @@ class BotInfo(commands.Cog, name="일반"):
             "개발자": f'`{(await self.bot.application_info()).owner}`',
             "서버 /사용자 수": f'`{len(self.bot.guilds)}`개/`{await self.bot.db.user.count_documents({})}`명',
             "업타임": f'<t:{self.bot.started_at}:R>',
-            "크레딧": f'개발에 도움을 주신\n`서진#5826`님, 프로필\n사진을 만들어 주신\n`! Tim23#1475` 님께\n감사드립니다!',
+            "크레딧": '개발에 도움을 주신\n`서진#5826`님, 프로필\n사진을 만들어 주신\n`! Tim23#1475` 님께\n감사드립니다!',
             "저작권": 'Icon made by `Pixel\nperfect`, `Freepik`,\n`Good Ware`\nfrom [flaticon](https://www.flaticon.com)',
             "기타 링크": f"[웹사이트]({config('links.blog')})\n[koreanbots]({config('links.koreanbots')})\n[github]({config('links.github')})\n[개인정보처리방침]({config('links.privacy-policy')})"}
         for k, v in desc.items():
@@ -42,12 +42,9 @@ class BotInfo(commands.Cog, name="일반"):
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
         embed = discord.Embed(title="{invitation}  끝봇 초대하기",
-                              description=f"""
-끝봇을 사용하고 싶다면 아래 버튼을 클릭하여
-끝봇을 당신의 서버에 초대하세요!
-
-끝봇을 서버에 초대할 경우, [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
-""",
+                              description="끝봇을 사용하고 싶다면 아래 버튼을 클릭하여\n"
+                                          "끝봇을 당신의 서버에 초대하세요!\n\n"
+                                          f"끝봇을 서버에 초대할 경우, [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.",
                               color=config('colors.general')
                               )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
@@ -58,7 +55,7 @@ class BotInfo(commands.Cog, name="일반"):
     async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장을 확인합니다."""
         embed = discord.Embed(title="{invitation} 끝봇 커뮤니티 참가하기",
-                              description=f"끝봇 커뮤니티에 참가하여, \n"
+                              description="끝봇 커뮤니티에 참가하여, \n"
                                           "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n"
                                           "다른 유저들과 교류해 보세요!",
                               color=config('colors.general')
