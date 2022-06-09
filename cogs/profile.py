@@ -45,7 +45,7 @@ class Profile(commands.Cog, name="사용자"):
         else:
             await ctx.reply(embed=embed)
 
-    @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
+    @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))  # TODO: fix ui
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def stats(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """대상의 자세한 통계를 확인합니다.
