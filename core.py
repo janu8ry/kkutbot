@@ -102,6 +102,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.started_at = round(time.time())
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.koreanbots_api = Koreanbots(api_key=config("token.koreanbots"))
+        print(config("token.koreanbots"))
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 
     def run_bot(self):
@@ -153,7 +154,7 @@ class Kkutbot(commands.AutoShardedBot):
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots_api.is_voted_bot(user.id, self.user.id)
+        data = await self.koreanbots_api.is_voted_bot(user.id, 703956235900420226)  # TODO: 테스트 완료시 'self.user.id)' 로 변경
         return data.voted
 
 
