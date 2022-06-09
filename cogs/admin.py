@@ -51,7 +51,7 @@ class Admin(commands.Cog, name="관리자"):
                   f"유저: `{await self.bot.db.user.count_documents({})}`명\n"
                   f"미사용 유저: `{await self.bot.db.unused.count_documents({})}`명\n"
                   f"활성화 유저: `{await self.bot.db.user.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`명\n"
-                  f"활성화 유저: `{await self.bot.db.guild.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`서버\n"
+                  f"활성화 서버: `{await self.bot.db.guild.count_documents({'latest_usage': {'$gte': round(time.time() - 86400 * count)}})}`서버\n"
                   f"출석 유저 수: `{await read(None, 'attendance')}`명"
         )
         embed.add_field(
