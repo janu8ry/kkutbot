@@ -3,9 +3,10 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+from discord.utils import escape_markdown as e_mk, escape_mentions as e_mt
 from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
 
-from tools.db import db
+from tools.db import db, write
 from tools.utils import disable_buttons, is_admin
 
 from .config import config  # noqa
@@ -71,7 +72,6 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
 
     def __init__(self, ctx: commands.Context):
         super().__init__()
-        self.value = None
         self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -134,7 +134,6 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
 
     def __init__(self, ctx: commands.Context, target: int):
         super().__init__()
-        self.value = None
         self.target = target
         self.ctx = ctx
 
@@ -279,14 +278,13 @@ class ConfirmModifyData(DefaultView):
         self.stop()
 
 
-class DataInput(discord.ui.Modal, title="데이터 수정하기"):
+class DataInput(DefaultModal, title="데이터 수정하기"):
     data_target = discord.ui.TextInput(label='타깃 아이디', required=True)
     data_path = discord.ui.TextInput(label='수정할 데이터 경로', required=True)
     data_value = discord.ui.TextInput(label='수정할 값', style=discord.TextStyle.long, required=True)
 
     def __init__(self, ctx: commands.Context, collection: AsyncIOMotorCollection):
         super().__init__()
-        self.value = None
         self.colection = collection
         self.ctx = ctx
 
@@ -338,4 +336,34 @@ class ModifyData(DefaultView):
     async def modify_general(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
         await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.general))
         self.value = True
+        self.stop()
+
+
+class InfoInput(DefaultModal, title="소개말 수정하기"):
+    info_word = discord.ui.TextInput(
+        label='소개말 내용 (최대 50자)', min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True
+    )
+
+    def __init__(self, ctx: commands.Context):
+        super().__init__()
+        self.ctx = ctx
+
+    async def on_submit(self, interaction: discord.Interaction):
+        self.info_word.value.replace('`', '')
+        await write(self.ctx.author, 'info', self.info_word.value)
+        await interaction.response.send_message(
+            f"<:done:{config('emojis.done')}> 소개말을 '{e_mk(e_mt(self.info_word.value))}' (으)로 변경했습니다!", ephemeral=True
+        )
+
+
+class InfoEdit(DefaultView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
+        self.ctx = ctx
+
+    @discord.ui.button(label='소개말 수정하기', style=discord.ButtonStyle.blurple, emoji="<:edit:984405210870988870>")
+    async def edit_info(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(InfoInput(ctx=self.ctx))
+        button.disabled = True
+        await self.message.edit(view=self)
         self.stop()
