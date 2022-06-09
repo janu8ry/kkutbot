@@ -41,7 +41,7 @@ class BotInfo(commands.Cog, name="일반"):
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
-        embed = discord.Embed(title="끝봇 초대하기",
+        embed = discord.Embed(title="{invitation}  끝봇 초대하기",
                               description=f"""
 끝봇을 사용하고 싶다면 아래 버튼을 클릭하여
 끝봇을 당신의 서버에 초대하세요!
@@ -57,7 +57,7 @@ class BotInfo(commands.Cog, name="일반"):
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장을 확인합니다."""
-        embed = discord.Embed(title="끝봇 커뮤니티 참가하기",
+        embed = discord.Embed(title="{invitation} 끝봇 커뮤니티 참가하기",
                               description=f"끝봇 커뮤니티에 참가하여, \n"
                                           "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n"
                                           "다른 유저들과 교류해 보세요!",
