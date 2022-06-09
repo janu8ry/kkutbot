@@ -110,7 +110,7 @@ class Admin(commands.Cog, name="관리자"):
         await add(user, 'medals', amount)
         await ctx.send("{done} 완료!")
 
-    @commands.command(name="$정보수정", usage="ㄲ$정보수정")
+    @commands.command(name="$정보수정", usage="ㄲ$정보수정")  # TODO: dict, list 자료형 추가
     async def modify_data(self, ctx: KkutbotContext):  # noqa
         """대상의 정보를 수정합니다."""
         embed = discord.Embed(
