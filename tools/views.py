@@ -224,7 +224,7 @@ class HelpDropdown(discord.ui.Select):
         for cmd in cog_data.get_commands():
             embed.add_field(
                 name=f"🔹 {cmd.name}",
-                value=f"{cmd.help}\n\n사용 방법: `{cmd.usage}`\n다른 이름: `{'`, `'.join(cmd.aliases) if cmd.aliases else '없음'}`",
+                value=f"{cmd.help}\n\n사용 방법: `{cmd.usage}`",
                 inline=False
             )
         embed.set_footer(text="도움이 필요하다면 서포트 서버에 참가해보세요!")
