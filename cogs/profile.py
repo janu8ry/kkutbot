@@ -10,7 +10,7 @@ from tools.views import InfoEdit
 
 
 class Profile(commands.Cog, name="사용자"):
-    """사용자의 프로필에 관련된 명령어들이 있는 카테고리입니다."""
+    """사용자의 프로필에 관련된 명령어들입니다."""
 
     __slots__ = ("bot", )
 

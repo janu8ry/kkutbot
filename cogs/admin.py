@@ -14,7 +14,7 @@ from tools.views import ModifyData, SendAnnouncement, SendNotice, ServerInvite
 
 
 class Admin(commands.Cog, name="관리자"):
-    """관리자 전용 명령어들이 있는 카테고리입니다."""
+    """관리자 전용 명령어들입니다."""
 
     __slots__ = ("bot",)
 
