@@ -19,7 +19,7 @@ class BotInfo(commands.Cog, name="일반"):
     async def help(self, ctx: KkutbotContext):
         """끝봇의 명령어 목록을 확인합니다."""
         embed = discord.Embed(
-            title="끝봇 도움말",
+            title="{help} 끝봇 도움말",
             description="끝봇은 끝말잇기가 주 기능인 디스코드 봇입니다.",
             color=config('colors.help')
         )
