@@ -51,7 +51,7 @@ class BotInfo(commands.Cog, name="일반"):
                               color=config('colors.general')
                               )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
-        await ctx.send(embed=embed, view=BotInvite())
+        await ctx.reply(embed=embed, view=BotInvite())
 
     @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ", "ㄷㅋ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
@@ -64,7 +64,7 @@ class BotInfo(commands.Cog, name="일반"):
                               color=config('colors.general')
                               )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
-        await ctx.send(embed=embed, view=ServerInvite())
+        await ctx.reply(embed=embed, view=ServerInvite())
 
 
 async def setup(bot: Kkutbot):
