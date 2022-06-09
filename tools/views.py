@@ -3,7 +3,8 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
-from discord.utils import escape_markdown as e_mk, escape_mentions as e_mt
+from discord.utils import escape_markdown as e_mk
+from discord.utils import escape_mentions as e_mt
 from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
 
 from tools.db import db, write
