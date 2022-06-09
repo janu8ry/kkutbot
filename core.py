@@ -72,7 +72,7 @@ intents.message_content = True
 
 class Kkutbot(commands.AutoShardedBot):
     __version__ = "2.0.0-alpha"
-    __slots__ = ("koreanbots", "dbl", "db", "scheduler", "started_at")
+    __slots__ = ("koreanbots", "koreanbots_api", "dbl", "db", "scheduler", "started_at")
     description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
     version_info = "개발중"
 
@@ -87,6 +87,7 @@ class Kkutbot(commands.AutoShardedBot):
             strip_after_prefix=True
         )
         self.koreanbots = None
+        self.koreanbots_api = None
         self.dbl = None
         self.db = db
         self.started_at = None
@@ -100,6 +101,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
+        self.koreanbots_api = Koreanbots(api_key=config("token.koreanbots"))
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 
     def run_bot(self):
@@ -151,7 +153,7 @@ class Kkutbot(commands.AutoShardedBot):
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await Koreanbots().is_voted_bot(user.id, self.user.id)
+        data = await self.koreanbots_api.is_voted_bot(user.id, self.user.id)
         return data.voted
 
 
