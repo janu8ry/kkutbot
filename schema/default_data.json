@@ -7,7 +7,7 @@
         "points": 1000,
         "medals": 0,
         "latest_reward": null,
-        "daily": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
+        "attendance": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
         "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
         "game": {
             "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
@@ -17,7 +17,7 @@
             "guild_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
             "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0}
         },
-        "attendance": 0,
+        "attendance_times": 0,
         "command_used": 0,
         "banned": {"isbanned": false, "since": 0, "period": 0, "reason": null},
         "latest_usage": null,
