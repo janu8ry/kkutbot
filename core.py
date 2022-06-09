@@ -62,7 +62,11 @@ class KkutbotContext(commands.Context):
     async def reply(self, content=None, **kwargs) -> discord.Message:
         if (not kwargs.get('escape_emoji_formatting', False)) and (self.command.name != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
-        return await super().reply(content=content, **kwargs)
+        if kwargs.get("mention_author"):
+            mention_author = True
+        else:
+            mention_author = False
+        return await super().reply(content=content, mention_author=mention_author, **kwargs)
 
 
 intents = discord.Intents.default()

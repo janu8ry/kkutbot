@@ -35,7 +35,7 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         embed.set_footer(text="아래 메뉴를 클릭해서 명령어 도움말을 확인해 보세요!")
         view = HelpMenu(ctx=ctx, home_embed=embed)
-        view.message = await ctx.reply(embed=embed, mention_author=False, view=view)
+        view.message = await ctx.reply(embed=embed, view=view)
 
     @commands.command(name="초대", usage="ㄲ초대", aliases=("링크", "ㅊㄷ", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
