@@ -22,6 +22,9 @@ async def main():
             "game.apmal": "game.long",
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
         },
+        "$set": {
+            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}
+        },
         "$unset": {
             "alerts.start_point": 1
         }
@@ -44,6 +47,9 @@ async def main():
             "game.rank_multi": "game.rank_online",
             "game.apmal": "game.long",
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
+        },
+        "$set": {
+            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}
         },
         "$unset": {
             "alerts.start_point": 1

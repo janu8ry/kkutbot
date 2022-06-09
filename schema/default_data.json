@@ -7,7 +7,7 @@
         "points": 1000,
         "medals": 0,
         "latest_reward": null,
-        "attendance": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false, "6": false},
+        "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
         "quest": {"status": {"date": 0, "completed": []}, "cache": {}},
         "game": {
             "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
