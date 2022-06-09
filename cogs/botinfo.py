@@ -7,7 +7,7 @@ from tools.views import HelpMenu, BotInvite
 
 
 class BotInfo(commands.Cog, name="일반"):
-    """봇의 기본 정보에 대한 카테고리입니다."""
+    """봇의 기본 명령어들이 있는 카테고리입니다."""
 
     __slots__ = ("bot",)
 
