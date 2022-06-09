@@ -102,7 +102,6 @@ class Kkutbot(commands.AutoShardedBot):
         self.started_at = round(time.time())
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.koreanbots_api = Koreanbots(api_key=config("token.koreanbots"))
-        print(config("token.koreanbots"))
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
 
     def run_bot(self):
