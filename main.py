@@ -10,7 +10,7 @@ from rich.traceback import install as rich_install
 
 import core
 from tools.config import config
-from tools.db import add, delete, read, write
+from tools.db import add, delete, read, write, append
 from tools.logger import setup_logger
 
 logger = logging.getLogger("kkutbot")
@@ -89,32 +89,32 @@ async def on_command_completion(ctx: core.KkutbotContext):
     await write(None, 'latest_usage', round(time.time()))
     await add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
 
-    # if userdata.quest.status.date != (today := date.today().toordinal()):
-    #     userdata.quest.status.date = today
-    #     userdata.quest.status.completed = []
-    #     cache = {}
-    #     for data in general.quests.keys():
-    #         cache[data] = userdata.from_path(data.replace("/", "."))
-    #     userdata.quest.cache = cache
-    #
-    # desc = ""
-    # for data, info in general.quests.items():
-    #     current = userdata.from_path(data.replace("/", ".")) - userdata.from_path(f"$quest.cache.{data}")
-    #     if current < 0:
-    #         setattr(userdata.quest.cache, "data", userdata.from_path(data.replace("/", ".")))
-    #     elif (current >= info['target']) and (data not in userdata.quest.status.completed):
-    #         setattr(userdata, info['reward'][1], userdata.from_path(info['reward'][1]) + info['reward'][0])
-    #         userdata.quest.status.completed = userdata.quest.status.completed.append(data)
-    #         desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
-    # if desc:
-    #     embed = discord.Embed(
-    #         title="퀘스트 클리어!",
-    #         description=desc,
-    #         color=config('colors.help')
-    #     )
-    #     embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
-    #     embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
-    #     await ctx.send(ctx.author.mention, embed=embed)
+    if (await read(ctx.author, 'quest.status.date')) != (today := datetime.today().toordinal()):
+        await write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+        cache = {}
+        for data in (await read(None, 'quests')).keys():
+            cache[data] = await read(ctx.author, data.replace("/", "."))
+        await write(ctx.author, 'quest.cache', cache)
+
+    desc = ""
+    for data, info in (await read(None, 'quests')).items():
+        current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f'quest.cache.{data}'))
+        if current < 0:
+            await write(ctx.author, f'quest.cache.{data}', await read(ctx.author, data.replace("/", ".")))
+        elif (current >= info['target']) and (data not in await read(ctx.author, 'quest.status.completed')):
+            await add(ctx.author, info['reward'][1], info['reward'][0])
+            await append(ctx.author, 'quest.status.completed', data)
+            desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    if desc:
+        embed = discord.Embed(
+            title="퀘스트 클리어!",
+            description=desc,
+            color=config('colors.help')
+        )
+        embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
+        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+        await ctx.reply(embed=embed)
+
     if not (await read(ctx.author, 'alerts.attendance')):
         await ctx.send(
             f"{ctx.author.mention}님, 오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!"

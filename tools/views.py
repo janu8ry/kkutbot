@@ -195,6 +195,16 @@ class BotInvite(discord.ui.View):
         )
 
 
+class KoreanBotsVote(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config('links.koreanbots')
+            )
+        )
+
+
 class HelpDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx

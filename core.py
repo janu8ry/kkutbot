@@ -2,6 +2,8 @@ import logging
 import os
 import time
 from typing import Type
+import json
+import random
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -95,7 +97,8 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler = AsyncIOScheduler(timezone='Asia/Seoul')
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
         self.scheduler.add_job(self.reset_attendance, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
-        self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=1)
+        self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=0)
+        self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=0)
         self.scheduler.start()
 
     async def setup_hook(self) -> None:
@@ -129,19 +132,19 @@ class Kkutbot(commands.AutoShardedBot):
         weekly_attendance = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
         await db.user.update_many({}, {'$set': {'attendance': weekly_attendance}})
 
-    # @staticmethod
-    # async def reset_quest():
-    #     with open('schema/quests.json', 'r', encoding="utf-8") as f:
-    #         quests = list(json.load(f).items())
-    #     random.shuffle(quests)
-    #     quests = dict(quests)
-    #     k = list(quests.keys())
-    #     v = list(quests.values())
-    #     await write(None, 'quest', {
-    #         k[0].replace(".", "/"): v[0],
-    #         k[1].replace(".", "/"): v[1],
-    #         k[2].replace(".", "/"): v[2]
-    #     })
+    @staticmethod
+    async def reset_quest():
+        with open('schema/quests.json', 'r', encoding="utf-8") as f:
+            quests = list(json.load(f).items())
+        random.shuffle(quests)
+        quests = dict(quests)
+        k = list(quests.keys())
+        v = list(quests.values())
+        await write(None, 'quests', {
+            k[0].replace(".", "/"): v[0],
+            k[1].replace(".", "/"): v[1],
+            k[2].replace(".", "/"): v[2]
+        })
 
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
