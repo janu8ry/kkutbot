@@ -38,6 +38,7 @@ class Economy(commands.Cog, name="경제"):
                 )
                 embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
                 await write(ctx.author, 'latest_reward', today)
+                await add(None, "reward", 1)
                 await ctx.reply(embed=embed)
             else:
                 embed = discord.Embed(
