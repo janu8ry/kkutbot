@@ -47,7 +47,7 @@ class Economy(commands.Cog, name="경제"):
         else:
             embed = discord.Embed(
                 description="{denyed} "
-                            f"한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n"
+                            "한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n"
                             "반영까지 1-2분 정도 소요될 수 있습니다.",
                 color=config('colors.error')
             )
