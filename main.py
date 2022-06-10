@@ -127,7 +127,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
         )
         await write(ctx.author, 'alerts.reward', True)
 
-    if not (await read(ctx.author, 'alerts.mails')):
+    if not (await read(ctx.author, 'alerts.mails')):  # TODO: 기한 지난 메일 숨기기
         mail_count = len(await read(ctx.author, "mails"))
         if mail_count > 0:
             await ctx.send(
