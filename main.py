@@ -66,18 +66,6 @@ async def on_message(message: discord.Message):
 
 @bot.event
 async def on_command(ctx: core.KkutbotContext):
-    if isinstance(ctx.channel, discord.DMChannel):
-        logger.command(
-            f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {ctx.message.content}"
-        )
-    else:
-        logger.command(
-            f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {ctx.message.content}"
-        )
-
-
-@bot.event
-async def on_command_completion(ctx: core.KkutbotContext):
     await add(ctx.author, 'command_used', 1)
     await write(ctx.author, 'latest_usage', round(time.time()))
 
@@ -96,6 +84,18 @@ async def on_command_completion(ctx: core.KkutbotContext):
             cache[data] = await read(ctx.author, data.replace("/", "."))
         await write(ctx.author, 'quest.cache', cache)
 
+    if isinstance(ctx.channel, discord.DMChannel):
+        logger.command(
+            f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {ctx.message.content}"
+        )
+    else:
+        logger.command(
+            f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {ctx.message.content}"
+        )
+
+
+@bot.event
+async def on_command_completion(ctx: core.KkutbotContext):
     desc = ""
     for data, info in (await read(None, 'quests')).items():
         current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f'quest.cache.{data}'))
