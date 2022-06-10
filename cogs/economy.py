@@ -6,8 +6,8 @@ import discord
 from discord.ext import commands
 
 from core import Kkutbot, KkutbotContext
-from tools.db import add, read, write
 from tools.config import config
+from tools.db import add, read, write
 from tools.views import KoreanBotsVote
 
 

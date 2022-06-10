@@ -7,9 +7,9 @@ from discord.ext import commands
 from humanize import naturalsize
 
 from core import Kkutbot, KkutbotContext
+from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import add, delete, read, write
-from tools.config import config
 from tools.utils import get_tier, get_winrate, is_admin, split_string
 from tools.views import ModifyData, SendAnnouncement, SendNotice, ServerInvite
 
