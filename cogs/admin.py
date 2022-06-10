@@ -77,6 +77,7 @@ class Admin(commands.Cog, name="관리자"):
                 await ctx.reply(content, escape_emoji_formatting=True)
             public_data = deepcopy(await read(user))
             del public_data['commands']
+            del public_data['announcements']
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
                 await ctx.reply(content, escape_emoji_formatting=True)
             return

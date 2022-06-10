@@ -23,7 +23,9 @@ async def main():
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
         },
         "$set": {
-            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}
+            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
+            "announcements": {},
+            "alert.announcements": True
         },
         "$unset": {
             "alerts.start_point": 1
@@ -49,7 +51,9 @@ async def main():
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
         },
         "$set": {
-            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0}
+            "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
+            "announcements": {},
+            "alert.announcements": True
         },
         "$unset": {
             "alerts.start_point": 1
@@ -69,7 +73,8 @@ async def main():
             "quest": "quests"
         },
         "$set": {
-            "reward": 0
+            "reward": 0,
+            "announcements": {}
         }
     })
 

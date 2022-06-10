@@ -86,11 +86,11 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
-            await db.user.update_many(
-                {},
+            await db.general.update_one(
+                {"_id": "general"},
                 {
-                    '$push': {'mails': {'title': self.a_title.value, 'value': self.description.value, 'time': datetime.now()}},
-                    '$set': {'alerts.mails': False}
+                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': datetime.now()}},
+                    '$set': {'alerts.announcements': False}
                 }
             )
 
