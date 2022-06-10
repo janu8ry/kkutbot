@@ -37,7 +37,7 @@ class BotInfo(commands.Cog, name="일반"):
         view = HelpMenu(ctx=ctx, home_embed=embed)
         view.message = await ctx.reply(embed=embed, view=view)
 
-    @commands.command(name="초대", usage="ㄲ초대", aliases=("링크", "ㅊㄷ", "ㄹㅋ"))
+    @commands.command(name="초대", usage="ㄲ초대", aliases=("링크", "ㅊㄷ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
