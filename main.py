@@ -10,7 +10,7 @@ from rich.traceback import install as rich_install
 
 import core
 from tools.config import config
-from tools.db import add, delete, read, write, append
+from tools.db import add, append, delete, read, write
 from tools.logger import setup_logger
 
 logger = logging.getLogger("kkutbot")
