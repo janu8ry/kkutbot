@@ -4,7 +4,8 @@ from discord.utils import escape_markdown as e_mk
 
 from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
-from tools.db import config, read
+from tools.db import read
+from tools.config import config
 from tools.utils import get_tier, get_winrate
 from tools.views import InfoEdit
 
