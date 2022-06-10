@@ -169,7 +169,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         # Show websocket latency in milliseconds
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
 
-        await ctx.send("\n".join(summary))
+        await ctx.reply("\n".join(summary), mention_author=False)
 
     @Feature.Command(parent="jsk", name="shell", aliases=["bash", "sh", "powershell", "ps1", "ps", "cmd", "terminal", "실행", "ㅅ"])
     async def jsk_shell(self, ctx: ContextA, *, argument: codeblock_converter):  # type: ignore
@@ -228,21 +228,21 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         match = self.filepath_regex.search(path)
 
         if not match:  # should never happen
-            return await ctx.send("파일 경로가 정확하지 않습니다.")
+            return await ctx.reply("파일 경로가 정확하지 않습니다.", mention_author=False)
 
         if not os.path.exists(path) or os.path.isdir(path):
-            return await ctx.send(f"`{path}`: 파일을 찾지 못했습니다.")
+            return await ctx.reply(f"`{path}`: 파일을 찾지 못했습니다.", mention_author=False)
 
         size = os.path.getsize(path)
 
         if size <= 0:
-            return await ctx.send(f"`{path}`: 크기가 0인 파일을 읽을 수 없습니다."
-                                  f" (파일이 비어있거나, 접근 불가능할 수 있습니다.).")
+            return await ctx.reply(f"`{path}`: 크기가 0인 파일을 읽을 수 없습니다."
+                                   f" (파일이 비어있거나, 접근 불가능할 수 있습니다.).", mention_author=False)
 
         if size > 128 * (1024 ** 2):
-            return await ctx.send(f"`{path}`: 파일의 용량이 128MB를 초과하여 전송할 수 없습니다.")
+            return await ctx.reply(f"`{path}`: 파일의 용량이 128MB를 초과하여 전송할 수 없습니다.", mention_author=False)
 
-        return await ctx.send(file=discord.File(path))
+        return await ctx.reply(file=discord.File(path), mention_author=False)
 
     @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
     async def jsk_python(self, ctx: commands.Context, *, argument: codeblock_converter):
@@ -316,7 +316,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 paginator.add_line(f"{icon} `{extension}`", empty=True)
 
         for page in paginator.pages:
-            await ctx.send(page)
+            await ctx.reply(page, mention_author=False)
 
     @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"])
     async def jsk_shutdown(self, ctx: ContextA):
@@ -326,7 +326,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         ellipse_character = "\N{BRAILLE PATTERN DOTS-356}" if Flags.USE_BRAILLE_J else "\N{HORIZONTAL ELLIPSIS}"
 
-        await ctx.send(f"로그아웃합니다{ellipse_character}")
+        await ctx.reply(f"로그아웃합니다{ellipse_character}", mention_author=False)
         logger.info("봇이 정상적으로 종료되었습니다!")
         await ctx.bot.close()
 
