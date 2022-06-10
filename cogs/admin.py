@@ -92,7 +92,7 @@ class Admin(commands.Cog, name="관리자"):
             guild = ctx.guild
 
         if not (await self.bot.db.guild.find_one({'_id': guild.id})):
-            return await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
+            return await ctx.send("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
         guild_data = await read(guild)
         guild_data["name"] = guild.name
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
@@ -137,7 +137,7 @@ class Admin(commands.Cog, name="관리자"):
             await delete(guild)
             await ctx.send("{done} 완료!")
         else:
-            await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
+            await ctx.send("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
 
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=["$탈퇴", "$나가기"])
     async def leave_guild(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
@@ -147,7 +147,7 @@ class Admin(commands.Cog, name="관리자"):
             await delete(guild)
             await ctx.send("{done} 완료!")
         else:
-            await ctx.send("{denyed} 해당 서버는 끝봇을 사용중인 서버가 아닙니다.")
+            await ctx.send("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
 
     @commands.command(name="$공지", usage="ㄲ$공지")
     async def announce_users(self, ctx: KkutbotContext):
@@ -255,7 +255,7 @@ class Admin(commands.Cog, name="관리자"):
             await self.bot.db.unused.insert_one(user)
             await self.bot.db.user.delete_one({"_id": user['_id']})
             cleaned += 1
-        await ctx.send(f"{{done}} `{cleaned}` 명 데이터 보존 처리, `{deleted}` 명 데이터 삭제 완료!")
+        await ctx.send(f"{{done}} `{cleaned}`명 데이터 보존 처리, `{deleted}`명 데이터 삭제 완료!")
 
 
 async def setup(bot: Kkutbot):

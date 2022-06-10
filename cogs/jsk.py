@@ -68,7 +68,7 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
 
 
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
-    """jishaku의 커스텀 확장 명령어들이 있는 카테고리입니다."""
+    """jishaku의 커스텀 확장 명령어들입니다."""
 
     filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
 

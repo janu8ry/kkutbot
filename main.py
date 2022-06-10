@@ -206,7 +206,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
             color=config('colors.general')
         )
-        embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}' 을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
+        embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.send(embed=embed)
     elif isinstance(error, commands.errors.MaxConcurrencyReached):
         if ctx.author.id in config('admin'):
@@ -243,7 +243,7 @@ async def on_guild_join(guild: discord.Guild):
         description=f"""
 **끝봇**을 서버에 초대해 주셔서 감사합니다!
 끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.
-- **ㄲ도움** 을 입력하여 끝봇의 도움말을 확인해 보세요!
+- **ㄲ도움**을 입력하여 끝봇의 도움말을 확인해 보세요!
 - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면
 [끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
 끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.

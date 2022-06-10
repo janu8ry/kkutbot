@@ -10,7 +10,7 @@
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
 주 기능은 **끝말잇기**입니다.   
 끝봇은 인증된 봇으로, 걱정 없이 사용하실 수 있습니다.    
-끝봇의 접두사는 ``ㄲ`` 입니다!
+끝봇의 접두사는 ``ㄲ``입니다!
 
 **[![봇 초대하기](https://img.shields.io/badge/%EB%B4%87%20%EC%B4%88%EB%8C%80%ED%95%98%EA%B8%B0-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=126016&scope=bot)**
 
@@ -20,7 +20,7 @@
 - 개발 언어: python 3.9.13 ([discord.py 2.0](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 2.0.0 alpha
 - 데이터베이스: mongoDB  
-- 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826`` 님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
+- 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826``님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
 
