@@ -127,14 +127,19 @@ async def on_command_completion(ctx: core.KkutbotContext):
         )
         await write(ctx.author, 'alerts.reward', True)
 
-    if not (await read(ctx.author, 'alerts.mails')):  # TODO: 기한 지난 메일 숨기기
-        mail_count = len(await read(ctx.author, "mails"))
-        if mail_count > 0:
-            await ctx.send(
-                f"{ctx.author.mention}님, 읽지 않은 메일이 `{mail_count}`개 있습니다.\n"
-                "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
-            )
+    if not (await read(ctx.author, 'alerts.mails')):
+        await ctx.send(
+            f"{ctx.author.mention}님, 읽지 않은 메일이 있습니다.\n"
+            "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
+        )
         await write(ctx.author, 'alerts.mails', True)
+
+    if not (await read(ctx.author, 'alerts.announcements')):
+        await ctx.send(
+            f"{ctx.author.mention}님, 읽지 않은 공지가 있습니다.\n"
+            "`ㄲ메일`을 입력하여 읽지 않은 공지를 확인해 보세요!"
+        )
+        await write(ctx.author, 'alerts.announcements', True)
 
 
 @bot.check
