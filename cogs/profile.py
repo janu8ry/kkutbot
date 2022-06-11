@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
@@ -30,7 +32,7 @@ class Profile(commands.Cog, name="사용자"):
         ㄲ프로필 @가나다 - '가나다'의 프로필을 확인합니다.
         """
         embed = discord.Embed(
-            title=e_mk(str(user)),
+            title=f"{{profile}} {e_mk(str(user))}",
             description=f"```yaml\n{await read(user, 'info')}```\n"
                         f":star: 현 시즌 티어 - **{await get_tier(user, 'rank_solo')}** | **{await get_tier(user, 'rank_online')}**\n​",
             color=config('colors.general')
@@ -46,7 +48,7 @@ class Profile(commands.Cog, name="사용자"):
         else:
             await ctx.reply(embed=embed)
 
-    @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))  # TODO: fix ui
+    @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def stats(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """대상의 자세한 통계를 확인합니다.
@@ -56,21 +58,22 @@ class Profile(commands.Cog, name="사용자"):
         ㄲ통계 @가나다 - 가나다의 통계를 확인합니다.
         """
         embed = discord.Embed(
-            title=str(user),
-            description=f"가입일 : `{str(await read(user, 'registered'))[:10]}`",
+            title=f"{{stats}} {e_mk(str(user))} 님의 통계",
+            description=f"가입일 : `{str(await read(user, 'registered'))[:10]}`\n"
+                        f"마지막 사용일 : `{str(datetime.fromtimestamp(await read(user, 'latest_usage')))[:10]}`",
             color=config('colors.general')
         )
 
         for k, v in config('modelist').items():
-            embed.add_field(name=k,
-                            value=f"게임 횟수 : `{await read(user, f'game.{v}.times')}`\n"
-                                  f"승리 횟수 : `{await read(user, f'game.{v}.win')}`\n"
-                                  f"최고 점수 : `{await read(user, f'game.{v}.best')}`\n"
-                                  f"승률 : `{await read(user, f'game.{v}.winrate')}%`")
+            embed.add_field(name=f"🔸 {k}",
+                            value=f"`{await read(user, f'game.{v}.win')}` / `{await read(user, f'game.{v}.times')}`회 승리 "
+                                  f"(`{await read(user, f'game.{v}.winrate')}%`)\n"
+                                  f"최고 점수 : `{await read(user, f'game.{v}.best')}`"
+                            )
         embed.add_field(
-            name="기타", value=f"출석 횟수 : `{await read(user, 'attendance_times')}`\n명령어 사용 횟수 : `{await read(user, 'command_used')}`"
+            name="🔸 기타", value=f"출석 횟수 : `{await read(user, 'attendance_times')}`\n명령어 사용 횟수 : `{await read(user, 'command_used')}`"
         )
-        embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 83}​​​")
+        embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 100}​​​")
         await ctx.reply(embed=embed)
 
 
