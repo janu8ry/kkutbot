@@ -159,7 +159,7 @@ class Admin(commands.Cog, name="관리자"):
         view.message = await ctx.reply("버튼 눌러 공지 작성하기", view=view)
 
     @commands.command(name="$알림", usage="ㄲ$알림 <유저>")
-    async def send_notice(self, ctx: KkutbotContext, user: KkutbotUserConverter()):  # noqa
+    async def send_notice(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저에게 알림을 전송합니다."""
         view = SendNotice(ctx=ctx, target=user.id)
         view.message = await ctx.reply("버튼 눌러 알림 보내기", view=view)
