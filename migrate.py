@@ -74,7 +74,7 @@ async def main():
         },
         "$set": {
             "reward": 0,
-            "announcements": {}
+            "announcements": []
         }
     })
 
