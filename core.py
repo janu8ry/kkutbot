@@ -156,7 +156,7 @@ class Kkutbot(commands.AutoShardedBot):
         return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots_api.is_voted_bot(user.id, 703956235900420226)  # TODO: 테스트 완료시 'self.user.id)' 로 변경
+        data = await self.koreanbots_api.is_voted_bot(user.id, 703956235900420226 if config("test") else self.user.id)
         return data.voted
 
 
