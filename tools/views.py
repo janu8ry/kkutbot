@@ -77,8 +77,7 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title=f"**{interaction.user.name}** 님의 메일함",
-            description="> 1주일간 읽지 않은 메일 `1` 개",
+            title=f"{{email}} **{interaction.user.name}** 님의 메일함",
             color=config('colors.help')
         )
         embed.add_field(name=f"{self.a_title.value} - `1초 전`", value=self.description.value)
@@ -140,8 +139,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title=f"**{interaction.user.name}** 님의 메일함",
-            description="> 1주일간 읽지 않은 메일 `1` 개",
+            title=f"{{email}} **{interaction.user.name}** 님의 메일함",
             color=config('colors.help')
         )
         embed.add_field(name="관리자로부터의 알림 - `1초 전`", value=self.msg.value)
