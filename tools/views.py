@@ -235,11 +235,12 @@ class HelpDropdown(discord.ui.Select):
             color=config("colors.help")
         )
         for cmd in cog_data.get_commands():
-            embed.add_field(
-                name=f"🔹 {cmd.name}",
-                value=f"{cmd.help}\n\n사용 방법: `{cmd.usage}`",
-                inline=False
-            )
+            if not cmd.hidden:
+                embed.add_field(
+                    name=f"🔹 {cmd.name}",
+                    value=f"{cmd.help}\n\n사용 방법: `{cmd.usage}`",
+                    inline=False
+                )
         embed.set_footer(text="도움이 필요하다면 서포트 서버에 참가해보세요!")
         self.view.children[0].disabled = False  # noqa
         await interaction.response.edit_message(embed=embed, view=self.view)
