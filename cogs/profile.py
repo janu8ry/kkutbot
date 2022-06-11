@@ -59,7 +59,7 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=f"{{stats}} {e_mk(str(user))} 님의 통계",
-            description=f"가입일 : `{str(await read(user, 'registered'))[:10]}`\n"
+            description=f"가입일 : `{str(datetime.fromtimestamp(await read(user, 'registered')))[:10]}`\n"
                         f"마지막 사용일 : `{str(datetime.fromtimestamp(await read(user, 'latest_usage')))[:10]}`",
             color=config('colors.general')
         )

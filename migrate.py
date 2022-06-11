@@ -31,6 +31,8 @@ async def main():
             "alerts.start_point": 1
         }
     })
+    for user in await (db.user.find()).to_list(None):
+        await db.user.update_one({"_id": user["_id"]}, {"$set": {"registered": round(user["registered"].timestamp())}})
 
     await db.unused.update_many({}, {
         "$rename": {
@@ -59,6 +61,8 @@ async def main():
             "alerts.start_point": 1
         }
     })
+    for user in await (db.unused.find()).to_list(None):
+        await db.unused.update_one({"_id": user["_id"]}, {"$set": {"registered": round(user["registered"].timestamp())}})
 
     await db.guild.update_many({}, {
         "$rename": {
