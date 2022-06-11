@@ -68,8 +68,8 @@ class ConfirmSendAnnouncement(DefaultView):
 
 
 class AnnouncementInput(DefaultModal, title='공지 작성하기'):
-    a_title = discord.ui.TextInput(label='공지 제목', required=True)
-    description = discord.ui.TextInput(label='공지 본문', style=discord.TextStyle.long, required=True)
+    a_title = discord.ui.TextInput(label='공지 제목', required=True, max_length=256)
+    description = discord.ui.TextInput(label='공지 본문', style=discord.TextStyle.long, required=True, max_length=1024)
 
     def __init__(self, ctx: commands.Context):
         super().__init__()
@@ -131,7 +131,7 @@ class ConfirmSendNotice(DefaultView):
 
 
 class NoticeInput(DefaultModal, title='알림 보내기'):
-    msg = discord.ui.TextInput(label='알림 내용', style=discord.TextStyle.long, required=True)
+    msg = discord.ui.TextInput(label='알림 내용', style=discord.TextStyle.long, required=True, max_length=1024)
 
     def __init__(self, ctx: commands.Context, target: int):
         super().__init__()
