@@ -19,13 +19,13 @@ async def main():
             "alert.mail": "alert.mails",
             "alert": "alerts",
             "game.rank_multi": "game.rank_online",
-            "game.apmal": "game.long",
-            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
+            "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "announcements": {},
-            "alert.announcements": True
+            "alert.announcements": True,
+            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
         },
         "$unset": {
             "alerts.start_point": 1
@@ -47,13 +47,13 @@ async def main():
             "alert.mail": "alert.mails",
             "alert": "alerts",
             "game.rank_multi": "game.rank_online",
-            "game.apmal": "game.long",
-            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
+            "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "announcements": {},
-            "alert.announcements": True
+            "alert.announcements": True,
+            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
         },
         "$unset": {
             "alerts.start_point": 1
