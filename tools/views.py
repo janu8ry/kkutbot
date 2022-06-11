@@ -80,7 +80,7 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
             title=f"{{email}} **{interaction.user.name}** 님의 메일함",
             color=config('colors.help')
         )
-        embed.add_field(name=f"{self.a_title.value} - `1초 전`", value=self.description.value)
+        embed.add_field(name=f"🔹 {self.a_title.value} - `1초 전`", value=self.description.value)
         view = ConfirmSendAnnouncement(ctx=self.ctx)
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
@@ -147,7 +147,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
             title=f"{{email}} **{interaction.user.name}** 님의 메일함",
             color=config('colors.help')
         )
-        embed.add_field(name="관리자로부터의 알림 - `1초 전`", value=self.msg.value)
+        embed.add_field(name="🔹 관리자로부터의 알림 - `1초 전`", value=self.msg.value)
         view = ConfirmSendNotice(ctx=self.ctx)
         await interaction.response.send_message("**<알림 미리보기>**", embed=embed, view=view)
         await view.wait()
