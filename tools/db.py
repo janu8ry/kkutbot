@@ -132,7 +132,7 @@ async def read(target: TargetObject, path: Optional[str] = None) -> Any:
             else:
                 raise ValueError
     else:
-        main_data = await db.general.find_one()
+        main_data = await db.general.find_one({"_id": "general"})
         if not main_data:
             main_data = deepcopy(config("default_data.general"))
 
