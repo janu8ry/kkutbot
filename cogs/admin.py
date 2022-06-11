@@ -67,6 +67,8 @@ class Admin(commands.Cog, name="관리자"):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             cmd_data = await read(None, 'commands')
+            if "jisahku" not in cmd_data:
+                cmd_data["jishaku"] = 0
             for k, v in cmd_data.copy().items():
                 if k.startswith("jishaku "):
                     cmd_data["jishaku"] += v
