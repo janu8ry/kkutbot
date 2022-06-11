@@ -69,6 +69,9 @@ class Paginator(DefaultView):
         self.add_item(PageInfo(pagecount=len(pages)))
         self.add_item(ToNext())
         self.add_item(ToLast())
+        if self.page_count == 1:
+            self.children[3].disabled = True
+            self.children[4].disabled = True
 
     async def run(self):
         await self.ctx.reply(embed=self.pages[0], view=self)
