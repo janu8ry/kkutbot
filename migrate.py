@@ -6,26 +6,31 @@ from tools.db import db
 async def main():
     await db.user.update_many({}, {
         "$rename": {
+            "alert": "alerts",
+            "daily": "attendance",
+            "mail": "mails",
+        }
+    })
+    await db.user.update_many({}, {  # noqa
+        "$rename": {
             "_name": "name",
             "register_date": "registered",
             "info_word": "info",
             "last_vote": "latest_reward",
             "daily_times": "attendance_times",
-            "daily": "attendance",
             "last_command": "latest_usage",
-            "mail": "mails",
-            "alert.daily": "alert.attendance",
-            "alert.heart": "alert.reward",
-            "alert.mail": "alert.mails",
-            "alert": "alerts",
+            "alerts.daily": "alert.attendance",
+            "alerts.heart": "alert.reward",
+            "alerts.mail": "alert.mails",
             "game.rank_multi": "game.rank_online",
             "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "announcements": {},
-            "alert.announcements": True,
-            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
+            "alerts.announcements": True,
+            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
+            "mails": {}
         },
         "$unset": {
             "alerts.start_point": 1
@@ -36,26 +41,31 @@ async def main():
 
     await db.unused.update_many({}, {
         "$rename": {
+            "alert": "alerts",
+            "daily": "attendance",
+            "mail": "mails"
+        }
+    })
+    await db.unused.update_many({}, {  # noqa
+        "$rename": {
             "_name": "name",
             "register_date": "registered",
             "info_word": "info",
             "last_vote": "latest_reward",
             "daily_times": "attendance_times",
-            "daily": "attendance",
             "last_command": "latest_usage",
-            "mail": "mails",
-            "alert.daily": "alert.attendance",
-            "alert.heart": "alert.reward",
-            "alert.mail": "alert.mails",
-            "alert": "alerts",
+            "alerts.daily": "alert.attendance",
+            "alerts.heart": "alert.reward",
+            "alerts.mail": "alert.mails",
             "game.rank_multi": "game.rank_online",
             "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "announcements": {},
-            "alert.announcements": True,
-            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None}
+            "alerts.announcements": True,
+            "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
+            "mails": {}
         },
         "$unset": {
             "alerts.start_point": 1
