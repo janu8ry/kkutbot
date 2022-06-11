@@ -155,7 +155,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
             await db.user.update_one(
                 {'_id': self.target},
                 {
-                    '$push': {'mail': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': datetime.now()}},
+                    '$push': {'mails': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': datetime.now()}},
                     '$set': {'alerts.mails': False}
                 }
             )
