@@ -88,7 +88,12 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
             await db.general.update_one(
                 {"_id": "general"},
                 {
-                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': datetime.now()}},
+                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': datetime.now()}}
+                }
+            )
+            await db.user.update_many(
+                {},
+                {
                     '$set': {'alerts.announcements': False}
                 }
             )
@@ -151,7 +156,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
                 {'_id': self.target},
                 {
                     '$push': {'mail': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': datetime.now()}},
-                    '$set': {'alert.mail': False}
+                    '$set': {'alerts.mails': False}
                 }
             )
 
