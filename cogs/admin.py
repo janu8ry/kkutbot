@@ -1,4 +1,3 @@
-import operator
 import time
 from copy import deepcopy
 
@@ -72,7 +71,7 @@ class Admin(commands.Cog, name="관리자"):
                 if k.startswith("jishaku "):
                     cmd_data["jishaku"] += v
                     del cmd_data[k]
-            sorted_data = sorted(cmd_data.items(), key=operator.itemgetter(1), reverse=True)
+            sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted_data).items())):
                 await ctx.reply(content, escape_emoji_formatting=True)
             public_data = deepcopy(await read(user))
