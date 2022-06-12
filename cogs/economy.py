@@ -76,7 +76,7 @@ class Economy(commands.Cog, name="경제"):
             await add(ctx.author, 'attendance_times', 1)
             await write(ctx.author, f'attendance.{week_today}', today)
             await add(None, 'attendance', 1)
-            msg = "+100 {points} 를 받았습니다!"
+            msg = "+`100` {points} 를 받았습니다!"
             success = True
             week_data = await read(ctx.author, 'attendance')
             if (week_today == 6) and (list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]):
@@ -99,16 +99,18 @@ class Economy(commands.Cog, name="경제"):
         )
         embed.add_field(name="주간 출석 현황", value=' '.join(week_daily))
         if success:
+            embed.title = "출석 완료!"
             embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.attendance')).url)
         await ctx.reply(embed=embed)
         if bonus:
             bonus_embed = discord.Embed(
+                title="보너스 보상",
                 description="일주일 동안 모두 출석했습니다!",
-                color=config("colors.info")
+                color=config("colors.help")
             )
-            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}`{{points}}\n+`1`{{medals}}")  # noqa
-            embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
-            await ctx.reply(embed=embed)
+            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`1` {{medals}}")  # noqa
+            bonus_embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
+            await ctx.reply(embed=bonus_embed)
 
     @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
