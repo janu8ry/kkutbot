@@ -1,5 +1,5 @@
-from datetime import timedelta
-from typing import Union
+from datetime import timedelta, datetime
+from typing import Union, Optional
 
 import discord
 from discord.ext import commands
@@ -63,3 +63,10 @@ async def disable_buttons(interaction: discord.Interaction, view: discord.ui.Vie
         if isinstance(item, discord.ui.Button):
             item.disabled = True
     await interaction.response.edit_message(view=view)
+
+
+def get_date(data: Optional[float]):
+    if data:
+        return str(datetime.fromtimestamp(data))[:10]
+    else:
+        return "끝봇의 유저가 아닙니다."

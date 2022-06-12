@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import discord
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
@@ -8,7 +6,7 @@ from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read
-from tools.utils import get_tier, get_winrate
+from tools.utils import get_tier, get_winrate, get_date
 from tools.views import InfoEdit
 
 
@@ -59,8 +57,8 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=f"{{stats}} {e_mk(str(user))} 님의 통계",
-            description=f"가입일 : `{str(datetime.fromtimestamp(await read(user, 'registered')))[:10]}`\n"
-                        f"마지막 사용일 : `{str(datetime.fromtimestamp(await read(user, 'latest_usage')))[:10]}`",
+            description=f"가입일 : `{get_date(await read(user, 'registered'))}`\n"
+                        f"마지막 사용일 : `{get_date(await read(user, 'latest_usage'))}`",
             color=config('colors.general')
         )
 
