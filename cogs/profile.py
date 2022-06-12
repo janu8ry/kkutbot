@@ -6,7 +6,7 @@ from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read
-from tools.utils import get_tier, get_winrate, get_date, is_admin
+from tools.utils import get_date, get_tier, get_winrate, is_admin
 from tools.views import InfoEdit
 
 
