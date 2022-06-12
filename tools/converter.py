@@ -31,7 +31,7 @@ class KkutbotUserConverter(Converter):
             if re.match(r"<@!?(\d+)>$", argument):  # if argument is mention
                 return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
             else:
-                user = await ctx.bot.db.user.find_one({'_name': str(argument)})
+                user = await ctx.bot.db.user.find_one({'name': str(argument)})
                 if user:  # if argument is user name
                     return await ctx.bot.fetch_user(user['_id'])
                 else:
