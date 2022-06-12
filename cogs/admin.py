@@ -202,7 +202,6 @@ class Admin(commands.Cog, name="관리자"):
                 color=config("colors.help")
             )
             for user in banned_users:
-                print(banned_users)
                 embed.add_field(
                     name=f"**{user['name']}** - `{user['_id']}`\n",
                     value=f"차단기간: `{user['banned']['period']}`일, 차단사유: {user['banned']['reason']}"
