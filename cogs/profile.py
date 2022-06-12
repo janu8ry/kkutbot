@@ -6,7 +6,7 @@ from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read
-from tools.utils import get_tier, get_winrate, get_date
+from tools.utils import get_tier, get_winrate, get_date, is_admin
 from tools.views import InfoEdit
 
 
@@ -30,7 +30,7 @@ class Profile(commands.Cog, name="사용자"):
         ㄲ프로필 @가나다 - '가나다'의 프로필을 확인합니다.
         """
         embed = discord.Embed(
-            title=f"{{profile}} {e_mk(str(user))}",
+            title=f"{{profile}} {e_mk(str(user))} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}",
             description=f"```yaml\n{await read(user, 'info')}```\n"
                         f":star: 현 시즌 티어 - **{await get_tier(user, 'rank_solo')}** | **{await get_tier(user, 'rank_online')}**\n​",
             color=config('colors.general')
