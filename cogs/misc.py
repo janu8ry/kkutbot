@@ -1,17 +1,14 @@
-import asyncio
 from datetime import datetime
 
 import discord
 from discord.ext import commands
-from discord.ext.commands.errors import BadArgument
-from discord.utils import escape_markdown as e_mk
-from motor.motor_asyncio import AsyncIOMotorCursor  # noqa
 
 from core import Kkutbot, KkutbotContext
-from tools.config import config, get_nested_dict
+from tools.config import config
 from tools.db import read, write
 from tools.paginator import Paginator
 from tools.utils import time_convert
+from tools.views import RankMenu
 
 
 class Misc(commands.Cog, name="기타"):
@@ -32,74 +29,14 @@ class Misc(commands.Cog, name="기타"):
         ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
         await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**')
 
-    # async def get_user_name(self, user_id: int) -> str:
-    #     user = self.bot.get_user(user_id)
-    #     if hasattr(user, 'name'):
-    #         username = user.name
-    #     else:
-    #         if await read(user_id, 'name'):
-    #             username = await read(user_id, 'name')
-    #         else:
-    #             username = (await self.bot.fetch_user(user_id)).name
-    #     if len(username) >= 15:
-    #         username = username[:12] + "..."
-    #     return username
-    #
-    # async def format_rank(self, rank: AsyncIOMotorCursor, query: str) -> list:
-    #     rank = await rank.to_list(length=15)
-    #     names = await asyncio.gather(*[self.get_user_name(i['_id']) for i in rank])
-    #     return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
-    #
-    # @commands.command(name="랭킹", usage="ㄲ랭킹 <분야>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
-    # @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    # async def ranking(self, ctx: KkutbotContext, *, event="솔로"):
-    #     """여러 분야의 TOP 15 랭킹을 확인합니다.
-    #     랭킹에 등재되려면 끝말잇기 '솔로' 모드의 티어가 **브론즈** 이상이여야 합니다.
-    #
-    #     **<분야>**
-    #     일반 - 포인트, 출석, 메달, 명령어
-    #
-    #     게임 - 솔로, 멀티, 쿵쿵따, 온라인, 앞말잇기
-    #
-    #     **<예시>**
-    #     ㄲ랭킹 or ㄲ랭킹 솔로- '솔로' 분야의 랭킹을 확인합니다.
-    #     ㄲ랭킹 포인트 - '포인트'가 많은 순서의 랭킹을 확인합니다.
-    #     ㄲ랭킹 쿵쿵따 - '쿵쿵따' 분야의 랭킹을 확인합니다.
-    #     """
-    #     await ctx.typing()
-    #     eventlist = {"포인트": 'points', "메달": 'medals', "출석": 'daily_times', "명령어": 'command_used'}
-    #     modelist = {"솔로": 'rank_solo', "멀티": 'rank_multi', "쿵쿵따": 'kkd', "온라인": 'online_multi', "앞말잇기": 'apmal'}
-    #     rank_query = {
-    #         'banned': False,
-    #         '_id': {
-    #             '$nin': config('bot_whitelist'),
-    #             '$ne': self.bot.owner_id
-    #         },
-    #         'game.rank_solo.tier': {
-    #             '$nin': ["언랭크", "뉴비"]
-    #         }
-    #     }
-    #     if event in eventlist:
-    #         rank = self.bot.db.user.find(rank_query).sort(eventlist[event], -1)
-    #         embed = discord.Embed(
-    #             title=f"랭킹 top 15 | {event}",
-    #             description="\n".join(await self.format_rank(rank, eventlist[event])),
-    #             color=config('colors.help')
-    #         )
-    #     elif event in modelist:
-    #         embed = discord.Embed(title=f"랭킹 top 15 | 끝말잇기 - {event} 모드", color=config('colors.help'))
-    #         rank = await asyncio.gather(
-    #
-    #             self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.winrate", -1), f"game.{modelist[event]}.winrate"),
-    #             self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.win", -1), f"game.{modelist[event]}.win"),
-    #             self.format_rank(self.bot.db.user.find(rank_query).sort(f"game.{modelist[event]}.best", -1), f"game.{modelist[event]}.best")
-    #         )
-    #         embed.add_field(name="승률", value="\n".join(rank[0]))
-    #         embed.add_field(name="승리수", value="\n".join(rank[1]))
-    #         embed.add_field(name="최고점수", value="\n".join(rank[2]))
-    #     else:
-    #         raise BadArgument
-    #     await ctx.send(embed=embed)
+    @commands.command(name="랭킹", usage="ㄲ랭킹", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
+    @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
+    async def ranking(self, ctx: KkutbotContext):
+        """여러 분야의 랭킹을 확인합니다.
+        끝말잇기 랭킹의 경우, 랭킹에 등재되려면 해당 모드를 50번 이상 플레이 해야 합니다.
+        """
+        view = RankMenu(ctx)
+        view.message = await ctx.reply(embed=await view.get_home_embed(), view=view)
 
     @commands.command(name="메일", usage="ㄲ메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
