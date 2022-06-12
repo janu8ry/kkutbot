@@ -19,15 +19,14 @@ async def main():
             "last_vote": "latest_reward",
             "daily_times": "attendance_times",
             "last_command": "latest_usage",
-            "alerts.daily": "alert.attendance",
-            "alerts.heart": "alert.reward",
-            "alerts.mail": "alert.mails",
+            "alerts.daily": "alerts.attendance",
+            "alerts.heart": "alerts.reward",
+            "alerts.mail": "alerts.mails",
             "game.rank_multi": "game.rank_online",
             "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
-            "announcements": {},
             "alerts.announcements": True,
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
             "mails": {}
@@ -37,7 +36,8 @@ async def main():
         }
     })
     for user in await (db.user.find()).to_list(None):
-        await db.user.update_one({"_id": user["_id"]}, {"$set": {"registered": round(user["registered"].timestamp())}})
+        t = {"alerts.reward": False}#, "registered": round(user["registered"].timestamp())}
+        await db.user.update_one({"_id": user["_id"]}, {"$set": t})
 
     await db.unused.update_many({}, {
         "$rename": {
@@ -54,15 +54,14 @@ async def main():
             "last_vote": "latest_reward",
             "daily_times": "attendance_times",
             "last_command": "latest_usage",
-            "alerts.daily": "alert.attendance",
-            "alerts.heart": "alert.reward",
-            "alerts.mail": "alert.mails",
+            "alerts.daily": "alerts.attendance",
+            "alerts.heart": "alerts.reward",
+            "alerts.mail": "alerts.mails",
             "game.rank_multi": "game.rank_online",
             "game.apmal": "game.long"
         },
         "$set": {
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
-            "announcements": {},
             "alerts.announcements": True,
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
             "mails": {}
@@ -72,7 +71,8 @@ async def main():
         }
     })
     for user in await (db.unused.find()).to_list(None):
-        await db.unused.update_one({"_id": user["_id"]}, {"$set": {"registered": round(user["registered"].timestamp())}})
+        t = {"alerts.reward": False}#, "registered": round(user["registered"].timestamp())}
+        await db.user.update_one({"_id": user["_id"]}, {"$set": t})
 
     await db.guild.update_many({}, {
         "$rename": {
