@@ -36,7 +36,7 @@ async def main():
         }
     })
     for user in await (db.user.find()).to_list(None):
-        t = {"alerts.reward": False}#, "registered": round(user["registered"].timestamp())}
+        t = {"alerts.reward": False, "registered": round(user["registered"].timestamp())}
         await db.user.update_one({"_id": user["_id"]}, {"$set": t})
 
     await db.unused.update_many({}, {
@@ -71,7 +71,7 @@ async def main():
         }
     })
     for user in await (db.unused.find()).to_list(None):
-        t = {"alerts.reward": False}#, "registered": round(user["registered"].timestamp())}
+        t = {"alerts.reward": False, "registered": round(user["registered"].timestamp())}
         await db.user.update_one({"_id": user["_id"]}, {"$set": t})
 
     await db.guild.update_many({}, {
