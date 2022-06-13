@@ -30,7 +30,7 @@ except ImportError:
 
 import core
 from tools.config import config
-from tools.db import db, read, write, append, add, delete
+from tools.db import add, append, db, delete, read, write
 from tools.utils import get_date, get_timestamp
 
 logger = logging.getLogger("kkutbot")
