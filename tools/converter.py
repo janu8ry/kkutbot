@@ -1,3 +1,4 @@
+import random
 import re
 from typing import Union
 
@@ -31,8 +32,9 @@ class KkutbotUserConverter(Converter):
             if re.match(r"<@!?(\d+)>$", argument):  # if argument is mention
                 return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
             else:
-                user = await ctx.bot.db.user.find_one({'name': str(argument)})
-                if user:  # if argument is user name
+                users = await (ctx.bot.db.user.find({'name': str(argument)})).to_list(None)
+                if users:  # if argument is user name
+                    user = random.choice(users)
                     return await ctx.bot.fetch_user(user['_id'])
                 else:
                     raise errors.BadArgument
