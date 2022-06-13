@@ -12,7 +12,7 @@ from tools.views import RankMenu
 
 
 class Social(commands.Cog, name="소셜"):
-    """끝봇의 소셜 명령어들입니다."""
+    """끝봇의 소셜 기능에 관련된 명령어들입니다."""
 
     __slots__ = ("bot", )
 
