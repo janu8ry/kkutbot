@@ -11,8 +11,8 @@ from tools.utils import time_convert
 from tools.views import RankMenu
 
 
-class Misc(commands.Cog, name="기타"):
-    """끝봇의 기타 명령어들입니다."""
+class Social(commands.Cog, name="소셜"):
+    """끝봇의 소셜 명령어들입니다."""
 
     __slots__ = ("bot", )
 
@@ -77,4 +77,4 @@ https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=33
 
 
 async def setup(bot: Kkutbot):
-    await bot.add_cog(Misc(bot))
+    await bot.add_cog(Social(bot))
