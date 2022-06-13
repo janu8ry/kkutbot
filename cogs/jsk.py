@@ -50,6 +50,8 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
         "ctx": ctx,
         "find": discord.utils.find,
         "get": discord.utils.get,
+        "e_mk": discord.utils.escape_markdown,
+        "e_mt": discord.utils.escape_mentions,
         "guild": ctx.guild,
         "http_get_bytes": jishaku.repl.repl_builtins.http_get_bytes,
         "http_get_json": jishaku.repl.repl_builtins.http_get_json,
