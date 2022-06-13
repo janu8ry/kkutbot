@@ -217,7 +217,7 @@ class HelpDropdown(discord.ui.Select):
         if not is_admin(ctx):
             cog_list.remove("관리자")
         options = []
-        for cogname in cog_list:
+        for cogname in reversed(cog_list):
             cog = ctx.bot.get_cog(cogname)
             option = discord.SelectOption(
                 label=cog.qualified_name,
