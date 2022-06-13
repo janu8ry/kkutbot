@@ -1,6 +1,7 @@
 import asyncio
 import time
-from typing import Optional
+from typing import Optional, Union
+import re
 
 import discord
 from discord.ext import commands
@@ -295,19 +296,19 @@ class ConfirmModifyData(DefaultView):
 
 
 class DataInput(DefaultModal, title="데이터 수정하기"):
-    data_target = discord.ui.TextInput(label='타깃 아이디', required=True)
     data_path = discord.ui.TextInput(label='수정할 데이터 경로', required=True)
     data_value = discord.ui.TextInput(label='수정할 값', style=discord.TextStyle.long, required=True)
 
-    def __init__(self, ctx: commands.Context, collection: AsyncIOMotorCollection):
+    def __init__(self, ctx: commands.Context, target: Union[int, str], collection: AsyncIOMotorCollection):
         super().__init__()
         self.colection = collection
         self.ctx = ctx
+        self.target = target
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="데이터 수정 확인",
-            description=f"수정 대상: {self.colection.name} - {self.data_target.value}",
+            description=f"수정 대상: {self.colection.name} - {self.target}",
             color=config('colors.help')
         )
         embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
@@ -323,7 +324,7 @@ class DataInput(DefaultModal, title="데이터 수정하기"):
             elif final_data.isdecimal():
                 final_data = int(self.data_value.value)
             await self.colection.update_one(
-                {'_id': int(self.data_target.value)},
+                {'_id': self.target},
                 {
                     '$set': {self.data_path.value: final_data}
                 }
@@ -331,28 +332,35 @@ class DataInput(DefaultModal, title="데이터 수정하기"):
 
 
 class ModifyData(DefaultView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: commands.Context, target: Union[int, str]):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
+        self.target = target
         self.ctx = ctx
 
-    @discord.ui.button(label='유저', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='수정하기', style=discord.ButtonStyle.blurple)
     async def modify_user(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.user))
+        if isinstance(self.target, str) and re.match(r"<@!?(\d+)>$", self.target):  # if argument is mention
+            self.target = re.findall(r'\d+', self.target)[0]
+        if isinstance(self.target, str) and self.target.isdecimal():
+            self.target = int(self.target)
+        if self.target in [g.id for g in self.ctx.bot.guilds]:
+            collection = db.guild
+        elif await db.user.find_one({"_id": self.target}):
+            collection = db.user
+        elif self.target == "general":
+            collection = db.general
+        else:
+            raise ValueError
+        await interaction.response.send_modal(DataInput(ctx=self.ctx, target=self.target, collection=collection))
         self.value = True
         self.stop()
 
-    @discord.ui.button(label='서버', style=discord.ButtonStyle.red)
-    async def modify_guild(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.guild))
-        self.value = True
-        self.stop()
-
-    @discord.ui.button(label='일반', style=discord.ButtonStyle.blurple)
-    async def modify_general(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
-        await interaction.response.send_modal(DataInput(ctx=self.ctx, collection=db.general))
-        self.value = True
-        self.stop()
+    async def on_error(self, interaction: discord.Interaction, error: Exception, item):
+        if isinstance(error, ValueError):
+            await interaction.response.send_message("에러가 발생했습니다!")
+        else:
+            raise error
 
 
 class InfoInput(DefaultModal, title="소개말 수정하기"):

@@ -1,5 +1,6 @@
 import time
 from copy import deepcopy
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -30,7 +31,7 @@ class Admin(commands.Cog, name="관리자"):
         embed = discord.Embed(color=config('colors.general'))
 
         t1 = time.time()
-        await self.bot.db.general.find_one()
+        await self.bot.db.general.find_one({"_id": "test"})
         t1 = time.time() - t1
 
         t2 = time.time()
@@ -113,15 +114,18 @@ class Admin(commands.Cog, name="관리자"):
         await add(user, 'medals', amount)
         await ctx.reply("{done} 완료!")
 
-    @commands.command(name="$정보수정", usage="ㄲ$정보수정")  # TODO: dict, list 자료형 추가
-    async def modify_data(self, ctx: KkutbotContext):  # noqa
-        """대상의 정보를 수정합니다."""
+    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <id>")  # TODO: dict, list 자료형 추가
+    async def modify_data(self, ctx: KkutbotContext, target: Union[int, str]):  # noqa
+        """
+        대상의 정보를 수정합니다.
+        id가 general이면 공용 데이터를 수정합니다.
+        """
         embed = discord.Embed(
             title="데이터 수정하기",
-            description="데이터를 수정할 대상의 유형을 선택해 주세요.",
+            description=f"대상: {target}",
             color=config("colors.help")
         )
-        view = ModifyData(ctx=ctx)
+        view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
