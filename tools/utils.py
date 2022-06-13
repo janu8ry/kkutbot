@@ -10,16 +10,18 @@ from tools.db import read
 from .config import config  # noqa
 
 
-def time_convert(time: Union[int, float, timedelta]) -> str:
-    if isinstance(time, (int, float)):
-        time = timedelta(seconds=time)
-    if time.days > 0:
-        return f"{time.days}일"
-    if time.seconds >= 3600:
-        return f"{time.seconds // 3600}시간"
-    if time.seconds >= 60:
-        return f"{time.seconds // 60}분"
-    return f"{time.seconds}초"
+def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
+    if isinstance(timeinfo, (int, float)):
+        timeinfo = timedelta(seconds=timeinfo)
+    if timeinfo.days > 365:
+        return f"{timeinfo.days // 365}년"
+    elif timeinfo.days > 0:
+        return f"{timeinfo.days}일"
+    elif timeinfo.seconds >= 3600:
+        return f"{timeinfo.seconds // 3600}시간"
+    elif timeinfo.seconds >= 60:
+        return f"{timeinfo.seconds // 60}분"
+    return f"{timeinfo.seconds}초"
 
 
 def get_date(data: Optional[float]) -> str:
