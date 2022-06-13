@@ -241,7 +241,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
-    await write(guild, 'invited', datetime.now())
+    await write(guild, 'invited', time.time())
     logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']][0]
     embed = discord.Embed(

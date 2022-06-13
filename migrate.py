@@ -227,6 +227,20 @@ async def main():
             "last_command": "latest_usage"
         }
     })
+    for guild in await (db.guild.find()).to_list(None):
+        t = {}
+        if "invited" in guild:
+            if isinstance(guild["invited"], str):
+                t["invited"] = get_timestamp(guild["invited"][:10])
+            else:
+                t["invited"] = round(guild["invited"].timestamp())
+        else:
+            t["invited"] = None
+        if "latest_usage" not in guild:
+            t["latest_usage"] = None
+        if "command_used" not in guild:
+            t["command_used"] = 0
+        await db.guild.update_one({"_id": guild["_id"]}, {"$set": t})
 
     await db.general.update_one({"_id": "general"}, {
         "$rename": {
