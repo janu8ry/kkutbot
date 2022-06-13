@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional, Union
+import time
 
 import discord
 from discord.ext import commands
@@ -19,6 +20,17 @@ def time_convert(time: Union[int, float, timedelta]) -> str:
     if time.seconds >= 60:
         return f"{time.seconds // 60}분"
     return f"{time.seconds}초"
+
+
+def get_date(data: Optional[float]) -> str:
+    if data:
+        return str(datetime.fromtimestamp(data))[:10]
+    else:
+        return "끝봇의 유저가 아닙니다."
+
+
+def get_timestamp(date: str) -> int:
+    return int(time.mktime(datetime.strptime(date, '%Y-%m-%d').timetuple()))
 
 
 def is_admin(ctx: commands.Context) -> bool:
@@ -63,10 +75,3 @@ async def disable_buttons(interaction: discord.Interaction, view: discord.ui.Vie
         if isinstance(item, discord.ui.Button):
             item.disabled = True
     await interaction.response.edit_message(view=view)
-
-
-def get_date(data: Optional[float]):
-    if data:
-        return str(datetime.fromtimestamp(data))[:10]
-    else:
-        return "끝봇의 유저가 아닙니다."

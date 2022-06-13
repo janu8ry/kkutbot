@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 
 import discord
 from discord.ext import commands
@@ -38,7 +38,7 @@ class Social(commands.Cog, name="소셜"):
             for mail in mails:
                 embed = discord.Embed(title=f"{{email}} {ctx.author.name} 님의 메일함", color=config("colors.help"))
                 embed.add_field(
-                    name=f"🔹 {mail['title']} - `{time_convert(datetime.now() - mail['time'])} 전`",
+                    name=f"🔹 {mail['title']} - `{time_convert(time.time() - mail['time'])} 전`",
                     value=mail['value'],
                     inline=False
                 )

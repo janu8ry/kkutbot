@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+import time
 from typing import Optional
 
 import discord
@@ -89,7 +89,7 @@ class AnnouncementInput(DefaultModal, title='공지 작성하기'):
             await db.general.update_one(
                 {"_id": "general"},
                 {
-                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': datetime.now()}}
+                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': round(time.time())}}
                 }
             )
             await db.user.update_many(
@@ -156,7 +156,7 @@ class NoticeInput(DefaultModal, title='알림 보내기'):
             await db.user.update_one(
                 {'_id': self.target},
                 {
-                    '$push': {'mails': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': datetime.now()}},
+                    '$push': {'mails': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': round(time.time())}},
                     '$set': {'alerts.mails': False}
                 }
             )
