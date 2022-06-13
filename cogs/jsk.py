@@ -30,7 +30,7 @@ except ImportError:
 
 import core
 from tools.config import config
-from tools.db import db, read, write
+from tools.db import db, read, write, append, add, delete
 
 logger = logging.getLogger("kkutbot")
 
@@ -60,6 +60,9 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
         "db": db,
         "read": read,
         "write": write,
+        "add": add,
+        "delete": delete,
+        "append": append,
         "config": config,
         "logger": logger
     }
