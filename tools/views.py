@@ -1,8 +1,8 @@
 import ast
 import asyncio
+import re
 import time
 from typing import Optional, Union
-import re
 
 import discord
 from discord.ext import commands
