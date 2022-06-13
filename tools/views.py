@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import time
 from typing import Optional, Union
@@ -306,29 +307,36 @@ class DataInput(DefaultModal, title="데이터 수정하기"):
         self.target = target
 
     async def on_submit(self, interaction: discord.Interaction):
+        final_data = self.data_value.value.strip()
+        if final_data == "True":
+            final_data = True
+        elif final_data == "False":
+            final_data = False
+        elif final_data.isdecimal():
+            final_data = int(self.data_value.value)
+        else:
+            try:
+                final_data = ast.literal_eval(self.data_value.value)
+            except SyntaxError:
+                await interaction.response.send_message("올바른 값이 아닙니다.")
+                return self.stop()
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {self.colection.name} - {self.target}",
             color=config('colors.help')
         )
-        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
+        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value, escape_emoji_formatting=True)  # noqa
         view = ConfirmModifyData(ctx=self.ctx)
         await interaction.response.send_message(embed=embed, view=view)
         await view.wait()
         if view.value:
-            final_data = self.data_value.value.strip()
-            if final_data == "True":
-                final_data = True
-            elif final_data == "False":
-                final_data = False
-            elif final_data.isdecimal():
-                final_data = int(self.data_value.value)
             await self.colection.update_one(
                 {'_id': self.target},
                 {
                     '$set': {self.data_path.value: final_data}
                 }
             )
+        self.stop()
 
 
 class ModifyData(DefaultView):
@@ -351,16 +359,11 @@ class ModifyData(DefaultView):
         elif self.target == "general":
             collection = db.general
         else:
-            raise ValueError
+            await interaction.response.send_message("올바른 타깃이 아닙니다.")
+            return self.stop()
         await interaction.response.send_modal(DataInput(ctx=self.ctx, target=self.target, collection=collection))
         self.value = True
         self.stop()
-
-    async def on_error(self, interaction: discord.Interaction, error: Exception, item):
-        if isinstance(error, ValueError):
-            await interaction.response.send_message("에러가 발생했습니다!")
-        else:
-            raise error
 
 
 class InfoInput(DefaultModal, title="소개말 수정하기"):
