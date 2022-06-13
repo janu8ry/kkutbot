@@ -19,16 +19,6 @@ class Misc(commands.Cog, name="기타"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="핑", usage="ㄲ핑")
-    @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
-    async def ping(self, ctx: KkutbotContext):
-        """끝봇의 응답 속도를 확인합니다.
-        핑이 지속적으로 400ms 이상일 경우, 관리자에게 제보 부탁드립니다.
-        """
-        message = await ctx.reply("걸린 시간: `---`ms")
-        ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
-        await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**')
-
     @commands.command(name="랭킹", usage="ㄲ랭킹", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext):

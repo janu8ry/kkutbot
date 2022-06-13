@@ -63,6 +63,16 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=ServerInvite())
 
+    @commands.command(name="핑", usage="ㄲ핑")
+    @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
+    async def ping(self, ctx: KkutbotContext):
+        """끝봇의 응답 속도를 확인합니다.
+        핑이 지속적으로 400ms 이상일 경우, 관리자에게 제보 부탁드립니다.
+        """
+        message = await ctx.reply("걸린 시간: `---`ms")
+        ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
+        await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**')
+
 
 async def setup(bot: Kkutbot):
     await bot.add_cog(BotInfo(bot))
