@@ -3,7 +3,7 @@ from typing import List
 import discord
 from discord.ext import commands
 
-from tools.views import DefaultView, DefaultModal
+from tools.views import DefaultModal, DefaultView
 
 
 class PageInput(DefaultModal, title="페이지 이동하기"):
