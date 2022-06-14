@@ -96,7 +96,6 @@ class Kkutbot(commands.AutoShardedBot):
 
         self.scheduler = AsyncIOScheduler(timezone='Asia/Seoul')
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
-        self.scheduler.add_job(self.reset_attendance, 'cron', day_of_week=0, hour=0, minute=0, second=0, misfire_grace_time=1000)
         self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=0)
         self.scheduler.start()
@@ -126,11 +125,6 @@ class Kkutbot(commands.AutoShardedBot):
         await write('general', 'attendance', 0)
         await db.user.update_many({'alerts.attendance': True}, {'$set': {'alerts.attendance': False}})
         await db.user.update_many({'alerts.reward': True}, {'$set': {'alert.reward': False}})
-
-    @staticmethod
-    async def reset_attendance():
-        weekly_attendance = {'0': False, '1': False, '2': False, '3': False, '4': False, '5': False, '6': False}
-        await db.user.update_many({}, {'$set': {'attendance': weekly_attendance}})
 
     @staticmethod
     async def reset_quest():
