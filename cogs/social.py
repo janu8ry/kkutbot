@@ -59,7 +59,7 @@ class Social(commands.Cog, name="소셜"):
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def byab(self, ctx: KkutbotContext):
         """🐳 안녕하세요!"""
-        await ctx.send("""
+        await ctx.reply("""
 코로나19로 힘든 시기!
 딩가딩가 놀 수만은 없죠.
 도움이 필요하실 때에는 어떻게 한다?
