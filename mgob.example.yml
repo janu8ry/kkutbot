@@ -2,9 +2,7 @@ target:
   host: "mongo"
   port: 27017
   database: "kkutbot"
-  username: ""
-  password: ""
 scheduler:
-  cron: "0 5 */1 * *"
+  cron: "0 20 */1 * *"
   retention: 20
   timeout: 60
