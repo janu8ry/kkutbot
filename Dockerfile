@@ -1,4 +1,4 @@
-FROM python:3.9.13-slim-bullseye AS builder
+FROM python:3.9.13-bullseye AS builder
 
 WORKDIR /kkutbot
 
