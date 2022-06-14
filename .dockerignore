@@ -24,7 +24,6 @@ dmypy.json
 
 # example files
 config.example.yml
-mongo.example.env
 mgob.example.yml
 
 # git & ci
