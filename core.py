@@ -2,9 +2,9 @@ import json
 import logging
 import os
 import random
+import shutil
 import time
 from typing import Type
-import shutil
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
