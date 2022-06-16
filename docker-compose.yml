@@ -10,6 +10,7 @@ services:
     container_name: "kkutbot"
     volumes:
       - ./logs:/kkutbot/logs
+      - ./backup:/storage
   mongo:
     image: mongo:4.4.14-focal
     restart: always
@@ -17,7 +18,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  /var/lib/mongodb:/data/db
+      -  /opt/homebrew/var/mongodb:/data/db
   mgob:
     image: stefanprodan/mgob:latest
     restart: always

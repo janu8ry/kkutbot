@@ -4,6 +4,7 @@ import os
 import random
 import time
 from typing import Type
+import shutil
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -14,6 +15,7 @@ from topgg import DBLClient
 
 from tools.config import config
 from tools.db import db, write
+from tools.utils import get_date
 
 logger = logging.getLogger("kkutbot")
 
@@ -98,13 +100,15 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
         self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=0)
-        self.scheduler.start()
+        if not config('test'):
+            self.scheduler.add_job(self.backup, 'cron', hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
         self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
         self.koreanbots_api = Koreanbots(api_key=config("token.koreanbots"))
         self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
+        self.scheduler.start()
 
     def run_bot(self):
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
@@ -125,6 +129,16 @@ class Kkutbot(commands.AutoShardedBot):
         await write('general', 'attendance', 0)
         await db.user.update_many({'alerts.attendance': True}, {'$set': {'alerts.attendance': False}})
         await db.user.update_many({'alerts.reward': True}, {'$set': {'alert.reward': False}})
+
+    async def backup(self):
+        for filename in os.listdir("/storage/mgob"):
+            if filename.endswith(".gz"):
+                logger.info(filename)
+                timestamp = int(filename[5:-3])
+                fp = f"/storage/backup-{get_date(timestamp, from_utc=True)}.gz"
+                os.replace(f"/storage/mgob/{filename}", fp)
+                shutil.rmtree("/storage/mgob")
+                await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
 
     @staticmethod
     async def reset_quest():
