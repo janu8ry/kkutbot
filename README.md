@@ -44,7 +44,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [ ] 티어별 난이도 조정
 - [ ] 한방단어 입력시 즉시 판정
 - [ ] 웹사이트 개발, 상세 도움말 / 티어 정보 작성
-- [ ] 도커 환경 테스트
+- [x] 도커 환경 테스트
 - [ ] https://betteruptime.com/ 사용
 
 # 봇 실행하기
@@ -94,8 +94,10 @@ docker compose up -d
 매일 0시에 로그가 `logs/yyyy-mm-dd.log.gz` 형태로 압축되어 백업되고,   
 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
-## DB 백업
-매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.zip` 형태로 압축되어 보관됩니다.
+## DB 백업 (도커 전용)
+매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.
+`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
+[localhost:8090/storage](http://localhost:8090/storage)에서도 백업 파일을 확인할 수 있습니다.
 
 ### 데이터 복구하기
 ```shell
