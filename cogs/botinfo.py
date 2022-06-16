@@ -23,7 +23,7 @@ class BotInfo(commands.Cog, name="일반"):
             description="끝봇은 끝말잇기가 주 기능인 디스코드 봇입니다!\n\n"
                         f"**개발자**: `{(await self.bot.application_info()).owner}`\n"
                         f"**서버 /사용자 수**: `{len(self.bot.guilds)}`개/`{await self.bot.db.user.count_documents({})}`명\n"
-                        f"**업타임**: <t:{self.bot.started_at}:R>\n\n"
+                        f"**업타임**: ~ <t:{self.bot.started_at}:R>부터\n\n"
                         "개발에 도움을 주신 `서진#5826`님,\n프로필 사진을 만들어 주신 `! Tim23#1475` 님께 감사드립니다!\n"
                         "Icon made from [flaticon](https://www.flaticon.com)",
             color=config('colors.help')
