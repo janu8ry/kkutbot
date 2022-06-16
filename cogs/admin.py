@@ -114,7 +114,7 @@ class Admin(commands.Cog, name="관리자"):
         await add(user, 'medals', amount)
         await ctx.reply("{done} 완료!")
 
-    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <id>")  # TODO: dict, list 자료형 추가
+    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <id>")
     async def modify_data(self, ctx: KkutbotContext, target: Union[int, str]):  # noqa
         """
         대상의 정보를 수정합니다.
