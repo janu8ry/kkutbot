@@ -101,7 +101,8 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=0)
         if not config('test'):
-            self.scheduler.add_job(self.backup, 'cron', hour=5, minute=5, second=0)
+            self.scheduler.add_job(self.backup_log, 'cron', hour=0, minute=5, second=0)
+            self.scheduler.add_job(self.backup_data, 'cron', hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
@@ -130,15 +131,20 @@ class Kkutbot(commands.AutoShardedBot):
         await db.user.update_many({'alerts.attendance': True}, {'$set': {'alerts.attendance': False}})
         await db.user.update_many({'alerts.reward': True}, {'$set': {'alert.reward': False}})
 
-    async def backup(self):
+    async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
-                logger.info(filename)
                 timestamp = int(filename[5:-3])
                 fp = f"/storage/backup-{get_date(timestamp, from_utc=True)}.gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
-                await (self.get_channel(config('backup_channel'))).send(file=discord.File(fp=fp))
+                await (self.get_channel(config('backup_channel.data'))).send(file=discord.File(fp=fp))
+                logger.info("몽고DB 데이터 백업 완료!")
+
+    async def backup_log(self):
+        fp = f"logs/{get_date(time.time() - 3600)}.log.gz"
+        await (self.get_channel(config('backup_channel.log'))).send(file=discord.File(fp=fp))
+        logger.info("로그 백업 완료!")
 
     @staticmethod
     async def reset_quest():

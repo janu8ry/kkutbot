@@ -44,8 +44,10 @@ mongo:
     user: username  # 'null' if you are not using auth
     password: userpasswd  # 'null' if you are not using auth
 
-# mongodb backup channel id
+# mongodb & log backup channel id
 backup_channel:
+  data:
+  log:
 
 # useful links
 links:
