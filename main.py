@@ -37,35 +37,7 @@ async def on_shard_ready(shard_id):
     logger.info(f"{shard_id}번 샤드 준비 완료!")
 
 
-@bot.event
-async def on_message(message: discord.Message):
-    is_banned = await read(message.author, 'banned.isbanned')
-    is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
-
-    if is_banned:
-        banned_since = await read(message.author, "banned.since")
-        banned_period = await read(message.author, "banned.period")
-        if time.time() - banned_since >= banned_period * 86400:
-            await write(message.author, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
-            await message.author.send(
-                f"당신은 <t:{round(banned_since + 86400 * banned_period)}> 부터 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!"
-            )
-        else:
-            return None
-    elif is_bot:
-        return None
-
-    cmd = message.content.lstrip(bot.command_prefix)
-    if cmd.startswith("jsk") or cmd.startswith("ㅈ"):
-        cls = commands.Context
-    else:
-        cls = core.KkutbotContext
-    ctx = await bot.get_context(message, cls=cls)
-    await bot.invoke(ctx)
-
-
-@bot.event
-async def on_command(ctx: core.KkutbotContext):
+async def before_command(ctx: core.KkutbotContext):
     await add(ctx.author, 'command_used', 1)
     await write(ctx.author, 'latest_usage', round(time.time()))
 
@@ -92,6 +64,35 @@ async def on_command(ctx: core.KkutbotContext):
         logger.command(
             f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {ctx.message.content}"
         )
+
+
+@bot.event
+async def on_message(message: discord.Message):
+    is_banned = await read(message.author, 'banned.isbanned')
+    is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
+
+    if is_banned:
+        banned_since = await read(message.author, "banned.since")
+        banned_period = await read(message.author, "banned.period")
+        if time.time() - banned_since >= banned_period * 86400:
+            await write(message.author, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
+            await message.author.send(
+                f"당신은 <t:{round(banned_since + 86400 * banned_period)}> 부터 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!"
+            )
+        else:
+            return None
+    elif is_bot:
+        return None
+
+    cmd = message.content.lstrip(bot.command_prefix)
+    if cmd.startswith("jsk") or cmd.startswith("ㅈ"):
+        cls = commands.Context
+    else:
+        cls = core.KkutbotContext
+    ctx = await bot.get_context(message, cls=cls)
+    if ctx.command:
+        await before_command(ctx)
+        await bot.invoke(ctx)
 
 
 @bot.event
