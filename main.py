@@ -133,9 +133,6 @@ async def on_command_completion(ctx: core.KkutbotContext):
 
 @bot.check
 async def check(ctx: core.KkutbotContext) -> bool:
-    if await read(ctx.author, "isbanned"):
-        return False
-
     if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
         try:
             embed = discord.Embed(
