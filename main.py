@@ -116,31 +116,34 @@ async def on_command_completion(ctx: core.KkutbotContext):
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
+    alert_message = []
     if not (await read(ctx.author, 'alerts.attendance')):
-        await ctx.reply(
+        alert_message.append(
             f"오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!"
         )
         await write(ctx.author, 'alerts.attendance', True)
 
     if not (await read(ctx.author, 'alerts.reward')):
-        await ctx.reply(
+        alert_message.append(
             f"일일 포인트를 받지 않았습니다.\n`ㄲ포인트`을 입력하여 일일 포인트를 받아가세요!"
         )
         await write(ctx.author, 'alerts.reward', True)
 
     if not (await read(ctx.author, 'alerts.mails')):
-        await ctx.reply(
+        alert_message.append(
             f"읽지 않은 메일이 있습니다.\n"
             "`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!"
         )
         await write(ctx.author, 'alerts.mails', True)
 
     if not (await read(ctx.author, 'alerts.announcements')):
-        await ctx.reply(
+        alert_message.append(
             f"읽지 않은 공지가 있습니다.\n"
             "`ㄲ메일`을 입력하여 읽지 않은 공지를 확인해 보세요!"
         )
         await write(ctx.author, 'alerts.announcements', True)
+    if alert_message:
+        await ctx.reply("\n\n".join(alert_message))
 
 
 @bot.check
