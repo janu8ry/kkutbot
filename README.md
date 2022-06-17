@@ -72,7 +72,6 @@ python3 main.py
 ```shell
 pyenv install 3.9.13
 pyenv virtualenv 3.9.13 kkutbot
-
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
 poetry config virtualenvs.create false --local
@@ -86,7 +85,10 @@ python3 main.py
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
-
+nano config.yml # config.yml 수정
+nano docker-compose.yml # docker-compose.yml 수정
+nano mgob.yml # mgob.yml 수정
+docker build -t kkutbot:latest .
 docker compose up -d
 ```
 
@@ -95,8 +97,8 @@ docker compose up -d
 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
 ## DB 백업 (도커 전용)
-매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.
-`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
+매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관되고,
+`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 [localhost:8090/storage](http://localhost:8090/storage)에서도 백업 파일을 확인할 수 있습니다.
 
 ### 데이터 복구하기
