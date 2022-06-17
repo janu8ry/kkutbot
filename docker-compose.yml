@@ -28,5 +28,3 @@ services:
     volumes:
       - ./mgob.yml:/config/mgob.yml
       - ./backup:/storage
-      - ./mgob_tmp:/tmp
-      - ./mgob_data:/data
