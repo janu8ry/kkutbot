@@ -128,7 +128,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
             alert_message.append(msg)
             await write(ctx.author, f'alerts.{path}', True)
     if alert_message:
-        await ctx.reply("\n\n".join(alert_message))
+        await ctx.reply("\n\n".join(alert_message), mention_author=True)
 
 
 @bot.check
