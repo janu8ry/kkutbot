@@ -56,6 +56,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [poetry](https://python-poetry.org)
 - [pyenv](https://github.com/pyenv/pyenv), [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) (선택)
 - [docker](https://www.docker.com/) (배포시)
+- 디스코드 봇의 '메시지 인텐트' 활성화
 
 ### poetry 가상환경 사용 (기본)
 ```shell
