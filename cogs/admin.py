@@ -300,18 +300,18 @@ class Admin(commands.Cog, name="관리자"):
                     del cmd_data[k]
             sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted_data).items())):
-                await ctx.reply(content, escape_emoji_formatting=True)
+                await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             public_data = deepcopy(await read(user))
             del public_data['commands']
             del public_data['announcements']
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
-                await ctx.reply(content, escape_emoji_formatting=True)
+                await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             return
 
         if not (await read(user, 'registered')):
             return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())):
-            await ctx.reply(content, escape_emoji_formatting=True)
+            await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
     async def guild_info(self, ctx: KkutbotContext, *, guild: discord.Guild = None):
