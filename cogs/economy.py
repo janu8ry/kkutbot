@@ -126,12 +126,12 @@ class Economy(commands.Cog, name="경제"):
             current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f'quest.cache.{data}')
             if current >= info['target']:
                 desc = "이 퀘스트를 완료했습니다!"
-                title = f"~~{info['name']}~~"
+                title = f"🔸 ~~{info['name']}~~"
             else:
                 desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"
-                title = info['name']
+                title = f"🔹 {info['name']}"
             embed.add_field(
-                name=f"🔹 {title} `{info['reward'][0]}`{{{info['reward'][1]}}}",
+                name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}",
                 value=desc,
                 inline=False
             )
