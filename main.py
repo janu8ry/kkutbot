@@ -85,12 +85,7 @@ async def on_message(message: discord.Message):
     elif is_bot:
         return None
 
-    cmd = message.content.lstrip(bot.command_prefix)
-    if cmd.startswith("jsk") or cmd.startswith("ㅈ"):
-        cls = commands.Context
-    else:
-        cls = core.KkutbotContext
-    ctx = await bot.get_context(message, cls=cls)
+    ctx = await bot.get_context(message, cls=core.KkutbotContext)
     if ctx.command:
         await before_command(ctx)
         await bot.invoke(ctx)

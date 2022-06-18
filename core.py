@@ -44,7 +44,7 @@ class KkutbotContext(commands.Context):
             ephemeral=False,
             escape_emoji_formatting=False
     ) -> discord.Message:
-        if (escape_emoji_formatting is False) and (self.command.name != "jishaku"):
+        if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         return await super().send(content=content,
                                   tts=tts,
@@ -64,10 +64,15 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, **kwargs) -> discord.Message:
-        if (not kwargs.get('escape_emoji_formatting', False)) and (self.command.name != "jishaku"):
+        if (not kwargs.get('escape_emoji_formatting', False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         kwargs.pop("mention_author", None)
-        return await super().reply(content=content, mention_author=bool(kwargs.get("mention_author")), **kwargs)
+        if self.interaction is None:
+            return await self.send(
+                content, reference=self.message, mention_author=bool(kwargs.get("mention_author")), **kwargs
+            )
+        else:
+            return await self.send(content, mention_author=bool(kwargs.get("mention_author")), **kwargs)
 
 
 intents = discord.Intents.default()
