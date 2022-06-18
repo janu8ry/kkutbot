@@ -166,7 +166,7 @@ async def write(target: TargetObject, path: str, value):
                 await db.unused.delete_one({"_id": id_})
             else:
                 main_data = await read(target)
-                main_data["registered"] = time.time()
+                main_data["registered"] = round(time.time())
                 main_data["_id"] = id_
                 main_data["name"] = name
                 await db.user.insert_one(main_data)
