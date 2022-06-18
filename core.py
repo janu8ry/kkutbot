@@ -151,14 +151,15 @@ class Kkutbot(commands.AutoShardedBot):
         with open('static/quests.json', 'r', encoding="utf-8") as f:
             quests = list(json.load(f).items())
         random.shuffle(quests)
-        quests = dict(quests)
-        k = list(quests.keys())
-        v = list(quests.values())
-        await write(None, 'quests', {
-            k[0].replace(".", "/"): v[0],
-            k[1].replace(".", "/"): v[1],
-            k[2].replace(".", "/"): v[2]
-        })
+        quest_data = {}
+        for k, v in dict(quests[:3]).items():
+            [t_start, t_end] = [int(t) for t in v["target"].split("-")]
+            target = random.randint(t_start, t_end)
+            v["name"] = v["name"].format(target)
+            v["target"] = target
+            v["reward"][0] = round(target * float(v["reward"][0].lstrip("*")))
+            quest_data[k.replace(".", "/")] = v
+        await write(None, 'quests', quest_data)
 
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
