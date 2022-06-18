@@ -12,6 +12,7 @@ import core
 from tools.config import config
 from tools.db import add, append, delete, read, write
 from tools.logger import setup_logger
+from tools.views import ServerInvite
 
 logger = logging.getLogger("kkutbot")
 
@@ -236,13 +237,21 @@ async def on_guild_join(guild: discord.Guild):
 끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.
 - **ㄲ도움**을 입력하여 끝봇의 도움말을 확인해 보세요!
 - 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면
-[끝봇 공식 커뮤니티]({config('links.invite.server')})에 참가해 보세요!
+  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!
+  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.
+
+
 끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
 """,
         color=config('colors.general')
     )
     try:
-        await announce.send(embed=embed)
+        await announce.send(embed=embed, view=ServerInvite())
+    except discord.errors.Forbidden:
+        pass
+    try:
+        owner = await bot.fetch_user(guild.owner_id)
+        await owner.send(embed=embed, view=ServerInvite())
     except discord.errors.Forbidden:
         pass
 
