@@ -112,7 +112,7 @@ class Economy(commands.Cog, name="경제"):
             bonus_embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
             await ctx.reply(embed=bonus_embed)
 
-    @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))  # TODO: 퀘스트 리뉴얼
+    @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.
