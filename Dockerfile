@@ -16,5 +16,7 @@ WORKDIR /kkutbot
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY . .
 
+ENV PYTHONUNBUFFERED=0
+
 
 CMD ["python", "main.py"]
