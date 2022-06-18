@@ -23,14 +23,14 @@ class ConfirmSendAnnouncement(BaseView):
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
-    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("공지 전송 완료!")
         await disable_buttons(interaction, view=self)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("공지 전송이 취소되었습니다.")
         await disable_buttons(interaction, view=self)
@@ -90,14 +90,14 @@ class ConfirmSendNotice(BaseView):
         self.value = None
 
     @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
-    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("알림 전송 완료!")
         await disable_buttons(interaction, view=self)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("알림 전송이 취소되었습니다.")
         await disable_buttons(interaction, view=self)
@@ -154,14 +154,14 @@ class ConfirmModifyData(BaseView):
         self.value = None
 
     @discord.ui.button(label='수정하기', style=discord.ButtonStyle.green)
-    async def confirm_send(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("데이터 수정 완료!")
         await disable_buttons(interaction, view=self)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("데이터 수정이 취소되었습니다.")
         await disable_buttons(interaction, view=self)
@@ -219,7 +219,7 @@ class ModifyData(BaseView):
         self.ctx = ctx
 
     @discord.ui.button(label='수정하기', style=discord.ButtonStyle.blurple)
-    async def modify_user(self, interaction: discord.Interaction, button: discord.ui.Button):  # noqa
+    async def modify_user(self, interaction: discord.Interaction, _button: discord.ui.Button):
         if isinstance(self.target, str) and re.match(r"<@!?(\d+)>$", self.target):  # if argument is mention
             self.target = re.findall(r'\d+', self.target)[0]
         if isinstance(self.target, str) and self.target.isdecimal():
