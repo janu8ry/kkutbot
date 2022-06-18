@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
-from discord.utils import escape_markdown as e_mk, escape_mentions as e_mt
+from discord.utils import escape_markdown as e_mk
+from discord.utils import escape_mentions as e_mt
 
 from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read, write
 from tools.utils import get_date, get_tier, get_winrate, is_admin
-from tools.views import BaseView, BaseModal
+from tools.views import BaseModal, BaseView
 
 
 class InfoInput(BaseModal, title="소개말 수정하기"):
