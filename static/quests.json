@@ -15,7 +15,7 @@
         "reward": ["*1", "medals"]
     },
     "points": {
-        "name": "하루 동안 {}포인트 모으기",
+        "name": "{}포인트 모으기",
         "target": "100-200",
         "reward": ["*0.05", "medals"]
     },
