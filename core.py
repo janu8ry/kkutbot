@@ -148,7 +148,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     async def reset_quest():
-        with open('schema/quests.json', 'r', encoding="utf-8") as f:
+        with open('static/quests.json', 'r', encoding="utf-8") as f:
             quests = list(json.load(f).items())
         random.shuffle(quests)
         quests = dict(quests)

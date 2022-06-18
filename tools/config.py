@@ -7,9 +7,9 @@ import yaml
 with open("config.yml", encoding="utf-8") as f:
     config_data = yaml.load(f, Loader=yaml.FullLoader)
 
-for file in os.listdir("schema"):
+for file in os.listdir("static"):
     if file not in ("wordlist.json", "transition.json", "quests.json"):
-        with open(f"schema/{file}", "r", encoding="utf-8") as f:
+        with open(f"static/{file}", "r", encoding="utf-8") as f:
             config_data[file[:-5]] = json.load(f)
 
 
