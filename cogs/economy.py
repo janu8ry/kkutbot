@@ -55,7 +55,7 @@ class Economy(commands.Cog, name="경제"):
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())
 
-    @commands.command(name="출석", usage="ㄲ출석", aliases=("ㅊ", "ㅊㅅ"))
+    @commands.command(name="출석", usage="ㄲ출석", aliases=("ㅊ", "ㅊㅅ", "ㅊㅊ"))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def daily_check(self, ctx: KkutbotContext):
