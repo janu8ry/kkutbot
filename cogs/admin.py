@@ -13,7 +13,7 @@ from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import add, db, delete, read, write
-from tools.utils import disable_buttons, get_tier, get_winrate, is_admin, split_string
+from tools.utils import get_tier, get_winrate, is_admin, split_string
 from tools.views import BaseModal, BaseView, ServerInvite
 
 
@@ -26,14 +26,14 @@ class ConfirmSendAnnouncement(BaseView):
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("공지 전송 완료!")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("공지 전송이 취소되었습니다.")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
 
@@ -93,14 +93,14 @@ class ConfirmSendNotice(BaseView):
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("알림 전송 완료!")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("알림 전송이 취소되었습니다.")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
 
@@ -157,14 +157,14 @@ class ConfirmModifyData(BaseView):
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("데이터 수정 완료!")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("데이터 수정이 취소되었습니다.")
-        await disable_buttons(interaction, view=self)
+        await self.disable_buttons(interaction)
         self.stop()
 
 
