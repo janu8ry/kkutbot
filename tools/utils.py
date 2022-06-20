@@ -1,6 +1,8 @@
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
+import json
+import random
 
 import discord
 from discord.ext import commands
@@ -8,6 +10,13 @@ from discord.ext import commands
 from tools.db import read
 
 from .config import config  # noqa
+
+
+with open('static/wordlist.json', 'r', encoding="utf-8") as f:
+    wordlist = json.load(f)
+
+with open('static/transition.json', 'r', encoding="utf-8") as f:
+    transition = json.load(f)
 
 
 def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
@@ -75,8 +84,36 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
     return tier if emoji else tier.split(" ")[0]
 
 
-async def disable_buttons(interaction: discord.Interaction, view: discord.ui.View):
-    for item in view.children:
-        if isinstance(item, discord.ui.Button):
-            item.disabled = True
-    await interaction.response.edit_message(view=view)
+def get_transition(word: str) -> list:
+    if word[-1] in transition:
+        return transition[word[-1]]
+    else:
+        return [word[-1]]
+
+
+def get_word(word: str) -> list:
+    du = get_transition(word[-1])
+    return_list = []
+    for x in du:
+        if x in wordlist:
+            return_list += wordlist[x[-1]]
+    return return_list
+
+
+def choose_first_word(kkd: bool = False) -> str:
+    while True:
+        random_list = random.choice(list(wordlist.values()))
+        bot_word = random.choice(random_list)
+        if len(get_word(bot_word)) >= 3:
+            if kkd:
+                if len(bot_word) == 3:
+                    break
+            else:
+                break
+    return bot_word
+
+
+def is_hanbang(word: str) -> bool:
+    if not get_word(word):
+        return True
+    return False
