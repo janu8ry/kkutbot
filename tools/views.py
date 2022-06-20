@@ -33,11 +33,14 @@ class BaseView(discord.ui.View):
         if self.message:
             await self.message.edit(view=self)
 
-    async def disable_buttons(self, interaction: discord.Interaction):
+    async def disable_buttons(self, interaction: discord.Interaction, use_msg=False):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
-        await interaction.response.edit_message(view=self)
+        if use_msg:
+            await self.message.edit(view=self)
+        else:
+            await interaction.response.edit_message(view=self)
 
 
 class BaseModal(discord.ui.Modal):
