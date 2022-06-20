@@ -1,8 +1,8 @@
+import json
+import random
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
-import json
-import random
 
 import discord
 from discord.ext import commands
@@ -10,7 +10,6 @@ from discord.ext import commands
 from tools.db import read
 
 from .config import config  # noqa
-
 
 with open('static/wordlist.json', 'r', encoding="utf-8") as f:
     wordlist = json.load(f)
