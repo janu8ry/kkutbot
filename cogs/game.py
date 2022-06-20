@@ -2,14 +2,14 @@ import asyncio
 import operator
 import random
 import time
-from typing import Union, Literal
+from typing import Literal, Union
 
 import discord
 from discord.ext import commands
 
 from core import Kkutbot, KkutbotContext
 from tools.db import add, config, read, write
-from tools.utils import choose_first_word, get_transition, get_tier, get_winrate, get_word, is_hanbang
+from tools.utils import choose_first_word, get_tier, get_transition, get_winrate, get_word, is_hanbang
 from tools.views import BaseView
 
 
