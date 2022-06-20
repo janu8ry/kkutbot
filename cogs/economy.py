@@ -125,7 +125,7 @@ class Economy(commands.Cog, name="경제"):
         )
         for data, info in (await read(None, 'quests')).items():
             current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f'quest.cache.{data}')
-            if current >= info['target']:
+            if data in await read(ctx.author, f'quest.status.completed'):  # current >= info['target']:
                 desc = "이 퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"
             else:
