@@ -580,7 +580,7 @@ class Game(commands.Cog, name="게임"):
                     game.used_words.append(game.bot_word)
                     game.begin_time = time.time()
                     game.score += 1
-                    if is_hanbang(game.bot_word):
+                    if is_hanbang(game.bot_word, kkd=True):
                         await game.game_end("패배")
                         return
                     else:
