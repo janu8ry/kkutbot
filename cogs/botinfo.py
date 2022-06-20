@@ -129,7 +129,7 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=ServerInvite())
 
-    @commands.command(name="핑", usage="ㄲ핑")
+    @commands.command(name="핑", usage="ㄲ핑", hidden=True)
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def ping(self, ctx: KkutbotContext):
         """끝봇의 응답 속도를 확인합니다.
@@ -137,7 +137,7 @@ class BotInfo(commands.Cog, name="일반"):
         """
         message = await ctx.reply("걸린 시간: `---`ms")
         ms = (message.created_at - ctx.message.created_at).total_seconds() * 1000
-        await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**')
+        await message.edit(content=f'걸린 시간: `{round(ms)}`**ms**', allowed_mentions=discord.AllowedMentions.none())
 
 
 async def setup(bot: Kkutbot):
