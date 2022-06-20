@@ -125,7 +125,7 @@ class Economy(commands.Cog, name="경제"):
         )
         for data, info in (await read(None, 'quests')).items():
             current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f'quest.cache.{data}')
-            if data in await read(ctx.author, f'quest.status.completed'):  # current >= info['target']:
+            if data in await read(ctx.author, f'quest.status.completed'):
                 desc = "이 퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"
             else:
@@ -137,6 +137,7 @@ class Economy(commands.Cog, name="경제"):
                 inline=False
             )
         embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.quest')).url)
+        embed.set_footer(text="모든 퀘스트를 완료하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)
 
 

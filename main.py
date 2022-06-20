@@ -3,6 +3,7 @@ import time
 import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Type
+import random
 
 import discord
 from discord.ext import commands
@@ -111,6 +112,20 @@ async def on_command_completion(ctx: core.KkutbotContext):
         embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
+
+        if len(await read(ctx.author, f'quest.status.completed')) == 3:
+            bonus_embed = discord.Embed(
+                title="보너스 보상",
+                description="오늘의 퀘스트를 모두 완료했습니다!",
+                color=config("colors.help")
+            )
+            bonus_point = random.randint(100, 200)
+            bonus_medal = random.randint(1, 5)
+            await add(ctx.author, 'points', bonus_point)
+            await add(ctx.author, 'medals', bonus_medal)
+            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
+            bonus_embed.set_thumbnail(url=bot.get_emoji(config('emojis.bonus')).url)
+            await ctx.reply(embed=bonus_embed)
 
     alert_message = []
     alerts = {
