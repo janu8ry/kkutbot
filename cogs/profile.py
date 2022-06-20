@@ -101,7 +101,7 @@ class Profile(commands.Cog, name="사용자"):
                             )
         embed.add_field(
             name="🔸 기타",
-            value=f"출석 횟수 : `{await read(user, 'attendance_times')}`\n"
+            value=f"출석 횟수 : `{await read(user, 'attendance.times')}`\n"
                   f"명령어 사용 횟수 : `{await read(user, 'command_used')}`\n"
                   f"클리어한 퀘스트: `{await read(user, 'quest.total')}`"
         )

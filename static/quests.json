@@ -9,7 +9,7 @@
         "target": "1-5",
         "reward": ["*20", "points"]
     },
-    "attendance_times": {
+    "attendance.times": {
         "name": "출석 {}회 완료하기",
         "target": "1-1",
         "reward": ["*1", "medals"]

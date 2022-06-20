@@ -185,8 +185,15 @@ async def main():
         }
     })
     for user in await (db.user.find()).to_list(None):
-        t = {"alerts.reward": False, "registered": round(user["registered"].timestamp())}
-        await db.user.update_one({"_id": user["_id"]}, {"$set": t})
+        db_set = {
+            "alerts.reward": False,
+            "registered": round(user["registered"].timestamp()),
+            "attendance.times": user["attendance_times"]
+        }
+        db_unset = {
+            "attendance_times": 1
+        }
+        await db.user.update_one({"_id": user["_id"]}, {"$set": db_set, "$unset": db_unset})
 
     await db.unused.update_many({}, {
         "$rename": {
@@ -221,8 +228,15 @@ async def main():
         }
     })
     for user in await (db.unused.find()).to_list(None):
-        t = {"alerts.reward": False, "registered": round(user["registered"].timestamp())}
-        await db.user.update_one({"_id": user["_id"]}, {"$set": t})
+        db_set = {
+            "alerts.reward": False,
+            "registered": round(user["registered"].timestamp()),
+            "attendance.times": user["attendance_times"]
+        }
+        db_unset = {
+            "attendance_times": 1
+        }
+        await db.unused.update_one({"_id": user["_id"]}, {"$set": db_set, "$unset": db_unset})
 
     await db.guild.update_many({}, {
         "$rename": {

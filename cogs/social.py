@@ -17,7 +17,7 @@ class RankDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.categories = {
-            "general": {"포인트": 'points', "메달": 'medals', "출석": 'attendance_times', "명령어": 'command_used'},
+            "general": {"포인트": 'points', "메달": 'medals', "출석": 'attendance.times', "명령어": 'command_used'},
             "game": {"솔로": 'rank_solo', "쿵쿵따": 'kkd'},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"]  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }

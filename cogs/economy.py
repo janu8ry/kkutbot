@@ -66,6 +66,7 @@ class Economy(commands.Cog, name="경제"):
         bonus = False
         week_daily = []
         week_data = await read(ctx.author, 'attendance')
+        del week_data["times"]
         today = datetime.today().toordinal()
         week_today = time.localtime().tm_wday
         if week_data[str(week_today)] == today:
@@ -73,12 +74,13 @@ class Economy(commands.Cog, name="경제"):
             success = False
         else:
             await add(ctx.author, 'points', 100)
-            await add(ctx.author, 'attendance_times', 1)
+            await add(ctx.author, 'attendance.times', 1)
             await write(ctx.author, f'attendance.{week_today}', today)
             await add(None, 'attendance', 1)
             msg = "+`100` {points} 를 받았습니다!"
             success = True
             week_data = await read(ctx.author, 'attendance')
+            del week_data["times"]
             if (week_today == 6) and (list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]):
                 bonus_point = random.randint(100, 200)
                 bonus_medal = random.randint(1, 5)
