@@ -177,7 +177,8 @@ async def main():
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "alerts.announcements": True,
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
-            "mails": []
+            "mails": [],
+            "quest.total": 0
         },
         "$unset": {
             "alerts.start_point": 1
@@ -212,7 +213,8 @@ async def main():
             "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0},
             "alerts.announcements": True,
             "banned": {"isbanned": False, "since": 0, "period": 0, "reason": None},
-            "mails": []
+            "mails": [],
+            "quest.total": 0
         },
         "$unset": {
             "alerts.start_point": 1

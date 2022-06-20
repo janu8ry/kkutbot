@@ -102,6 +102,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
         elif (current >= info['target']) and (data not in await read(ctx.author, 'quest.status.completed')):
             await add(ctx.author, info['reward'][1], info['reward'][0])
             await append(ctx.author, 'quest.status.completed', data)
+            await add(ctx.author, "quest.total", 1)
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
         embed = discord.Embed(

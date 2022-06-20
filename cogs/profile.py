@@ -44,7 +44,7 @@ class InfoEdit(BaseView):
 class Profile(commands.Cog, name="사용자"):
     """사용자의 프로필에 관련된 명령어들입니다."""
 
-    __slots__ = ("bot", )
+    __slots__ = ("bot",)
 
     def __init__(self, bot: Kkutbot):
         self.bot = bot
@@ -100,7 +100,10 @@ class Profile(commands.Cog, name="사용자"):
                                   f"최고 점수 : `{await read(user, f'game.{v}.best')}`"
                             )
         embed.add_field(
-            name="🔸 기타", value=f"출석 횟수 : `{await read(user, 'attendance_times')}`\n명령어 사용 횟수 : `{await read(user, 'command_used')}`"
+            name="🔸 기타",
+            value=f"출석 횟수 : `{await read(user, 'attendance_times')}`\n"
+                  f"명령어 사용 횟수 : `{await read(user, 'command_used')}`\n"
+                  f"클리어한 퀘스트: `{await read(user, 'quest.total')}`"
         )
         embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 100}​​​")
         await ctx.reply(embed=embed)
