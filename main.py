@@ -1,9 +1,9 @@
 import logging
+import random
 import time
 import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Type
-import random
 
 import discord
 from discord.ext import commands
