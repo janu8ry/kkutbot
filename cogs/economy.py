@@ -117,6 +117,7 @@ class Economy(commands.Cog, name="경제"):
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.
+        모든 퀘스트를 완료하면 추가 보상을 받을 수 있습니다!
         퀘스트 항목은 0시에 초기화됩니다."""
         embed = discord.Embed(
             title="데일리 퀘스트",
