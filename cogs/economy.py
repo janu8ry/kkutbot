@@ -102,11 +102,12 @@ class Economy(commands.Cog, name="경제"):
         if success:
             embed.title = "출석 완료!"
             embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.attendance')).url)
+            embed.set_footer(text="일주일 동안 매일 출석하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)
         if bonus:
             bonus_embed = discord.Embed(
                 title="보너스 보상",
-                description="일주일 동안 모두 출석했습니다!",
+                description="일주일 동안 매일 출석했습니다!",
                 color=config("colors.help")
             )
             bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")  # noqa
