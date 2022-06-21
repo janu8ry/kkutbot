@@ -114,7 +114,7 @@ async def on_command_completion(ctx: core.KkutbotContext):
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
-        if len(await read(ctx.author, f'quest.status.completed')) == 3:
+        if len(await read(ctx.author, 'quest.status.completed')) == 3:
             bonus_embed = discord.Embed(
                 title="보너스 보상",
                 description="오늘의 퀘스트를 모두 완료했습니다!",
@@ -202,7 +202,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             description=f"<t:{time.time() + round(error.retry_after, 1)}:R>에 다시 시도해 주세요.",
             color=config('colors.error')
         )
-        embed.set_thumbnail(url=bot.get_emoji(config(f"emojis.denyed")).url)
+        embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument, commands.errors.TooManyArguments)):
         embed = discord.Embed(
@@ -210,7 +210,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
             color=config('colors.general')
         )
-        embed.set_thumbnail(url=bot.get_emoji(config(f"emojis.denyed")).url)
+        embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.errors.MaxConcurrencyReached):

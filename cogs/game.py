@@ -210,7 +210,7 @@ class MultiGame(GameBase):
                     await add(kv[0], 'game.guild_multi.win', 1)
                 await write(kv[0], 'game.guild_multi.winrate', await get_winrate(kv[0], "guild_multi"))
         embed = discord.Embed(title="📔 게임 종료!", description="\n".join(desc), color=config('colors.general'))
-        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config(f"emojis.gameover")).url)
+        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config("emojis.gameover")).url)
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
         del self
@@ -389,7 +389,7 @@ class Game(commands.Cog, name="게임"):
 
         if (await read(ctx.author, 'points')) <= 30:
             return await ctx.reply(f"{{denyed}} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
-                                   f"`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
+                                   "`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
 
         if mode is None:
             embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config('colors.general'))
