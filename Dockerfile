@@ -4,7 +4,7 @@ WORKDIR /kkutbot
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install --no-cache-dir poetry && \
+RUN pip install --no-cache-dir poetry==1.1.13 && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --no-dev
 
