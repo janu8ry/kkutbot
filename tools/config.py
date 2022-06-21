@@ -5,7 +5,7 @@ from typing import Any, List
 import yaml
 
 with open("config.yml", encoding="utf-8") as f:
-    config_data = yaml.load(f, Loader=yaml.FullLoader)
+    config_data = yaml.safe_load(f)
 
 for file in os.listdir("static"):
     if file not in ("wordlist.json", "transition.json", "quests.json"):
