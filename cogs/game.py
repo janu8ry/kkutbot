@@ -388,7 +388,7 @@ class Game(commands.Cog, name="게임"):
             return x.author == ctx.author and x.channel == ctx.channel
 
         if (await read(ctx.author, 'points')) <= 30:
-            return await ctx.reply(f"{{denyed}} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
+            return await ctx.reply("{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
                                    "`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
 
         if mode is None:
