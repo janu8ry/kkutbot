@@ -11,6 +11,8 @@ services:
     volumes:
       - ./logs:/kkutbot/logs
       - ./backup:/storage
+    environment:
+      - TZ=Asia/Seoul
   mongo:
     image: mongo:4.4.14-focal
     restart: always
@@ -19,6 +21,8 @@ services:
       - "27017:27017"
     volumes:
       -  /var/lib/mongodb:/data/db
+    environment:
+      - TZ=Asia/Seoul
   mgob:
     image: stefanprodan/mgob:latest
     restart: always
