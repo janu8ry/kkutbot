@@ -18,7 +18,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  /opt/homebrew/var/mongodb:/data/db
+      -  /var/lib/mongodb:/data/db
   mgob:
     image: stefanprodan/mgob:latest
     restart: always
