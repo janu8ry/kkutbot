@@ -32,3 +32,5 @@ services:
     volumes:
       - ./mgob.yml:/config/mgob.yml
       - ./backup:/storage
+    environment:
+      - TZ=Asia/Seoul

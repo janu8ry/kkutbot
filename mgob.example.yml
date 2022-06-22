@@ -3,6 +3,6 @@ target:
   port: 27017
   database: "kkutbot"
 scheduler:
-  cron: "0 20 */1 * *"
+  cron: "0 5 */1 * *"
   retention: 20
   timeout: 60
