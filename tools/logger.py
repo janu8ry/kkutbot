@@ -22,7 +22,13 @@ def namer(_) -> str:
     return os.path.join("logs", time.strftime("%Y-%m-%d") + ".log")
 
 
-console = Console(
+def setup_logger():
+    if "logs" not in os.listdir():
+        os.mkdir("logs")
+    logger = logging.getLogger("kkutbot")
+    logger.setLevel(logging.DEBUG)
+
+    console = Console(
         theme=Theme(
             {
                 "logging.level.command": "green",
@@ -31,14 +37,7 @@ console = Console(
             }
         )
     )
-stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
-
-
-def setup_logger():
-    if "logs" not in os.listdir():
-        os.mkdir("logs")
-    logger = logging.getLogger("kkutbot")
-    logger.setLevel(logging.DEBUG)
+    stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
 
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG + 3)
