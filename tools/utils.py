@@ -1,7 +1,7 @@
 import json
 import random
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Optional, Union
 
 import discord
@@ -32,12 +32,9 @@ def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
     return f"{timeinfo.seconds}초"
 
 
-def get_date(timestamp: Optional[float], from_utc: bool = False) -> str:
+def get_date(timestamp: Optional[float]) -> str:
     if timestamp:
-        if from_utc:
-            return str(datetime.fromtimestamp(timestamp).astimezone(timezone(timedelta(hours=9))))[:10]
-        else:
-            return str(datetime.fromtimestamp(timestamp))[:10]
+        return str(datetime.fromtimestamp(timestamp))[:10]
     else:
         return "끝봇의 유저가 아닙니다."
 
