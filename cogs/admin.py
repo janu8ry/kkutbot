@@ -26,7 +26,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
     async def kkutbot_status(self, ctx: KkutbotContext, count: int = 7):
-        """봇의 현황을 확인합니다."""
+        """끝봇의 현황을 확인합니다."""
         embed = discord.Embed(color=config('colors.general'))
 
         t1 = time.time()
@@ -57,8 +57,8 @@ class Admin(commands.Cog, name="관리자"):
         embed.add_field(
             name="DB",
             value=f"용량: `{naturalsize((await self.bot.db.command('collstats', 'user'))['size'])}`\n"
-                  f"조회 지연시간: `{round(t1 * 1000)}`ms\n"
-                  f"업뎃 지연시간: `{round(t2 * 1000)}`ms"
+                  f"조회 지연 시간: `{round(t1 * 1000)}`ms\n"
+                  f"업뎃 지연 시간: `{round(t2 * 1000)}`ms"
         )
         await ctx.send(embed=embed)
 
@@ -132,7 +132,7 @@ class Admin(commands.Cog, name="관리자"):
 
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
     async def delete_guilddata(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
-        """유저의 데이터를 초기화합니다."""
+        """서버의 데이터를 초기화합니다."""
         if await self.bot.db.guild.find_one({'_id': guild.id}):
             await delete(guild)
             await ctx.send("{done} 완료!")
@@ -169,7 +169,7 @@ class Admin(commands.Cog, name="관리자"):
         banned_since = time.time()
         await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason.lstrip()})
         await user.send(
-            f"당신은 `끝봇 이용 {days}일 정지` 처리 되었습니다.\n\n"
+            f"당신은 `끝봇 이용 {days}일 정지` 처리되었습니다.\n\n"
             f"사유: `{reason.lstrip()}` \n\n차단 시작: <t:{round(banned_since)}> \n\n"
             f"차단 해제: <t:{round(banned_since + 86400 * days)}> (<t:{round(banned_since + 86400 * days)}:R>)\n\n"
             f"끝봇 공식 커뮤니티에서 차단 해제를 요청할 수 있습니다.",
@@ -202,7 +202,7 @@ class Admin(commands.Cog, name="관리자"):
                 print(banned_users)
                 embed.add_field(
                     name=f"**{user['name']}** - `{user['_id']}`\n",
-                    value=f"차단기간: `{user['banned']['period']}`일, 차단사유: {user['banned']['reason']}"
+                    value=f"차단 기간: `{user['banned']['period']}`일, 차단 사유: {user['banned']['reason']}"
                 )
             await ctx.send(embed=embed)
 
