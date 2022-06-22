@@ -7,7 +7,7 @@ from core import Kkutbot, KkutbotContext
 from tools.config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read, write
-from tools.utils import get_date, get_tier, get_winrate, is_admin
+from tools.utils import get_tier, get_winrate, is_admin
 from tools.views import BaseModal, BaseView
 
 
@@ -88,8 +88,8 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=f"{{stats}} {e_mk(str(user))} 님의 통계",
-            description=f"가입일 : `{get_date(await read(user, 'registered'))}`\n"
-                        f"마지막 사용일 : `{get_date(await read(user, 'latest_usage'))}`",
+            description=f"가입일 : <t:{await read(user, 'registered')}:D>\n"
+                        f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
             color=config("colors.general")
         )
 
