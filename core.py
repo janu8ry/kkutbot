@@ -98,13 +98,13 @@ class Kkutbot(commands.AutoShardedBot):
         self.db = db
         self.started_at = None
 
-        self.scheduler = AsyncIOScheduler(timezone='Asia/Seoul')
-        self.scheduler.add_job(self.update_presence, 'interval', minutes=1)
-        self.scheduler.add_job(self.reset_alerts, 'cron', hour=0, minute=0, second=0)
-        self.scheduler.add_job(self.reset_quest, 'cron', hour=0, minute=0, second=0)
+        self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
+        self.scheduler.add_job(self.update_presence, "interval", minutes=1)
+        self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
+        self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config('test'):
-            self.scheduler.add_job(self.backup_log, 'cron', hour=0, minute=5, second=0)
-            self.scheduler.add_job(self.backup_data, 'cron', hour=5, minute=5, second=0)
+            self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
+            self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
@@ -129,9 +129,9 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     async def reset_alerts():
-        await write('general', 'attendance', 0)
-        await db.user.update_many({'alerts.attendance': True}, {'$set': {'alerts.attendance': False}})
-        await db.user.update_many({'alerts.reward': True}, {'$set': {'alert.reward': False}})
+        await write("general", "attendance", 0)
+        await db.user.update_many({"alerts.attendance": True}, {"$set": {"alerts.attendance": False}})
+        await db.user.update_many({"alerts.reward": True}, {"$set": {"alert.reward": False}})
 
     async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
@@ -140,17 +140,17 @@ class Kkutbot(commands.AutoShardedBot):
                 fp = f"/storage/backup-{get_date(timestamp, from_utc=True)}.gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
-                await (self.get_channel(config('backup_channel.data'))).send(file=discord.File(fp=fp))
+                await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self):
         fp = f"logs/{get_date(time.time() - 3600)}.log.gz"
-        await (self.get_channel(config('backup_channel.log'))).send(file=discord.File(fp=fp))
+        await (self.get_channel(config("backup_channel.log"))).send(file=discord.File(fp=fp))
         logger.info("로그 백업 완료!")
 
     @staticmethod
     async def reset_quest():
-        with open('static/quests.json', 'r', encoding="utf-8") as f:
+        with open("static/quests.json", "r", encoding="utf-8") as f:
             quests = list(json.load(f).items())
         random.shuffle(quests)
         quest_data = {}
@@ -161,7 +161,7 @@ class Kkutbot(commands.AutoShardedBot):
             v["target"] = target
             v["reward"][0] = round(target * float(v["reward"][0].lstrip("*")))
             quest_data[k.replace(".", "/")] = v
-        await write(None, 'quests', quest_data)
+        await write(None, "quests", quest_data)
 
     async def reload_all(self):
         for cogname in os.listdir("cogs"):
@@ -170,7 +170,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     def dict_emojis():
-        return {k: f"<:{k}:{v}>" for k, v in config('emojis').items()}
+        return {k: f"<:{k}:{v}>" for k, v in config("emojis").items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         data = await self.koreanbots_api.is_voted_bot(user.id, 703956235900420226 if config("test") else self.user.id)
@@ -180,11 +180,11 @@ class Kkutbot(commands.AutoShardedBot):
 def command(name: str = None, cls: Type[commands.Command] = commands.Command, **attrs):
     def decorator(func):
         if isinstance(func, commands.Command):
-            raise TypeError('Callback is already a command.')
-        if ('user' in func.__annotations__) and (attrs.get('rest_is_raw') is not False):
-            rest_is_raw = attrs.pop('rest_is_raw', True)
+            raise TypeError("Callback is already a command.")
+        if ("user" in func.__annotations__) and (attrs.get("rest_is_raw") is not False):
+            rest_is_raw = attrs.pop("rest_is_raw", True)
         else:
-            rest_is_raw = attrs.pop('rest_is_raw', False)
+            rest_is_raw = attrs.pop("rest_is_raw", False)
         return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
 
     return decorator
@@ -195,11 +195,11 @@ commands.command = command
 
 class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
-        if not kwargs.get('escape_emoji_formatting', False):
-            if title := kwargs.get('title'):
-                kwargs['title'] = title.format(**Kkutbot.dict_emojis())
-            if description := kwargs.get('description'):
-                kwargs['description'] = description.format(**Kkutbot.dict_emojis())
+        if not kwargs.get("escape_emoji_formatting", False):
+            if title := kwargs.get("title"):
+                kwargs["title"] = title.format(**Kkutbot.dict_emojis())
+            if description := kwargs.get("description"):
+                kwargs["description"] = description.format(**Kkutbot.dict_emojis())
         super().__init__(**kwargs)
 
     def add_field(self, *, name, value, inline=True, escape_emoji_formatting=False):
