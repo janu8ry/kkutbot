@@ -15,8 +15,8 @@ from topgg import DBLClient
 
 from tools.config import config
 from tools.db import db, write
-from tools.utils import get_date
 from tools.logger import stream_handler
+from tools.utils import get_date
 
 logger = logging.getLogger("kkutbot")
 
