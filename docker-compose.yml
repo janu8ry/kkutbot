@@ -25,7 +25,7 @@ services:
     environment:
       - TZ=Asia/Seoul
   mgob:
-    image: stefanprodan/mgob:latest
+    image: janu8ry/mgob:latest
     restart: always
     container_name: "kkutbot-mgob"
     ports:
