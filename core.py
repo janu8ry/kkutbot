@@ -137,7 +137,7 @@ class Kkutbot(commands.AutoShardedBot):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
                 timestamp = int(filename[5:-3])
-                fp = f"/storage/backup-{get_date(timestamp, from_utc=True)}.gz"
+                fp = f"/storage/backup-{get_date(timestamp - 600, from_utc=True)}.gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
