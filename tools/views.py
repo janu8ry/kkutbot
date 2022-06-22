@@ -74,13 +74,13 @@ class KoreanBotsVote(discord.ui.View):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config('links.koreanbots')
+                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config("links.koreanbots")
             )
         )
 
 
 class PageInput(BaseModal, title="페이지 이동하기"):
-    target_page = discord.ui.TextInput(label='페이지 번호', placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
+    target_page = discord.ui.TextInput(label="페이지 번호", placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
 
     def __init__(self, ctx: commands.Context, view: "Paginator"):
         super().__init__()

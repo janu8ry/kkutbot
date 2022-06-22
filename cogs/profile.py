@@ -13,7 +13,7 @@ from tools.views import BaseModal, BaseView
 
 class InfoInput(BaseModal, title="소개말 수정하기"):
     info_word = discord.ui.TextInput(
-        label='소개말 내용 (최대 50자)', min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True
+        label="소개말 내용 (최대 50자)", min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True
     )
 
     def __init__(self, ctx: commands.Context):
@@ -21,8 +21,8 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
-        self.info_word.value.replace('`', '')
-        await write(self.ctx.author, 'info', self.info_word.value)
+        self.info_word.value.replace("`", "")
+        await write(self.ctx.author, "info", self.info_word.value)
         await interaction.response.send_message(
             f"<:done:{config('emojis.done')}> 소개말을 '{e_mk(e_mt(self.info_word.value))}'(으)로 변경했습니다!", ephemeral=True
         )
@@ -33,7 +33,7 @@ class InfoEdit(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.ctx = ctx
 
-    @discord.ui.button(label='소개말 수정하기', style=discord.ButtonStyle.blurple, emoji="<:edit:984405210870988870>")
+    @discord.ui.button(label="소개말 수정하기", style=discord.ButtonStyle.blurple, emoji="<:edit:984405210870988870>")
     async def edit_info(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(InfoInput(ctx=self.ctx))
         button.disabled = True
@@ -64,7 +64,7 @@ class Profile(commands.Cog, name="사용자"):
             title=f"{{profile}} {e_mk(str(user))} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}",
             description=f"```yaml\n{await read(user, 'info')}```\n"
                         f"{{tier}} 랭킹전 티어 - **{await get_tier(user, 'rank_solo')}** | **{await get_tier(user, 'rank_online')}**\n​",
-            color=config('colors.general')
+            color=config("colors.general")
         )
         embed.add_field(name="{points} **포인트**", value=f"{await read(user, 'points')}")
         embed.add_field(name="{starter} **승률**", value=f"{await get_winrate(user, 'rank_solo')}% | {await get_winrate(user, 'rank_online')}%")
@@ -90,10 +90,10 @@ class Profile(commands.Cog, name="사용자"):
             title=f"{{stats}} {e_mk(str(user))} 님의 통계",
             description=f"가입일 : `{get_date(await read(user, 'registered'))}`\n"
                         f"마지막 사용일 : `{get_date(await read(user, 'latest_usage'))}`",
-            color=config('colors.general')
+            color=config("colors.general")
         )
 
-        for k, v in config('modelist').items():
+        for k, v in config("modelist").items():
             embed.add_field(name=f"🔸 {k}",
                             value=f"`{await read(user, f'game.{v}.win')}` / `{await read(user, f'game.{v}.times')}`회 승리 "
                                   f"(`{await read(user, f'game.{v}.winrate')}%`)\n"

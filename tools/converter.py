@@ -26,15 +26,15 @@ class KkutbotUserConverter(Converter):
             pass
 
         if argument.isdecimal():  # if argument is user id
-            user = await ctx.bot.db.user.find_one({'_id': int(argument)})
-            return await ctx.bot.fetch_user(user['_id'])
+            user = await ctx.bot.db.user.find_one({"_id": int(argument)})
+            return await ctx.bot.fetch_user(user["_id"])
         else:
             if re.match(r"<@!?(\d+)>$", argument):  # if argument is mention
-                return await ctx.bot.fetch_user(int(re.findall(r'\d+', argument)[0]))
+                return await ctx.bot.fetch_user(int(re.findall(r"\d+", argument)[0]))
             else:
-                users = await (ctx.bot.db.user.find({'name': str(argument)})).to_list(None)
+                users = await (ctx.bot.db.user.find({"name": str(argument)})).to_list(None)
                 if users:  # if argument is user name
                     user = random.choice(users)
-                    return await ctx.bot.fetch_user(user['_id'])
+                    return await ctx.bot.fetch_user(user["_id"])
                 else:
                     raise errors.BadArgument

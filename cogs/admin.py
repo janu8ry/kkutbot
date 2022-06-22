@@ -22,14 +22,14 @@ class ConfirmSendAnnouncement(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
-    @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
+    @discord.ui.button(label="전송하기", style=discord.ButtonStyle.green)
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("공지 전송 완료!")
         await self.disable_buttons(interaction)
         self.stop()
 
-    @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
+    @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("공지 전송이 취소되었습니다.")
@@ -37,9 +37,9 @@ class ConfirmSendAnnouncement(BaseView):
         self.stop()
 
 
-class AnnouncementInput(BaseModal, title='공지 작성하기'):
-    a_title = discord.ui.TextInput(label='공지 제목', required=True, max_length=256)
-    description = discord.ui.TextInput(label='공지 본문', style=discord.TextStyle.long, required=True, max_length=1024)
+class AnnouncementInput(BaseModal, title="공지 작성하기"):
+    a_title = discord.ui.TextInput(label="공지 제목", required=True, max_length=256)
+    description = discord.ui.TextInput(label="공지 본문", style=discord.TextStyle.long, required=True, max_length=1024)
 
     def __init__(self, ctx: commands.Context):
         super().__init__()
@@ -48,7 +48,7 @@ class AnnouncementInput(BaseModal, title='공지 작성하기'):
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title=f"{{email}} **{interaction.user.name}** 님의 메일함",
-            color=config('colors.help')
+            color=config("colors.help")
         )
         embed.add_field(name=f"🔹 {self.a_title.value} - `1초 전`", value=self.description.value)
         view = ConfirmSendAnnouncement(ctx=self.ctx)
@@ -58,13 +58,13 @@ class AnnouncementInput(BaseModal, title='공지 작성하기'):
             await db.general.update_one(
                 {"_id": "general"},
                 {
-                    '$push': {'announcements': {'title': self.a_title.value, 'value': self.description.value, 'time': round(time.time())}}
+                    "$push": {"announcements": {"title": self.a_title.value, "value": self.description.value, "time": round(time.time())}}
                 }
             )
             await db.user.update_many(
                 {},
                 {
-                    '$set': {'alerts.announcements': False}
+                    "$set": {"alerts.announcements": False}
                 }
             )
 
@@ -75,7 +75,7 @@ class SendAnnouncement(BaseView):
         self.value = None
         self.ctx = ctx
 
-    @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="내용 작성하기", style=discord.ButtonStyle.blurple)
     async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx))
         button.disabled = True
@@ -89,14 +89,14 @@ class ConfirmSendNotice(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
-    @discord.ui.button(label='전송하기', style=discord.ButtonStyle.green)
+    @discord.ui.button(label="전송하기", style=discord.ButtonStyle.green)
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("알림 전송 완료!")
         await self.disable_buttons(interaction)
         self.stop()
 
-    @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
+    @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("알림 전송이 취소되었습니다.")
@@ -104,8 +104,8 @@ class ConfirmSendNotice(BaseView):
         self.stop()
 
 
-class NoticeInput(BaseModal, title='알림 보내기'):
-    msg = discord.ui.TextInput(label='알림 내용', style=discord.TextStyle.long, required=True, max_length=1024)
+class NoticeInput(BaseModal, title="알림 보내기"):
+    msg = discord.ui.TextInput(label="알림 내용", style=discord.TextStyle.long, required=True, max_length=1024)
 
     def __init__(self, ctx: commands.Context, target: int):
         super().__init__()
@@ -115,7 +115,7 @@ class NoticeInput(BaseModal, title='알림 보내기'):
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title=f"{{email}} **{interaction.user.name}** 님의 메일함",
-            color=config('colors.help')
+            color=config("colors.help")
         )
         embed.add_field(name="🔹 관리자로부터의 알림 - `1초 전`", value=self.msg.value)
         view = ConfirmSendNotice(ctx=self.ctx)
@@ -123,10 +123,10 @@ class NoticeInput(BaseModal, title='알림 보내기'):
         await view.wait()
         if view.value:
             await db.user.update_one(
-                {'_id': self.target},
+                {"_id": self.target},
                 {
-                    '$push': {'mails': {'title': "관리자로부터의 알림", 'value': self.msg.value, 'time': round(time.time())}},
-                    '$set': {'alerts.mails': False}
+                    "$push": {"mails": {"title": "관리자로부터의 알림", "value": self.msg.value, "time": round(time.time())}},
+                    "$set": {"alerts.mails": False}
                 }
             )
 
@@ -139,7 +139,7 @@ class SendNotice(BaseView):
         self.ctx = ctx
         self.message: Optional[discord.Message] = None
 
-    @discord.ui.button(label='내용 작성하기', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="내용 작성하기", style=discord.ButtonStyle.blurple)
     async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(NoticeInput(ctx=self.ctx, target=self.target))
         button.disabled = True
@@ -153,14 +153,14 @@ class ConfirmModifyData(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
-    @discord.ui.button(label='수정하기', style=discord.ButtonStyle.green)
+    @discord.ui.button(label="수정하기", style=discord.ButtonStyle.green)
     async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("데이터 수정 완료!")
         await self.disable_buttons(interaction)
         self.stop()
 
-    @discord.ui.button(label='취소하기', style=discord.ButtonStyle.red)
+    @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("데이터 수정이 취소되었습니다.")
@@ -169,8 +169,8 @@ class ConfirmModifyData(BaseView):
 
 
 class DataInput(BaseModal, title="데이터 수정하기"):
-    data_path = discord.ui.TextInput(label='수정할 데이터 경로', required=True)
-    data_value = discord.ui.TextInput(label='수정할 값', style=discord.TextStyle.long, required=True)
+    data_path = discord.ui.TextInput(label="수정할 데이터 경로", required=True)
+    data_value = discord.ui.TextInput(label="수정할 값", style=discord.TextStyle.long, required=True)
 
     def __init__(self, ctx: commands.Context, target: Union[int, str], collection: AsyncIOMotorCollection):
         super().__init__()
@@ -195,7 +195,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {self.colection.name} - {self.target}",
-            color=config('colors.help')
+            color=config("colors.help")
         )
         embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value, escape_emoji_formatting=True)  # noqa
         view = ConfirmModifyData(ctx=self.ctx)
@@ -203,9 +203,9 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         await view.wait()
         if view.value:
             await self.colection.update_one(
-                {'_id': self.target},
+                {"_id": self.target},
                 {
-                    '$set': {self.data_path.value: final_data}
+                    "$set": {self.data_path.value: final_data}
                 }
             )
         self.stop()
@@ -218,7 +218,7 @@ class ModifyData(BaseView):
         self.target = target
         self.ctx = ctx
 
-    @discord.ui.button(label='수정하기', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="수정하기", style=discord.ButtonStyle.blurple)
     async def modify_user(self, interaction: discord.Interaction, _button: discord.ui.Button):
         if isinstance(self.target, str) and re.match(r"<@!?(\d+)>$", self.target):  # if argument is mention
             self.target = re.findall(r'\d+', self.target)[0]
@@ -252,7 +252,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
     async def kkutbot_status(self, ctx: KkutbotContext, count: int = 7):
         """끝봇의 현황을 확인합니다."""
-        embed = discord.Embed(color=config('colors.general'))
+        embed = discord.Embed(color=config("colors.general"))
 
         t1 = time.time()
         await self.bot.db.general.find_one({"_id": "test"})
@@ -291,7 +291,7 @@ class Admin(commands.Cog, name="관리자"):
     async def user_info(self, ctx: KkutbotContext, *, user: KkutbotUserConverter() = None):  # noqa
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
-            cmd_data = await read(None, 'commands')
+            cmd_data = await read(None, "commands")
             if "jisahku" not in cmd_data:
                 cmd_data["jishaku"] = 0
             for k, v in cmd_data.copy().items():
@@ -302,13 +302,13 @@ class Admin(commands.Cog, name="관리자"):
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted_data).items())):
                 await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             public_data = deepcopy(await read(user))
-            del public_data['commands']
-            del public_data['announcements']
+            del public_data["commands"]
+            del public_data["announcements"]
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
                 await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             return
 
-        if not (await read(user, 'registered')):
+        if not (await read(user, "registered")):
             return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())):
             await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
@@ -319,7 +319,7 @@ class Admin(commands.Cog, name="관리자"):
         if guild is None:
             guild = ctx.guild
 
-        if not (await self.bot.db.guild.find_one({'_id': guild.id})):
+        if not (await self.bot.db.guild.find_one({"_id": guild.id})):
             return await ctx.reply("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
         guild_data = await read(guild)
         guild_data["name"] = guild.name
@@ -329,13 +329,13 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
     async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: KkutbotUserConverter()):  # noqa
         """관리자 권한으로 포인트를 지급합니다."""
-        await add(user, 'points', amount)
+        await add(user, "points", amount)
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
     async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: KkutbotUserConverter()):  # noqa
         """관리자 권한으로 메달을 지급합니다."""
-        await add(user, 'medals', amount)
+        await add(user, "medals", amount)
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$정보수정", usage="ㄲ$정보수정 <id>")
@@ -364,7 +364,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
     async def delete_guilddata(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
         """서버의 데이터를 초기화합니다."""
-        if await self.bot.db.guild.find_one({'_id': guild.id}):
+        if await self.bot.db.guild.find_one({"_id": guild.id}):
             await delete(guild)
             await ctx.reply("{done} 완료!")
         else:
@@ -373,7 +373,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=["$탈퇴", "$나가기"])
     async def leave_guild(self, ctx: KkutbotContext, *, guild: discord.Guild):  # noqa
         """서버를 나갑니다."""
-        if await self.bot.db.guild.find_one({'_id': guild.id}):
+        if await self.bot.db.guild.find_one({"_id": guild.id}):
             await guild.leave()
             await delete(guild)
             await ctx.reply("{done} 완료!")
@@ -395,7 +395,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <기간(일)> <사유>", aliases=("$정지",))
     async def ban_user(self, ctx: KkutbotContext, user: KkutbotUserConverter(), days: float = 1.0, *, reason: str = "없음"):  # noqa
         """유저를 이용 정지 처리합니다."""
-        if await read(user, 'banned.isbanned'):
+        if await read(user, "banned.isbanned"):
             return await ctx.reply("{denyed} 이미 차단된 유저입니다.")
         banned_since = time.time()
         await write(user, "banned", {"isbanned": True, "since": banned_since, "period": days, "reason": reason.lstrip()})
@@ -411,7 +411,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
     async def unban_user(self, ctx: KkutbotContext, *, user: KkutbotUserConverter()):  # noqa
         """유저의 이용 정지 처리를 해제합니다."""
-        if await read(user, 'banned.isbanned'):
+        if await read(user, "banned.isbanned"):
             await write(user, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
             await ctx.reply("{done} 완료!")
             await user.send("당신은 관리자에 의해 `끝봇 이용 정지` 처리가 해제되었습니다. 다음부터는 조심해주세요!")
@@ -438,19 +438,19 @@ class Admin(commands.Cog, name="관리자"):
 
     async def update_user_name(self, target: int):
         username = (self.bot.get_user(target) or await self.bot.fetch_user(target)).name
-        await write(target, 'name', username)
+        await write(target, "name", username)
 
     @staticmethod
     async def update_game_winrate(target: int):
-        for gamemode in config('modelist').values():
-            if (await read(target, f'game.{gamemode}.winrate')) != (winrate := await get_winrate(target, gamemode)):
-                await write(target, f'game.{gamemode}.winrate', winrate)
+        for gamemode in config("modelist").values():
+            if (await read(target, f"game.{gamemode}.winrate")) != (winrate := await get_winrate(target, gamemode)):
+                await write(target, f"game.{gamemode}.winrate", winrate)
 
     @staticmethod
     async def update_game_tier(target: int):
         for gamemode in ("rank_solo", "rank_online"):
-            if (await read(target, f'game.{gamemode}.tier')) != (tier := await get_tier(target, gamemode, emoji=False)):
-                await write(target, f'game.{gamemode}.tier', tier)
+            if (await read(target, f"game.{gamemode}.tier")) != (tier := await get_tier(target, gamemode, emoji=False)):
+                await write(target, f"game.{gamemode}.tier", tier)
 
     @commands.command(name="$캐시", usage="ㄲ$캐시")
     async def add_user_cache(self, ctx: KkutbotContext):
@@ -458,15 +458,15 @@ class Admin(commands.Cog, name="관리자"):
         users = await self.bot.db.user.count_documents({"name": None})
         msg = await ctx.send(f"이름 캐싱 진행중... (`0`/`{users}`)")
         for n, target in enumerate(await self.bot.db.user.find({"name": None})):
-            await self.update_user_name(target['_id'])
+            await self.update_user_name(target["_id"])
             await msg.edit(content=f"이름 캐싱 진행중... (`{n + 1}`/`{users}`)")
         await ctx.reply("{done} 이름 캐싱 완료!")
 
         users = await self.bot.db.user.count_documents({})
         msg = await ctx.send(f"게임 데이터 캐싱 진행중... (`0`/`{users}`)")
         for n, target in enumerate(await self.bot.db.user.find()):
-            await self.update_game_winrate(target['_id'])
-            await self.update_game_tier(target['_id'])
+            await self.update_game_winrate(target["_id"])
+            await self.update_game_tier(target["_id"])
             await msg.edit(content=f"진행중... (`{n + 1}`/`{users}`)")
         await ctx.reply("{done} 게임 데이터 캐싱 완료!")
 
@@ -475,15 +475,15 @@ class Admin(commands.Cog, name="관리자"):
         """미사용 유저들을 정리합니다."""
         cleaned = 0
         deleted = 0
-        if delete_data == 'y':
+        if delete_data == "y":
             deleted = await self.bot.db.unused.count_documents()
             await self.bot.db.unused.drop()
         async for user in self.bot.db.user.find({
-            'latest_usage': {'$lt': time.time() - 86400 * days},
-            'command_used': {'$lt': command_usage}
+            "latest_usage": {"$lt": time.time() - 86400 * days},
+            "command_used": {"$lt": command_usage}
         }):
             await self.bot.db.unused.insert_one(user)
-            await self.bot.db.user.delete_one({"_id": user['_id']})
+            await self.bot.db.user.delete_one({"_id": user["_id"]})
             cleaned += 1
         await ctx.reply(f"{{done}} `{cleaned}`명 데이터 보존 처리, `{deleted}`명 데이터 삭제 완료!")
 

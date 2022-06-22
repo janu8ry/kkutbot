@@ -11,10 +11,10 @@ from tools.db import read
 
 from .config import config  # noqa
 
-with open('static/wordlist.json', 'r', encoding="utf-8") as f:
+with open("static/wordlist.json", "r", encoding="utf-8") as f:
     wordlist = json.load(f)
 
-with open('static/transition.json', 'r', encoding="utf-8") as f:
+with open("static/transition.json", "r", encoding="utf-8") as f:
     transition = json.load(f)
 
 
@@ -43,11 +43,11 @@ def get_date(timestamp: Optional[float], from_utc: bool = False) -> str:
 
 
 def get_timestamp(date: str) -> int:
-    return int(time.mktime(datetime.strptime(date, '%Y-%m-%d').timetuple()))
+    return int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple()))
 
 
 def is_admin(ctx: commands.Context) -> bool:
-    return ctx.author.id in config('admin')
+    return ctx.author.id in config("admin")
 
 
 def split_string(n: str, unit=2000, t="\n") -> tuple:
@@ -63,8 +63,8 @@ def split_string(n: str, unit=2000, t="\n") -> tuple:
 
 
 async def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
-    game_times = await read(target, f'game.{mode}.times')
-    game_win_times = await read(target, f'game.{mode}.win')
+    game_times = await read(target, f"game.{mode}.times")
+    game_win_times = await read(target, f"game.{mode}.win")
     if 0 in (game_times, game_win_times):
         return 0
     else:
@@ -75,8 +75,8 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
     if mode not in ("rank_solo", "rank_online"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
-    for k, v in config('tierlist').items():
-        if (await read(target, 'points')) >= v['points'] and (await get_winrate(target, mode)) >= v['winrate'] and (await read(target, f'game.{mode}.times')) >= v['times']:
+    for k, v in config("tierlist").items():
+        if (await read(target, "points")) >= v["points"] and (await get_winrate(target, mode)) >= v["winrate"] and (await read(target, f"game.{mode}.times")) >= v["times"]:
             tier = f"{k} {v['emoji']}"
         else:
             break

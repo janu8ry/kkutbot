@@ -24,8 +24,8 @@ class GameBase:
         self.begin_time = time.time()
 
     async def alert_tier_change(self, player: discord.User, tier: str, tier_past: str) -> discord.Message:
-        tierlist = list(config('tierlist').keys())
-        emojis = [data["emoji"] for data in config('tierlist').values()]
+        tierlist = list(config("tierlist").keys())
+        emojis = [data["emoji"] for data in config("tierlist").values()]
         if tierlist.index(tier) > tierlist.index(tier_past):
             embed = discord.Embed(
                 title="{tier} 티어 승급!",
@@ -41,7 +41,7 @@ class GameBase:
                             f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
                 color=config("colors.error")
             )
-            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config('emojis.leveldown')).url)
+            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config("emojis.leveldown")).url)
         return await self.ctx.send(player.mention, embed=embed, mention_author=True)
 
 
@@ -70,24 +70,24 @@ class SoloGame(GameBase):
                 return await self.ctx.send(f"{_msg.author.mention}님, {desc}", embed=embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time))
 
     async def game_end(self, result: Literal["승리", "패배", "포기"]):
-        mode = 'kkd' if self.kkd else 'rank_solo'
+        mode = "kkd" if self.kkd else "rank_solo"
 
         if result == "승리":
             self.score += 10
             points = self.score * 5 if self.kkd else self.score * 3
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
-            color = config('colors.general')
+            color = config("colors.general")
             emoji = "win"
-            await add(self.player, f'game.{mode}.win', 1)
+            await add(self.player, f"game.{mode}.win", 1)
         elif result == "패배":
             points = -30
             desc = f"대답시간이 {15 if self.kkd else 10}초를 초과했습니다..."
-            color = config('colors.error')
+            color = config("colors.error")
             emoji = "gameover"
         elif result == "포기":
             points = -30
             desc = "게임을 포기했습니다."
-            color = config('colors.error')
+            color = config("colors.error")
             emoji = "surrender"
         else:
             raise commands.BadArgument
@@ -104,16 +104,16 @@ class SoloGame(GameBase):
             else:
                 embed.add_field(name="🔹 가능했던 단어", value=f"`{self.bot_word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.reply(embed=embed, mention_author=True)
-        await add(self.player, 'points', points)
-        await add(self.player, f'game.{mode}.times', 1)
-        if self.score > await read(self.player, f'game.{mode}.best'):
-            await write(self.player, f'game.{mode}.best', self.score)
+        await add(self.player, "points", points)
+        await add(self.player, f"game.{mode}.times", 1)
+        if self.score > await read(self.player, f"game.{mode}.best"):
+            await write(self.player, f"game.{mode}.best", self.score)
         if mode == "rank_solo":
             tier = await get_tier(self.player, "rank_solo", emoji=False)
-            if (tier_past := await read(self.player, 'game.rank_solo.tier')) != tier:
-                await write(self.player, 'game.rank_solo.tier', tier)
+            if (tier_past := await read(self.player, "game.rank_solo.tier")) != tier:
+                await write(self.player, "game.rank_solo.tier", tier)
                 await self.alert_tier_change(self.player, tier, tier_past)
-        await write(self.player, f'game.{mode}.winrate', await get_winrate(self.player, mode))
+        await write(self.player, f"game.{mode}.winrate", await get_winrate(self.player, mode))
 
 
 class MultiGame(GameBase):
@@ -153,7 +153,7 @@ class MultiGame(GameBase):
                                           f"호스트 {self.host.mention} 님은 `게임 시작` 버튼을 클릭하여 게임을 시작할 수 있습니다.",
                               color=config('colors.general'))
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/5)",
-                        value="`" + '`\n`'.join([str(_x) for _x in self.players]) + "`")
+                        value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View = None):
@@ -176,7 +176,7 @@ class MultiGame(GameBase):
         return embed
 
     async def player_out(self, gg=False):
-        embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config('colors.error'))
+        embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config("colors.error"))
         embed.set_thumbnail(url=self.ctx.bot.get_emoji(config(f"emojis.{'surrender' if gg else 'dead'}")).url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
@@ -201,15 +201,15 @@ class MultiGame(GameBase):
         for n, kv in enumerate(rank):
             if n < len(rank) - 1:
                 desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")
-                await add(kv[0], 'points', int(rank[n + 1][1]) * 2)
-                await add(kv[0], 'game.guild_multi.times', 1)
-                await write(kv[0], 'last_command', time.time())
-                if int(rank[n + 1][1]) > await read(kv[0], 'game.guild_multi.best'):
-                    await write(kv[0], 'game.guild_multi.best', self.score)
+                await add(kv[0], "points", int(rank[n + 1][1]) * 2)
+                await add(kv[0], "game.guild_multi.times", 1)
+                await write(kv[0], "last_command", time.time())
+                if int(rank[n + 1][1]) > await read(kv[0], "game.guild_multi.best"):
+                    await write(kv[0], "game.guild_multi.best", self.score)
                 if (n + 1) <= round((len(rank) - 1) / 2):
-                    await add(kv[0], 'game.guild_multi.win', 1)
-                await write(kv[0], 'game.guild_multi.winrate', await get_winrate(kv[0], "guild_multi"))
-        embed = discord.Embed(title="📔 게임 종료!", description="\n".join(desc), color=config('colors.general'))
+                    await add(kv[0], "game.guild_multi.win", 1)
+                await write(kv[0], "game.guild_multi.winrate", await get_winrate(kv[0], "guild_multi"))
+        embed = discord.Embed(title="📔 게임 종료!", description="\n".join(desc), color=config("colors.general"))
         embed.set_thumbnail(url=self.ctx.bot.get_emoji(config("emojis.gameover")).url)
         await self.ctx.send(embed=embed)
         Game.guild_multi_games.remove(self.ctx.channel.id)
@@ -221,7 +221,7 @@ class MultiGame(GameBase):
         embed = discord.Embed(
             title=self.word,
             description=f"<t:{round(10 + self.begin_time)}:R>까지 `{'` 또는 `'.join(du_word)}` (으)로 시작하는 단어를 이어주세요.",
-            color=config('colors.general')
+            color=config("colors.general")
         )
         return await self.msg.channel.send(f"{self.now_player.mention}님, {desc}", embed=embed, delete_after=10 - (time.time() - self.begin_time))
 
@@ -387,16 +387,16 @@ class Game(commands.Cog, name="게임"):
         def check(x: Union[discord.Message, KkutbotContext]) -> bool:
             return x.author == ctx.author and x.channel == ctx.channel
 
-        if (await read(ctx.author, 'points')) <= 30:
+        if (await read(ctx.author, "points")) <= 30:
             return await ctx.reply("{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
                                    "`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
 
         if mode is None:
-            embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config('colors.general'))
+            embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config("colors.general"))
             embed.add_field(name=":one:", value="- 솔로 랭킹전", inline=False)
             embed.add_field(name=":two:", value="- 서버원들과 친선전", inline=False)
             embed.add_field(name=":three:", value="- 쿵쿵따", inline=False)
-            embed.set_footer(text="'ㄲ도움 끝말잇기' 로 더 자세한 도움말을 확인해 보세요!")
+            embed.set_footer(text="'ㄲ도움' 으로 더 자세한 도움말을 확인해 보세요!")
             view = SelectMode(ctx)
             view.message = await ctx.reply(embed=embed, view=view)
             await view.wait()
@@ -409,7 +409,7 @@ class Game(commands.Cog, name="게임"):
             await game.send_info_embed(ctx)
             while True:
                 try:
-                    msg = await self.bot.wait_for('message', check=check, timeout=10.0 - (time.time() - game.begin_time))
+                    msg = await self.bot.wait_for("message", check=check, timeout=10.0 - (time.time() - game.begin_time))
                     user_word = msg.content
                 except asyncio.TimeoutError:
                     await game.game_end("패배")
@@ -477,7 +477,11 @@ class Game(commands.Cog, name="게임"):
             await game.send_info_embed()
             while True:
                 try:
-                    m = await self.bot.wait_for('message', check=lambda _x: _x.author in game.players and _x.channel == ctx.channel and game.alive[game.turn % len(game.alive)] == _x.author, timeout=10.0 - (time.time() - game.begin_time))
+                    m = await self.bot.wait_for(
+                        "message",
+                        check=lambda _x: _x.author in game.players and _x.channel == ctx.channel and game.alive[game.turn % len(game.alive)] == _x.author,
+                        timeout=10.0 - (time.time() - game.begin_time)
+                    )
                     user_word = m.content
                 except asyncio.TimeoutError:
                     await game.player_out()
@@ -538,7 +542,7 @@ class Game(commands.Cog, name="게임"):
             await game.send_info_embed(ctx)
             while True:
                 try:
-                    msg = await self.bot.wait_for('message', check=check, timeout=15.0 - (time.time() - game.begin_time))
+                    msg = await self.bot.wait_for("message", check=check, timeout=15.0 - (time.time() - game.begin_time))
                     user_word = msg.content
                 except asyncio.TimeoutError:
                     await game.game_end("패배")

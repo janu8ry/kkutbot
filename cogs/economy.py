@@ -26,18 +26,18 @@ class Economy(commands.Cog, name="경제"):
         """[한국 디스코드 리스트](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 포인트를 받습니다.
         하루에 한번씩만 수령 가능합니다.
         """
-        await write(ctx.author, 'alerts.reward', True)
+        await write(ctx.author, "alerts.reward", True)
         if await self.bot.if_koreanbots_voted(ctx.author):
-            if (today := datetime.today().toordinal()) != (await read(ctx.author, 'latest_reward')):
+            if (today := datetime.today().toordinal()) != (await read(ctx.author, "latest_reward")):
                 points = random.randint(50, 150)
-                await add(ctx.author, 'points', points)
+                await add(ctx.author, "points", points)
                 embed = discord.Embed(
                     title="포인트 수령 성공!",
                     description=f"+{points} {{points}} 를 받았습니다!",
                     color=config("colors.help")
                 )
-                embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
-                await write(ctx.author, 'latest_reward', today)
+                embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.bonus")).url)
+                await write(ctx.author, "latest_reward", today)
                 await add(None, "reward", 1)
                 await ctx.reply(embed=embed)
             else:
@@ -48,10 +48,9 @@ class Economy(commands.Cog, name="경제"):
                 await ctx.reply(embed=embed)
         else:
             embed = discord.Embed(
-                description="{denyed} "
-                            "한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n"
+                description="{denyed} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n"
                             "반영까지 1-2분 정도 소요될 수 있습니다.",
-                color=config('colors.error')
+                color=config("colors.error")
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())
 
@@ -62,10 +61,10 @@ class Economy(commands.Cog, name="경제"):
         """출석체크를 하고 100포인트를 획득합니다.
         일주일동안 매일 출석하면 일요일 출석시 추가 보상을 받을 수 있습니다!
         """
-        await write(ctx.author, 'alerts.attendance', True)
+        await write(ctx.author, "alerts.attendance", True)
         bonus = False
         week_daily = []
-        week_data = await read(ctx.author, 'attendance')
+        week_data = await read(ctx.author, "attendance")
         del week_data["times"]
         today = datetime.today().toordinal()
         week_today = time.localtime().tm_wday
@@ -73,19 +72,19 @@ class Economy(commands.Cog, name="경제"):
             msg = "{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."
             success = False
         else:
-            await add(ctx.author, 'points', 100)
-            await add(ctx.author, 'attendance.times', 1)
-            await write(ctx.author, f'attendance.{week_today}', today)
-            await add(None, 'attendance', 1)
+            await add(ctx.author, "points", 100)
+            await add(ctx.author, "attendance.times", 1)
+            await write(ctx.author, f"attendance.{week_today}", today)
+            await add(None, "attendance", 1)
             msg = "+`100` {points} 를 받았습니다!"
             success = True
-            week_data = await read(ctx.author, 'attendance')
+            week_data = await read(ctx.author, "attendance")
             del week_data["times"]
             if (week_today == 6) and (list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]):
                 bonus_point = random.randint(100, 200)
                 bonus_medal = random.randint(1, 5)
-                await add(ctx.author, 'points', bonus_point)
-                await add(ctx.author, 'medals', bonus_medal)
+                await add(ctx.author, "points", bonus_point)
+                await add(ctx.author, "medals", bonus_medal)
                 bonus = True
 
         for i in range(week_today + 1):
@@ -100,10 +99,10 @@ class Economy(commands.Cog, name="경제"):
             description=f"{msg}",
             color=config(f"colors.{'help' if success else 'error'}")
         )
-        embed.add_field(name="주간 출석 현황", value=' '.join(week_daily))
+        embed.add_field(name="주간 출석 현황", value=" ".join(week_daily))
         if success:
             embed.title = "출석 완료!"
-            embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.attendance')).url)
+            embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.attendance")).url)
             embed.set_footer(text="일주일 동안 매일 출석하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)
         if bonus:
@@ -113,7 +112,7 @@ class Economy(commands.Cog, name="경제"):
                 color=config("colors.help")
             )
             bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")  # noqa
-            bonus_embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.bonus')).url)
+            bonus_embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.bonus")).url)
             await ctx.reply(embed=bonus_embed)
 
     @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
@@ -125,11 +124,11 @@ class Economy(commands.Cog, name="경제"):
         embed = discord.Embed(
             title="데일리 퀘스트",
             description="끝봇을 사용하며 퀘스트를 클리어하고, 보상을 획득하세요!",
-            color=config('colors.help')
+            color=config("colors.help")
         )
-        for data, info in (await read(None, 'quests')).items():
-            current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f'quest.cache.{data}')
-            if data in await read(ctx.author, 'quest.status.completed'):
+        for data, info in (await read(None, "quests")).items():
+            current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f"quest.cache.{data}")
+            if data in await read(ctx.author, "quest.status.completed"):
                 desc = "이 퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"
             else:
@@ -140,7 +139,7 @@ class Economy(commands.Cog, name="경제"):
                 value=desc,
                 inline=False
             )
-        embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.quest')).url)
+        embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.quest")).url)
         embed.set_footer(text="모든 퀘스트를 완료하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)
 

@@ -17,15 +17,15 @@ class RankDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.categories = {
-            "general": {"포인트": 'points', "메달": 'medals', "출석": 'attendance.times', "명령어": 'command_used'},
-            "game": {"솔로": 'rank_solo', "쿵쿵따": 'kkd'},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
+            "general": {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"},
+            "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"]  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
         self.query = {
-            'banned.isbanned': False,
-            '_id': {
-                '$nin': config('bot_whitelist'),
-                '$ne': self.ctx.bot.owner_id
+            "banned.isbanned": False,
+            "_id": {
+                "$nin": config("bot_whitelist"),
+                "$ne": self.ctx.bot.owner_id
             }
         }
         options = [
@@ -38,7 +38,7 @@ class RankDropdown(discord.ui.Select):
         ]
         for category in self.categories["general"] | self.categories["game"]:
             option = discord.SelectOption(
-                label=category if category in self.categories['general'] else f"끝말잇기 - {category}",
+                label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드' }의 랭킹을 확인합니다.",
                 emoji="<:ranking:985439871004995634>"
@@ -48,11 +48,11 @@ class RankDropdown(discord.ui.Select):
 
     async def get_user_name(self, user_id: int) -> str:
         user = self.ctx.bot.get_user(user_id)
-        if hasattr(user, 'name'):
+        if hasattr(user, "name"):
             username = user.name
         else:
-            if await read(user_id, 'name'):
-                username = await read(user_id, 'name')
+            if await read(user_id, "name"):
+                username = await read(user_id, "name")
             else:
                 username = (await self.ctx.bot.fetch_user(user_id)).name
         if len(username) >= 15:
@@ -61,16 +61,16 @@ class RankDropdown(discord.ui.Select):
 
     async def format_rank(self, rank: AsyncIOMotorCursor, query: str) -> list:
         rank = await rank.to_list(None)
-        names = await asyncio.gather(*[self.get_user_name(i['_id']) for i in rank])
+        names = await asyncio.gather(*[self.get_user_name(i["_id"]) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
     async def get_overall_rank(self):
-        embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config('colors.help'))
+        embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config("colors.help"))
         coros = []
         for path in self.categories["main"]:
             if path in self.categories["general"]:
                 coros.append(
-                    self.format_rank(self.ctx.bot.db.user.find(self.query).sort(self.categories['general'][path], -1).limit(5), self.categories['general'][path]),
+                    self.format_rank(self.ctx.bot.db.user.find(self.query).sort(self.categories["general"][path], -1).limit(5), self.categories["general"][path]),
                 )
             else:
                 game_query = self.query.copy()
@@ -105,11 +105,11 @@ class RankDropdown(discord.ui.Select):
             embed = discord.Embed(
                 title=f"{{ranking}} 랭킹 top 15 | {self.values[0]}",
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
-                color=config('colors.help')
+                color=config("colors.help")
             )
         else:
             self.query[f"game.{self.categories['game'][category]}.times"] = {"$gte": 50}
-            embed = discord.Embed(title=f"{{ranking}} 랭킹 top 15 | 끝말잇기 - {category} 모드", color=config('colors.help'))
+            embed = discord.Embed(title=f"{{ranking}} 랭킹 top 15 | 끝말잇기 - {category} 모드", color=config("colors.help"))
             coros = []
             for path in ("win", "best", "winrate"):
                 full_path = f"game.{self.categories['game'][category]}.{path}"
@@ -156,14 +156,14 @@ class Social(commands.Cog, name="소셜"):
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다."""
-        mails = sorted(await read(ctx.author, 'mails') + await read(None, 'announcements'), key=lambda item: item["time"], reverse=True)
+        mails = sorted(await read(ctx.author, "mails") + await read(None, "announcements"), key=lambda item: item["time"], reverse=True)
         pages = []
         if mails:
             for mail in mails:
                 embed = discord.Embed(title=f"{{email}} {ctx.author.name} 님의 메일함", color=config("colors.help"))
                 embed.add_field(
                     name=f"🔹 {mail['title']} - `{time_convert(time.time() - mail['time'])} 전`",
-                    value=mail['value'],
+                    value=mail["value"],
                     inline=False
                 )
                 pages.append(embed)
@@ -174,8 +174,8 @@ class Social(commands.Cog, name="소셜"):
                     color=config("colors.help")
                 )
             pages.append(embed)
-        await write(ctx.author, 'alerts.mails', True)
-        await write(ctx.author, 'alerts.announcements', True)
+        await write(ctx.author, "alerts.mails", True)
+        await write(ctx.author, "alerts.announcements", True)
         paginator = Paginator(ctx, pages=pages)
         await paginator.run()
 

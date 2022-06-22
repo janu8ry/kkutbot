@@ -83,7 +83,7 @@ def _get_id(target: TargetObject) -> Union[int, str]:
         target's id
     """
     if target:
-        return getattr(target, 'id', target)
+        return getattr(target, "id", target)
     else:
         return "general"
 
@@ -102,7 +102,7 @@ def _get_name(target: TargetObject) -> str:
     int
         target's name
     """
-    return getattr(target, 'name', None)
+    return getattr(target, "name", None)
 
 
 async def read(target: TargetObject, path: Optional[str] = None) -> Any:
@@ -123,7 +123,7 @@ async def read(target: TargetObject, path: Optional[str] = None) -> Any:
     """
     if target:
         collection = get_collection(target)
-        main_data = await collection.find_one({'_id': _get_id(target)})
+        main_data = await collection.find_one({"_id": _get_id(target)})
         if not main_data:
             if collection.name == "user":
                 main_data = deepcopy(config("default_data.user"))
@@ -227,9 +227,9 @@ async def append(target: TargetObject, path: str, value):
     """
     collection = get_collection(target)
     await collection.update_one(
-        {'_id': _get_id(target)},
+        {"_id": _get_id(target)},
         {
-            '$push': {
+            "$push": {
                 path: value
             }
         }
