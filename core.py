@@ -80,10 +80,7 @@ intents.message_content = True
 
 
 class Kkutbot(commands.AutoShardedBot):
-    __version__ = "2.0.0-alpha"
     __slots__ = ("koreanbots", "koreanbots_api", "dbl", "db", "scheduler", "started_at")
-    description = "끝봇은 끝말잇기가 주 기능인 인증된 디스코드 봇입니다."
-    version_info = "개발중"
 
     def __init__(self):
         super().__init__(
