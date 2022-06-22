@@ -16,6 +16,7 @@ from topgg import DBLClient
 from tools.config import config
 from tools.db import db, write
 from tools.utils import get_date
+from tools.logger import stream_handler
 
 logger = logging.getLogger("kkutbot")
 
@@ -116,7 +117,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.start()
 
     def run_bot(self):
-        super().run(config(f"token.{'test' if config('test') else 'main'}"))
+        super().run(config(f"token.{'test' if config('test') else 'main'}"), log_handler=stream_handler, log_level=logging.DEBUG)
 
     async def try_reload(self, name: str):
         name = f"cogs.{name}"

@@ -21,12 +21,7 @@ def namer(_) -> str:
     return os.path.join("logs", time.strftime("%Y-%m-%d") + ".log")
 
 
-def setup_logger():
-    if "logs" not in os.listdir():
-        os.mkdir("logs")
-    logger = logging.getLogger("kkutbot")
-    logger.setLevel(logging.DEBUG)
-    console = Console(
+console = Console(
         theme=Theme(
             {
                 "logging.level.command": "green",
@@ -35,8 +30,15 @@ def setup_logger():
             }
         )
     )
+stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
 
-    stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
+
+def setup_logger():
+    if "logs" not in os.listdir():
+        os.mkdir("logs")
+    logger = logging.getLogger("kkutbot")
+    logger.setLevel(logging.DEBUG)
+
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG + 3)
 
@@ -77,9 +79,5 @@ def setup_logger():
         self.log(logging.DEBUG + 4, msg, *args, **kwargs)
 
     logging.Logger.leave = leave
-
-    dpy_logger = logging.getLogger("discord")
-    dpy_logger.addHandler(stream_handler)
-    dpy_logger.setLevel(logging.DEBUG)
 
     logger.info("로깅 설정 완료!")
