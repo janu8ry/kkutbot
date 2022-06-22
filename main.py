@@ -40,23 +40,23 @@ async def on_shard_ready(shard_id):
 
 
 async def before_command(ctx: core.KkutbotContext):
-    await add(ctx.author, 'command_used', 1)
-    await write(ctx.author, 'latest_usage', round(time.time()))
+    await add(ctx.author, "command_used", 1)
+    await write(ctx.author, "latest_usage", round(time.time()))
 
     if ctx.guild:
-        await write(ctx.guild, 'latest_usage', round(time.time()))
-        await add(ctx.guild, 'command_used', 1)
+        await write(ctx.guild, "latest_usage", round(time.time()))
+        await add(ctx.guild, "command_used", 1)
 
-    await add(None, 'command_used', 1)
-    await write(None, 'latest_usage', round(time.time()))
+    await add(None, "command_used", 1)
+    await write(None, "latest_usage", round(time.time()))
     await add(None, f"commands.{ctx.command.qualified_name.replace('$', '_')}", 1)
 
-    if (await read(ctx.author, 'quest.status.date')) != (today := datetime.today().toordinal()):
-        await write(ctx.author, 'quest.status', {'date': today, 'completed': []})
+    if (await read(ctx.author, "quest.status.date")) != (today := datetime.today().toordinal()):
+        await write(ctx.author, "quest.status", {"date": today, "completed": []})
         cache = {}
-        for data in (await read(None, 'quests')).keys():
+        for data in (await read(None, "quests")).keys():
             cache[data] = await read(ctx.author, data.replace("/", "."))
-        await write(ctx.author, 'quest.cache', cache)
+        await write(ctx.author, "quest.cache", cache)
 
     if isinstance(ctx.channel, discord.DMChannel):
         logger.command(
@@ -70,8 +70,8 @@ async def before_command(ctx: core.KkutbotContext):
 
 @bot.event
 async def on_message(message: discord.Message):
-    is_banned = await read(message.author, 'banned.isbanned')
-    is_bot = message.author.bot and (message.author.id not in config('bot_whitelist'))
+    is_banned = await read(message.author, "banned.isbanned")
+    is_bot = message.author.bot and (message.author.id not in config("bot_whitelist"))
 
     if is_banned:
         banned_since = await read(message.author, "banned.since")
@@ -95,26 +95,26 @@ async def on_message(message: discord.Message):
 @bot.event
 async def on_command_completion(ctx: core.KkutbotContext):
     desc = ""
-    for data, info in (await read(None, 'quests')).items():
-        current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f'quest.cache.{data}'))
+    for data, info in (await read(None, "quests")).items():
+        current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f"quest.cache.{data}"))
         if current < 0:
-            await write(ctx.author, f'quest.cache.{data}', await read(ctx.author, data.replace("/", ".")))
-        elif (current >= info['target']) and (data not in await read(ctx.author, 'quest.status.completed')):
-            await add(ctx.author, info['reward'][1], info['reward'][0])
-            await append(ctx.author, 'quest.status.completed', data)
+            await write(ctx.author, f"quest.cache.{data}", await read(ctx.author, data.replace("/", ".")))
+        elif (current >= info["target"]) and (data not in await read(ctx.author, "quest.status.completed")):
+            await add(ctx.author, info["reward"][1], info["reward"][0])
+            await append(ctx.author, "quest.status.completed", data)
             await add(ctx.author, "quest.total", 1)
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
         embed = discord.Embed(
             title="퀘스트 클리어!",
             description=desc,
-            color=config('colors.help')
+            color=config("colors.help")
         )
-        embed.set_thumbnail(url=bot.get_emoji(config('emojis.congrats')).url)
+        embed.set_thumbnail(url=bot.get_emoji(config("emojis.congrats")).url)
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
-        if len(await read(ctx.author, 'quest.status.completed')) == 3:
+        if len(await read(ctx.author, "quest.status.completed")) == 3:
             bonus_embed = discord.Embed(
                 title="보너스 보상",
                 description="오늘의 퀘스트를 모두 완료했습니다!",
@@ -122,10 +122,10 @@ async def on_command_completion(ctx: core.KkutbotContext):
             )
             bonus_point = random.randint(100, 200)
             bonus_medal = random.randint(1, 5)
-            await add(ctx.author, 'points', bonus_point)
-            await add(ctx.author, 'medals', bonus_medal)
+            await add(ctx.author, "points", bonus_point)
+            await add(ctx.author, "medals", bonus_medal)
             bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
-            bonus_embed.set_thumbnail(url=bot.get_emoji(config('emojis.bonus')).url)
+            bonus_embed.set_thumbnail(url=bot.get_emoji(config("emojis.bonus")).url)
             await ctx.reply(embed=bonus_embed)
 
     alert_message = []
@@ -136,9 +136,9 @@ async def on_command_completion(ctx: core.KkutbotContext):
         "announcements": "읽지 않은 공지가 있습니다.\n`ㄲ메일`을 입력하여 읽지 않은 공지를 확인해 보세요!"
     }
     for path, msg in alerts.items():
-        if not (await read(ctx.author, f'alerts.{path}')):
+        if not (await read(ctx.author, f"alerts.{path}")):
             alert_message.append(msg)
-            await write(ctx.author, f'alerts.{path}', True)
+            await write(ctx.author, f"alerts.{path}", True)
     if alert_message:
         await ctx.reply("\n\n".join(alert_message), mention_author=True)
 
@@ -151,7 +151,7 @@ async def check(ctx: core.KkutbotContext) -> bool:
                 title="오류",
                 description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"
                             f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
-                color=config('colors.error')
+                color=config("colors.error")
             )
             await ctx.author.send(embed=embed)
         except discord.Forbidden:
@@ -195,12 +195,12 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
     elif isinstance(error, commands.errors.DisabledCommand):
         await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
     elif isinstance(error, commands.errors.CommandOnCooldown):
-        if ctx.author.id in config('admin'):
+        if ctx.author.id in config("admin"):
             return await ctx.reinvoke()
         embed = discord.Embed(
             title="잠깐!",
             description=f"<t:{time.time() + round(error.retry_after, 1)}:R>에 다시 시도해 주세요.",
-            color=config('colors.error')
+            color=config("colors.error")
         )
         embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         await ctx.reply(embed=embed)
@@ -208,13 +208,13 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
-            color=config('colors.general')
+            color=config("colors.general")
         )
         embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.errors.MaxConcurrencyReached):
-        if ctx.author.id in config('admin'):
+        if ctx.author.id in config("admin"):
             return await ctx.reinvoke()
         if error.per == commands.BucketType.guild:
             await ctx.reply(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다.")
@@ -241,22 +241,18 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
-    await write(guild, 'invited', time.time())
+    await write(guild, "invited", time.time())
     logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
-    announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))['send_messages']][0]
+    announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))["send_messages"]][0]
     embed = discord.Embed(
-        description=f"""
-**끝봇**을 서버에 초대해 주셔서 감사합니다!
-끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.
-- **ㄲ도움**을 입력하여 끝봇의 도움말을 확인해 보세요!
-- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면
-  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!
-  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.
-
-
-끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.
-""",
-        color=config('colors.general')
+        description=f"**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
+                    "끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.\n"
+                    "- **ㄲ도움**을 입력하여 끝봇의 도움말을 확인해 보세요!\n"
+                    "- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면\n"
+                    "  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!\n"
+                    "  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.\n\n"
+                    "끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.",
+        color=config("colors.general")
     )
     try:
         await announce.send(embed=embed, view=ServerInvite())
@@ -284,7 +280,7 @@ async def on_guild_join(guild: discord.Guild):
         embed = discord.Embed(
             title="권한이 부족합니다.",
             description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
-            color=config('colors.error'))
+            color=config("colors.error"))
         embed.add_field(
             name="더 필요한 권한 목록",
             value=f"`{'`, `'.join([config('perms')[p] for p in missing_perms])}`"
