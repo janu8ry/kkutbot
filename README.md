@@ -2,7 +2,7 @@
 [![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/703956235900420226)
 [![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226)
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
-[![python](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/)
+[![python](https://img.shields.io/badge/python-3.9-blue)](https://www.python.org/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6716eb15f92f4bb29c3da2f09d8e2483)](https://www.codacy.com/gh/janu8ry/kkutbot/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=janu8ry/kkutbot&amp;utm_campaign=Badge_Grade)
 [![DeepSource](https://deepsource.io/gh/janu8ry/kkutbot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janu8ry/kkutbot/?ref=repository-badge)
 
@@ -20,7 +20,7 @@
 - 개발 언어: python 3.9.13 ([discord.py 2.0](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 2.0.0 alpha
 - 데이터베이스: mongoDB  
-- 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826``님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#9999``님께 감사드립니다!
+- 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826``님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#1475``님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
 
