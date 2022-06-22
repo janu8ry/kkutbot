@@ -4,7 +4,8 @@ version: "3.9"
 
 services:
   kkutbot:
-    build: .
+    build:
+      context: .
     image: kkutbot:latest
     restart: always
     container_name: "kkutbot"
