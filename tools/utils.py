@@ -106,11 +106,11 @@ def choose_first_word(kkd: bool = False) -> str:
     return bot_word
 
 
-def is_hanbang(word: str, kkd: bool = False) -> bool:
+def is_hanbang(word: str, used_words: list, kkd: bool = False) -> bool:
     if kkd:
         words = [w for w in get_word(word) if len(w) == 3]
     else:
         words = get_word(word)
-    if not words:
+    if not [w for w in words if w not in used_words]:
         return True
     return False

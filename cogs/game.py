@@ -430,7 +430,7 @@ class Game(commands.Cog, name="게임"):
                         await game.send_info_embed(msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력해 주세요.")
                         continue
                     elif user_word in get_word(game.bot_word):
-                        if (game.score == 0) and is_hanbang(user_word):
+                        if (game.score == 0) and is_hanbang(user_word, game.used_words):
                             await game.send_info_embed(msg, "첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
@@ -448,7 +448,7 @@ class Game(commands.Cog, name="게임"):
                     game.used_words.append(game.bot_word)
                     game.begin_time = time.time()
                     game.score += 1
-                    if is_hanbang(game.bot_word):
+                    if is_hanbang(game.bot_word, game.used_words):
                         await game.game_end("패배")
                         return
                     else:
@@ -513,7 +513,7 @@ class Game(commands.Cog, name="게임"):
                         await game.send_info_embed(f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요.")
                         continue
                     elif user_word in get_word(game.word):
-                        if ((game.turn // len(game.alive)) == 0) and is_hanbang(user_word):
+                        if ((game.turn // len(game.alive)) == 0) and is_hanbang(user_word, game.used_words):
                             await game.send_info_embed("첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
@@ -523,7 +523,7 @@ class Game(commands.Cog, name="게임"):
                             game.score += 1
                             await game.update_embed(game.game_embed())
                             game.begin_time = time.time()
-                            if is_hanbang(game.word):
+                            if is_hanbang(game.word, game.used_words):
                                 await game.player_out()
                                 if len(game.players) - len(game.final_score) == 1:
                                     await game.game_end()
@@ -584,7 +584,7 @@ class Game(commands.Cog, name="게임"):
                     game.used_words.append(game.bot_word)
                     game.begin_time = time.time()
                     game.score += 1
-                    if is_hanbang(game.bot_word, kkd=True):
+                    if is_hanbang(game.bot_word, game.used_words, kkd=True):
                         await game.game_end("패배")
                         return
                     else:
