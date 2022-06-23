@@ -199,7 +199,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             return await ctx.reinvoke()
         embed = discord.Embed(
             title="잠깐!",
-            description=f"<t:{time.time() + round(error.retry_after, 1)}:R>에 다시 시도해 주세요.",
+            description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.",
             color=config("colors.error")
         )
         embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
