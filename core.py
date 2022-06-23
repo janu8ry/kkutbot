@@ -5,6 +5,7 @@ import random
 import shutil
 import time
 from typing import Type
+from datetime import datetime, timedelta
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -15,7 +16,7 @@ from topgg import DBLClient
 
 from tools.config import config
 from tools.db import db, write
-from tools.utils import get_date
+from tools.utils import format_date
 
 logger = logging.getLogger("kkutbot")
 
@@ -135,15 +136,14 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
-                timestamp = int(filename[5:-3])
-                fp = f"/storage/backup-{get_date(timestamp - 21600)}.gz"
+                fp = f"/storage/backup-{format_date(datetime.now() - timedelta(days=1))}.gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self):
-        fp = f"logs/{get_date(time.time() - 3600)}.log.gz"
+        fp = f"logs/{format_date(datetime.now() - timedelta(days=1))}.log.gz"
         await (self.get_channel(config("backup_channel.log"))).send(file=discord.File(fp=fp))
         logger.info("로그 백업 완료!")
 

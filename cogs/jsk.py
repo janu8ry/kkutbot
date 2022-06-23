@@ -31,7 +31,7 @@ except ImportError:
 import core
 from tools.config import config
 from tools.db import add, append, db, delete, read, write
-from tools.utils import get_date, get_timestamp
+from tools.utils import get_timestamp
 
 logger = logging.getLogger("kkutbot")
 
@@ -68,7 +68,6 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
         "append": append,
         "config": config,
         "logger": logger,
-        "get_date": get_date,
         "get_timestamp": get_timestamp
     }
 

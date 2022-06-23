@@ -2,7 +2,7 @@ import json
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -32,11 +32,8 @@ def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
     return f"{timeinfo.seconds}초"
 
 
-def get_date(timestamp: Optional[float]) -> str:
-    if timestamp:
-        return str(datetime.fromtimestamp(timestamp))[:10]
-    else:
-        return "끝봇의 유저가 아닙니다."
+def format_date(dt: datetime) -> str:
+    return dt.strftime('%Y-%m-%d')
 
 
 def get_timestamp(date: str) -> int:
