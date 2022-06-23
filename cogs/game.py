@@ -369,6 +369,7 @@ class Game(commands.Cog, name="게임"):
 
         **3. 기타**
         단어DB 출처 : 표준국어대사전, 단어수 약 31만개
+        티어 정보 확인 : [홈페이지](https://kkutbot.github.io/blog/끝말잇기-티어-정보)
 
         **4. 게임모드**
         :one: 솔로 랭킹전
