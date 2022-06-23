@@ -62,6 +62,8 @@ class SoloGame(GameBase):
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_transition(self.bot_word))})```", inline=False)
         embed.add_field(name="🔹 남은 시간", value=f"<t:{round((15 if self.kkd else 10) + self.begin_time)}:R>", inline=False)
         embed.set_footer(text="'ㄲ도움'을 입력하여 규칙을 확인할 수 있습니다.")
+        if self.kkd:
+            desc = desc.replace("10", "15")
         desc = desc.format(**self.ctx.bot.dict_emojis())
         try:
             return await _msg.reply(desc, embed=embed, delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time), mention_author=True)
