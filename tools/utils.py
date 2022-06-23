@@ -33,7 +33,7 @@ def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
 
 
 def format_date(dt: datetime) -> str:
-    return dt.strftime('%Y-%m-%d')
+    return dt.strftime("%Y-%m-%d")
 
 
 def get_timestamp(date: str) -> int:
