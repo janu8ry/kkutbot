@@ -143,8 +143,10 @@ class Kkutbot(commands.AutoShardedBot):
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self):
-        fp = f"logs/{format_date(datetime.now() - timedelta(days=1))}.log.gz"
-        await (self.get_channel(config("backup_channel.log"))).send(file=discord.File(fp=fp))
+        fp_before = f"logs/{format_date(datetime.now())}.log.gz"
+        fp_after = f"logs/{format_date(datetime.now() - timedelta(days=1))}.log.gz"
+        os.replace(fp_before, fp_after)
+        await (self.get_channel(config("backup_channel.log"))).send(file=discord.File(fp=fp_after))
         logger.info("로그 백업 완료!")
 
     @staticmethod
