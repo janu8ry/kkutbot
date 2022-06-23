@@ -64,7 +64,7 @@ class KkutbotContext(commands.Context):
                                   )
 
     async def reply(self, content=None, mention_author=False, **kwargs) -> discord.Message:
-        if (not kwargs.get('escape_emoji_formatting', False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
+        if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format(**self.bot.dict_emojis()) if content else None
         if self.interaction is None:
             return await self.send(
