@@ -339,7 +339,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$정보수정", usage="ㄲ$정보수정 <id>")
-    async def modify_data(self, ctx: KkutbotContext, target: Union[int, str]):  # noqa
+    async def modify_data(self, ctx: KkutbotContext, *, target: Union[int, str]):  # noqa
         """
         대상의 정보를 수정합니다.
         id가 general이면 공용 데이터를 수정합니다.
