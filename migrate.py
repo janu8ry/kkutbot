@@ -185,9 +185,13 @@ async def main():
         }
     })
     for user in await (db.user.find()).to_list(None):
+        if isinstance(user["registered"], int):
+            ts = round(user["registered"])
+        else:
+            ts = round(user["registered"].timestamp())
         db_set = {
             "alerts.reward": False,
-            "registered": round(user["registered"].timestamp()),
+            "registered": ts,
             "attendance.times": user["attendance_times"]
         }
         db_unset = {
@@ -228,9 +232,13 @@ async def main():
         }
     })
     for user in await (db.unused.find()).to_list(None):
+        if isinstance(user["registered"], int):
+            ts = round(user["registered"])
+        else:
+            ts = round(user["registered"].timestamp())
         db_set = {
             "alerts.reward": False,
-            "registered": round(user["registered"].timestamp()),
+            "registered": ts,
             "attendance.times": user["attendance_times"]
         }
         db_unset = {
