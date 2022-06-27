@@ -24,6 +24,7 @@ services:
       -  /var/lib/mongodb:/data/db
     environment:
       - TZ=Asia/Seoul
+    command: mongod --quiet
   mgob:
     image: janu8ry/mgob:latest
     restart: always
