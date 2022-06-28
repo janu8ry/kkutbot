@@ -21,7 +21,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  /var/lib/mongodb:/data/db
+      -  /home/janu8ry/mongodb:/data/db
     environment:
       - TZ=Asia/Seoul
     command: mongod --quiet
