@@ -86,26 +86,34 @@ class Profile(commands.Cog, name="사용자"):
         ㄲ통계 - 자신의 통계를 확인합니다.
         ㄲ통계 @가나다 - 가나다의 통계를 확인합니다.
         """
-        embed = discord.Embed(
-            title=f"{{stats}} {e_mk(str(user))} 님의 통계",
-            description=f"가입일 : <t:{await read(user, 'registered')}:D>\n"
-                        f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
-            color=config("colors.general")
-        )
+        if await read(user, 'registered'):
+            embed = discord.Embed(
+                title=f"{{stats}} {e_mk(str(user))} 님의 통계",
+                description=f"가입일 : <t:{await read(user, 'registered')}:D>\n"
+                            f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
+                color=config("colors.general")
+            )
 
-        for k, v in config("modelist").items():
-            embed.add_field(name=f"🔸 {k}",
-                            value=f"`{await read(user, f'game.{v}.win')}` / `{await read(user, f'game.{v}.times')}`회 승리 "
-                                  f"(`{await read(user, f'game.{v}.winrate')}%`)\n"
-                                  f"최고 점수 : `{await read(user, f'game.{v}.best')}`"
-                            )
-        embed.add_field(
-            name="🔸 기타",
-            value=f"출석 횟수 : `{await read(user, 'attendance.times')}`\n"
-                  f"명령어 사용 횟수 : `{await read(user, 'command_used')}`\n"
-                  f"클리어한 퀘스트: `{await read(user, 'quest.total')}`"
-        )
-        embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 100}​​​")
+            for k, v in config("modelist").items():
+                embed.add_field(name=f"🔸 {k}",
+                                value=f"`{await read(user, f'game.{v}.win')}` / `{await read(user, f'game.{v}.times')}`회 승리 "
+                                      f"(`{await read(user, f'game.{v}.winrate')}%`)\n"
+                                      f"최고 점수 : `{await read(user, f'game.{v}.best')}`"
+                                )
+            embed.add_field(
+                name="🔸 기타",
+                value=f"출석 횟수 : `{await read(user, 'attendance.times')}`\n"
+                      f"명령어 사용 횟수 : `{await read(user, 'command_used')}`\n"
+                      f"클리어한 퀘스트: `{await read(user, 'quest.total')}`"
+            )
+            embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 100}​​​")
+        else:
+            embed = discord.Embed(
+                title=f"{{stats}} {e_mk(str(user))} 님의 통계",
+                description="이 유저는 끝봇의 유저가 아닙니다.",
+                color=config("colors.error")
+            )
+            embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.denyed')).url)
         await ctx.reply(embed=embed)
 
 
