@@ -131,7 +131,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def debug_db(self):
         u = await db.user.count_documents({})
         if u < 100:
-            logger.log("db리셋")
+            logger.info("db리셋")
             await (self.get_channel(config("backup_channel.data"))).send("<@610625541157945344> <@394116972176080916> 아?마 db리셋 로그 확인좀요")
 
     @staticmethod
