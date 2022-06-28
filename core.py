@@ -100,6 +100,7 @@ class Kkutbot(commands.AutoShardedBot):
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
+        self.scheduler.add_job(self.debug_db, "interval", minutes=1)
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config('test'):
