@@ -128,7 +128,7 @@ class Kkutbot(commands.AutoShardedBot):
         await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
     
     async def debug_db(self):
-        u = await bot.db.user.count_documents({})
+        u = await self.bot.db.user.count_documents({})
         if u < 100:
             logger.log("db리셋")
             await (self.get_channel(config("backup_channel.data"))).send("<@610625541157945344> <@394116972176080916> 아?마 db리셋 로그 확인좀요")
