@@ -287,6 +287,15 @@ class Admin(commands.Cog, name="관리자"):
         )
         await ctx.reply(embed=embed)
 
+    @commands.command(name="$로그", usage="ㄲ$로그 <날짜>")
+    async def get_log(self, ctx: KkutbotContext, date: str = None):
+        """해당 날짜의 로그 파일을 확인합니다."""
+        if date is None:
+            path = "logs/latest.log"
+        else:
+            path = f"logs/{date}.log.gz"
+        await ctx.reply(file=discord.File(path))
+
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     async def user_info(self, ctx: KkutbotContext, *, user: KkutbotUserConverter() = None):  # noqa
         """유저의 (상세)정보를 출력합니다."""
