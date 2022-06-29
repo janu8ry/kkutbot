@@ -145,8 +145,16 @@ class Kkutbot(commands.AutoShardedBot):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
                 date = format_date(datetime.now() - timedelta(days=1))
-                index = (datetime.now().hour if datetime.now().hour != 0 else 24) / 6
-                fp = f"/storage/{date}-({index}).gz"
+                if datetime.now().hour == 0:
+                    fp = f"/storage/{date}.gz"
+                    for index in range(3):
+                        del_fp = f"/storage/{date}-({index + 1}).gz"
+                        if os.path.isfile(del_fp):
+                            os.remove(del_fp)
+                    logger.info("몽고DB 데이터 병합 완료!")
+                else:
+                    index = datetime.now().hour / 6
+                    fp = f"/storage/{date}-({index}).gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
