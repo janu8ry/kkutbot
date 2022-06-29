@@ -144,8 +144,8 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
-                date = format_date(datetime.now() - timedelta(days=1))
                 if datetime.now().hour == 0:
+                    date = format_date(datetime.now() - timedelta(days=1))
                     fp = f"/storage/{date}.gz"
                     for index in range(3):
                         del_fp = f"/storage/{date}-({index + 1}).gz"
@@ -153,7 +153,8 @@ class Kkutbot(commands.AutoShardedBot):
                             os.remove(del_fp)
                     logger.info("몽고DB 데이터 병합 완료!")
                 else:
-                    index = datetime.now().hour / 6
+                    date = format_date(datetime.now())
+                    index = round(datetime.now().hour / 6)
                     fp = f"/storage/{date}-({index}).gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
