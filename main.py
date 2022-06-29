@@ -245,7 +245,7 @@ async def on_guild_join(guild: discord.Guild):
     logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))["send_messages"]][0]
     embed = discord.Embed(
-        description=f"**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
+        description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
                     "끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.\n"
                     "- **ㄲ도움**을 입력하여 끝봇의 도움말을 확인해 보세요!\n"
                     "- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면\n"
