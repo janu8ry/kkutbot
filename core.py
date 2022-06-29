@@ -105,7 +105,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config('test'):
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
-            self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
+            self.scheduler.add_job(self.backup_data, "cron", hour="0,6,12,18", minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
@@ -144,7 +144,9 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
-                fp = f"/storage/backup-{format_date(datetime.now() - timedelta(days=1))}.gz"
+                date = format_date(datetime.now() - timedelta(days=1))
+                index = (datetime.now().hour if datetime.now().hour != 0 else 24) / 6
+                fp = f"/storage/{date}-({index}).gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
