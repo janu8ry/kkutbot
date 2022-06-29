@@ -246,7 +246,7 @@ class Admin(commands.Cog, name="관리자"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    def cog_check(self, ctx):
+    def cog_check(self, ctx):  # noqa
         return is_admin(ctx)
 
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
