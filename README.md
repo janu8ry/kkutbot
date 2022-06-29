@@ -18,7 +18,7 @@
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
 - 개발 언어: python 3.9.13 ([discord.py 2.0](https://discordpy.readthedocs.io/en/latest/index.html))
-- 버전: 2.0.0
+- 버전: 2.0.1
 - 데이터베이스: mongoDB  
 - 크레딧: 끝봇 개발에 도움을 주신 ``서진#5826``님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#1475``님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
@@ -34,17 +34,9 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 
 버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
 
-# 2.0 업데이트 TODO
-- [x] 통계 명령어 ui 개선
-- [x] $정보수정 명령어 dict, list 자료형 허용
-- [x] 커맨드 답변을 모두 reply로 교체
-- [x] 기한 지난 메일 숨기기
-- [x] 퀘스트 리뉴얼
+# 다음 업데이트 TODO
 - [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
 - [ ] 티어별 난이도 조정
-- [x] 한방단어 입력시 즉시 판정
-- [ ] 웹사이트 개발, 상세 도움말 / 티어 정보 작성
-- [x] 도커 환경 테스트
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
@@ -94,18 +86,18 @@ docker compose up -d
 
 ## 로그 저장
 매일 0시에 로그가 `logs/yyyy-mm-dd.log.gz` 형태로 압축되어 백업되고,   
-`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
+0시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
 ## DB 백업 (도커 전용)
-매일 새벽 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관되고,
-`config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
+매일 6,12,18시에 `kkutbot` 데이터베이스가 압축되어 임시로 보관되고,    
+0시에 `backup/yyyy-mm-dd.gz` 형태로 최종적으로 압축되어 보관됩니다.   
+또한 0,6,12,18시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 [localhost:8090/storage](http://localhost:8090/storage)에서도 백업 파일을 확인할 수 있습니다.
 
 ### 데이터 복구하기
+[mongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) 가 필요합니다.
 ```shell
-unzip backup/backup-xxxx-xx-xx.zip  # 압축 해제  tmp 디렉토리 생성
-mongorestore -h dbhost:dbport --db kkutbot --authenticationDatabase admin -u dbuser -p dbpasswd tmp/kkutbot --drop
-rm -rf tmp
+mongorestore --db kkutbot --gzip --archive=./yyyy-mm-dd.gz --drop
 ```
 
 # 연락하기
