@@ -21,10 +21,15 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  /home/janu8ry/mongodb:/data/db
+      -  /data/db:/data/db
     environment:
       - TZ=Asia/Seoul
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_username
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_password
     command: mongod --quiet
+    secrets:
+      - mongo_username
+      - mongo_password
   mgob:
     image: janu8ry/mgob:latest
     restart: always
@@ -36,3 +41,9 @@ services:
       - ./backup:/storage
     environment:
       - TZ=Asia/Seoul
+
+secrets:
+  mongo_username:
+    file: mongo_username.txt
+  mongo_password:
+    file: mongo_password.txt

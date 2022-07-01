@@ -35,6 +35,7 @@ db_options = {}
 if all([username := dbconfig("user"), password := dbconfig("password")]):
     db_options["username"] = username
     db_options["password"] = password
+    db_options["authSource"] = "admin"
 
 _client = AsyncIOMotorClient(
     host=dbconfig("ip"), port=dbconfig("port"), **db_options

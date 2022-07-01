@@ -26,6 +26,8 @@ dmypy.json
 config.yml
 mongo.env
 mgob.yml
+mongo_username.txt
+mongo_password.txt
 
 # logs & backup
 logs/

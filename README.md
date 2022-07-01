@@ -80,6 +80,8 @@ cd kkutbot
 nano config.yml # config.yml 수정
 nano docker-compose.yml # docker-compose.yml 수정
 nano mgob.yml # mgob.yml 수정
+nano mongo_username.txt # mongoDB 사용자 이름 입력
+nano mongo_password.txt # mongoDB 비밀번호 입력
 docker build -t kkutbot:latest .
 docker compose up -d
 ```
@@ -97,7 +99,8 @@ docker compose up -d
 ### 데이터 복구하기
 [mongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) 가 필요합니다.
 ```shell
-mongorestore --db kkutbot --gzip --archive=./yyyy-mm-dd.gz --drop
+docker inspect kkutbot-mongo  # 컨테이너 ip 확인
+mongorestore --db kkutbot --gzip --archive=./yyyy-mm-dd.gz --drop --host xxx.xxx.xxx.xxx  # 위의 ip 입력
 ```
 
 # 연락하기
