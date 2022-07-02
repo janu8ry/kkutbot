@@ -4,8 +4,6 @@ target:
   database: "kkutbot"
   username: "admin"
   password: "password"
-  params: "--authenticationDatabase admin"
 scheduler:
-  cron: "0 0,6,12,18 */1 * *"
-  retention: 20
-  timeout: 60
+  hour: "0,6,12,18"
+  minute: "0"

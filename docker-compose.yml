@@ -21,7 +21,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  /data/db:/data/db
+      -  /Users/janu8ry/Desktop/mongodb:/data/db
     environment:
       - TZ=Asia/Seoul
       - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_username
@@ -30,15 +30,13 @@ services:
     secrets:
       - mongo_username
       - mongo_password
-  mgob:
-    image: janu8ry/mgob:latest
+  mongob:
+    image: janu8ry/mongob:arm64
     restart: always
-    container_name: "kkutbot-mgob"
-    ports:
-      - "8090:8090"
+    container_name: "kkutbot-mongob"
     volumes:
-      - ./mgob.yml:/config/mgob.yml
-      - ./backup:/storage
+      - ./mongob.yml:/mongob/config.yml
+      - ./backup:/backup
     environment:
       - TZ=Asia/Seoul
 

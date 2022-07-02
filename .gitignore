@@ -25,7 +25,7 @@ dmypy.json
 # secret config file
 config.yml
 mongo.env
-mgob.yml
+mongob.yml
 mongo_username.txt
 mongo_password.txt
 
