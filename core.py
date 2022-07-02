@@ -100,7 +100,6 @@ class Kkutbot(commands.AutoShardedBot):
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
-        self.scheduler.add_job(self.debug_db, "interval", minutes=1, id="debug_db")
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config('test'):
@@ -127,13 +126,6 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def update_presence(self):
         await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
-    
-    async def debug_db(self):
-        u = await db.user.count_documents({})
-        if u < 100:
-            logger.info("db리셋")
-            await (self.get_channel(config("backup_channel.data"))).send("<@610625541157945344> <@394116972176080916> 아?마 db리셋 로그 확인좀요 (ㄲ$로그)")
-            self.scheduler.remove_job('debug_db')
 
     @staticmethod
     async def reset_alerts():
