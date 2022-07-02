@@ -2,8 +2,9 @@ target:
   host: "mongo"
   port: 27017
   database: "kkutbot"
-  username: "admin"
-  password: "password"
+  username_file: "/mongob/username.txt"
+  password_file: "/mongob/password.txt"
 scheduler:
   hour: "0,6,12,18"
   minute: "0"
+  test: true

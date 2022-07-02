@@ -37,6 +37,8 @@ services:
     volumes:
       - ./mongob.yml:/mongob/config.yml
       - ./backup:/backup
+      - ./mongo_username.txt:/mongob/username.txt
+      - ./mongo_password.txt:/mongob/password.txt
     environment:
       - TZ=Asia/Seoul
 
