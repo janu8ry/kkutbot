@@ -5,6 +5,6 @@ target:
   username_file: "/mongob/username.txt"
   password_file: "/mongob/password.txt"
 scheduler:
-  hour: "0,6,12,18"
+  hour: "5"
   minute: "0"
   test: true

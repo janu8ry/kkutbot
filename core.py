@@ -104,7 +104,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config('test'):
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
-            self.scheduler.add_job(self.backup_data, "cron", hour="0,6,12,18", minute=5, second=0)
+            self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
@@ -136,18 +136,8 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self):
         for filename in os.listdir("/storage/mgob"):
             if filename.endswith(".gz"):
-                if datetime.now().hour == 0:
-                    date = format_date(datetime.now() - timedelta(days=1))
-                    fp = f"/storage/{date}.gz"
-                    for index in range(3):
-                        del_fp = f"/storage/{date}-({index + 1}).gz"
-                        if os.path.isfile(del_fp):
-                            os.remove(del_fp)
-                    logger.info("몽고DB 데이터 병합 완료!")
-                else:
-                    date = format_date(datetime.now())
-                    index = round(datetime.now().hour / 6)
-                    fp = f"/storage/{date}-({index}).gz"
+                date = format_date(datetime.now() - timedelta(days=1))
+                fp = f"/storage/{date}.gz"
                 os.replace(f"/storage/mgob/{filename}", fp)
                 shutil.rmtree("/storage/mgob")
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))

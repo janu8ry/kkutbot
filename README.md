@@ -91,10 +91,8 @@ docker compose up -d
 0시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
 ## DB 백업 (도커 전용)
-매일 6,12,18시에 `kkutbot` 데이터베이스가 압축되어 임시로 보관되고,    
-0시에 `backup/yyyy-mm-dd.gz` 형태로 최종적으로 압축되어 보관됩니다.   
-또한 0,6,12,18시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
-[localhost:8090/storage](http://localhost:8090/storage)에서도 백업 파일을 확인할 수 있습니다.
+매일 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.   
+또한 5시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 
 ### 데이터 복구하기
 [mongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) 가 필요합니다.
