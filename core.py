@@ -21,6 +21,11 @@ from tools.utils import format_date
 logger = logging.getLogger("kkutbot")
 
 
+class FormattingDict(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
 class KkutbotContext(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -46,7 +51,7 @@ class KkutbotContext(commands.Context):
             escape_emoji_formatting=False
     ) -> discord.Message:
         if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format(**self.bot.dict_emojis()) if content else None
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
         return await super().send(content=content,
                                   tts=tts,
                                   embed=embed,
@@ -66,7 +71,7 @@ class KkutbotContext(commands.Context):
 
     async def reply(self, content=None, mention_author=False, **kwargs) -> discord.Message:
         if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format(**self.bot.dict_emojis()) if content else None
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
         if self.interaction is None:
             return await self.send(
                 content, reference=self.message, mention_author=mention_author, **kwargs
@@ -199,15 +204,15 @@ class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs):
         if not kwargs.get("escape_emoji_formatting", False):
             if title := kwargs.get("title"):
-                kwargs["title"] = title.format(**Kkutbot.dict_emojis())
+                kwargs["title"] = title.format_map(FormattingDict(Kkutbot.dict_emojis()))
             if description := kwargs.get("description"):
-                kwargs["description"] = description.format(**Kkutbot.dict_emojis())
+                kwargs["description"] = description.format_map(FormattingDict(Kkutbot.dict_emojis()))
         super().__init__(**kwargs)
 
     def add_field(self, *, name, value, inline=True, escape_emoji_formatting=False):
         if escape_emoji_formatting is False:
-            name = name.format(**Kkutbot.dict_emojis()) if name else None
-            value = value.format(**Kkutbot.dict_emojis()) if value else None
+            name = name.format_map(FormattingDict(Kkutbot.dict_emojis())) if name else None
+            value = value.format_map(FormattingDict(Kkutbot.dict_emojis())) if value else None
         return super().add_field(name=name, value=value, inline=inline)
 
 
