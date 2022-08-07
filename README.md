@@ -95,10 +95,8 @@ docker compose up -d
 또한 5시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 
 ### 데이터 복구하기
-[mongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) 가 필요합니다.
 ```shell
-docker inspect kkutbot-mongo  # 컨테이너 ip 확인
-mongorestore --db kkutbot --gzip --archive=./yyyy-mm-dd.gz --drop --host xxx.xxx.xxx.xxx  # 위의 ip 입력
+docker exec -i kkutbot-mongo sh -c 'mongorestore --db kkutbot --gzip --archive --drop --authenticationDatabase admin -u username -p password' < /yyyy-mm-dd.gz
 ```
 
 # 연락하기
