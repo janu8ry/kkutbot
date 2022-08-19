@@ -23,8 +23,8 @@ humanize = "^4.1.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"
-flake8 = "^4.0.1"
 mypy = "^0.971"
+flake8 = "^5.0.4"
 
 [tool.isort]
 skip_gitignore = "True"
