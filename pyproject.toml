@@ -31,13 +31,6 @@ skip_gitignore = "True"
 line_length = "150"
 extra_standard_library = ["typing_extensions"]
 
-[mypy]
-strict = "True"
-warn_unused_configs = "True"
-show_error_codes = "True"
-disable_error_code = "misc"
-exclude = ".venv"
-
 [tool.poetry.urls]
 Invite = "https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=387136&scope=bot"
 discord = "https://discord.gg/z8tRzwf"
