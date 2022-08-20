@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from tools.db import read
 
-from .config import config  # noqa
+from config import config  # noqa
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:
     wordlist = json.load(f)

@@ -7,7 +7,7 @@ from typing_extensions import TypeAlias
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
-from .config import config, get_nested_dict  # noqa
+from config import config, get_nested_dict  # noqa
 
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"

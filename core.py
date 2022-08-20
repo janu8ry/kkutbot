@@ -14,7 +14,7 @@ from koreanbots import Koreanbots
 from koreanbots.integrations.discord import DiscordpyKoreanbots
 from topgg import DBLClient
 
-from tools.config import config
+from config import config
 from tools.db import db, write
 from tools.utils import format_date
 

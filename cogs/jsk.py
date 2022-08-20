@@ -29,7 +29,7 @@ except ImportError:
     from importlib_metadata import distribution, packages_distributions
 
 import core
-from tools.config import config
+from config import config
 from tools.db import add, append, db, delete, read, write
 from tools.utils import get_timestamp
 

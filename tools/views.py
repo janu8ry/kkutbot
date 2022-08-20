@@ -3,7 +3,7 @@ from typing import List, Optional
 import discord
 from discord.ext import commands
 
-from .config import config  # noqa
+from config import config  # noqa
 
 
 class BaseView(discord.ui.View):

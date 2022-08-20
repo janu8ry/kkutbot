@@ -4,7 +4,7 @@ from discord.utils import escape_markdown as e_mk
 from discord.utils import escape_mentions as e_mt
 
 from core import Kkutbot, KkutbotContext
-from tools.config import config
+from config import config
 from tools.converter import KkutbotUserConverter
 from tools.db import read, write
 from tools.utils import get_tier, get_winrate, is_admin

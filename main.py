@@ -10,7 +10,7 @@ from discord.ext import commands
 from rich.traceback import install as rich_install
 
 import core
-from tools.config import config
+from config import config
 from tools.db import add, append, delete, read, write
 from tools.logger import setup_logger
 from tools.views import ServerInvite

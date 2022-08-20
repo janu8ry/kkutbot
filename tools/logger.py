@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
 
-from .config import config  # noqa
+from config import config  # noqa
 
 
 def rotator(source: str, dest: str):
