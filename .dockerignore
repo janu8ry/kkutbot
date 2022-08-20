@@ -5,6 +5,7 @@
 venv/
 .venv/
 .python-version
+poetry.toml
 
 # macOS
 .DS_Store
