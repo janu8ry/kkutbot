@@ -9,8 +9,8 @@ from discord.ext import commands
 from humanize import naturalsize
 from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
 
-from core import Kkutbot, KkutbotContext
 from config import config
+from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import add, db, delete, read, write
 from tools.utils import get_tier, get_winrate, is_admin, split_string

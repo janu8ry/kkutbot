@@ -5,8 +5,8 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core import Kkutbot, KkutbotContext
 from config import config
+from core import Kkutbot, KkutbotContext
 from tools.db import add, read, write
 from tools.views import KoreanBotsVote
 

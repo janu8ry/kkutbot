@@ -7,9 +7,8 @@ from typing import Union
 import discord
 from discord.ext import commands
 
-from tools.db import read
-
 from config import config  # noqa
+from tools.db import read
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:
     wordlist = json.load(f)

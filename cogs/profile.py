@@ -3,8 +3,8 @@ from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
 from discord.utils import escape_mentions as e_mt
 
-from core import Kkutbot, KkutbotContext
 from config import config
+from core import Kkutbot, KkutbotContext
 from tools.converter import KkutbotUserConverter
 from tools.db import read, write
 from tools.utils import get_tier, get_winrate, is_admin

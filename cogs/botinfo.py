@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 
-from core import Kkutbot, KkutbotContext
 from config import config
+from core import Kkutbot, KkutbotContext
 from tools.utils import is_admin
 from tools.views import BaseView, BotInvite, ServerInvite
 
