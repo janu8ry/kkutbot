@@ -18,7 +18,7 @@ from tools.views import BaseModal, BaseView, ServerInvite
 
 
 class ConfirmSendAnnouncement(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
@@ -41,7 +41,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
     a_title = discord.ui.TextInput(label="공지 제목", required=True, max_length=256)
     description = discord.ui.TextInput(label="공지 본문", style=discord.TextStyle.long, required=True, max_length=1024)
 
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__()
         self.ctx = ctx
 
@@ -70,7 +70,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
 
 
 class SendAnnouncement(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.ctx = ctx
@@ -85,7 +85,7 @@ class SendAnnouncement(BaseView):
 
 
 class ConfirmSendNotice(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
@@ -107,7 +107,7 @@ class ConfirmSendNotice(BaseView):
 class NoticeInput(BaseModal, title="알림 보내기"):
     msg = discord.ui.TextInput(label="알림 내용", style=discord.TextStyle.long, required=True, max_length=1024)
 
-    def __init__(self, ctx: commands.Context, target: int):
+    def __init__(self, ctx: KkutbotContext, target: int):
         super().__init__()
         self.target = target
         self.ctx = ctx
@@ -132,7 +132,7 @@ class NoticeInput(BaseModal, title="알림 보내기"):
 
 
 class SendNotice(BaseView):
-    def __init__(self, ctx: commands.Context, target: int):
+    def __init__(self, ctx: KkutbotContext, target: int):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target
@@ -149,7 +149,7 @@ class SendNotice(BaseView):
 
 
 class ConfirmModifyData(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
@@ -172,7 +172,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
     data_path = discord.ui.TextInput(label="수정할 데이터 경로", required=True)
     data_value = discord.ui.TextInput(label="수정할 값", style=discord.TextStyle.long, required=True)
 
-    def __init__(self, ctx: commands.Context, target: Union[int, str], collection: AsyncIOMotorCollection):
+    def __init__(self, ctx: KkutbotContext, target: Union[int, str], collection: AsyncIOMotorCollection):
         super().__init__()
         self.colection = collection
         self.ctx = ctx
@@ -212,7 +212,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
 
 
 class ModifyData(BaseView):
-    def __init__(self, ctx: commands.Context, target: Union[int, str]):
+    def __init__(self, ctx: KkutbotContext, target: Union[int, str]):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target
