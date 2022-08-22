@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, List
+from typing import Any, List, Union
+from typing_extensions import TypeAlias
 
 import yaml
 
@@ -13,7 +14,10 @@ for file in os.listdir("static"):
             config_data[file[:-5]] = json.load(f)
 
 
-def get_nested_dict(data: dict, path: List[str]) -> Any:
+DataType: TypeAlias = Union[int, str, float, bool, dict[str, Any], list[Any], None]
+
+
+def get_nested_dict(data: dict[str, Any], path: List[str]) -> Any:
     """
     gets value in nested dictionary.
     Parameters

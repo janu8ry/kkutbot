@@ -1,6 +1,6 @@
 import random
 import re
-from typing import Union
+from typing import Optional
 
 import discord
 from discord.ext.commands import Context, errors
@@ -10,7 +10,7 @@ from discord.ext.commands.converter import Converter, MemberConverter, UserConve
 class KkutbotUserConverter(Converter):
     """User & Member Converter without Member Intents"""
 
-    async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
+    async def convert(self, ctx: Context, argument: str) -> Optional[discord.User, discord.Member]:
         argument = argument.lstrip()
 
         if not argument:

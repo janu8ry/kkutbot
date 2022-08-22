@@ -1,3 +1,4 @@
+# type: ignore
 import asyncio
 
 from tools.db import db
@@ -151,7 +152,7 @@ announcements = [
 ]
 
 
-async def main():
+async def main() -> None:
     await db.user.update_many({}, {
         "$rename": {
             "alert": "alerts",

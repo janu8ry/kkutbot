@@ -21,7 +21,7 @@ bot = core.Kkutbot()
 
 
 @bot.event
-async def on_ready():
+async def on_ready() -> None:
     await bot.reload_all()
 
     guilds = len(bot.guilds)
@@ -35,11 +35,11 @@ async def on_ready():
 
 
 @bot.event
-async def on_shard_ready(shard_id):
+async def on_shard_ready(shard_id: int) -> None:
     logger.info(f"{shard_id}번 샤드 준비 완료!")
 
 
-async def before_command(ctx: core.KkutbotContext):
+async def before_command(ctx: core.KkutbotContext) -> None:
     await add(ctx.author, "command_used", 1)
     await write(ctx.author, "latest_usage", round(time.time()))
 
@@ -59,17 +59,17 @@ async def before_command(ctx: core.KkutbotContext):
         await write(ctx.author, "quest.cache", cache)
 
     if isinstance(ctx.channel, discord.DMChannel):
-        logger.command(
+        logger.command(  # type: ignore
             f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {ctx.message.content}"
         )
     else:
-        logger.command(
+        logger.command(  # type: ignore
             f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {ctx.message.content}"
         )
 
 
 @bot.event
-async def on_message(message: discord.Message):
+async def on_message(message: discord.Message) -> None:
     is_banned = await read(message.author, "banned.isbanned")
     is_bot = message.author.bot and (message.author.id not in config("bot_whitelist"))
 
@@ -93,7 +93,7 @@ async def on_message(message: discord.Message):
 
 
 @bot.event
-async def on_command_completion(ctx: core.KkutbotContext):
+async def on_command_completion(ctx: core.KkutbotContext) -> None:
     desc = ""
     for data, info in (await read(None, "quests")).items():
         current = await read(ctx.author, data.replace("/", ".")) - (await read(ctx.author, f"quest.cache.{data}"))
@@ -162,9 +162,9 @@ async def check(ctx: core.KkutbotContext) -> bool:
 
 
 @bot.event
-async def on_interaction(interaction: discord.Interaction):
+async def on_interaction(interaction: discord.Interaction) -> None:
     kst = timezone(timedelta(hours=9))
-    interaction_created = time.mktime(interaction.message.created_at.astimezone(kst).timetuple())
+    interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
     if interaction_created < bot.started_at:
         types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
         await interaction.response.send_message(
@@ -178,7 +178,7 @@ async def on_interaction(interaction: discord.Interaction):
 
 
 @bot.event
-async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError]):
+async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError]) -> None:
     if isinstance(error, commands.errors.BotMissingPermissions):
         await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
     elif isinstance(error, commands.errors.MissingPermissions):
@@ -196,7 +196,8 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
     elif isinstance(error, commands.errors.CommandOnCooldown):
         if ctx.author.id in config("admin"):
-            return await ctx.reinvoke()
+            await ctx.reinvoke()
+            return
         embed = discord.Embed(
             title="잠깐!",
             description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.",
@@ -215,7 +216,8 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.errors.MaxConcurrencyReached):
         if ctx.author.id in config("admin"):
-            return await ctx.reinvoke()
+            await ctx.reinvoke()
+            return
         if error.per == commands.BucketType.guild:
             await ctx.reply(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다.")
         elif error.per == commands.BucketType.channel:
@@ -240,9 +242,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
 
 
 @bot.event
-async def on_guild_join(guild: discord.Guild):
+async def on_guild_join(guild: discord.Guild) -> None:
     await write(guild, "invited", time.time())
-    logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
+    logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")  # type: ignore
     announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))["send_messages"]][0]
     embed = discord.Embed(
         description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
@@ -294,8 +296,8 @@ async def on_guild_join(guild: discord.Guild):
 
 
 @bot.event
-async def on_guild_remove(guild: discord.Guild):
-    logger.leave(f"'{guild.name}'에서 추방됨. (총 {len(bot.guilds)}서버)")
+async def on_guild_remove(guild: discord.Guild) -> None:
+    logger.leave(f"'{guild.name}'에서 추방됨. (총 {len(bot.guilds)}서버)")  # type: ignore
     await delete(guild)
 
 

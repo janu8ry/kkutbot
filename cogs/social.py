@@ -36,7 +36,7 @@ class RankDropdown(discord.ui.Select):
                 emoji="<:ranking:985439871004995634>"
             )
         ]
-        for category in self.categories["general"] | self.categories["game"]:
+        for category in (self.categories["general"] | self.categories["game"]):  # type: ignore
             option = discord.SelectOption(
                 label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
@@ -49,7 +49,7 @@ class RankDropdown(discord.ui.Select):
     async def get_user_name(self, user_id: int) -> str:
         user = self.ctx.bot.get_user(user_id)
         if hasattr(user, "name"):
-            username = user.name
+            username: str = user.name
         else:
             if await read(user_id, "name"):
                 username = await read(user_id, "name")
@@ -64,7 +64,7 @@ class RankDropdown(discord.ui.Select):
         names = await asyncio.gather(*[self.get_user_name(i["_id"]) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
-    async def get_overall_rank(self):
+    async def get_overall_rank(self) -> None:
         embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config("colors.help"))
         coros = []
         for path in self.categories["main"]:

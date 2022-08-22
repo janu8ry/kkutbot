@@ -2,7 +2,7 @@ import json
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Union, Any
 
 import discord
 from discord.ext import commands
@@ -11,10 +11,10 @@ from config import config  # noqa
 from tools.db import read
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:
-    wordlist = json.load(f)
+    wordlist: dict[str, list[str]] = json.load(f)
 
 with open("static/transition.json", "r", encoding="utf-8") as f:
-    transition = json.load(f)
+    transition: dict[str, list[str]] = json.load(f)
 
 
 def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
@@ -43,10 +43,10 @@ def is_admin(ctx: commands.Context) -> bool:
     return ctx.author.id in config("admin")
 
 
-def split_string(n: str, unit=2000, t="\n") -> tuple:
-    n = n.split(t)
-    x = []
-    r = []
+def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
+    n = w.split(t)
+    x: list[str] = []
+    r: list[str] = []
     for idx, i in enumerate(n):
         x.append(i)
         if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx+1]]]) + len(x) > unit:
@@ -55,9 +55,9 @@ def split_string(n: str, unit=2000, t="\n") -> tuple:
     return tuple(r)
 
 
-async def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> float:
-    game_times = await read(target, f"game.{mode}.times")
-    game_win_times = await read(target, f"game.{mode}.win")
+async def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> Any:
+    game_times: int = await read(target, f"game.{mode}.times")
+    game_win_times: int = await read(target, f"game.{mode}.win")
     if 0 in (game_times, game_win_times):
         return 0
     else:
@@ -76,14 +76,14 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
     return tier if emoji else tier.split(" ")[0]
 
 
-def get_transition(word: str) -> list:
+def get_transition(word: str) -> list[str]:
     if word[-1] in transition:
         return transition[word[-1]]
     else:
         return [word[-1]]
 
 
-def get_word(word: str) -> list:
+def get_word(word: str) -> list[str]:
     du = get_transition(word[-1])
     return_list = []
     for x in du:
@@ -105,7 +105,7 @@ def choose_first_word(kkd: bool = False) -> str:
     return bot_word
 
 
-def is_hanbang(word: str, used_words: list, kkd: bool = False) -> bool:
+def is_hanbang(word: str, used_words: list[str], kkd: bool = False) -> bool:
     if kkd:
         words = [w for w in get_word(word) if len(w) == 3]
     else:

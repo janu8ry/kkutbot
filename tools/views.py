@@ -1,13 +1,14 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 
 import discord
 from discord.ext import commands
 
+from core import KkutbotContext
 from config import config  # noqa
 
 
 class BaseView(discord.ui.View):
-    def __init__(self, ctx, *args, author_only=False, **kwargs):
+    def __init__(self, ctx: KkutbotContext, *args: Any, author_only: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.ctx = ctx
         self.author_only = author_only
@@ -33,7 +34,7 @@ class BaseView(discord.ui.View):
         if self.message:
             await self.message.edit(view=self)
 
-    async def disable_buttons(self, interaction: discord.Interaction, use_msg=False):
+    async def disable_buttons(self, interaction: discord.Interaction, use_msg: bool = False) -> None:
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
@@ -44,13 +45,13 @@ class BaseView(discord.ui.View):
 
 
 class BaseModal(discord.ui.Modal):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.timeout = 120
 
 
 class ServerInvite(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.add_item(
             discord.ui.Button(
@@ -60,7 +61,7 @@ class ServerInvite(discord.ui.View):
 
 
 class BotInvite(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.add_item(
             discord.ui.Button(
@@ -70,7 +71,7 @@ class BotInvite(discord.ui.View):
 
 
 class KoreanBotsVote(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.add_item(
             discord.ui.Button(
@@ -82,24 +83,25 @@ class KoreanBotsVote(discord.ui.View):
 class PageInput(BaseModal, title="페이지 이동하기"):
     target_page = discord.ui.TextInput(label="페이지 번호", placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
 
-    def __init__(self, ctx: commands.Context, view: "Paginator"):
+    def __init__(self, ctx: commands.Context, view: "Paginator") -> None:
         super().__init__()
         self.ctx = ctx
         self.target = None
         self.view = view
         self.target_page.label = f"페이지 번호 (1~{view.page_count})"
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord.Interaction) -> None:
         if self.target_page.value.isdecimal() and (1 <= int(self.target_page.value) <= self.view.page_count):
             self.view.index = int(self.target_page.value) - 1
             await self.view.children[2].update_buttons(interaction)
         else:
             await interaction.response.send_message(f"올바른 값이 아닙니다.\n가능한 값: (1~{self.view.page_count})", ephemeral=True)
-            return self.stop()
+            self.stop()
+            return
 
 
 class PaginatorButton(discord.ui.Button):
-    async def update_buttons(self, interaction: discord.Interaction):
+    async def update_buttons(self, interaction: discord.Interaction) -> None:
         self.view.children[0].disabled = bool(self.view.index == 0)
         self.view.children[1].disabled = bool(self.view.index == 0)
         self.view.children[2].label = f"{self.view.index + 1}/{self.view.page_count}"
@@ -109,52 +111,52 @@ class PaginatorButton(discord.ui.Button):
 
 
 class ToFirst(PaginatorButton):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(label="<<", style=discord.ButtonStyle.red, disabled=True)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
         self.view.index = 0
         await self.update_buttons(interaction)
 
 
 class ToBack(PaginatorButton):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(label="<", style=discord.ButtonStyle.red, disabled=True)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
         self.view.index -= 1
         await self.update_buttons(interaction)
 
 
 class PageInfo(PaginatorButton):
-    def __init__(self, pagecount):
+    def __init__(self, pagecount: int) -> None:
         super().__init__(label=f"1/{pagecount}", style=discord.ButtonStyle.gray, disabled=False)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
         modal = PageInput(self.view.ctx, self.view)
         await interaction.response.send_modal(modal)
 
 
 class ToNext(PaginatorButton):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(label=">", style=discord.ButtonStyle.blurple, disabled=False)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
         self.view.index += 1
         await self.update_buttons(interaction)
 
 
 class ToLast(PaginatorButton):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(label=">>", style=discord.ButtonStyle.blurple, disabled=False)
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
         self.view.index = self.view.page_count - 1
         await self.update_buttons(interaction)
 
 
 class Paginator(BaseView):
-    def __init__(self, ctx: commands.Context, pages: List[discord.Embed]):
+    def __init__(self, ctx: KkutbotContext, pages: List[discord.Embed]):
         super().__init__(ctx=ctx, author_only=True)
         self.pages = pages
         self.ctx = ctx
@@ -169,5 +171,5 @@ class Paginator(BaseView):
             self.children[3].disabled = True
             self.children[4].disabled = True
 
-    async def run(self):
+    async def run(self) -> None:
         await self.ctx.reply(embed=self.pages[0], view=self)

@@ -7,7 +7,7 @@ from typing_extensions import TypeAlias
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
-from config import config, get_nested_dict  # noqa
+from config import config, get_nested_dict, DataType
 
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
@@ -84,12 +84,12 @@ def _get_id(target: TargetObject) -> Union[int, str]:
         target's id
     """
     if target:
-        return getattr(target, "id", target)
+        return getattr(target, "id", target)  # type: ignore
     else:
         return "general"
 
 
-def _get_name(target: TargetObject) -> str:
+def _get_name(target: TargetObject) -> Optional[str]:
     """
     returns target name
 
@@ -124,7 +124,7 @@ async def read(target: TargetObject, path: Optional[str] = None) -> Any:
     """
     if target:
         collection = get_collection(target)
-        main_data = await collection.find_one({"_id": _get_id(target)})
+        main_data: dict[Any, Any] = await collection.find_one({"_id": _get_id(target)})
         if not main_data:
             if collection.name == "user":
                 main_data = deepcopy(config("default_data.user"))
@@ -143,7 +143,7 @@ async def read(target: TargetObject, path: Optional[str] = None) -> Any:
     return get_nested_dict(main_data, path.split("."))
 
 
-async def write(target: TargetObject, path: str, value):
+async def write(target: TargetObject, path: str, value: Any) -> None:
     """
     writes value to target
 
@@ -183,7 +183,7 @@ async def write(target: TargetObject, path: str, value):
     await collection.update_one({"_id": id_}, {"$set": {path: value}})
 
 
-async def add(target: TargetObject, path: str, value: int):
+async def add(target: TargetObject, path: str, value: int) -> None:
     """
     adds value to target data
 
@@ -200,7 +200,7 @@ async def add(target: TargetObject, path: str, value: int):
     await write(target, path, data_before + value)
 
 
-async def delete(target: TargetObject):
+async def delete(target: TargetObject) -> None:
     """
     deletes target data in DB
 
@@ -213,7 +213,7 @@ async def delete(target: TargetObject):
     await collection.delete_one({"_id": _get_id(target)})
 
 
-async def append(target: TargetObject, path: str, value):
+async def append(target: TargetObject, path: str, value: Any) -> None:
     """
     appends value to target data(list)
 
