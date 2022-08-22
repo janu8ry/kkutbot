@@ -2,7 +2,7 @@ import json
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Union, Any
+from typing import Any, Union
 
 import discord
 from discord.ext import commands

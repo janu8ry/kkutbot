@@ -1,10 +1,10 @@
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 import discord
 from discord.ext import commands
 
-from core import KkutbotContext
 from config import config  # noqa
+from core import KkutbotContext
 
 
 class BaseView(discord.ui.View):
