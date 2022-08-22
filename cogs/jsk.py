@@ -18,9 +18,7 @@ from jishaku.features.root_command import natural_size
 from jishaku.flags import Flags
 from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
-from jishaku.paginators import PaginatorInterface, WrappedPaginator
 from jishaku.repl import AsyncCodeExecutor
-from jishaku.shell import ShellReader
 from jishaku.types import ContextA
 
 try:
@@ -177,79 +175,6 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
 
         await ctx.reply("\n".join(summary), mention_author=False)
-
-    @Feature.Command(parent="jsk", name="shell", aliases=["bash", "sh", "powershell", "ps1", "ps", "cmd", "terminal", "실행", "ㅅ"])
-    async def jsk_shell(self, ctx: ContextA, *, argument: codeblock_converter):  # type: ignore
-        """
-        Executes statements in the system shell.
-        This uses the system shell as defined in $SHELL, or `/bin/bash` otherwise.
-        Execution can be cancelled by closing the paginator.
-        """
-
-        if typing.TYPE_CHECKING:
-            argument: Codeblock = argument  # type: ignore
-
-        async with ReplResponseReactor(ctx.message):
-            with self.submit(ctx):
-                with ShellReader(argument.content, escape_ansi=not Flags.use_ansi(ctx)) as reader:
-                    prefix = "```" + reader.highlight
-
-                    paginator = WrappedPaginator(prefix=prefix, max_size=1975)
-                    paginator.add_line(f"{reader.ps1} {argument.content}\n")
-
-                    interface = PaginatorInterface(ctx.bot, paginator, owner=ctx.author)
-                    self.bot.loop.create_task(interface.send_to(ctx))
-
-                    async for line in reader:
-                        if interface.closed:
-                            return
-                        await interface.add_line(line)
-
-                await interface.add_line(f"\n[status] Return code {reader.close_code}")
-
-    @Feature.Command(parent="jsk", name="poetry", aliases=["ㅍㅌ"])
-    async def jsk_pip(self, ctx: commands.Context, *, argument: codeblock_converter):
-        """
-        Shortcut for "jsk sh poetry". Invokes the system shell.
-        """
-        if typing.TYPE_CHECKING:
-            argument: Codeblock = argument  # type: ignore
-
-        return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "poetry " + argument.content))  # type: ignore
-
-    @Feature.Command(parent="jsk", name="docker")
-    async def jsk_docker(self, ctx: commands.Context, *, argument: codeblock_converter):
-        """
-        Shortcut for "jsk sh docker". Invokes the system shell.
-        """
-        if typing.TYPE_CHECKING:
-            argument: Codeblock = argument  # type: ignore
-
-        return await ctx.invoke(self.jsk_shell, argument=Codeblock(argument.language, "docker " + argument.content))  # type: ignore
-
-    @Feature.Command(parent="jsk", name="file", aliases=["파일", "ㅍㅇ"])
-    async def jsk_file(self, ctx: commands.Context, path: str):
-        """
-        Sends local file to discord channel.
-        """
-        match = self.filepath_regex.search(path)
-
-        if not match:  # should never happen
-            return await ctx.reply("파일 경로가 정확하지 않습니다.", mention_author=False)
-
-        if not os.path.exists(path) or os.path.isdir(path):
-            return await ctx.reply(f"`{path}`: 파일을 찾지 못했습니다.", mention_author=False)
-
-        size = os.path.getsize(path)
-
-        if size <= 0:
-            return await ctx.reply(f"`{path}`: 크기가 0인 파일을 읽을 수 없습니다."
-                                   f" (파일이 비어있거나, 접근 불가능할 수 있습니다.).", mention_author=False)
-
-        if size > 128 * (1024 ** 2):
-            return await ctx.reply(f"`{path}`: 파일의 용량이 128MB를 초과하여 전송할 수 없습니다.", mention_author=False)
-
-        return await ctx.reply(file=discord.File(path), mention_author=False)
 
     @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
     async def jsk_python(self, ctx: commands.Context, *, argument: codeblock_converter):
