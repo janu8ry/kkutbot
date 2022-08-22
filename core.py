@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import random
-import shutil
 import time
 from datetime import datetime, timedelta
 from typing import Any, Callable, Optional, Type, TypeVar, Union
@@ -140,13 +139,12 @@ class Kkutbot(commands.AutoShardedBot):
         await db.user.update_many({"alerts.attendance": True}, {"$set": {"alerts.attendance": False}})
         await db.user.update_many({"alerts.reward": True}, {"$set": {"alert.reward": False}})
 
-    async def backup_data(self) -> None:  # TODO: 백업 이미지 변경
-        for filename in os.listdir("/storage/mgob"):
+    async def backup_data(self) -> None:
+        for filename in os.listdir("/backup"):
             if filename.endswith(".gz"):
                 date = format_date(datetime.now() - timedelta(days=1))
-                fp = f"/storage/{date}.gz"
-                os.replace(f"/storage/mgob/{filename}", fp)
-                shutil.rmtree("/storage/mgob")
+                fp = f"/backup/{date}.gz"
+                os.replace(f"/backup/{filename}", fp)
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 

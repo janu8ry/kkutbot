@@ -11,7 +11,7 @@ services:
     container_name: "kkutbot"
     volumes:
       - ./logs:/kkutbot/logs
-      - ./backup:/storage
+      - ./backup:/backup
     environment:
       - TZ=Asia/Seoul
   mongo:
