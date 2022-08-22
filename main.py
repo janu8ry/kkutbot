@@ -23,6 +23,12 @@ bot = core.Kkutbot()
 @bot.event
 async def on_ready() -> None:
     await bot.reload_all()
+    to_replace = {
+        "jishaku sh": ["쉘", "ㅅ", "실행"],
+        "jishaku cat": ["캣", "ㅋ", "파일", "ㅍㅇ"]
+    }
+    for name, aliases in to_replace.items():
+        bot.add_aliases(name, aliases)
 
     guilds = len(bot.guilds)
     users = await bot.db.user.count_documents({})

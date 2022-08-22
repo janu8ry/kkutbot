@@ -133,6 +133,18 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_presence(self) -> None:
         await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
 
+    def add_aliases(self, name: str, aliases: list[str]) -> None:
+        cmd = self.get_command(name)
+        cmd.aliases = list(cmd.aliases)
+        cmd.aliases.extend(aliases)
+        cmd.aliases = tuple(cmd.aliases)
+        if parent := cmd.parent:
+            parent.remove_command(cmd.name)
+            parent.add_command(cmd)
+        else:
+            self.remove_command(name)
+            self.add_command(cmd)  # type: ignore
+
     @staticmethod
     async def reset_alerts() -> None:
         await write("general", "attendance", 0)
