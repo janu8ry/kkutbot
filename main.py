@@ -171,18 +171,19 @@ async def check(ctx: core.KkutbotContext) -> bool:
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction) -> None:
-    kst = timezone(timedelta(hours=9))
-    interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
-    if interaction_created < bot.started_at:
-        types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
-        await interaction.response.send_message(
-            embed=discord.Embed(
-                description=f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n"
-                            f"명령어를 새로 입력해주세요.",
-                color=config("colors.error")
-            ),
-            ephemeral=True
-        )
+    if interaction.type != discord.InteractionType.application_command:
+        kst = timezone(timedelta(hours=9))
+        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
+        if interaction_created < bot.started_at:
+            types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
+            await interaction.response.send_message(
+                embed=discord.Embed(
+                    description=f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n"
+                                f"명령어를 새로 입력해주세요.",
+                    color=config("colors.error")
+                ),
+                ephemeral=True
+            )
 
 
 @bot.event
