@@ -6,6 +6,8 @@ import discord
 from discord.ext.commands import Context, errors
 from discord.ext.commands.converter import Converter, MemberConverter, UserConverter
 
+__all__ = ["KkutbotUserConverter"]
+
 
 class KkutbotUserConverter(Converter):
     """User & Member Converter without Member Intents"""

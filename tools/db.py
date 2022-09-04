@@ -9,6 +9,8 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # no
 
 from config import config, get_nested_dict
 
+__all__ = ["db", "read", "write", "add", "delete", "append"]
+
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
