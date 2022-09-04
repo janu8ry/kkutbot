@@ -4,7 +4,7 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Any, Callable, Optional, Type, TypeVar, Union, Annotated
+from typing import Annotated, Any, Callable, Optional, Type, TypeVar, Union
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler

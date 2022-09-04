@@ -3,8 +3,8 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot, KkutbotContext
-from views.general import BotInvite, ServerInvite
 from views.botinfo import HelpMenu
+from views.general import BotInvite, ServerInvite
 
 
 class BotInfo(commands.Cog, name="일반"):
