@@ -13,7 +13,7 @@ import core
 from config import config
 from tools.db import add, append, delete, read, write
 from tools.logger import setup_logger
-from tools.views import ServerInvite
+from views.general import ServerInvite
 
 logger = logging.getLogger("kkutbot")
 
