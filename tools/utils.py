@@ -31,10 +31,6 @@ def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
     return f"{timeinfo.seconds}초"
 
 
-def format_date(dt: datetime) -> str:
-    return dt.strftime("%Y-%m-%d")
-
-
 def get_timestamp(date: str) -> int:
     return int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple()))
 

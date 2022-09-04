@@ -16,7 +16,6 @@ from topgg import DBLClient
 
 from config import config
 from tools.db import db, write
-from tools.utils import format_date
 
 logger = logging.getLogger("kkutbot")
 
@@ -154,15 +153,15 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self) -> None:
         for filename in os.listdir("/backup"):
             if filename.endswith(".gz"):
-                date = format_date(datetime.now() - timedelta(days=1))
+                date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
                 fp = f"/backup/{date}.gz"
                 os.replace(f"/backup/{filename}", fp)
                 await (self.get_channel(config("backup_channel.data"))).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self) -> None:
-        fp_before = f"logs/{format_date(datetime.now())}.log.gz"
-        fp_after = f"logs/{format_date(datetime.now() - timedelta(days=1))}.log.gz"
+        fp_before = f"logs/{datetime.now().strftime('%Y-%m-%d')}.log.gz"
+        fp_after = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
         os.replace(fp_before, fp_after)
         await (self.get_channel(config("backup_channel.log"))).send(file=discord.File(fp=fp_after))
         logger.info("로그 백업 완료!")

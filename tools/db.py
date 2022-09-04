@@ -1,18 +1,17 @@
 import logging
 import time
 from copy import deepcopy
-from typing import Any, Literal, Optional, Union
+from typing import Any, Optional, Union
 from typing_extensions import TypeAlias
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
-from config import DataType, config, get_nested_dict
+from config import config, get_nested_dict
 
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
-coltype: TypeAlias = Literal["user", "guild", "general", "unused"]
 TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
 
 

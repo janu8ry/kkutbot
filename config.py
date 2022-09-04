@@ -1,7 +1,6 @@
 import json
 import os
-from typing import Any, List, Union
-from typing_extensions import TypeAlias
+from typing import Any, List
 
 import yaml
 
@@ -12,9 +11,6 @@ for file in os.listdir("static"):
     if file not in ("wordlist.json", "transition.json", "quests.json"):
         with open(f"static/{file}", "r", encoding="utf-8") as f:
             config_data[file[:-5]] = json.load(f)
-
-
-DataType: TypeAlias = Union[int, str, float, bool, dict[str, Any], list[Any], None]
 
 
 def get_nested_dict(data: dict[str, Any], path: List[str]) -> Any:
