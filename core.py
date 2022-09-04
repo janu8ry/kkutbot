@@ -4,7 +4,7 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Type, TypeVar, Union, Annotated
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -97,11 +97,12 @@ class Kkutbot(commands.AutoShardedBot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True
         )
+        self.guild_multi_games: list[int] = []
         self.db: AsyncIOMotorDatabase = db
-        self.koreanbots: DiscordpyKoreanbots
-        self.koreanbots_api: Koreanbots
-        self.dbl: DBLClient
-        self.started_at: int
+        self.koreanbots = Annotated[DiscordpyKoreanbots, None]
+        self.koreanbots_api = Annotated[Koreanbots, None]
+        self.dbl = Annotated[DBLClient, None]
+        self.started_at = Annotated[int, None]
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)

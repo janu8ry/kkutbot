@@ -8,7 +8,7 @@ from discord.ext import commands
 from config import config
 from core import Kkutbot, KkutbotContext
 from tools.db import add, read, write
-from tools.views import KoreanBotsVote
+from views.general import KoreanBotsVote
 
 
 class Economy(commands.Cog, name="경제"):
