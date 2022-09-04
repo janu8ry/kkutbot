@@ -9,7 +9,6 @@ from typing import Annotated, Any, Callable, Optional, Type, TypeVar, Union
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext import commands
-from koreanbots import Koreanbots
 from koreanbots.integrations.discord import DiscordpyKoreanbots
 from motor.motor_asyncio import AsyncIOMotorDatabase  # noqa
 from topgg import DBLClient
@@ -100,7 +99,6 @@ class Kkutbot(commands.AutoShardedBot):
         self.guild_multi_games: list[int] = []
         self.db: AsyncIOMotorDatabase = db
         self.koreanbots = Annotated[DiscordpyKoreanbots, None]
-        self.koreanbots_api = Annotated[Koreanbots, None]
         self.dbl = Annotated[DBLClient, None]
         self.started_at = Annotated[int, None]
 
@@ -113,10 +111,9 @@ class Kkutbot(commands.AutoShardedBot):
             self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
-        self.started_at = round(time.time())  # noqa
-        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)  # noqa
-        self.koreanbots_api = Koreanbots(api_key=config("token.koreanbots"))  # noqa
-        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))  # noqa
+        self.started_at = round(time.time())
+        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
+        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
         self.scheduler.start()
 
     def run_bot(self) -> None:
@@ -192,7 +189,7 @@ class Kkutbot(commands.AutoShardedBot):
         return {k: f"<:{k}:{v}>" for k, v in config("emojis").items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots_api.is_voted_bot(user.id, 703956235900420226 if config("test") else self.user.id)
+        data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)
         return data.voted
 
 
