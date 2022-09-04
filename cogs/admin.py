@@ -75,7 +75,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply(file=discord.File(path))
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
-    async def user_info(self, ctx: KkutbotContext, *, user: commands.parameter(converter=KkutbotUserConverter) = None):
+    async def user_info(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             cmd_data = await read(None, "commands")
@@ -101,7 +101,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
-    async def guild_info(self, ctx: KkutbotContext, *, guild: commands.CurrentGuild):
+    async def guild_info(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
         if not (await self.bot.db.guild.find_one({"_id": guild.id})):
             return await ctx.reply("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
@@ -111,13 +111,13 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply(content, escape_emoji_formatting=True)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
-    async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: commands.parameter(converter=KkutbotUserConverter)):
+    async def give_point(self, ctx: KkutbotContext, amount: int = 1000, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """관리자 권한으로 포인트를 지급합니다."""
         await add(user, "points", amount)
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
-    async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: commands.parameter(converter=KkutbotUserConverter)):
+    async def give_medal(self, ctx: KkutbotContext, amount: int = 1000, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """관리자 권한으로 메달을 지급합니다."""
         await add(user, "medals", amount)
         await ctx.reply("{done} 완료!")
@@ -137,7 +137,7 @@ class Admin(commands.Cog, name="관리자"):
         view.message = await ctx.reply(embed=embed, view=view)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
-    async def delete_userdata(self, ctx: KkutbotContext, *, user: commands.parameter(converter=KkutbotUserConverter)):
+    async def delete_userdata(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """유저의 데이터를 초기화합니다."""
         if await self.bot.db.user.find_one({'_id': user.id}):
             await delete(user)
@@ -146,7 +146,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply("{denyed} 해당 유저는 끝봇의 유저가 아닙니다.")
 
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
-    async def delete_guilddata(self, ctx: KkutbotContext, *, guild: commands.CurrentGuild):
+    async def delete_guilddata(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """서버의 데이터를 초기화합니다."""
         if await self.bot.db.guild.find_one({"_id": guild.id}):
             await delete(guild)
@@ -155,7 +155,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
 
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기"))
-    async def leave_guild(self, ctx: KkutbotContext, *, guild: commands.CurrentGuild):
+    async def leave_guild(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """서버를 나갑니다."""
         if await self.bot.db.guild.find_one({"_id": guild.id}):
             await guild.leave()
@@ -171,13 +171,13 @@ class Admin(commands.Cog, name="관리자"):
         view.message = await ctx.reply("버튼 눌러 공지 작성하기", view=view)
 
     @commands.command(name="$알림", usage="ㄲ$알림 <유저>")
-    async def send_notice(self, ctx: KkutbotContext, *, user: commands.parameter(converter=KkutbotUserConverter)):
+    async def send_notice(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """유저에게 알림을 전송합니다."""
         view = SendNotice(ctx=ctx, target=user.id)
         view.message = await ctx.reply("버튼 눌러 알림 보내기", view=view)
 
     @commands.command(name="$차단", usage="ㄲ$차단 <유저> <기간(일)> <사유>", aliases=("$정지",))
-    async def ban_user(self, ctx: KkutbotContext, user: commands.parameter(converter=KkutbotUserConverter), days: float = 1.0, *, reason: str = "없음"):
+    async def ban_user(self, ctx: KkutbotContext, user: discord.Member = commands.parameter(converter=KkutbotUserConverter), days: float = 1.0, *, reason: str = "없음"):
         """유저를 이용 정지 처리합니다."""
         if await read(user, "banned.isbanned"):
             return await ctx.reply("{denyed} 이미 차단된 유저입니다.")
@@ -193,7 +193,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$차단해제", usage="ㄲ$차단해제 <유저>", aliases=("$정지해제",))
-    async def unban_user(self, ctx: KkutbotContext, *, user: commands.parameter(converter=KkutbotUserConverter)):
+    async def unban_user(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
         """유저의 이용 정지 처리를 해제합니다."""
         if await read(user, "banned.isbanned"):
             await write(user, "banned", {"isbanned": False, "since": 0, "period": 0, "reason": None})
