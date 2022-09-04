@@ -46,7 +46,7 @@ class HelpDropdown(discord.ui.Select):
 
 
 class HelpMenu(BaseView):
-    def __init__(self, ctx: commands.Context, home_embed: discord.Embed):
+    def __init__(self, ctx: KkutbotContext, home_embed: discord.Embed):
         super().__init__(ctx=ctx, author_only=True)
         self.home_embed = home_embed
         self.add_item(

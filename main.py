@@ -23,6 +23,7 @@ bot = core.Kkutbot()
 @bot.event
 async def on_ready() -> None:
     await bot.reload_all()
+
     to_replace = {
         "jishaku sh": ["쉘", "ㅅ", "실행"],
         "jishaku cat": ["캣", "ㅋ", "파일", "ㅍㅇ"]

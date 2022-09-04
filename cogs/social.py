@@ -1,5 +1,6 @@
 import asyncio
 import time
+from typing import Coroutine
 
 import discord
 from discord.ext import commands
@@ -64,7 +65,7 @@ class RankDropdown(discord.ui.Select):
         names = await asyncio.gather(*[self.get_user_name(i["_id"]) for i in rank])
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
-    async def get_overall_rank(self) -> None:
+    async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
         embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config("colors.help"))
         coros = []
         for path in self.categories["main"]:
@@ -125,7 +126,7 @@ class RankDropdown(discord.ui.Select):
 
 
 class RankMenu(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.dropdown = RankDropdown(ctx)
         self.add_item(self.dropdown)

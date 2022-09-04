@@ -29,7 +29,7 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
 
 
 class InfoEdit(BaseView):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: KkutbotContext):
         super().__init__(ctx=ctx, author_only=True)
         self.ctx = ctx
 
