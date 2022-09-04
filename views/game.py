@@ -55,7 +55,7 @@ class SelectMode(BaseView):
 
 
 class HostGuildGame(BaseView):
-    def __init__(self, ctx: KkutbotContext, game: MultiGame):
+    def __init__(self, ctx: KkutbotContext, game: "MultiGame"):
         super().__init__(ctx=ctx, author_only=False)
         self.ctx = ctx
         self.timeout = 120
