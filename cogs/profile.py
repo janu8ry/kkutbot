@@ -31,7 +31,7 @@ class Profile(commands.Cog, name="사용자"):
         """
         embed = discord.Embed(
             title=f"{{profile}} {e_mk(str(user))} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}",
-            description=f"```yaml\n{await read(user, 'info')}```\n"
+            description=f"```yaml\n{await read(user, 'bio')}```\n"
                         f"{{tier}} 랭킹전 티어 - **{await get_tier(user, 'rank_solo')}** | **{await get_tier(user, 'rank_online')}**\n​",
             color=config("colors.general")
         )

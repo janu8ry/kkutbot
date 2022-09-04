@@ -3,7 +3,7 @@
         "_id": null,
         "name": null,
         "registered": null,
-        "info": "소개말이 없습니다.",
+        "bio": "소개말이 없습니다.",
         "points": 1000,
         "medals": 0,
         "latest_reward": null,
