@@ -63,6 +63,8 @@ class Economy(commands.Cog, name="경제"):
         """
         await write(ctx.author, "alerts.attendance", True)
         bonus = False
+        bonus_point = random.randint(100, 200)
+        bonus_medal = random.randint(1, 5)
         week_daily = []
         week_data = await read(ctx.author, "attendance")
         del week_data["times"]
@@ -81,8 +83,6 @@ class Economy(commands.Cog, name="경제"):
             week_data = await read(ctx.author, "attendance")
             del week_data["times"]
             if (week_today == 6) and (list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]):
-                bonus_point = random.randint(100, 200)
-                bonus_medal = random.randint(1, 5)
                 await add(ctx.author, "points", bonus_point)
                 await add(ctx.author, "medals", bonus_medal)
                 bonus = True
@@ -111,7 +111,7 @@ class Economy(commands.Cog, name="경제"):
                 description="일주일 동안 매일 출석했습니다!",
                 color=config("colors.help")
             )
-            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")  # noqa
+            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
             bonus_embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.bonus")).url)
             await ctx.reply(embed=bonus_embed)
 

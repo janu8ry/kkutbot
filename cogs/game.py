@@ -8,7 +8,8 @@ import discord
 from discord.ext import commands
 
 from core import Kkutbot, KkutbotContext
-from tools.db import add, config, read, write
+from config import config
+from tools.db import add, read, write
 from tools.utils import choose_first_word, get_tier, get_transition, get_winrate, get_word, is_hanbang
 from views.game import HostGuildGame, SelectMode
 
@@ -330,7 +331,7 @@ class Game(commands.Cog, name="게임"):
                         await game.send_info_embed(msg, f"**{user_word}** (은)는 없는 단어입니다.")
                         continue
                 final_list = [x for x in get_word(user_word) if x not in game.used_words]
-                if not final_list:  # noqa
+                if not final_list:
                     await game.game_end("승리")
                     return
                 else:
