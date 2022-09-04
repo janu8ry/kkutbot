@@ -150,7 +150,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def backup_data(self) -> None:
         for filename in os.listdir("/backup"):
-            if filename.endswith(".gz"):
+            if filename[:10].isdecimal():
                 date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
                 fp = f"/backup/{date}.gz"
                 os.replace(f"/backup/{filename}", fp)
