@@ -3,8 +3,8 @@ import operator
 import random
 import time
 from typing import Literal, Union
-
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from config import config
@@ -237,12 +237,21 @@ class Game(commands.Cog, name="게임"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="끝말잇기", usage="ㄲ끝말잇기 <모드>", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
+    @commands.hybrid_command(name="끝말잇기", usage="/끝말잇기 <모드>", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def game(self, ctx: KkutbotContext, mode: int = None):
+    @app_commands.describe(mode="플레이 할 게임 모드를 선택합니다.")
+    @app_commands.rename(mode="모드")
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="솔로 랭킹전", value=1),
+        app_commands.Choice(name="서버원들과 친선전", value=2),
+        app_commands.Choice(name="쿵쿵따", value=3),
+    ])
+    async def game(self, ctx: KkutbotContext, mode: app_commands.Choice[int] = None):
         """
+        끝말잇기 게임을 플레이합니다.
+
         **1. 게임 방법**
         서로 번갈아가며 상대방이 마지막에 제시한 단어의 마지막 글자로 시작하는 단어를 제시합니다.
         이를 계속 반복하다가 어느 한쪽이 단어를 잇지 못하게 되면 상대방의 승리!
@@ -269,12 +278,11 @@ class Game(commands.Cog, name="게임"):
         :three: 쿵쿵따
         -끝봇과 끝말잇기 대결을 합니다. 하지만 세글자 단어만 사용 가능합니다.
 
-        `ㄲ끝말잇기 <모드>` 명령어로 해당 게임 모드를 빠르게 플레이 할 수도 있습니다!
-        예시) `ㄲ끝말잇기 1` -> 1번 모드(솔로 랭킹전) 플레이
+        `ㄲ끝말잇기<모드>` 명령어로 해당 게임 모드를 빠르게 플레이 할 수도 있습니다!
+        예시) `ㄲ끝말잇기1` -> 1번 모드(솔로 랭킹전) 플레이
 
         3종류의 모드 추가 개발중...
         """
-
         def check(x: Union[discord.Message, KkutbotContext]) -> bool:
             return x.author == ctx.author and x.channel == ctx.channel
 
@@ -292,8 +300,10 @@ class Game(commands.Cog, name="게임"):
             view.message = await ctx.reply(embed=embed, view=view)
             await view.wait()
             mode = view.value
-        elif not (1 <= mode <= 3):
-            return await ctx.reply("{denyed} 존재하지 않는 모드입니다.")
+        else:
+            mode = mode.value
+            if not (1 <= mode <= 3):
+                return await ctx.reply("{denyed} 존재하지 않는 모드입니다.")
 
         if mode == 1:
             game = SoloGame(ctx)
@@ -483,6 +493,30 @@ class Game(commands.Cog, name="게임"):
 
         elif mode == 0:
             return await ctx.send("취소되었습니다.")
+
+    @commands.command(name="끝말잇기1", usage="ㄲ끝말잇기1", aliases=("ㄲ1", "끝1", "ㄲㅁㅇㄱ1"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game1(self, ctx: KkutbotContext):
+        """끝말잇기 '솔로 랭킹전' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
+
+    @commands.command(name="끝말잇기2", usage="ㄲ끝말잇기2", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game2(self, ctx: KkutbotContext):
+        """끝말잇기 '서버원들과 친선전' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
+
+    @commands.command(name="끝말잇기3", usage="ㄲ끝말잇기3", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game3(self, ctx: KkutbotContext):
+        """끝말잇기 '쿵쿵따' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="쿵쿵따", value=3))
 
 
 async def setup(bot: Kkutbot):

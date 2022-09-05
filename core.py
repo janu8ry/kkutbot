@@ -119,6 +119,9 @@ class Kkutbot(commands.AutoShardedBot):
     def run_bot(self) -> None:
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
 
+    async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
+        return await super().get_context(origin, cls=cls)
+
     async def try_reload(self, name: str) -> None:
         name = f"cogs.{name}"
         try:

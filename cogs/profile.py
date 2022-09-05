@@ -1,4 +1,7 @@
+from typing import List
+
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
 
@@ -10,6 +13,17 @@ from tools.utils import get_tier, get_winrate, is_admin
 from views.profile import InfoEdit
 
 
+async def member_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    choices = []
+    if interaction.guild:
+        for member in interaction.guild.members:
+            if current.lower() in member.name.lower():
+                choices.append(app_commands.Choice(name=member.name, value=str(member.id)))
+            elif current.lower() in member.display_name.lower():
+                choices.append(app_commands.Choice(name=member.display_name, value=str(member.id)))
+    return choices[:25]
+
+
 class Profile(commands.Cog, name="사용자"):
     """사용자의 프로필에 관련된 명령어들입니다."""
 
@@ -18,11 +32,12 @@ class Profile(commands.Cog, name="사용자"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="프로필", usage="ㄲ프로필 <유저>", aliases=("ㅍ", "ㅍㄹㅍ"))
+    @commands.hybrid_command(name="프로필", usage="/프로필 <유저>", aliases=("ㅍ", "ㅍㄹㅍ"))
+    @app_commands.autocomplete(user=member_autocomplete)
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
-    async def profile(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
-        """대상의 티어, 포인트, 승률 등의 프로필을 확인합니다.
+    async def profile(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author)):
+        """유저의 티어, 포인트, 승률 등의 프로필을 확인합니다.
         자신의 프로필을 확인한 경우, 아래 버튼을 눌러 소개말을 변경할 수 있습니다!
 
         <예시>
@@ -46,10 +61,11 @@ class Profile(commands.Cog, name="사용자"):
         else:
             await ctx.reply(embed=embed)
 
-    @commands.command(name="통계", usage="ㄲ통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
+    @commands.hybrid_command(name="통계", usage="/통계 <유저>", aliases=("상세정보", "ㅌ", "ㅌㄱ"))
+    @app_commands.autocomplete(user=member_autocomplete)
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    async def stats(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None)):
-        """대상의 자세한 통계를 확인합니다.
+    async def stats(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author)):
+        """유저의 자세한 통계를 확인합니다.
 
         <예시>
         ㄲ통계 - 자신의 통계를 확인합니다.

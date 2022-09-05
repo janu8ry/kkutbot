@@ -19,12 +19,14 @@ class Economy(commands.Cog, name="경제"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="포인트", usage="ㄲ포인트", aliases=("ㅍㅇㅌ", "지원금", "ㅈㅇㄱ"))
+    @commands.hybrid_command(name="포인트", usage="/포인트", aliases=("ㅍㅇㅌ", "지원금", "ㅈㅇㄱ"))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def get_heart_reward(self, ctx: KkutbotContext):
-        """[한국 디스코드 리스트](https://koreanbots.dev/bots/703956235900420226) 에서 **하트 추가**를 누르고 포인트를 받습니다.
+        """한국 디스코드 리스트에서 하트 추가를 누르고 포인트를 받습니다.
         하루에 한번씩만 수령 가능합니다.
+
+         - 한국 디스코드 리스트: https://koreanbots.dev/bots/703956235900420226
         """
         await write(ctx.author, "alerts.reward", True)
         if await self.bot.if_koreanbots_voted(ctx.author):
@@ -54,7 +56,7 @@ class Economy(commands.Cog, name="경제"):
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())
 
-    @commands.command(name="출석", usage="ㄲ출석", aliases=("ㅊ", "ㅊㅅ", "ㅊㅊ"))
+    @commands.hybrid_command(name="출석", usage="/출석", aliases=("ㅊ", "ㅊㅅ", "ㅊㅊ"))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def daily_check(self, ctx: KkutbotContext):
@@ -115,7 +117,7 @@ class Economy(commands.Cog, name="경제"):
             bonus_embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.bonus")).url)
             await ctx.reply(embed=bonus_embed)
 
-    @commands.command(name="퀘스트", usage="ㄲ퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
+    @commands.hybrid_command(name="퀘스트", usage="/퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.

@@ -15,7 +15,7 @@ class BotInfo(commands.Cog, name="일반"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.command(name="도움", usage="ㄲ도움", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"))
+    @commands.hybrid_command(name="도움", usage="/도움", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext):
         """끝봇의 명령어 목록을 확인합니다."""
@@ -38,7 +38,7 @@ class BotInfo(commands.Cog, name="일반"):
         view = HelpMenu(ctx=ctx, home_embed=embed)
         view.message = await ctx.reply(embed=embed, view=view)
 
-    @commands.command(name="초대", usage="ㄲ초대", aliases=("링크", "ㅊㄷ"))
+    @commands.hybrid_command(name="초대", usage="/초대", aliases=("링크", "ㅊㄷ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """끝봇을 초대할 때 필요한 링크를 확인합니다."""
@@ -51,7 +51,7 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=BotInvite())
 
-    @commands.command(name="커뮤니티", usage="ㄲ커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ", "ㄷㅋ"))
+    @commands.hybrid_command(name="커뮤니티", usage="/커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ", "ㄷㅋ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장을 확인합니다."""
@@ -64,7 +64,7 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=ServerInvite())
 
-    @commands.command(name="핑", usage="ㄲ핑", hidden=True)
+    @commands.hybrid_command(name="핑", usage="/핑", hidden=True)
     @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
     async def ping(self, ctx: KkutbotContext):
         """끝봇의 응답 속도를 확인합니다.

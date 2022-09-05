@@ -3,7 +3,7 @@ import random
 import time
 import traceback
 from datetime import datetime, timedelta, timezone
-from typing import Type
+from typing import Type, Union
 
 import discord
 from discord.ext import commands
@@ -171,7 +171,7 @@ async def check(ctx: core.KkutbotContext) -> bool:
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction) -> None:
-    if interaction.type != discord.InteractionType.application_command:
+    if interaction.type == discord.InteractionType.component:
         kst = timezone(timedelta(hours=9))
         interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
         if interaction_created < bot.started_at:
@@ -187,26 +187,28 @@ async def on_interaction(interaction: discord.Interaction) -> None:
 
 
 @bot.event
-async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError]) -> None:
-    if isinstance(error, commands.errors.BotMissingPermissions):
+async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.CommandError, commands.HybridCommandError]]) -> None:
+    if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
-    elif isinstance(error, commands.errors.MissingPermissions):
+    elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다.")
     elif isinstance(error, commands.errors.NotOwner):
         return
-    elif isinstance(error, commands.errors.NoPrivateMessage):
+    elif isinstance(error, commands.NoPrivateMessage):
         await ctx.reply("{denyed} DM으로는 실행할 수 없는 기능입니다.")
     elif isinstance(error, commands.errors.PrivateMessageOnly):
         await ctx.reply("{denyed} DM으로만 실행할 수 있는 기능입니다.")
-    elif isinstance(error, commands.errors.CheckFailure):
+    elif isinstance(error, commands.CheckFailure):
         if ctx.command.name.startswith("$"):
             return
     elif isinstance(error, commands.errors.DisabledCommand):
         await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
-    elif isinstance(error, commands.errors.CommandOnCooldown):
+    elif isinstance(error, commands.CommandOnCooldown):
         if ctx.author.id in config("admin"):
-            await ctx.reinvoke()
-            return
+            try:
+                await ctx.reinvoke()
+            except TypeError:
+                pass
         embed = discord.Embed(
             title="잠깐!",
             description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.",
@@ -214,7 +216,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         )
         embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         await ctx.reply(embed=embed)
-    elif isinstance(error, (commands.errors.MissingRequiredArgument, commands.errors.BadArgument, commands.errors.TooManyArguments)):
+    elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
@@ -223,10 +225,12 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
         embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
-    elif isinstance(error, commands.errors.MaxConcurrencyReached):
+    elif isinstance(error, commands.MaxConcurrencyReached):
         if ctx.author.id in config("admin"):
-            await ctx.reinvoke()
-            return
+            try:
+                await ctx.reinvoke()
+            except TypeError:
+                pass
         if error.per == commands.BucketType.guild:
             await ctx.reply(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다.")
         elif error.per == commands.BucketType.channel:
