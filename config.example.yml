@@ -18,11 +18,6 @@ token:
 admin:
   -
 
-# webhook url for logging
-webhook:
-  main:
-  test:
-
 # embed colors
 colors:
   general: 0x4374D9
@@ -45,9 +40,10 @@ mongo:
     password: userpasswd  # 'null' if you are not using auth
 
 # mongodb & log backup channel id
-backup_channel:
-  data:
-  log:
+channels:
+  backup_data:
+  backup_log:
+  error_log:
 
 # useful links
 links:
