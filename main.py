@@ -47,6 +47,7 @@ async def on_shard_ready(shard_id: int) -> None:
     logger.info(f"{shard_id}번 샤드 준비 완료!")
 
 
+@bot.before_invoke
 async def before_command(ctx: core.KkutbotContext) -> None:
     await add(ctx.author, "command_used", 1)
     await write(ctx.author, "latest_usage", round(time.time()))
@@ -66,13 +67,17 @@ async def before_command(ctx: core.KkutbotContext) -> None:
             cache[data] = await read(ctx.author, data.replace("/", "."))
         await write(ctx.author, "quest.cache", cache)
 
+    if ctx.message.content:
+        msg = ctx.message.content
+    else:
+        msg = f"/{ctx.command}"
     if isinstance(ctx.channel, discord.DMChannel):
         logger.command(  # type: ignore
-            f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {ctx.message.content}"
+            f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {msg}"
         )
     else:
         logger.command(  # type: ignore
-            f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {ctx.message.content}"
+            f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}"
         )
 
 
@@ -96,7 +101,6 @@ async def on_message(message: discord.Message) -> None:
 
     ctx = await bot.get_context(message, cls=core.KkutbotContext)
     if ctx.command:
-        await before_command(ctx)
         await bot.invoke(ctx)
 
 
