@@ -22,14 +22,13 @@ services:
       - "27017:27017"
     volumes:
       -  /Users/janu8ry/Desktop/mongodb:/data/db
+    env_file:
+      - .env
     environment:
       - TZ=Asia/Seoul
-      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_username
-      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_password
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     command: mongod --quiet
-    secrets:
-      - mongo_username
-      - mongo_password
   mongob:
     image: janu8ry/mongob:arm64
     restart: always
@@ -37,13 +36,9 @@ services:
     volumes:
       - ./mongob.yml:/mongob/config.yml
       - ./backup:/backup
-      - ./mongo_username.txt:/mongob/username.txt
-      - ./mongo_password.txt:/mongob/password.txt
+    env_file:
+      - .env
     environment:
       - TZ=Asia/Seoul
-
-secrets:
-  mongo_username:
-    file: mongo_username.txt
-  mongo_password:
-    file: mongo_password.txt
+      - MONGOB_USERNAME=${MONGO_USERNAME}
+      - MONGOB_PASSWORD=${MONGO_PASSWORD}
