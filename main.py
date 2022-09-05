@@ -2,9 +2,9 @@ import logging
 import random
 import time
 import traceback
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Type, Union
-import uuid
 
 import discord
 from discord.ext import commands
