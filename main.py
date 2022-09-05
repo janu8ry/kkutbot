@@ -4,6 +4,7 @@ import time
 import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Type, Union
+import uuid
 
 import discord
 from discord.ext import commands
@@ -13,6 +14,7 @@ import core
 from config import config
 from tools.db import add, append, delete, read, write
 from tools.logger import setup_logger
+from tools.utils import is_admin
 from views.general import ServerInvite
 
 logger = logging.getLogger("kkutbot")
@@ -250,12 +252,21 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
             error = error.__cause__
 
         error_log = ''.join(traceback.format_exception(type(error), error, error.__traceback__, chain=False))
+        error_log = error_log.replace("```", "\\`\\`\\`")
+        error_id = str(uuid.uuid4())[:6]
 
-        embed = discord.Embed(title="에러", color=config('colors.error'))
-        embed.add_field(name="에러 코드", value=f"```{error}```")
-        embed.set_footer(text="끝봇 공식 커뮤니티에서 개발자에게 제보해 주세요!")
-        await ctx.reply(embed=embed)
-        logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}")
+        error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config('colors.error'))
+        error_embed.add_field(name="에러 발생 위치", value=f"유저: {ctx.author}(`{ctx.author.id}`)\n서버: {ctx.guild}(`{ctx.guild.id}`)\n채널: {ctx.channel}(`{ctx.channel.id}`)")
+        error_embed.add_field(name="에러 이름", value=f"`{error_log.__class__.__name__}`", inline=False)
+        error_embed.add_field(name="에러 내용", value=f"```{error}```", inline=False)
+
+        if is_admin(ctx):
+            await ctx.reply(embed=error_embed)
+        else:
+            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config('colors.error'))
+            await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
+            await (bot.get_channel(config("channels.error_log"))).send(embed=error_embed)
+        logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}\n에러 ID: {error_id}")
 
 
 @bot.event
