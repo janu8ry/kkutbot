@@ -29,6 +29,28 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     command: mongod --quiet
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: "kkutbot-mongo-express"
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD}
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_USERNAME}
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+    depends_on:
+      - mongo
   mongob:
     image: janu8ry/mongob:arm64
     restart: always
@@ -42,3 +64,5 @@ services:
       - TZ=Asia/Seoul
       - MONGOB_USERNAME=${MONGO_USERNAME}
       - MONGOB_PASSWORD=${MONGO_PASSWORD}
+    depends_on:
+      - mongo
