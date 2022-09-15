@@ -20,6 +20,7 @@ rich = "^12.4.4"
 APScheduler = "^3.9.1"
 humanize = "^4.1.0"
 jishaku = {extras = ["procinfo"], version = "^2.5.1"}
+beanie = "^1.11.9"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"
