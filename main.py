@@ -86,7 +86,6 @@ async def before_command(ctx: core.KkutbotContext) -> None:
 @bot.event
 async def on_message(message: discord.Message) -> None:
     is_banned = await read(message.author, "banned.isbanned")
-    is_bot = message.author.bot and (message.author.id not in config("bot_whitelist"))
 
     if is_banned:
         banned_since = await read(message.author, "banned.since")
@@ -98,7 +97,7 @@ async def on_message(message: discord.Message) -> None:
             )
         else:
             return None
-    elif is_bot:
+    elif message.author.bot:
         return None
 
     ctx = await bot.get_context(message, cls=core.KkutbotContext)
