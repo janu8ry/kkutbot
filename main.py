@@ -121,9 +121,9 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
         embed = discord.Embed(
             title="퀘스트 클리어!",
             description=desc,
-            color=config("colors.help")
+            color=config.colors.help
         )
-        embed.set_thumbnail(url=bot.get_emoji(config("emojis.congrats")).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["congrats"]).url)
         embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
@@ -131,14 +131,14 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
             bonus_embed = discord.Embed(
                 title="보너스 보상",
                 description="오늘의 퀘스트를 모두 완료했습니다!",
-                color=config("colors.help")
+                color=config.colors.help
             )
             bonus_point = random.randint(100, 200)
             bonus_medal = random.randint(1, 5)
             await add(ctx.author, "points", bonus_point)
             await add(ctx.author, "medals", bonus_medal)
             bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
-            bonus_embed.set_thumbnail(url=bot.get_emoji(config("emojis.bonus")).url)
+            bonus_embed.set_thumbnail(url=bot.get_emoji(config.emojis["bonus"]).url)
             await ctx.reply(embed=bonus_embed)
 
     alert_message = []
@@ -164,7 +164,7 @@ async def check(ctx: core.KkutbotContext) -> bool:
                 title="오류",
                 description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"
                             f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
-                color=config("colors.error")
+                color=config.colors.error
             )
             await ctx.author.send(embed=embed)
         except discord.Forbidden:
@@ -185,7 +185,7 @@ async def on_interaction(interaction: discord.Interaction) -> None:
                 embed=discord.Embed(
                     description=f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n"
                                 f"명령어를 새로 입력해주세요.",
-                    color=config("colors.error")
+                    color=config.colors.error
                 ),
                 ephemeral=True
             )
@@ -194,9 +194,9 @@ async def on_interaction(interaction: discord.Interaction) -> None:
 @bot.event
 async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.CommandError, commands.HybridCommandError]]) -> None:
     if isinstance(error, commands.BotMissingPermissions):
-        await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
+        await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config('perms')[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다.")
+        await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다.")
     elif isinstance(error, commands.errors.NotOwner):
         return
     elif isinstance(error, commands.NoPrivateMessage):
@@ -209,7 +209,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
     elif isinstance(error, commands.errors.DisabledCommand):
         await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
     elif isinstance(error, commands.CommandOnCooldown):
-        if ctx.author.id in config("admin"):
+        if ctx.author.id in config.admin:
             try:
                 await ctx.reinvoke()
             except TypeError:
@@ -217,21 +217,21 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         embed = discord.Embed(
             title="잠깐!",
             description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.",
-            color=config("colors.error")
+            color=config.colors.error
         )
-        embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
             description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
-            color=config("colors.general")
+            color=config.colors.general
         )
-        embed.set_thumbnail(url=bot.get_emoji(config("emojis.denyed")).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):
-        if ctx.author.id in config("admin"):
+        if ctx.author.id in config.admin:
             try:
                 await ctx.reinvoke()
             except TypeError:
@@ -254,7 +254,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         error_log = error_log.replace("```", "\\`\\`\\`")
         error_id = str(uuid.uuid4())[:6]
 
-        error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config('colors.error'))
+        error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
         error_embed.add_field(name="에러 발생 위치", value=f"유저: {ctx.author}(`{ctx.author.id}`)\n서버: {ctx.guild}(`{ctx.guild.id}`)\n채널: {ctx.channel}(`{ctx.channel.id}`)")
         error_embed.add_field(name="에러 이름", value=f"`{error_log.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```{error}```", inline=False)
@@ -262,9 +262,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)
         else:
-            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config('colors.error'))
+            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.error)
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
-            await (bot.get_channel(config("channels.error_log"))).send(embed=error_embed)
+            await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)
         logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}\n에러 ID: {error_id}")
 
 
@@ -280,8 +280,8 @@ async def on_guild_join(guild: discord.Guild) -> None:
                     "- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면\n"
                     "  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!\n"
                     "  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.\n\n"
-                    "끝봇을 서버에 초대한 경우 [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.",
-        color=config("colors.general")
+                    f"끝봇을 서버에 초대한 경우 [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
+        color=config.colors.general
     )
     try:
         await announce.send(embed=embed, view=ServerInvite())
@@ -309,10 +309,10 @@ async def on_guild_join(guild: discord.Guild) -> None:
         embed = discord.Embed(
             title="권한이 부족합니다.",
             description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
-            color=config("colors.error"))
+            color=config.colors.error)
         embed.add_field(
             name="더 필요한 권한 목록",
-            value=f"`{'`, `'.join([config('perms')[p] for p in missing_perms])}`"
+            value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`"
         )
         try:
             await announce.send(embed=embed)

@@ -22,7 +22,7 @@ class BaseView(discord.ui.View):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.",
-                    color=config("colors.error")
+                    color=config.colors.error
                 ),
                 ephemeral=True
             )
@@ -57,7 +57,7 @@ class ServerInvite(discord.ui.View):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label=text, style=discord.ButtonStyle.grey, url=config("links.invite.server")
+                label=text, style=discord.ButtonStyle.grey, url=config.links.invite.server
             )
         )
 
@@ -67,7 +67,7 @@ class BotInvite(discord.ui.View):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config.links.invite.bot
             )
         )
 
@@ -77,7 +77,7 @@ class KoreanBotsVote(discord.ui.View):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config("links.koreanbots")
+                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config.links.koreanbots
             )
         )
 

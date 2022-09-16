@@ -33,7 +33,7 @@ class HelpDropdown(discord.ui.Select):
         embed = discord.Embed(
             title=f"{{help}} {self.values[0]} 명령어 도움말",
             description=cog_data.description,
-            color=config("colors.help")
+            color=config.colors.help
         )
         for cmd in cog_data.get_commands():
             if not cmd.hidden:
@@ -53,17 +53,17 @@ class HelpMenu(BaseView):
         self.home_embed = home_embed
         self.add_item(
             discord.ui.Button(
-                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config("links.invite.bot")
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config.links.invite.bot
             )
         )
         self.add_item(
             discord.ui.Button(
-                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config("links.invite.server")
+                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config.links.invite.server
             )
         )
         self.add_item(
             discord.ui.Button(
-                label="하트 누르기", style=discord.ButtonStyle.red, url=f"{config('links.koreanbots')}/vote"
+                label="하트 누르기", style=discord.ButtonStyle.red, url=f"{config.links.koreanbots}/vote"
             )
         )
         self.add_item(HelpDropdown(ctx))

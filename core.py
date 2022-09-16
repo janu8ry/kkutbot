@@ -88,7 +88,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     def __init__(self) -> None:
         super().__init__(
-            command_prefix=config(f"prefix.{'test' if config('test') else 'main'}"),
+            command_prefix=getattr(config.prefix, "test" if config.is_test else "main"),
             help_command=None,
             intents=intents,
             activity=discord.Game("봇 로딩"),
@@ -106,18 +106,18 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
-        if not config('test'):
+        if not config.is_test:
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
             self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
-        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
-        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
+        self.koreanbots = DiscordpyKoreanbots(self, config.token.koreanbots, run_task=not config.is_test, include_shard_count=True)
+        self.dbl = DBLClient(self, config.token.dbl, autopost=not config.is_test, post_shard_count=not config.is_test)
         self.scheduler.start()
 
     def run_bot(self) -> None:
-        super().run(config(f"token.{'test' if config('test') else 'main'}"))
+        super().run(getattr(config.token, "test" if config.is_test else "main"))
 
     async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
         return await super().get_context(origin, cls=cls)
@@ -157,14 +157,14 @@ class Kkutbot(commands.AutoShardedBot):
                 date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
                 fp = f"/backup/{date}.gz"
                 os.replace(f"/backup/{filename}", fp)
-                await (self.get_channel(config("channels.backup_data"))).send(file=discord.File(fp=fp))
+                await (self.get_channel(config.channels.backup_data)).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self) -> None:
         fp_before = f"logs/{datetime.now().strftime('%Y-%m-%d')}.log.gz"
         fp_after = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
         os.replace(fp_before, fp_after)
-        await (self.get_channel(config("channels.backup_log"))).send(file=discord.File(fp=fp_after))
+        await (self.get_channel(config.channels.backup_log)).send(file=discord.File(fp=fp_after))
         logger.info("로그 백업 완료!")
 
     @staticmethod
@@ -189,7 +189,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     @staticmethod
     def dict_emojis() -> dict[str, str]:
-        return {k: f"<:{k}:{v}>" for k, v in config("emojis").items()}
+        return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)

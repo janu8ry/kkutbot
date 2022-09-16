@@ -1,6 +1,6 @@
 # run configuration
 # 'true' to run testbot, 'false' to run the main bot.
-test: false
+testmode: false
 
 # bot prefix
 prefix:
@@ -17,12 +17,6 @@ token:
 # list of admin ids that can use admin commands.
 admin:
   -
-
-# embed colors
-colors:
-  general: 0x4374D9
-  error: 0xCC3D3D
-  help: 0x47C83E
 
 # mongodb configuration
 mongo:
@@ -55,4 +49,4 @@ links:
   koreanbots:
   topgg:
   github:
-  blog:
+  website:

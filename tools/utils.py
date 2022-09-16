@@ -41,7 +41,7 @@ def get_timestamp(date: str) -> int:
 
 
 def is_admin(ctx: commands.Context) -> bool:
-    return ctx.author.id in config("admin")
+    return ctx.author.id in config.admin
 
 
 def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
@@ -69,7 +69,7 @@ async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, 
     if mode not in ("rank_solo", "rank_online"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
-    for k, v in config("tierlist").items():
+    for k, v in config.tierlist.items():
         if (await read(target, "points")) >= v["points"] and (await get_winrate(target, mode)) >= v["winrate"] and (await read(target, f"game.{mode}.times")) >= v["times"] and (await read(target, f"game.{mode}.best")) >= v["best"]:
             tier = f"{k} {v['emoji']}"
         else:

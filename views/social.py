@@ -25,7 +25,6 @@ class RankDropdown(discord.ui.Select):
         self.query = {
             "banned.isbanned": False,
             "_id": {
-                "$nin": config("bot_whitelist"),
                 "$ne": self.ctx.bot.owner_id
             }
         }
@@ -66,7 +65,7 @@ class RankDropdown(discord.ui.Select):
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
-        embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config("colors.help"))
+        embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config.colors.help)
         coros = []
         for path in self.categories["main"]:
             if path in self.categories["general"]:
@@ -106,11 +105,11 @@ class RankDropdown(discord.ui.Select):
             embed = discord.Embed(
                 title=f"{{ranking}} 랭킹 top 15 | {self.values[0]}",
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
-                color=config("colors.help")
+                color=config.colors.help
             )
         else:
             self.query[f"game.{self.categories['game'][category]}.times"] = {"$gte": 50}
-            embed = discord.Embed(title=f"{{ranking}} 랭킹 top 15 | 끝말잇기 - {category} 모드", color=config("colors.help"))
+            embed = discord.Embed(title=f"{{ranking}} 랭킹 top 15 | 끝말잇기 - {category} 모드", color=config.colors.help)
             coros = []
             for path in ("win", "best", "winrate"):
                 full_path = f"game.{self.categories['game'][category]}.{path}"

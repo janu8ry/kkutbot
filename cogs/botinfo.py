@@ -27,11 +27,11 @@ class BotInfo(commands.Cog, name="일반"):
                         f"🔹 **업타임**: ~ <t:{self.bot.started_at}:R>부터\n\n"
                         "개발에 도움을 주신 `서진#5826`님,\n프로필 사진을 만들어 주신 `! Tim23#1475` 님께 감사드립니다!\n"
                         "Icon made from [flaticon](https://www.flaticon.com)",
-            color=config("colors.help")
+            color=config.colors.help
         )
         embed.add_field(
             name="🔹 기타 링크",
-            value=f"[웹사이트]({config('links.blog')})  [koreanbots]({config('links.koreanbots')})  [github]({config('links.github')})  [개인정보처리방침]({config('links.privacy-policy')})"
+            value=f"[웹사이트]({config.links.blog})  [koreanbots]({config.links.koreanbots})  [github]({config.links.github})  [개인정보처리방침]({config.links.privacy_policy})"
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         embed.set_footer(text="아래 메뉴를 클릭해서 명령어 도움말을 확인해 보세요!")
@@ -45,8 +45,8 @@ class BotInfo(commands.Cog, name="일반"):
         embed = discord.Embed(title="{invitation} 끝봇 초대하기",
                               description="끝봇을 사용하고 싶다면 아래 버튼을 클릭하여\n"
                                           "끝봇을 당신의 서버에 초대하세요!\n\n"
-                                          f"끝봇을 서버에 초대할 경우, [약관]({config('links.privacy-policy')})에 동의한 것으로 간주됩니다.",
-                              color=config("colors.general")
+                                          f"끝봇을 서버에 초대할 경우, [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
+                              color=config.colors.general
                               )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=BotInvite())
@@ -59,7 +59,7 @@ class BotInfo(commands.Cog, name="일반"):
                               description="끝봇 커뮤니티에 참가하여,\n"
                                           "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n"
                                           "다른 유저들과 교류해 보세요!",
-                              color=config("colors.general")
+                              color=config.colors.general
                               )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=ServerInvite())

@@ -40,7 +40,7 @@ def setup_logger() -> None:
             }
         )
     )
-    stream_handler = RichHandler(rich_tracebacks=not config("test"), console=console)
+    stream_handler = RichHandler(rich_tracebacks=not config.is_test, console=console)
 
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG + 3)

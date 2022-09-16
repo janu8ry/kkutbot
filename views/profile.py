@@ -24,7 +24,7 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         self.info_word.value.replace("`", "")
         await write(self.ctx.author, "info", self.info_word.value)
         await interaction.response.send_message(
-            f"<:done:{config('emojis.done')}> 소개말을 '{e_mk(e_mt(self.info_word.value))}'(으)로 변경했습니다!", ephemeral=True
+            f"<:done:{config.emojis['done']}> 소개말을 '{e_mk(e_mt(self.info_word.value))}'(으)로 변경했습니다!", ephemeral=True
         )
 
 

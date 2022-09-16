@@ -37,7 +37,7 @@ class Social(commands.Cog, name="소셜"):
         pages = []
         if mails:
             for mail in mails:
-                embed = discord.Embed(title=f"{{email}} {ctx.author.name} 님의 메일함", color=config("colors.help"))
+                embed = discord.Embed(title=f"{{email}} {ctx.author.name} 님의 메일함", color=config.colors.help)
                 embed.add_field(
                     name=f"🔹 {mail['title']} - `{time_convert(time.time() - mail['time'])} 전`",
                     value=mail["value"],
@@ -48,7 +48,7 @@ class Social(commands.Cog, name="소셜"):
             embed = discord.Embed(
                     title=f"{{email}} {ctx.author.name} 님의 메일함",
                     description="{denyed} 메일함이 비어있습니다!",
-                    color=config("colors.help")
+                    color=config.colors.help
                 )
             pages.append(embed)
         await write(ctx.author, "alerts.mails", True)

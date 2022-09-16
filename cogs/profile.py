@@ -76,10 +76,10 @@ class Profile(commands.Cog, name="사용자"):
                 title=f"{{stats}} {e_mk(str(user))} 님의 통계",
                 description=f"가입일 : <t:{await read(user, 'registered')}:D>\n"
                             f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
-                color=config("colors.general")
+                color=config.colors.general
             )
 
-            for k, v in config("modelist").items():
+            for k, v in config.modelist.items():
                 embed.add_field(name=f"🔸 {k}",
                                 value=f"`{await read(user, f'game.{v}.win')}` / `{await read(user, f'game.{v}.times')}`회 승리 "
                                       f"(`{await read(user, f'game.{v}.winrate')}%`)\n"
@@ -96,9 +96,9 @@ class Profile(commands.Cog, name="사용자"):
             embed = discord.Embed(
                 title=f"{{stats}} {e_mk(str(user))} 님의 통계",
                 description="이 유저는 끝봇의 유저가 아닙니다.",
-                color=config("colors.error")
+                color=config.colors.error
             )
-            embed.set_thumbnail(url=self.bot.get_emoji(config('emojis.denyed')).url)
+            embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
 
 

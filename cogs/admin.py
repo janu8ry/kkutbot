@@ -30,7 +30,7 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$현황", usage="ㄲ$현황", aliases=("ㅎ", "$ㅎ"))
     async def kkutbot_status(self, ctx: KkutbotContext, count: int = 7):
         """끝봇의 현황을 확인합니다."""
-        embed = discord.Embed(color=config("colors.general"))
+        embed = discord.Embed(color=config.colors.general)
 
         t1 = time.time()
         await self.bot.db.general.find_one({"_id": "test"})
@@ -131,7 +131,7 @@ class Admin(commands.Cog, name="관리자"):
         embed = discord.Embed(
             title="데이터 수정하기",
             description=f"대상: {target}",
-            color=config("colors.help")
+            color=config.colors.help
         )
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
@@ -211,7 +211,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             embed = discord.Embed(
                 title="차단 유저 목록",
-                color=config("colors.help")
+                color=config.colors.help
             )
             for user in banned_users:
                 embed.add_field(
