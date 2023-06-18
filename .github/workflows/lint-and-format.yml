@@ -37,8 +37,11 @@ jobs:
       - name: Sort with isort
         run: |
           ./.venv/bin/isort . --gitignore
+      - name: Format with black
+        run: |
+          ./.venv/bin/black .
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "style(isort): sort imports"
+          commit_message: "style: sort imports and format code"
           commit_user_name: Isort Action
