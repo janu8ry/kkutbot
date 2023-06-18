@@ -14,9 +14,7 @@ __all__ = ["db", "read", "write", "add", "delete", "append"]
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
-TargetObject: TypeAlias = Union[
-    discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str
-]
+TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
 
 
 def dbconfig(query: str) -> Any:
@@ -174,14 +172,10 @@ async def write(target: TargetObject, path: str, value: Any) -> None:
                 await db.user.insert_one(main_data)
         if name and name != (await read(target, "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
-    elif (collection.name == "guild") and (
-        (main_data := await read(target)) == deepcopy(config("default_data.guild"))
-    ):
+    elif (collection.name == "guild") and ((main_data := await read(target)) == deepcopy(config("default_data.guild"))):
         main_data["_id"] = id_
         await db.guild.insert_one(main_data)
-    elif (collection.name == "general") and (
-        (main_data := await read(target)) == deepcopy(config("default_data.general"))
-    ):
+    elif (collection.name == "general") and ((main_data := await read(target)) == deepcopy(config("default_data.general"))):
         main_data["_id"] = "general"
         await db.general.insert_one(main_data)
 

@@ -64,9 +64,7 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     return tuple(r)
 
 
-async def get_winrate(
-    target: Union[int, discord.User, discord.Member], mode: str
-) -> Any:
+async def get_winrate(target: Union[int, discord.User, discord.Member], mode: str) -> Any:
     game_times: int = await read(target, f"game.{mode}.times")
     game_win_times: int = await read(target, f"game.{mode}.win")
     if 0 in (game_times, game_win_times):
@@ -75,9 +73,7 @@ async def get_winrate(
         return round(game_win_times / game_times * 100, 2)
 
 
-async def get_tier(
-    target: Union[int, discord.User, discord.Member], mode: str, emoji: bool = True
-) -> str:
+async def get_tier(target: Union[int, discord.User, discord.Member], mode: str, emoji: bool = True) -> str:
     if mode not in ("rank_solo", "rank_online"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"

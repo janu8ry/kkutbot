@@ -29,9 +29,7 @@ class Social(commands.Cog, name="소셜"):
         view = RankMenu(ctx)
         view.message = await ctx.reply(embed=await view.get_home_embed(), view=view)
 
-    @commands.hybrid_command(
-        name="메일", usage="/메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지")
-    )
+    @commands.hybrid_command(name="메일", usage="/메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다."""

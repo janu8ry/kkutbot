@@ -50,9 +50,7 @@ class RankDropdown(discord.ui.Select):
         ]
         for category in self.categories["general"] | self.categories["game"]:  # type: ignore
             option = discord.SelectOption(
-                label=category
-                if category in self.categories["general"]
-                else f"끝말잇기 - {category}",
+                label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드' }의 랭킹을 확인합니다.",
                 emoji="<:ranking:985439871004995634>",
@@ -76,23 +74,16 @@ class RankDropdown(discord.ui.Select):
     async def format_rank(self, rank: AsyncIOMotorCursor, query: str) -> list:
         rank = await rank.to_list(None)
         names = await asyncio.gather(*[self.get_user_name(i["_id"]) for i in rank])
-        return [
-            f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`"
-            for idx, i in enumerate(rank)
-        ]
+        return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
-        embed = discord.Embed(
-            title="{ranking} 종합 랭킹 top 5", color=config("colors.help")
-        )
+        embed = discord.Embed(title="{ranking} 종합 랭킹 top 5", color=config("colors.help"))
         coros = []
         for path in self.categories["main"]:
             if path in self.categories["general"]:
                 coros.append(
                     self.format_rank(
-                        self.ctx.bot.db.user.find(self.query)
-                        .sort(self.categories["general"][path], -1)
-                        .limit(5),
+                        self.ctx.bot.db.user.find(self.query).sort(self.categories["general"][path], -1).limit(5),
                         self.categories["general"][path],
                     ),
                 )
@@ -103,9 +94,7 @@ class RankDropdown(discord.ui.Select):
                     full_path = f"game.{self.categories['game'][path]}.{gpath}"
                     coros.append(
                         self.format_rank(
-                            self.ctx.bot.db.user.find(game_query)
-                            .sort(full_path, -1)
-                            .limit(5),
+                            self.ctx.bot.db.user.find(game_query).sort(full_path, -1).limit(5),
                             full_path,
                         ),
                     )
@@ -113,15 +102,11 @@ class RankDropdown(discord.ui.Select):
         gpath = ["승리수", "최고점수", "승률"]
         for i, rank in enumerate(overall_rank):
             if i <= 2:
-                embed.add_field(
-                    name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank)
-                )
+                embed.add_field(name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank))
             elif 3 <= i <= 5:
                 embed.add_field(name=f"🔹 솔로 모드 - {gpath[i % 3]}", value="\n".join(rank))
             else:
-                embed.add_field(
-                    name=f"🔹 쿵쿵따 모드 - {gpath[i % 3]}", value="\n".join(rank)
-                )  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
+                embed.add_field(name=f"🔹 쿵쿵따 모드 - {gpath[i % 3]}", value="\n".join(rank))  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
 
         return embed, coros
 
@@ -134,16 +119,10 @@ class RankDropdown(discord.ui.Select):
         if category == "종합 랭킹":
             embed, coros = await self.get_overall_rank()
         elif category in self.categories["general"]:
-            rank = (
-                self.ctx.bot.db.user.find(self.query)
-                .sort(self.categories["general"][category], -1)
-                .limit(15)
-            )
+            rank = self.ctx.bot.db.user.find(self.query).sort(self.categories["general"][category], -1).limit(15)
             embed = discord.Embed(
                 title=f"{{ranking}} 랭킹 top 15 | {self.values[0]}",
-                description="\n".join(
-                    await self.format_rank(rank, self.categories["general"][category])
-                ),
+                description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
                 color=config("colors.help"),
             )
         else:
@@ -157,9 +136,7 @@ class RankDropdown(discord.ui.Select):
                 full_path = f"game.{self.categories['game'][category]}.{path}"
                 coros.append(
                     self.format_rank(
-                        self.ctx.bot.db.user.find(self.query)
-                        .sort(full_path, -1)
-                        .limit(15),
+                        self.ctx.bot.db.user.find(self.query).sort(full_path, -1).limit(15),
                         full_path,
                     ),
                 )

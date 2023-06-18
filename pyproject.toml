@@ -26,6 +26,9 @@ isort = "^5.10.1"
 flake8 = "^5.0.4"
 black = "^23.3.0"
 
+[tool.black]
+line-length = "150"
+
 [tool.isort]
 skip_gitignore = true
 line_length = "150"

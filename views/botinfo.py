@@ -74,11 +74,7 @@ class HelpMenu(BaseView):
         )
         self.add_item(HelpDropdown(ctx))
 
-    @discord.ui.button(
-        label="홈", style=discord.ButtonStyle.blurple, emoji="🏠", row=2, disabled=True
-    )
-    async def go_home(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
+    @discord.ui.button(label="홈", style=discord.ButtonStyle.blurple, emoji="🏠", row=2, disabled=True)
+    async def go_home(self, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         await interaction.response.edit_message(embed=self.home_embed, view=self)

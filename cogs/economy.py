@@ -30,9 +30,7 @@ class Economy(commands.Cog, name="경제"):
         """
         await write(ctx.author, "alerts.reward", True)
         if await self.bot.if_koreanbots_voted(ctx.author):
-            if (today := datetime.today().toordinal()) != (
-                await read(ctx.author, "latest_reward")
-            ):
+            if (today := datetime.today().toordinal()) != (await read(ctx.author, "latest_reward")):
                 points = random.randint(50, 150)
                 await add(ctx.author, "points", points)
                 embed = discord.Embed(
@@ -52,8 +50,7 @@ class Economy(commands.Cog, name="경제"):
                 await ctx.reply(embed=embed)
         else:
             embed = discord.Embed(
-                description="{denyed} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n"
-                "반영까지 1-2분 정도 소요될 수 있습니다.",
+                description="{denyed} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n" "반영까지 1-2분 정도 소요될 수 있습니다.",
                 color=config("colors.error"),
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())
@@ -86,9 +83,7 @@ class Economy(commands.Cog, name="경제"):
             success = True
             week_data = await read(ctx.author, "attendance")
             del week_data["times"]
-            if (week_today == 6) and (
-                list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]
-            ):
+            if (week_today == 6) and (list(week_data.values()) == [today - i + 1 for i in range(7, 0, -1)]):
                 await add(ctx.author, "points", bonus_point)
                 await add(ctx.author, "medals", bonus_medal)
                 bonus = True
@@ -121,14 +116,10 @@ class Economy(commands.Cog, name="경제"):
                 name="추가 보상",
                 value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}",
             )
-            bonus_embed.set_thumbnail(
-                url=self.bot.get_emoji(config("emojis.bonus")).url
-            )
+            bonus_embed.set_thumbnail(url=self.bot.get_emoji(config("emojis.bonus")).url)
             await ctx.reply(embed=bonus_embed)
 
-    @commands.hybrid_command(
-        name="퀘스트", usage="/퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션")
-    )
+    @commands.hybrid_command(name="퀘스트", usage="/퀘스트", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
         """매일 퀘스트를 클리어하고 보상을 획득합니다.
@@ -140,9 +131,7 @@ class Economy(commands.Cog, name="경제"):
             color=config("colors.help"),
         )
         for data, info in (await read(None, "quests")).items():
-            current = await read(ctx.author, data.replace("/", ".")) - await read(
-                ctx.author, f"quest.cache.{data}"
-            )
+            current = await read(ctx.author, data.replace("/", ".")) - await read(ctx.author, f"quest.cache.{data}")
             if data in await read(ctx.author, "quest.status.completed"):
                 desc = "이 퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"

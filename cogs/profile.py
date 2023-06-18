@@ -13,20 +13,14 @@ from tools.utils import get_tier, get_winrate, is_admin
 from views.profile import InfoEdit
 
 
-async def member_autocomplete(
-    interaction: discord.Interaction, current: str
-) -> List[app_commands.Choice[str]]:
+async def member_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
     choices = []
     if interaction.guild:
         for member in interaction.guild.members:
             if current.lower() in member.name.lower():
-                choices.append(
-                    app_commands.Choice(name=member.name, value=str(member.id))
-                )
+                choices.append(app_commands.Choice(name=member.name, value=str(member.id)))
             elif current.lower() in member.display_name.lower():
-                choices.append(
-                    app_commands.Choice(name=member.display_name, value=str(member.id))
-                )
+                choices.append(app_commands.Choice(name=member.display_name, value=str(member.id)))
     return choices[:25]
 
 
@@ -46,9 +40,7 @@ class Profile(commands.Cog, name="사용자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=lambda ctx: ctx.author
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author),
     ):
         """유저의 티어, 포인트, 승률 등의 프로필을 확인합니다.
         자신의 프로필을 확인한 경우, 아래 버튼을 눌러 소개말을 변경할 수 있습니다!
@@ -84,9 +76,7 @@ class Profile(commands.Cog, name="사용자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=lambda ctx: ctx.author
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author),
     ):
         """유저의 자세한 통계를 확인합니다.
 
@@ -97,8 +87,7 @@ class Profile(commands.Cog, name="사용자"):
         if await read(user, "registered"):
             embed = discord.Embed(
                 title=f"{{stats}} {e_mk(str(user))} 님의 통계",
-                description=f"가입일 : <t:{await read(user, 'registered')}:D>\n"
-                f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
+                description=f"가입일 : <t:{await read(user, 'registered')}:D>\n" f"마지막 사용일 : <t:{await read(user, 'latest_usage')}:D>",
                 color=config("colors.general"),
             )
 

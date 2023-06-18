@@ -41,23 +41,15 @@ class KkutbotContext(commands.Context):
         delete_after: Optional[float] = None,
         nonce: Optional[int] = None,
         allowed_mentions: Optional[discord.AllowedMentions] = None,
-        reference: Union[
-            discord.Message, discord.MessageReference, discord.PartialMessage, None
-        ] = None,
+        reference: Union[discord.Message, discord.MessageReference, discord.PartialMessage, None] = None,
         mention_author: Optional[bool] = None,
         view: Optional[discord.ui.View] = None,
         suppress_embeds: bool = False,
         ephemeral: bool = False,
         escape_emoji_formatting: bool = False,
     ) -> discord.Message:
-        if (escape_emoji_formatting is False) and (
-            self.command.qualified_name.split(" ")[0] != "jishaku"
-        ):
-            content = (
-                content.format_map(FormattingDict(self.bot.dict_emojis()))
-                if content
-                else None
-            )
+        if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
         return await super().send(
             content=content,
             tts=tts,
@@ -76,21 +68,11 @@ class KkutbotContext(commands.Context):
             ephemeral=ephemeral,
         )
 
-    async def reply(
-        self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any
-    ) -> discord.Message:
-        if (not kwargs.get("escape_emoji_formatting", False)) and (
-            self.command.qualified_name.split(" ")[0] != "jishaku"
-        ):
-            content = (
-                content.format_map(FormattingDict(self.bot.dict_emojis()))
-                if content
-                else None
-            )
+    async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
+        if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
         if self.interaction is None:
-            return await self.send(
-                content, reference=self.message, mention_author=mention_author, **kwargs
-            )
+            return await self.send(content, reference=self.message, mention_author=mention_author, **kwargs)
         else:
             return await self.send(content, mention_author=mention_author, **kwargs)
 
@@ -164,11 +146,7 @@ class Kkutbot(commands.AutoShardedBot):
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
-        await self.change_presence(
-            activity=discord.Game(
-                f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"
-            )
-        )
+        await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
@@ -185,12 +163,8 @@ class Kkutbot(commands.AutoShardedBot):
     @staticmethod
     async def reset_alerts() -> None:
         await write("general", "attendance", 0)
-        await db.user.update_many(
-            {"alerts.attendance": True}, {"$set": {"alerts.attendance": False}}
-        )
-        await db.user.update_many(
-            {"alerts.reward": True}, {"$set": {"alert.reward": False}}
-        )
+        await db.user.update_many({"alerts.attendance": True}, {"$set": {"alerts.attendance": False}})
+        await db.user.update_many({"alerts.reward": True}, {"$set": {"alert.reward": False}})
 
     async def backup_data(self) -> None:
         for filename in os.listdir("/backup"):
@@ -198,20 +172,14 @@ class Kkutbot(commands.AutoShardedBot):
                 date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
                 fp = f"/backup/{date}.gz"
                 os.replace(f"/backup/{filename}", fp)
-                await self.get_channel(config("channels.backup_data")).send(
-                    file=discord.File(fp=fp)
-                )
+                await self.get_channel(config("channels.backup_data")).send(file=discord.File(fp=fp))
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self) -> None:
         fp_before = f"logs/{datetime.now().strftime('%Y-%m-%d')}.log.gz"
-        fp_after = (
-            f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
-        )
+        fp_after = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
         os.replace(fp_before, fp_after)
-        await self.get_channel(config("channels.backup_log")).send(
-            file=discord.File(fp=fp_after)
-        )
+        await self.get_channel(config("channels.backup_log")).send(file=discord.File(fp=fp_after))
         logger.info("로그 백업 완료!")
 
     @staticmethod
@@ -270,13 +238,9 @@ class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs: Any) -> None:
         if not kwargs.get("escape_emoji_formatting", False):
             if title := kwargs.get("title"):
-                kwargs["title"] = title.format_map(
-                    FormattingDict(Kkutbot.dict_emojis())
-                )
+                kwargs["title"] = title.format_map(FormattingDict(Kkutbot.dict_emojis()))
             if description := kwargs.get("description"):
-                kwargs["description"] = description.format_map(
-                    FormattingDict(Kkutbot.dict_emojis())
-                )
+                kwargs["description"] = description.format_map(FormattingDict(Kkutbot.dict_emojis()))
         super().__init__(**kwargs)
 
     def add_field(

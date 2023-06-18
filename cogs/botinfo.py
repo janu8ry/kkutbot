@@ -15,9 +15,7 @@ class BotInfo(commands.Cog, name="일반"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(
-        name="도움", usage="/도움", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ")
-    )
+    @commands.hybrid_command(name="도움", usage="/도움", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext):
         """끝봇의 명령어 목록을 확인합니다."""
@@ -54,17 +52,13 @@ class BotInfo(commands.Cog, name="일반"):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=BotInvite())
 
-    @commands.hybrid_command(
-        name="커뮤니티", usage="/커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ", "ㄷㅋ")
-    )
+    @commands.hybrid_command(name="커뮤니티", usage="/커뮤니티", aliases=("지원", "서버", "디스코드", "디코", "ㅋㅁㄴㅌ", "ㄷㅋ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def community_invite(self, ctx: KkutbotContext):
         """끝봇 공식 커뮤니티에 참가하기 위한 초대장을 확인합니다."""
         embed = discord.Embed(
             title="{invitation} 끝봇 커뮤니티 참가하기",
-            description="끝봇 커뮤니티에 참가하여,\n"
-            "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n"
-            "다른 유저들과 교류해 보세요!",
+            description="끝봇 커뮤니티에 참가하여,\n" "주요 공지사항을 확인하고, 건의사항이나 버그를 제보하고,\n" "다른 유저들과 교류해 보세요!",
             color=config("colors.general"),
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)

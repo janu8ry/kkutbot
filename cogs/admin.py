@@ -37,9 +37,7 @@ class Admin(commands.Cog, name="관리자"):
         t1 = time.time() - t1
 
         t2 = time.time()
-        await self.bot.db.general.update_one(
-            {"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True
-        )
+        await self.bot.db.general.update_one({"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True)
         t2 = time.time() - t2
 
         embed.add_field(
@@ -81,9 +79,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
@@ -94,48 +90,29 @@ class Admin(commands.Cog, name="관리자"):
                 if k.startswith("jishaku "):
                     cmd_data["jishaku"] += v
                     del cmd_data[k]
-            sorted_data = sorted(
-                cmd_data.items(), key=lambda item: item[1], reverse=True
-            )
-            for content in split_string(
-                "\n".join(
-                    f"{k.replace('_', '$')}: `{v}`회"
-                    for k, v in dict(sorted_data).items()
-                )
-            ):
-                await ctx.reply(
-                    content, escape_emoji_formatting=True, mention_author=True
-                )
+            sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
+            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in dict(sorted_data).items())):
+                await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             public_data = deepcopy(await read(user))
             del public_data["commands"]
             del public_data["announcements"]
-            for content in split_string(
-                "\n".join(f"{k}: `{v}`" for k, v in public_data.items())
-            ):
-                await ctx.reply(
-                    content, escape_emoji_formatting=True, mention_author=True
-                )
+            for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
+                await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
             return
 
         if not (await read(user, "registered")):
             return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
-        for content in split_string(
-            "\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())
-        ):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in (await read(user)).items())):
             await ctx.reply(content, escape_emoji_formatting=True, mention_author=True)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
-    async def guild_info(
-        self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild
-    ):
+    async def guild_info(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
         if not (await self.bot.db.guild.find_one({"_id": guild.id})):
             return await ctx.reply("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
         guild_data = await read(guild)
         guild_data["name"] = guild.name
-        for content in split_string(
-            "\n".join(f"{k}: `{v}`" for k, v in guild_data.items())
-        ):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
             await ctx.reply(content, escape_emoji_formatting=True)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
@@ -144,9 +121,7 @@ class Admin(commands.Cog, name="관리자"):
         ctx: KkutbotContext,
         amount: int = 1000,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """관리자 권한으로 포인트를 지급합니다."""
         await add(user, "points", amount)
@@ -158,9 +133,7 @@ class Admin(commands.Cog, name="관리자"):
         ctx: KkutbotContext,
         amount: int = 1000,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """관리자 권한으로 메달을 지급합니다."""
         await add(user, "medals", amount)
@@ -172,9 +145,7 @@ class Admin(commands.Cog, name="관리자"):
         대상의 정보를 수정합니다.
         id가 general이면 공용 데이터를 수정합니다.
         """
-        embed = discord.Embed(
-            title="데이터 수정하기", description=f"대상: {target}", color=config("colors.help")
-        )
+        embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config("colors.help"))
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 
@@ -183,9 +154,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """유저의 데이터를 초기화합니다."""
         if await self.bot.db.user.find_one({"_id": user.id}):
@@ -195,9 +164,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply("{denyed} 해당 유저는 끝봇의 유저가 아닙니다.")
 
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
-    async def delete_guilddata(
-        self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild
-    ):
+    async def delete_guilddata(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """서버의 데이터를 초기화합니다."""
         if await self.bot.db.guild.find_one({"_id": guild.id}):
             await delete(guild)
@@ -206,9 +173,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다.")
 
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기"))
-    async def leave_guild(
-        self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild
-    ):
+    async def leave_guild(self, ctx: KkutbotContext, *, guild: discord.Guild = commands.CurrentGuild):
         """서버를 나갑니다."""
         if await self.bot.db.guild.find_one({"_id": guild.id}):
             await guild.leave()
@@ -228,9 +193,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """유저에게 알림을 전송합니다."""
         view = SendNotice(ctx=ctx, target=user.id)
@@ -273,9 +236,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: KkutbotContext,
         *,
-        user: discord.Member = commands.parameter(
-            converter=KkutbotUserConverter, default=None
-        ),
+        user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=None),
     ):
         """유저의 이용 정지 처리를 해제합니다."""
         if await read(user, "banned.isbanned"):
@@ -289,14 +250,10 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply("{denyed} 현재 차단되지 않은 유저입니다.")
 
-    @commands.command(
-        name="$차단목록", usage="ㄲ$정지목록", aliases=("$정지목록", "$정지리스트", "$차단리스트")
-    )
+    @commands.command(name="$차단목록", usage="ㄲ$정지목록", aliases=("$정지목록", "$정지리스트", "$차단리스트"))
     async def blocked_list(self, ctx: KkutbotContext):
         """정지된 유저의 목록을 확인합니다."""
-        banned_users = await self.bot.db.user.find({"banned.isbanned": True}).to_list(
-            None
-        )
+        banned_users = await self.bot.db.user.find({"banned.isbanned": True}).to_list(None)
         if not banned_users:
             return await ctx.reply("{help} 현재 차단된 유저가 없습니다.")
         else:

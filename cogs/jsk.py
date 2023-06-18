@@ -109,8 +109,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             f"Jishaku `{package_version('jishaku')}`",
             f"{dist_version}",
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
-            f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, "
-            f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
+            f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, " f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
             "",
         ]
 
@@ -133,9 +132,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                     pid = proc.pid
                     thread_count = proc.num_threads()
 
-                    summary.append(
-                        f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다."
-                    )
+                    summary.append(f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다.")
                 except psutil.AccessDenied:
                     pass
 
@@ -148,19 +145,14 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         if len(self.bot.shards) > 20:
             summary.append(
-                f"This bot is automatically sharded ({len(self.bot.shards)} shards of {self.bot.shard_count})"
-                f" and can see {cache_summary}."
+                f"This bot is automatically sharded ({len(self.bot.shards)} shards of {self.bot.shard_count})" f" and can see {cache_summary}."
             )
         else:
-            summary.append(
-                f"샤드 수는 `{self.bot.shard_count}`개이며," f" {cache_summary}와 활동하고 있습니다."
-            )
+            summary.append(f"샤드 수는 `{self.bot.shard_count}`개이며," f" {cache_summary}와 활동하고 있습니다.")
 
         # pylint: disable=protected-access
         if self.bot._connection.max_messages:  # noqa
-            message_cache = (
-                f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
-            )
+            message_cache = f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
         else:
             message_cache = "메시지 캐시가 비활성화 되어있습니다."
 
@@ -199,9 +191,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         try:
             async with ReplResponseReactor(ctx.message):
                 with self.submit(ctx):
-                    executor = AsyncCodeExecutor(
-                        argument.content, scope, arg_dict=arg_dict
-                    )
+                    executor = AsyncCodeExecutor(argument.content, scope, arg_dict=arg_dict)
                     async for send, result in AsyncSender(executor):  # type: ignore
                         send: typing.Callable[..., None]
                         result: typing.Any
@@ -231,13 +221,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         if ctx.invoked_with == "reload" and not extensions:
             extensions = [["cogs.jsk"]]
         elif ctx.invoked_with == "ㄹ" and not extensions:
-            extensions = [
-                [
-                    f"cogs.{cogname[:-3]}"
-                    for cogname in os.listdir("cogs")
-                    if cogname.endswith(".py")
-                ]
-            ]
+            extensions = [[f"cogs.{cogname[:-3]}" for cogname in os.listdir("cogs") if cogname.endswith(".py")]]
 
         for extension in itertools.chain(*extensions):
             method, icon = (
@@ -255,9 +239,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 await discord.utils.maybe_coroutine(method, extension)
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
             except Exception as exc:  # pylint: disable=broad-except
-                traceback_data = "".join(
-                    traceback.format_exception(type(exc), exc, exc.__traceback__, 1)
-                )
+                traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
 
                 paginator.add_line(
                     f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```",
@@ -269,19 +251,13 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         for page in paginator.pages:
             await ctx.reply(page, mention_author=False)
 
-    @Feature.Command(
-        parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"]
-    )
+    @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"])
     async def jsk_shutdown(self, ctx: ContextA):
         """
         Logs this bot out.
         """
 
-        ellipse_character = (
-            "\N{BRAILLE PATTERN DOTS-356}"
-            if Flags.USE_BRAILLE_J
-            else "\N{HORIZONTAL ELLIPSIS}"
-        )
+        ellipse_character = "\N{BRAILLE PATTERN DOTS-356}" if Flags.USE_BRAILLE_J else "\N{HORIZONTAL ELLIPSIS}"
 
         await ctx.reply(f"로그아웃합니다{ellipse_character}", mention_author=False)
         logger.info("봇이 정상적으로 종료되었습니다!")

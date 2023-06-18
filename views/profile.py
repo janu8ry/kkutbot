@@ -43,9 +43,7 @@ class InfoEdit(BaseView):
         style=discord.ButtonStyle.blurple,
         emoji="<:edit:984405210870988870>",
     )
-    async def edit_info(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
+    async def edit_info(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(InfoInput(ctx=self.ctx))
         button.disabled = True
         await self.message.edit(view=self)

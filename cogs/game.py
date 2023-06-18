@@ -11,14 +11,7 @@ from discord.ext import commands
 from config import config
 from core import Kkutbot, KkutbotContext
 from tools.db import add, read, write
-from tools.utils import (
-    choose_first_word,
-    get_tier,
-    get_transition,
-    get_winrate,
-    get_word,
-    is_hanbang,
-)
+from tools.utils import choose_first_word, get_tier, get_transition, get_winrate, get_word, is_hanbang
 from views.game import HostGuildGame, SelectMode
 
 
@@ -32,31 +25,23 @@ class GameBase:
         self.score = 0
         self.begin_time = time.time()
 
-    async def alert_tier_change(
-        self, player: discord.User, tier: str, tier_past: str
-    ) -> discord.Message:
+    async def alert_tier_change(self, player: discord.User, tier: str, tier_past: str) -> discord.Message:
         tierlist = list(config("tierlist").keys())
         emojis = [data["emoji"] for data in config("tierlist").values()]
         if tierlist.index(tier) > tierlist.index(tier_past):
             embed = discord.Embed(
                 title="{tier} 티어 승급!",
-                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
-                f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
+                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> " f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
                 color=config("colors.help"),
             )
-            embed.set_thumbnail(
-                url=self.ctx.bot.get_emoji(config("emojis.levelup")).url
-            )
+            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config("emojis.levelup")).url)
         else:
             embed = discord.Embed(
                 title="{tier} 티어 강등...",
-                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
-                f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
+                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> " f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
                 color=config("colors.error"),
             )
-            embed.set_thumbnail(
-                url=self.ctx.bot.get_emoji(config("emojis.leveldown")).url
-            )
+            embed.set_thumbnail(url=self.ctx.bot.get_emoji(config("emojis.leveldown")).url)
         return await self.ctx.send(player.mention, embed=embed, mention_author=True)
 
 
@@ -116,8 +101,7 @@ class SoloGame(GameBase):
                 return await self.ctx.send(
                     f"{_msg.author.mention}님, {desc}",
                     embed=embed,
-                    delete_after=(15 if self.kkd else 10)
-                    - (time.time() - self.begin_time),
+                    delete_after=(15 if self.kkd else 10) - (time.time() - self.begin_time),
                 )
 
     async def game_end(self, result: Literal["승리", "패배", "포기"]):
@@ -143,20 +127,12 @@ class SoloGame(GameBase):
         else:
             raise commands.BadArgument
 
-        embed = discord.Embed(
-            title="{result} 게임 결과", description=f"**{result}**  |  {desc}", color=color
-        )
+        embed = discord.Embed(title="{result} 게임 결과", description=f"**{result}**  |  {desc}", color=color)
         embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
-        embed.add_field(
-            name="🔸 보상", value=f"`{'+' if result == '승리' else ''}{points}` {{points}}"
-        )
+        embed.add_field(name="🔸 보상", value=f"`{'+' if result == '승리' else ''}{points}` {{points}}")
         embed.set_thumbnail(url=self.ctx.bot.get_emoji(config(f"emojis.{emoji}")).url)
         if result in ("패배", "포기"):
-            possibles = [
-                i
-                for i in get_word(self.bot_word)
-                if i not in self.used_words and (len(i) == 3 if self.kkd else True)
-            ]
+            possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
             if possibles:
                 random.shuffle(possibles)
                 embed.add_field(
@@ -180,9 +156,7 @@ class SoloGame(GameBase):
             if (tier_past := await read(self.player, "game.rank_solo.tier")) != tier:
                 await write(self.player, "game.rank_solo.tier", tier)
                 await self.alert_tier_change(self.player, tier, tier_past)
-        await write(
-            self.player, f"game.{mode}.winrate", await get_winrate(self.player, mode)
-        )
+        await write(self.player, f"game.{mode}.winrate", await get_winrate(self.player, mode))
 
 
 class MultiGame(GameBase):
@@ -280,11 +254,7 @@ class MultiGame(GameBase):
             title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!",
             color=config("colors.error"),
         )
-        embed.set_thumbnail(
-            url=self.ctx.bot.get_emoji(
-                config(f"emojis.{'surrender' if gg else 'dead'}")
-            ).url
-        )
+        embed.set_thumbnail(url=self.ctx.bot.get_emoji(config(f"emojis.{'surrender' if gg else 'dead'}")).url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
             random.shuffle(possibles)
@@ -294,9 +264,7 @@ class MultiGame(GameBase):
                 inline=False,
             )
         else:
-            embed.add_field(
-                name="🔹 가능했던 단어", value=f"`{self.word}`은(는) 한방단어였습니다...", inline=False
-            )
+            embed.add_field(name="🔹 가능했던 단어", value=f"`{self.word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.send(embed=embed)
         self.final_score[self.now_player] = self.score
         self.score += 2
@@ -309,15 +277,11 @@ class MultiGame(GameBase):
         desc = []
         self.final_score[self.now_player] = self.score
         self.final_score["zero"] = 0
-        rank = sorted(
-            self.final_score.items(), key=operator.itemgetter(1), reverse=True
-        )
+        rank = sorted(self.final_score.items(), key=operator.itemgetter(1), reverse=True)
         emojis = ["{gold}", "{silver}", "{bronze}"]
         for n, kv in enumerate(rank):
             if n < len(rank) - 1:
-                desc.append(
-                    f"**{n + 1 if n >= 3 else emojis[n]}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}"
-                )
+                desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")
                 await add(kv[0], "points", int(rank[n + 1][1]) * 2)
                 await add(kv[0], "game.guild_multi.times", 1)
                 await write(kv[0], "last_command", time.time())
@@ -363,9 +327,7 @@ class Game(commands.Cog, name="게임"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(
-        name="끝말잇기", usage="/끝말잇기 <모드>", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ")
-    )
+    @commands.hybrid_command(name="끝말잇기", usage="/끝말잇기 <모드>", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
@@ -418,10 +380,7 @@ class Game(commands.Cog, name="게임"):
             return x.author == ctx.author and x.channel == ctx.channel
 
         if (await read(ctx.author, "points")) <= 30:
-            return await ctx.reply(
-                "{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n"
-                "`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"
-            )
+            return await ctx.reply("{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n" "`ㄲ출석`, `ㄲ포인트`, `ㄲ퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
 
         if mode is None:
             embed = discord.Embed(
@@ -460,40 +419,28 @@ class Game(commands.Cog, name="게임"):
                     du = get_transition(game.bot_word)
                     if user_word in ("ㅈㅈ", "gg", "GG"):
                         if len(game.used_words) < 10:
-                            await game.send_info_embed(
-                                msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다."
-                            )
+                            await game.send_info_embed(msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
                             continue
                         else:
                             await game.game_end("포기")
                             return
                     elif user_word in game.used_words:
-                        await game.send_info_embed(
-                            msg, f"**{user_word}** (은)는 이미 사용한 단어입니다."
-                        )
+                        await game.send_info_embed(msg, f"**{user_word}** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
-                        await game.send_info_embed(
-                            msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력해 주세요."
-                        )
+                        await game.send_info_embed(msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력해 주세요.")
                         continue
                     elif user_word in get_word(game.bot_word):
                         if (game.score == 0) and is_hanbang(user_word, game.used_words):
-                            await game.send_info_embed(
-                                msg, "첫번째 회차에서는 한방단어를 사용할 수 없습니다."
-                            )
+                            await game.send_info_embed(msg, "첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
                             game.used_words.append(user_word)
                             game.score += 1
                     else:
-                        await game.send_info_embed(
-                            msg, f"**{user_word}** (은)는 없는 단어입니다."
-                        )
+                        await game.send_info_embed(msg, f"**{user_word}** (은)는 없는 단어입니다.")
                         continue
-                final_list = [
-                    x for x in get_word(user_word) if x not in game.used_words
-                ]
+                final_list = [x for x in get_word(user_word) if x not in game.used_words]
                 if not final_list:
                     await game.game_end("승리")
                     return
@@ -512,9 +459,7 @@ class Game(commands.Cog, name="게임"):
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
             if ctx.channel.id in self.bot.guild_multi_games:
-                return await ctx.reply(
-                    "{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."
-                )
+                return await ctx.reply("{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다.")
 
             self.bot.guild_multi_games.append(ctx.channel.id)
             game = MultiGame(ctx, hosting_time=round(time.time()))
@@ -554,9 +499,7 @@ class Game(commands.Cog, name="게임"):
                     du = get_transition(game.word)
                     if user_word in ("ㅈㅈ", "gg", "GG"):
                         if game.turn < 5:
-                            await game.send_info_embed(
-                                "{denyed} 5턴 이상 진행해야 포기할 수 있습니다."
-                            )
+                            await game.send_info_embed("{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
                             continue
                         else:
                             await game.player_out(gg=True)
@@ -567,19 +510,13 @@ class Game(commands.Cog, name="게임"):
                                 await game.update_embed(game.game_embed())
                                 await game.send_info_embed()
                     elif user_word in game.used_words:
-                        await game.send_info_embed(
-                            f"***{user_word}*** (은)는 이미 사용한 단어입니다."
-                        )
+                        await game.send_info_embed(f"***{user_word}*** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
-                        await game.send_info_embed(
-                            f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요."
-                        )
+                        await game.send_info_embed(f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요.")
                         continue
                     elif user_word in get_word(game.word):
-                        if ((game.turn // len(game.alive)) == 0) and is_hanbang(
-                            user_word, game.used_words
-                        ):
+                        if ((game.turn // len(game.alive)) == 0) and is_hanbang(user_word, game.used_words):
                             await game.send_info_embed("첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
@@ -621,45 +558,31 @@ class Game(commands.Cog, name="게임"):
                     du = get_transition(game.bot_word)
                     if user_word in ("ㅈㅈ", "gg", "GG"):
                         if len(game.used_words) < 10:
-                            await game.send_info_embed(
-                                msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다."
-                            )
+                            await game.send_info_embed(msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
                             continue
                         else:
                             await game.game_end("포기")
                             return
                     elif user_word in game.used_words:
-                        await game.send_info_embed(
-                            msg, f"**{user_word}** (은)는 이미 사용한 단어입니다."
-                        )
+                        await game.send_info_embed(msg, f"**{user_word}** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
-                        await game.send_info_embed(
-                            msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요."
-                        )
+                        await game.send_info_embed(msg, f"`{'` 또는 `'.join(du)}` (으)로 시작하는 단어를 입력 해 주세요.")
                         continue
                     elif len(user_word) != 3:
                         await game.send_info_embed(msg, "세글자 단어만 사용 가능합니다.")
                         continue
                     elif user_word in get_word(game.bot_word):
                         if (game.score == 0) and (len(get_word(user_word)) == 0):
-                            await game.send_info_embed(
-                                msg, "첫번째 회차에서는 한방단어를 사용할 수 없습니다."
-                            )
+                            await game.send_info_embed(msg, "첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
                             game.used_words.append(user_word)
                             game.score += 1
                     else:
-                        await game.send_info_embed(
-                            msg, f"**{user_word}** (은)는 없는 단어입니다."
-                        )
+                        await game.send_info_embed(msg, f"**{user_word}** (은)는 없는 단어입니다.")
                         continue
-                final_list = [
-                    x
-                    for x in get_word(user_word)
-                    if x not in game.used_words and len(x) == 3
-                ]
+                final_list = [x for x in get_word(user_word) if x not in game.used_words and len(x) == 3]
                 if not final_list:
                     await game.game_end("승리")
                     return
@@ -677,9 +600,7 @@ class Game(commands.Cog, name="게임"):
         elif mode == 0:
             return await ctx.send("취소되었습니다.")
 
-    @commands.command(
-        name="끝말잇기1", usage="ㄲ끝말잇기1", aliases=("ㄲ1", "끝1", "ㄲㅁㅇㄱ1"), hidden=True
-    )
+    @commands.command(name="끝말잇기1", usage="ㄲ끝말잇기1", aliases=("ㄲ1", "끝1", "ㄲㅁㅇㄱ1"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
@@ -687,9 +608,7 @@ class Game(commands.Cog, name="게임"):
         """끝말잇기 '솔로 랭킹전' 모드를 플레이합니다."""
         await self.game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
 
-    @commands.command(
-        name="끝말잇기2", usage="ㄲ끝말잇기2", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"), hidden=True
-    )
+    @commands.command(name="끝말잇기2", usage="ㄲ끝말잇기2", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
@@ -697,9 +616,7 @@ class Game(commands.Cog, name="게임"):
         """끝말잇기 '서버원들과 친선전' 모드를 플레이합니다."""
         await self.game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
 
-    @commands.command(
-        name="끝말잇기3", usage="ㄲ끝말잇기3", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"), hidden=True
-    )
+    @commands.command(name="끝말잇기3", usage="ㄲ끝말잇기3", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
