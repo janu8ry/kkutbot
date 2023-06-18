@@ -31,15 +31,15 @@ jobs:
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          ./.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
+          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          ./.venv/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=300 --statistics --exclude ./.venv
+          poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=300 --statistics --exclude ./.venv
       - name: Sort with isort
         run: |
-          ./.venv/bin/isort . --gitignore
+          poetry run isort .
       - name: Format with black
         run: |
-          ./.venv/bin/black .
+          poetry run black .
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
