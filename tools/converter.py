@@ -12,7 +12,9 @@ __all__ = ["KkutbotUserConverter"]
 class KkutbotUserConverter(Converter[Union[discord.Member, discord.User, None]]):
     """User & Member Converter without Member Intents"""
 
-    async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member, None]:
+    async def convert(
+        self, ctx: Context, argument: str
+    ) -> Union[discord.User, discord.Member, None]:
         argument = argument.lstrip()
 
         if not argument:
@@ -34,7 +36,9 @@ class KkutbotUserConverter(Converter[Union[discord.Member, discord.User, None]])
             if re.match(r"<@!?(\d+)>$", argument):  # if argument is mention
                 return await ctx.bot.fetch_user(int(re.findall(r"\d+", argument)[0]))
             else:
-                users = await (ctx.bot.db.user.find({"name": str(argument)})).to_list(None)
+                users = await ctx.bot.db.user.find({"name": str(argument)}).to_list(
+                    None
+                )
                 if users:  # if argument is user name
                     user = random.choice(users)
                     return await ctx.bot.fetch_user(user["_id"])

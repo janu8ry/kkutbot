@@ -4,38 +4,24 @@ from tools.db import db
 
 
 async def main() -> None:
-    await db.user.update_many({}, {
-        "$rename": {
-            "info": "bio"
-        }
-    })
-    for user in await (db.user.find()).to_list(None):
+    await db.user.update_many({}, {"$rename": {"info": "bio"}})
+    for user in await db.user.find().to_list(None):
         if isinstance(user["latest_usage"], float):
             ts = round(user["latest_usage"])
-            db_set = {
-                "latest_usage": ts
-            }
+            db_set = {"latest_usage": ts}
             await db.user.update_one({"_id": user["_id"]}, {"$set": db_set})
 
-    await db.unused.update_many({}, {
-        "$rename": {
-            "info": "bio"
-        }
-    })
-    for unused in await (db.unused.find()).to_list(None):
+    await db.unused.update_many({}, {"$rename": {"info": "bio"}})
+    for unused in await db.unused.find().to_list(None):
         if isinstance(unused["latest_usage"], float):
             ts = round(unused["latest_usage"])
-            db_set = {
-                "latest_usage": ts
-            }
+            db_set = {"latest_usage": ts}
             await db.unused.update_one({"_id": unused["_id"]}, {"$set": db_set})
 
-    for guild in await (db.guild.find()).to_list(None):
+    for guild in await db.guild.find().to_list(None):
         if isinstance(guild["latest_usage"], float):
             ts = round(guild["latest_usage"])
-            db_set = {
-                "latest_usage": ts
-            }
+            db_set = {"latest_usage": ts}
             await db.guild.update_one({"_id": guild["_id"]}, {"$set": db_set})
 
 

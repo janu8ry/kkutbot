@@ -24,11 +24,13 @@ jishaku = {extras = ["procinfo"], version = "^2.5.1"}
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"
 flake8 = "^5.0.4"
+black = "^23.3.0"
 
 [tool.isort]
 skip_gitignore = true
 line_length = "150"
 extra_standard_library = ["typing_extensions"]
+profile = "black"
 
 [tool.mypy]
 strict = false

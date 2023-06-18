@@ -29,47 +29,64 @@ class KkutbotContext(commands.Context):
         super().__init__(**kwargs)
 
     async def send(
-            self,
-            content: Optional[str] = None,
-            *,
-            tts: bool = False,
-            embed: Optional[discord.Embed] = None,
-            embeds: Optional[list[discord.Embed]] = None,
-            file: Optional[discord.File] = None,
-            files: Optional[list[discord.File]] = None,
-            stickers: Optional[discord.Sticker] = None,
-            delete_after: Optional[float] = None,
-            nonce: Optional[int] = None,
-            allowed_mentions: Optional[discord.AllowedMentions] = None,
-            reference: Union[discord.Message, discord.MessageReference, discord.PartialMessage, None] = None,
-            mention_author: Optional[bool] = None,
-            view: Optional[discord.ui.View] = None,
-            suppress_embeds: bool = False,
-            ephemeral: bool = False,
-            escape_emoji_formatting: bool = False
+        self,
+        content: Optional[str] = None,
+        *,
+        tts: bool = False,
+        embed: Optional[discord.Embed] = None,
+        embeds: Optional[list[discord.Embed]] = None,
+        file: Optional[discord.File] = None,
+        files: Optional[list[discord.File]] = None,
+        stickers: Optional[discord.Sticker] = None,
+        delete_after: Optional[float] = None,
+        nonce: Optional[int] = None,
+        allowed_mentions: Optional[discord.AllowedMentions] = None,
+        reference: Union[
+            discord.Message, discord.MessageReference, discord.PartialMessage, None
+        ] = None,
+        mention_author: Optional[bool] = None,
+        view: Optional[discord.ui.View] = None,
+        suppress_embeds: bool = False,
+        ephemeral: bool = False,
+        escape_emoji_formatting: bool = False,
     ) -> discord.Message:
-        if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
-        return await super().send(content=content,
-                                  tts=tts,
-                                  embed=embed,
-                                  embeds=embeds,
-                                  file=file,
-                                  files=files,
-                                  stickers=stickers,
-                                  delete_after=delete_after,
-                                  nonce=nonce,
-                                  allowed_mentions=allowed_mentions,
-                                  reference=reference,
-                                  mention_author=mention_author,
-                                  view=view,
-                                  suppress_embeds=suppress_embeds,
-                                  ephemeral=ephemeral
-                                  )
+        if (escape_emoji_formatting is False) and (
+            self.command.qualified_name.split(" ")[0] != "jishaku"
+        ):
+            content = (
+                content.format_map(FormattingDict(self.bot.dict_emojis()))
+                if content
+                else None
+            )
+        return await super().send(
+            content=content,
+            tts=tts,
+            embed=embed,
+            embeds=embeds,
+            file=file,
+            files=files,
+            stickers=stickers,
+            delete_after=delete_after,
+            nonce=nonce,
+            allowed_mentions=allowed_mentions,
+            reference=reference,
+            mention_author=mention_author,
+            view=view,
+            suppress_embeds=suppress_embeds,
+            ephemeral=ephemeral,
+        )
 
-    async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
-        if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
+    async def reply(
+        self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any
+    ) -> discord.Message:
+        if (not kwargs.get("escape_emoji_formatting", False)) and (
+            self.command.qualified_name.split(" ")[0] != "jishaku"
+        ):
+            content = (
+                content.format_map(FormattingDict(self.bot.dict_emojis()))
+                if content
+                else None
+            )
         if self.interaction is None:
             return await self.send(
                 content, reference=self.message, mention_author=mention_author, **kwargs
@@ -94,7 +111,7 @@ class Kkutbot(commands.AutoShardedBot):
             activity=discord.Game("봇 로딩"),
             owner_id=610625541157945344,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
-            strip_after_prefix=True
+            strip_after_prefix=True,
         )
         self.guild_multi_games: list[int] = []
         self.db: AsyncIOMotorDatabase = db
@@ -106,20 +123,36 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
-        if not config('test'):
+        if not config("test"):
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
             self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
-        self.koreanbots = DiscordpyKoreanbots(self, config("token.koreanbots"), run_task=not config("test"), include_shard_count=True)
-        self.dbl = DBLClient(self, config("token.dbl"), autopost=not config("test"), post_shard_count=not config("test"))
+        self.koreanbots = DiscordpyKoreanbots(
+            self,
+            config("token.koreanbots"),
+            run_task=not config("test"),
+            include_shard_count=True,
+        )
+        self.dbl = DBLClient(
+            self,
+            config("token.dbl"),
+            autopost=not config("test"),
+            post_shard_count=not config("test"),
+        )
         self.scheduler.start()
 
     def run_bot(self) -> None:
         super().run(config(f"token.{'test' if config('test') else 'main'}"))
 
-    async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
+    async def get_context(
+        self,
+        origin: Union[discord.Message, discord.Interaction],
+        /,
+        *,
+        cls=KkutbotContext,
+    ) -> KkutbotContext:
         return await super().get_context(origin, cls=cls)
 
     async def try_reload(self, name: str) -> None:
@@ -131,7 +164,11 @@ class Kkutbot(commands.AutoShardedBot):
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
-        await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
+        await self.change_presence(
+            activity=discord.Game(
+                f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"
+            )
+        )
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
@@ -148,8 +185,12 @@ class Kkutbot(commands.AutoShardedBot):
     @staticmethod
     async def reset_alerts() -> None:
         await write("general", "attendance", 0)
-        await db.user.update_many({"alerts.attendance": True}, {"$set": {"alerts.attendance": False}})
-        await db.user.update_many({"alerts.reward": True}, {"$set": {"alert.reward": False}})
+        await db.user.update_many(
+            {"alerts.attendance": True}, {"$set": {"alerts.attendance": False}}
+        )
+        await db.user.update_many(
+            {"alerts.reward": True}, {"$set": {"alert.reward": False}}
+        )
 
     async def backup_data(self) -> None:
         for filename in os.listdir("/backup"):
@@ -157,14 +198,20 @@ class Kkutbot(commands.AutoShardedBot):
                 date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
                 fp = f"/backup/{date}.gz"
                 os.replace(f"/backup/{filename}", fp)
-                await (self.get_channel(config("channels.backup_data"))).send(file=discord.File(fp=fp))
+                await self.get_channel(config("channels.backup_data")).send(
+                    file=discord.File(fp=fp)
+                )
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self) -> None:
         fp_before = f"logs/{datetime.now().strftime('%Y-%m-%d')}.log.gz"
-        fp_after = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
+        fp_after = (
+            f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
+        )
         os.replace(fp_before, fp_after)
-        await (self.get_channel(config("channels.backup_log"))).send(file=discord.File(fp=fp_after))
+        await self.get_channel(config("channels.backup_log")).send(
+            file=discord.File(fp=fp_after)
+        )
         logger.info("로그 백업 완료!")
 
     @staticmethod
@@ -196,10 +243,14 @@ class Kkutbot(commands.AutoShardedBot):
         return data.voted
 
 
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
 
 
-def command(name: Optional[str] = None, cls: Type[commands.Command] = commands.Command, **attrs: Any) -> Callable[[F], Any]:
+def command(
+    name: Optional[str] = None,
+    cls: Type[commands.Command] = commands.Command,
+    **attrs: Any,
+) -> Callable[[F], Any]:
     def decorator(func: F) -> commands.Command:
         if isinstance(func, commands.Command):
             raise TypeError("Callback is already a command.")
@@ -219,12 +270,23 @@ class KkutbotEmbed(discord.Embed):
     def __init__(self, **kwargs: Any) -> None:
         if not kwargs.get("escape_emoji_formatting", False):
             if title := kwargs.get("title"):
-                kwargs["title"] = title.format_map(FormattingDict(Kkutbot.dict_emojis()))
+                kwargs["title"] = title.format_map(
+                    FormattingDict(Kkutbot.dict_emojis())
+                )
             if description := kwargs.get("description"):
-                kwargs["description"] = description.format_map(FormattingDict(Kkutbot.dict_emojis()))
+                kwargs["description"] = description.format_map(
+                    FormattingDict(Kkutbot.dict_emojis())
+                )
         super().__init__(**kwargs)
 
-    def add_field(self, *, name: str, value: str, inline: bool = True, escape_emoji_formatting: bool = False) -> discord.Embed:
+    def add_field(
+        self,
+        *,
+        name: str,
+        value: str,
+        inline: bool = True,
+        escape_emoji_formatting: bool = False,
+    ) -> discord.Embed:
         if escape_emoji_formatting is False:
             name = name.format_map(FormattingDict(Kkutbot.dict_emojis()))
             value = value.format_map(FormattingDict(Kkutbot.dict_emojis()))

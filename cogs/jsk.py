@@ -66,7 +66,7 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
         "append": append,
         "config": config,
         "logger": logger,
-        "get_timestamp": get_timestamp
+        "get_timestamp": get_timestamp,
     }
 
     return {f"{prefix}{k}": v for k, v in raw_var_dict.items()}
@@ -77,7 +77,12 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
     filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
 
-    @Feature.Command(name="jishaku", aliases=["ㅈ", "jsk"], invoke_without_command=True, ignore_extra=False)
+    @Feature.Command(
+        name="jishaku",
+        aliases=["ㅈ", "jsk"],
+        invoke_without_command=True,
+        ignore_extra=False,
+    )
     async def jsk(self, ctx: ContextA):
         """
         The Jishaku debug and diagnostic commands.
@@ -87,17 +92,18 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         # Try to locate what vends the `discord` package
         distributions: typing.List[str] = [
-            dist for dist in packages_distributions()['discord']  # type: ignore
+            dist
+            for dist in packages_distributions()["discord"]  # type: ignore
             if any(
-                file.parts == ('discord', '__init__.py')  # type: ignore
+                file.parts == ("discord", "__init__.py")  # type: ignore
                 for file in distribution(dist).files  # type: ignore
             )
         ]
 
         if distributions:
-            dist_version = f'{distributions[0]} `{package_version(distributions[0])}`'
+            dist_version = f"{distributions[0]} `{package_version(distributions[0])}`"
         else:
-            dist_version = f'unknown `{discord.__version__}`'
+            dist_version = f"unknown `{discord.__version__}`"
 
         summary = [
             f"Jishaku `{package_version('jishaku')}`",
@@ -105,7 +111,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
             f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, "
             f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
-            ""
+            "",
         ]
 
         try:
@@ -114,9 +120,11 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             with proc.oneshot():
                 try:
                     mem = proc.memory_full_info()
-                    summary.append(f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
-                                   f"`{natural_size(mem.vms)}`의 가상 메모리, "
-                                   f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다.")
+                    summary.append(
+                        f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
+                        f"`{natural_size(mem.vms)}`의 가상 메모리, "
+                        f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다."
+                    )
                 except psutil.AccessDenied:
                     pass
 
@@ -125,7 +133,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                     pid = proc.pid
                     thread_count = proc.num_threads()
 
-                    summary.append(f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다.")
+                    summary.append(
+                        f"PID {pid} (`{name}`) 에서 `{thread_count}` 개의 스레드에서 작동중입니다."
+                    )
                 except psutil.AccessDenied:
                     pass
 
@@ -143,26 +153,22 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             )
         else:
             summary.append(
-                f"샤드 수는 `{self.bot.shard_count}`개이며,"
-                f" {cache_summary}와 활동하고 있습니다."
+                f"샤드 수는 `{self.bot.shard_count}`개이며," f" {cache_summary}와 활동하고 있습니다."
             )
 
         # pylint: disable=protected-access
         if self.bot._connection.max_messages:  # noqa
-            message_cache = f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
+            message_cache = (
+                f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
+            )
         else:
             message_cache = "메시지 캐시가 비활성화 되어있습니다."
 
-        remarks = {
-            True: 'enabled',
-            False: 'disabled',
-            None: 'unknown'
-        }
+        remarks = {True: "enabled", False: "disabled", None: "unknown"}
 
         *group, last = (
             f"{intent.replace('_', ' ')} 인텐트: `{'활성화' if remarks.get(getattr(self.bot.intents, intent, None)) == 'enabled' else '비활성화'}`"
-            for intent in
-            ('presences', 'members', 'message_content')
+            for intent in ("presences", "members", "message_content")
         )
 
         summary.append(message_cache)
@@ -193,7 +199,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         try:
             async with ReplResponseReactor(ctx.message):
                 with self.submit(ctx):
-                    executor = AsyncCodeExecutor(argument.content, scope, arg_dict=arg_dict)
+                    executor = AsyncCodeExecutor(
+                        argument.content, scope, arg_dict=arg_dict
+                    )
                     async for send, result in AsyncSender(executor):  # type: ignore
                         send: typing.Callable[..., None]
                         result: typing.Any
@@ -217,19 +225,28 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         extensions: typing.Iterable[typing.List[str]] = extensions  # type: ignore
 
-        paginator = commands.Paginator(prefix='', suffix='')
+        paginator = commands.Paginator(prefix="", suffix="")
 
         # 'jsk reload' on its own just reloads jishaku
-        if ctx.invoked_with == 'reload' and not extensions:
-            extensions = [['cogs.jsk']]
-        elif ctx.invoked_with == 'ㄹ' and not extensions:
-            extensions = [[f"cogs.{cogname[:-3]}" for cogname in os.listdir("cogs") if cogname.endswith(".py")]]
+        if ctx.invoked_with == "reload" and not extensions:
+            extensions = [["cogs.jsk"]]
+        elif ctx.invoked_with == "ㄹ" and not extensions:
+            extensions = [
+                [
+                    f"cogs.{cogname[:-3]}"
+                    for cogname in os.listdir("cogs")
+                    if cogname.endswith(".py")
+                ]
+            ]
 
         for extension in itertools.chain(*extensions):
             method, icon = (
-                (self.bot.reload_extension, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
-                if extension in self.bot.extensions else
-                (self.bot.load_extension, "\N{INBOX TRAY}")
+                (
+                    self.bot.reload_extension,
+                    "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}",
+                )
+                if extension in self.bot.extensions
+                else (self.bot.load_extension, "\N{INBOX TRAY}")
             )
 
             await discord.utils.maybe_coroutine(method, extension)
@@ -238,11 +255,13 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 await discord.utils.maybe_coroutine(method, extension)
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
             except Exception as exc:  # pylint: disable=broad-except
-                traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
+                traceback_data = "".join(
+                    traceback.format_exception(type(exc), exc, exc.__traceback__, 1)
+                )
 
                 paginator.add_line(
                     f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```",
-                    empty=True
+                    empty=True,
                 )
             else:
                 paginator.add_line(f"{icon} `{extension}`", empty=True)
@@ -250,13 +269,19 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         for page in paginator.pages:
             await ctx.reply(page, mention_author=False)
 
-    @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"])
+    @Feature.Command(
+        parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"]
+    )
     async def jsk_shutdown(self, ctx: ContextA):
         """
         Logs this bot out.
         """
 
-        ellipse_character = "\N{BRAILLE PATTERN DOTS-356}" if Flags.USE_BRAILLE_J else "\N{HORIZONTAL ELLIPSIS}"
+        ellipse_character = (
+            "\N{BRAILLE PATTERN DOTS-356}"
+            if Flags.USE_BRAILLE_J
+            else "\N{HORIZONTAL ELLIPSIS}"
+        )
 
         await ctx.reply(f"로그아웃합니다{ellipse_character}", mention_author=False)
         logger.info("봇이 정상적으로 종료되었습니다!")

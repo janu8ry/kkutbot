@@ -14,7 +14,9 @@ __all__ = ["db", "read", "write", "add", "delete", "append"]
 logger = logging.getLogger("kkutbot")
 MODE = "test" if config("test") else "main"
 
-TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
+TargetObject: TypeAlias = Union[
+    discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str
+]
 
 
 def dbconfig(query: str) -> Any:
@@ -38,9 +40,7 @@ if all([username := dbconfig("user"), password := dbconfig("password")]):
     db_options["password"] = password
     db_options["authSource"] = "admin"
 
-_client = AsyncIOMotorClient(
-    host=dbconfig("ip"), port=dbconfig("port"), **db_options
-)
+_client = AsyncIOMotorClient(host=dbconfig("ip"), port=dbconfig("port"), **db_options)
 
 logger.info("mongoDB에 연결됨")
 
@@ -174,10 +174,14 @@ async def write(target: TargetObject, path: str, value: Any) -> None:
                 await db.user.insert_one(main_data)
         if name and name != (await read(target, "name")):
             await db.user.update_one({"_id": id_}, {"$set": {"name": name}})
-    elif (collection.name == "guild") and ((main_data := await read(target)) == deepcopy(config("default_data.guild"))):
+    elif (collection.name == "guild") and (
+        (main_data := await read(target)) == deepcopy(config("default_data.guild"))
+    ):
         main_data["_id"] = id_
         await db.guild.insert_one(main_data)
-    elif (collection.name == "general") and ((main_data := await read(target)) == deepcopy(config("default_data.general"))):
+    elif (collection.name == "general") and (
+        (main_data := await read(target)) == deepcopy(config("default_data.general"))
+    ):
         main_data["_id"] = "general"
         await db.general.insert_one(main_data)
 
@@ -228,11 +232,4 @@ async def append(target: TargetObject, path: str, value: Any) -> None:
         value to append to DB
     """
     collection = get_collection(target)
-    await collection.update_one(
-        {"_id": _get_id(target)},
-        {
-            "$push": {
-                path: value
-            }
-        }
-    )
+    await collection.update_one({"_id": _get_id(target)}, {"$push": {path: value}})

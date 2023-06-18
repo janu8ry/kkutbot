@@ -15,7 +15,7 @@ from views.social import RankMenu
 class Social(commands.Cog, name="소셜"):
     """끝봇의 소셜 기능에 관련된 명령어들입니다."""
 
-    __slots__ = ("bot", )
+    __slots__ = ("bot",)
 
     def __init__(self, bot: Kkutbot):
         self.bot = bot
@@ -29,27 +29,36 @@ class Social(commands.Cog, name="소셜"):
         view = RankMenu(ctx)
         view.message = await ctx.reply(embed=await view.get_home_embed(), view=view)
 
-    @commands.hybrid_command(name="메일", usage="/메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지"))
+    @commands.hybrid_command(
+        name="메일", usage="/메일", aliases=("ㅁ", "ㅁㅇ", "메일함", "알림", "공지")
+    )
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def mail(self, ctx: KkutbotContext):
         """끝봇의 공지와 업데이트 소식, 개인 알림 등을 확인합니다."""
-        mails = sorted(await read(ctx.author, "mails") + await read(None, "announcements"), key=lambda item: item["time"], reverse=True)
+        mails = sorted(
+            await read(ctx.author, "mails") + await read(None, "announcements"),
+            key=lambda item: item["time"],
+            reverse=True,
+        )
         pages = []
         if mails:
             for mail in mails:
-                embed = discord.Embed(title=f"{{email}} {ctx.author.name} 님의 메일함", color=config("colors.help"))
+                embed = discord.Embed(
+                    title=f"{{email}} {ctx.author.name} 님의 메일함",
+                    color=config("colors.help"),
+                )
                 embed.add_field(
                     name=f"🔹 {mail['title']} - `{time_convert(time.time() - mail['time'])} 전`",
                     value=mail["value"],
-                    inline=False
+                    inline=False,
                 )
                 pages.append(embed)
         else:
             embed = discord.Embed(
-                    title=f"{{email}} {ctx.author.name} 님의 메일함",
-                    description="{denyed} 메일함이 비어있습니다!",
-                    color=config("colors.help")
-                )
+                title=f"{{email}} {ctx.author.name} 님의 메일함",
+                description="{denyed} 메일함이 비어있습니다!",
+                color=config("colors.help"),
+            )
             pages.append(embed)
         await write(ctx.author, "alerts.mails", True)
         await write(ctx.author, "alerts.announcements", True)
@@ -60,7 +69,8 @@ class Social(commands.Cog, name="소셜"):
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def byab(self, ctx: KkutbotContext):
         """🐳 안녕하세요!"""
-        await ctx.reply("""
+        await ctx.reply(
+            """
 코로나19로 힘든 시기!
 딩가딩가 놀 수만은 없죠.
 도움이 필요하실 때에는 어떻게 한다?
@@ -74,7 +84,8 @@ class Social(commands.Cog, name="소셜"):
 **봇 초대 링크**
 
 https://discord.com/oauth2/authorize?client_id=732773322286432416&permissions=336066630&scope=bot
-""")
+"""
+        )
 
 
 async def setup(bot: Kkutbot):
