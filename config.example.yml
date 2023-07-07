@@ -1,0 +1,52 @@
+# run configuration
+# 'true' to run testbot, 'false' to run the main bot.
+testmode: false
+
+# bot prefix
+prefix:
+  main: ㄲ
+  test: ㅌㄲ
+
+# secret tokens
+token:
+  main: main bot token
+  test: test bot token
+  koreanbots: koreanbots token
+  dbl: top.gg token
+
+# list of admin ids that can use admin commands.
+admin:
+  -
+
+# mongodb configuration
+mongo:
+  main:
+    ip: ip address
+    port: 27017
+    db: kkutbot
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
+  test:
+    ip: ip address
+    port: 27017
+    db: kkuttest
+    user: username  # 'null' if you are not using auth
+    password: userpasswd  # 'null' if you are not using auth
+
+# mongodb & log backup channel id
+channels:
+  backup_data:
+  backup_log:
+  error_log:
+
+# useful links
+links:
+  invite:
+    bot: bot invite oauth url
+    server: support server invite url
+  privacy-policy:
+  terms-of-service:
+  koreanbots:
+  topgg:
+  github:
+  website:
