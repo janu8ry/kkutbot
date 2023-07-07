@@ -1,0 +1,8 @@
+target:
+  host: "mongo"
+  port: 27017
+  database: "kkutbot"
+scheduler:
+  hour: "5"
+  minute: "0"
+  test: true
