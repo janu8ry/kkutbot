@@ -1,0 +1,52 @@
+{
+    "command_used": {
+        "name": "명령어 {}회 이상 사용하기",
+        "target": "10-50",
+        "reward": ["*1", "points"]
+    },
+    "medals": {
+        "name": "메달 {}개 이상 수집하기",
+        "target": "1-5",
+        "reward": ["*20", "points"]
+    },
+    "attendance.times": {
+        "name": "출석 {}회 완료하기",
+        "target": "1-1",
+        "reward": ["*1", "medals"]
+    },
+    "points": {
+        "name": "{}포인트 모으기",
+        "target": "100-200",
+        "reward": ["*0.05", "medals"]
+    },
+    "game.rank_solo.win": {
+        "name": "솔로 게임 {}판 승리하기",
+        "target": "5-15",
+        "reward": ["*0.5", "medals"]
+    },
+    "game.kkd.win": {
+        "name": "쿵쿵따 {}판 승리하기",
+        "target": "5-15",
+        "reward": ["*1", "medals"]
+    },
+    "game.guild_multi.win": {
+        "name": "서버원들과의 멀티플레이 {}판 승리하기",
+        "target": "5-15",
+        "reward": ["*0.3", "medals"]
+    },
+    "game.rank_solo.times": {
+        "name": "솔로 모드 {}판 플레이하기",
+        "target": "10-20",
+        "reward": ["*0.2", "medals"]
+    },
+    "game.guild_multi.times": {
+        "name": "서버원들과 멀티플레이 {}판 플레이하기",
+        "target": "5-10",
+        "reward": ["*0.2", "medals"]
+    },
+    "game.kkd.times": {
+        "name": "쿵쿵따 {}판 플레이하기",
+        "target": "5-15",
+        "reward": ["*0.2", "medals"]
+    }
+}
