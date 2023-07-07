@@ -1,0 +1,45 @@
+{
+    "user": {
+        "_id": null,
+        "name": null,
+        "registered": null,
+        "bio": "소개말이 없습니다.",
+        "points": 1000,
+        "medals": 0,
+        "latest_reward": null,
+        "attendance": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "times": 0},
+        "quest": {
+            "status": {"date": 0, "completed": []},
+            "cache": {},
+            "total": 0
+        },
+        "game": {
+            "rank_solo": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+            "rank_online": {"times": 0, "win": 0, "best": 0, "tier": "언랭크", "winrate": 0},
+            "long": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "kkd": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "guild_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0},
+            "online_multi": {"times": 0, "win": 0, "best": 0, "winrate": 0}
+        },
+        "command_used": 0,
+        "latest_usage": null,
+        "mails": [],
+        "alerts": {"attendance": false, "reward": false, "mails": true, "announcements": true}
+    },
+    "guild": {
+        "_id": null,
+        "invited": null,
+        "latest_usage": null,
+        "command_used": 0
+    },
+    "general": {
+        "_id": null,
+        "attendance": 0,
+        "reward": 0,
+        "command_used": 0,
+        "latest_usage": null,
+        "commands": {},
+        "quests": {},
+        "announcements": []
+    }
+}
