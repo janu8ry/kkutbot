@@ -108,9 +108,9 @@ class Mongo:
 
 @dataclass(frozen=True)
 class Channels:
-    backup_data: str = field(default_factory=lambda: _config("channels.backup_data"))
-    backup_log: str = field(default_factory=lambda: _config("channels.backup_log"))
-    error_log: str = field(default_factory=lambda: _config("channels.error_log"))
+    backup_data: int = field(default_factory=lambda: _config("channels.backup_data"))
+    backup_log: int = field(default_factory=lambda: _config("channels.backup_log"))
+    error_log: int = field(default_factory=lambda: _config("channels.error_log"))
 
 
 @dataclass(frozen=True)
