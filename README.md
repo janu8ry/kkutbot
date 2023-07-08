@@ -17,10 +17,10 @@
 
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
-- 개발 언어: python 3.10.12 ([discord.py 2.3](https://discordpy.readthedocs.io/en/latest/index.html))
+- 개발 언어: python 3.10.12 ([discord.py 2.3.1](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 2.1.0-a
-- 데이터베이스: mongoDB  
-- 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님, 끝봇의 프로필 사진을 만들어주신 ``! Tim23#1475``님께 감사드립니다!
+- 데이터베이스: mongoDB 4.4   
+- 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님, 끝봇의 프로필 사진을 만들어주신 [Tim232](https://github.com/Tim232)님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
 
