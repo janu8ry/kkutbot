@@ -190,7 +190,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def reload_all(self) -> None:
         for package in os.listdir("extensions"):
-            if os.path.isdir(package):
+            if os.path.isdir(f"extensions/{package}"):
                 await self.try_reload(package)
 
     @staticmethod
