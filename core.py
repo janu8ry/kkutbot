@@ -219,3 +219,22 @@ def command(name: Optional[str] = None, cls: Type[commands.Command] = commands.C
 
 
 commands.command = command
+
+
+class KkutbotEmbed(discord.Embed):
+    def __init__(self, **kwargs: Any) -> None:
+        if not kwargs.get("escape_emoji_formatting", False):
+            if title := kwargs.get("title"):
+                kwargs["title"] = title.format_map(FormattingDict(Kkutbot.dict_emojis()))
+            if description := kwargs.get("description"):
+                kwargs["description"] = description.format_map(FormattingDict(Kkutbot.dict_emojis()))
+        super().__init__(**kwargs)
+
+    def add_field(self, *, name: str, value: str, inline: bool = True, escape_emoji_formatting: bool = False) -> discord.Embed:
+        if escape_emoji_formatting is False:
+            name = name.format_map(FormattingDict(Kkutbot.dict_emojis()))
+            value = value.format_map(FormattingDict(Kkutbot.dict_emojis()))
+        return super().add_field(name=name, value=value, inline=inline)
+
+
+discord.Embed = KkutbotEmbed
