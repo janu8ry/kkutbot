@@ -91,6 +91,61 @@ async def before_command(ctx: core.KkutbotContext) -> None:
         logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")
 
 
+@bot.event
+async def on_command_completion(ctx: core.KkutbotContext) -> None:
+    public = await bot.db.get_public()
+    user = await bot.db.get_user(ctx.author)
+    desc = ""
+    for data, info in public.quests.items():
+        current = get_nested_dict(user.dict(), data.split("/")) - user.quest.cache[data]
+        if current < 0:
+            user.quest.cache[data] = get_nested_dict(user.dict(), data.split("/"))
+        elif (current >= info["target"]) and (data not in user.quest.status.completed):
+            await user.inc({getattr(User, info["reward"][1]): info["reward"][0]})
+            await user.update(Push({User.quest.status.completed: data}))
+            user.quest.total += 1
+            desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    if desc:
+        embed = discord.Embed(
+            title="퀘스트 클리어!",
+            description=desc,
+            color=config.colors.help
+        )
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["congrats"]).url)
+        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+        await ctx.reply(embed=embed)
+
+        if len(user.quest.status.completed) == 3:
+            bonus_embed = discord.Embed(
+                title="보너스 보상",
+                description="오늘의 퀘스트를 모두 완료했습니다!",
+                color=config.colors.help
+            )
+            bonus_point = random.randint(100, 200)
+            bonus_medal = random.randint(1, 5)
+            user.points += bonus_point
+            user.medals += bonus_medal
+            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
+            bonus_embed.set_thumbnail(url=bot.get_emoji(config.emojis["bonus"]).url)
+            await ctx.reply(embed=bonus_embed)
+
+    alert_message = []
+    alerts = {
+        "attendance": "오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!",
+        "reward": "일일 포인트를 받지 않았습니다.\n`ㄲ포인트`을 입력하여 일일 포인트를 받아가세요!",
+        "mails": "읽지 않은 메일이 있습니다.\n`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!",
+        "announcements": "읽지 않은 공지가 있습니다.\n`ㄲ메일`을 입력하여 읽지 않은 공지를 확인해 보세요!"
+    }
+    for path, msg in alerts.items():
+        if not getattr(user.alerts, path):
+            alert_message.append(msg)
+            setattr(user.alerts, path, True)
+    if alert_message:
+        await ctx.reply("\n\n".join(alert_message), mention_author=True)
+
+    await bot.db.save(user)
+
+
 @bot.check
 async def check(ctx: core.KkutbotContext) -> bool:
     if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
