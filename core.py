@@ -4,7 +4,7 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Any, Callable, Optional, Type, TypeVar, Union, Sequence
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -23,6 +23,68 @@ logger = logging.getLogger("kkutbot")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+
+
+class FormattingDict(dict[str, str]):
+    def __missing__(self, key: str) -> str:
+        return "{" + key + "}"
+
+
+class KkutbotContext(commands.Context):
+    def __init__(self, bot: "Kkutbot", **kwargs: Any) -> None:
+        super().__init__(bot=bot, **kwargs)
+        self.bot: "Kkutbot" = bot
+
+    async def send(
+            self,
+            content: Optional[str] = None,
+            *,
+            tts: bool = False,
+            embed: Optional[discord.Embed] = None,
+            embeds: Optional[Sequence[discord.Embed]] = None,
+            file: Optional[discord.File] = None,
+            files: Optional[Sequence[discord.File]] = None,
+            stickers: Optional[Sequence[Union[discord.GuildSticker, discord.StickerItem]]] = None,
+            delete_after: Optional[float] = None,
+            nonce: Optional[Union[str, int]] = None,
+            allowed_mentions: Optional[discord.AllowedMentions] = None,
+            reference: Optional[Union[discord.Message, discord.MessageReference, discord.PartialMessage]] = None,
+            mention_author: Optional[bool] = None,
+            view: Optional[discord.ui.View] = None,
+            suppress_embeds: bool = False,
+            ephemeral: bool = False,
+            silent: bool = False,
+            escape_emoji_formatting: bool = False
+    ) -> discord.Message:
+        if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
+        return await super().send(content=content,  # noqa
+                                  tts=tts,
+                                  embed=embed,
+                                  file=file,
+                                  files=files,
+                                  nonce=nonce,
+                                  delete_after=delete_after,
+                                  allowed_mentions=allowed_mentions,
+                                  reference=reference,
+                                  mention_author=mention_author,
+                                  view=view,
+                                  embeds=embeds,
+                                  stickers=stickers,
+                                  suppress_embeds=suppress_embeds,
+                                  ephemeral=ephemeral,
+                                  silent=silent
+                                  )
+
+    async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
+        if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
+            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
+        if self.interaction is None:
+            return await self.send(
+                content, reference=self.message, mention_author=mention_author, **kwargs
+            )
+        else:
+            return await self.send(content, mention_author=mention_author, **kwargs)
 
 
 class Kkutbot(commands.AutoShardedBot):
@@ -61,6 +123,9 @@ class Kkutbot(commands.AutoShardedBot):
 
     def run_bot(self) -> None:
         super().run(getattr(config.token, "test" if config.is_test else "main"))
+
+    async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
+        return await super().get_context(origin, cls=cls)
 
     async def try_reload(self, name: str) -> None:
         name = f"extensions.{name}"
