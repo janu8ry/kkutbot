@@ -200,3 +200,22 @@ class Kkutbot(commands.AutoShardedBot):
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)  # noqa
         return data.voted
+
+
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def command(name: Optional[str] = None, cls: Type[commands.Command] = commands.Command, **attrs: Any) -> Callable[[F], Any]:
+    def decorator(func: F) -> commands.Command:
+        if isinstance(func, commands.Command):
+            raise TypeError("Callback is already a command.")
+        if ("user" in func.__annotations__) and (attrs.get("rest_is_raw") is not False):
+            rest_is_raw = attrs.pop("rest_is_raw", True)
+        else:
+            rest_is_raw = attrs.pop("rest_is_raw", False)
+        return cls(func, name=name, rest_is_raw=rest_is_raw, **attrs)
+
+    return decorator
+
+
+commands.command = command
