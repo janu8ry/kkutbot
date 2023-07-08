@@ -15,7 +15,7 @@ import core
 from config import config, get_nested_dict
 from tools.logger import setup_logger
 from tools.utils import is_admin
-from views.general import ServerInvite
+from views import ServerInvite
 from database.models import User
 
 logger = logging.getLogger("kkutbot")
@@ -256,6 +256,67 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)
         logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 내용: {error_log}\n에러 ID: {error_id}")
+
+    @bot.event
+    async def on_guild_join(guild: discord.Guild) -> None:
+        guild_data = await bot.db.get_guild(guild)
+        guild_data.invited = round(time.time())
+        await bot.db.save(guild_data)
+        logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
+        announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))["send_messages"]][0]
+        embed = discord.Embed(
+            description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
+                        "끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.\n"
+                        "- **/도움** 명령어를 사용하여 끝봇의 도움말을 확인해 보세요!\n"
+                        "- 끝봇의 공지와 업데이트, 사용 도움을 받고 싶으시다면\n"
+                        "  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!\n"
+                        "  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.\n\n"
+                        f"끝봇을 서버에 초대한 경우 [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
+            color=config.colors.general
+        )
+        try:
+            await announce.send(embed=embed, view=ServerInvite())
+        except discord.errors.Forbidden:
+            pass
+        try:
+            owner = await bot.fetch_user(guild.owner_id)
+            await owner.send(embed=embed, view=ServerInvite())
+        except discord.errors.Forbidden:
+            pass
+
+        essential_perms = (
+            "send_messages",
+            "embed_links",
+            "attach_files",
+            "read_messages",
+            "add_reactions",
+            "external_emojis",
+            "use_application_commands"
+        )
+
+        missing_perms = [p for p in essential_perms if not dict(guild.me.guild_permissions)[p]]
+
+        if missing_perms:
+            embed = discord.Embed(
+                title="권한이 부족합니다.",
+                description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.",
+                color=config.colors.error)
+            embed.add_field(
+                name="필수 권한 목록",
+                value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`"
+            )
+            try:
+                await announce.send(embed=embed)
+                owner = await bot.fetch_user(guild.owner_id)
+                await owner.send(embed=embed)
+            except discord.errors.Forbidden:
+                pass
+
+    @bot.event
+    async def on_guild_remove(guild: discord.Guild) -> None:
+        logger.leave(f"'{guild.name}'에서 추방됨. (총 {len(bot.guilds)}서버)")
+        guild_data = await bot.db.get_guild(guild)
+        await guild_data.delete()
 
 
 if __name__ == "__main__":
