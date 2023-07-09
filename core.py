@@ -151,8 +151,8 @@ class Kkutbot(commands.AutoShardedBot):
             self.add_command(cmd)
 
     async def reset_alerts(self) -> None:
-        general = await self.db.get_public()
-        general.attendance = 0
+        public = await self.db.get_public()
+        public.attendance = 0
         await User.find(User.alerts.attendance == True).update(Set({User.alerts.attendance: False}))  # noqa
         await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
 
@@ -173,7 +173,7 @@ class Kkutbot(commands.AutoShardedBot):
         logger.info("로그 백업 완료!")
 
     async def reset_quest(self) -> None:
-        general = await self.db.get_public()
+        public = await self.db.get_public()
         with open("static/quests.json", "r", encoding="utf-8") as f:
             quests = list(json.load(f).items())
         random.shuffle(quests)
@@ -185,8 +185,8 @@ class Kkutbot(commands.AutoShardedBot):
             v["target"] = target
             v["reward"][0] = round(target * float(v["reward"][0].lstrip("*")))
             quest_data[k.replace(".", "/")] = v
-        general.quests = quest_data
-        await self.db.save(general)
+        public.quests = quest_data
+        await self.db.save(public)
 
     async def reload_all(self) -> None:
         for package in os.listdir("extensions"):
