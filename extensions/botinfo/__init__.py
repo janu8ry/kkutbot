@@ -1,5 +1,6 @@
 import core
+from .help import Help
 
 
 async def setup(bot: core.Kkutbot):
-    pass
+    await bot.add_cog(Help(bot=bot))
