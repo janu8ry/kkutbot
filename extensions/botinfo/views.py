@@ -12,7 +12,7 @@ class HelpDropdown(discord.ui.Select):
         self.ctx = ctx
         options = []
         for cmd in ctx.bot.commands:
-            if cmd.cog.qualified_name not in ["지샤쿠", "관리자"]:  # noqa
+            if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden:  # noqa
                 option = discord.SelectOption(
                     label=cmd.name,
                     value=cmd.name,
