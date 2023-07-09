@@ -4,7 +4,7 @@ from config import config
 from core import KkutbotContext
 from views import BaseView
 
-__all__ = ["HelpMenu"]
+__all__ = ["HelpMenu", "InviteMenu"]
 
 
 class HelpDropdown(discord.ui.Select):
@@ -46,7 +46,7 @@ class HelpMenu(BaseView):
         )
         self.add_item(
             discord.ui.Button(
-                label="서포트 서버 참가하기", style=discord.ButtonStyle.grey, url=config.links.invite.server
+                label="커뮤니티 서버 참가하기", style=discord.ButtonStyle.grey, url=config.links.invite.server
             )
         )
         self.add_item(
@@ -60,3 +60,18 @@ class HelpMenu(BaseView):
     async def go_home(self, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         await interaction.response.edit_message(embed=self.home_embed, view=self)
+
+
+class InviteMenu(discord.ui.View):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config.links.invite.bot
+            )
+        )
+        self.add_item(
+            discord.ui.Button(
+                label="커뮤니티 서버 참가하기", style=discord.ButtonStyle.grey, url=config.links.invite.server
+            )
+        )
