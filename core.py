@@ -128,11 +128,11 @@ class Kkutbot(commands.AutoShardedBot):
         return await super().get_context(origin, cls=cls)
 
     async def try_reload(self, name: str) -> None:
-        name = f"extensions.{name}"
+        path = f"extensions.{name}"
         try:
-            await self.reload_extension(name)
+            await self.reload_extension(path)
         except commands.ExtensionNotLoaded:
-            await self.load_extension(name)
+            await self.load_extension(path)
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
