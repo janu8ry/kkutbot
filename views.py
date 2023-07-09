@@ -5,7 +5,7 @@ import discord
 from config import config
 from core import KkutbotContext
 
-__all__ = ["BaseView", "BaseModal", "ServerInvite", "BotInvite", "KoreanBotsVote", "Paginator"]
+__all__ = ["BaseView", "BaseModal", "ServerInvite", "KoreanBotsVote", "Paginator"]
 
 
 class BaseView(discord.ui.View):
@@ -57,16 +57,6 @@ class ServerInvite(discord.ui.View):
         self.add_item(
             discord.ui.Button(
                 label=text, style=discord.ButtonStyle.grey, url=config.links.invite.server
-            )
-        )
-
-
-class BotInvite(discord.ui.View):
-    def __init__(self) -> None:
-        super().__init__()
-        self.add_item(
-            discord.ui.Button(
-                label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config.links.invite.bot
             )
         )
 
