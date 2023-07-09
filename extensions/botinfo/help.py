@@ -9,8 +9,6 @@ from database.models import User
 
 
 class Help(commands.Cog, name="일반"):
-    """봇의 기본 명령어들입니다."""
-
     __slots__ = ("bot",)
 
     def __init__(self, bot: Kkutbot):
