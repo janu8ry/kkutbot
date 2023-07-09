@@ -20,7 +20,7 @@ class HelpDropdown(discord.ui.Select):
                     emoji=cmd.description
                 )
                 options.append(option)
-        super().__init__(placeholder="카테고리를 선택해 주세요.", options=options, row=1)
+        super().__init__(placeholder="도움말을 확인할 명령어를 선택해 주세요.", options=options, row=1)
 
     async def callback(self, interaction: discord.Interaction):
         cmd = self.ctx.bot.get_command(self.values[0])
