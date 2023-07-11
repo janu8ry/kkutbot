@@ -106,7 +106,7 @@ def get_tier(data: User, mode: str, emoji: bool = True) -> str:
     if mode not in ("rank_solo", "rank_online"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
-    modes = {'rank_solo': data.game.rank_solo, 'kkd': data.game.kkd}
+    modes = {'rank_solo': data.game.rank_solo, 'rank_online': data.game.rank_online}
     for k, v in config.tierlist.items():
         if data.points >= v["points"] and get_winrate(modes[mode]) >= v["winrate"] and modes[mode].times >= v["times"] and modes[mode].best >= v["best"]:
             tier = f"{k} {v['emoji']}"
