@@ -18,9 +18,9 @@ class Help(commands.Cog, name="일반"):
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext):
         """
-        🔸 끝봇의 명령어 목록을 확인합니다.
+        끝봇의 명령어 목록을 확인합니다.
 
-        🔹 사용법
+        --사용법
         `/도움`을 사용하여 도움말을 확인합니다.
         """
         embed = discord.Embed(

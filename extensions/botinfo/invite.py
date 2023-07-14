@@ -16,9 +16,9 @@ class Invite(commands.Cog, name="초대"):
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """
-        🔸 끝봇과 서포트 서버의 초대링크를 확인합니다.
+        끝봇과 서포트 서버의 초대링크를 확인합니다.
 
-        🔹 사용법
+        --사용법
         `/초대`을 사용하여 끝봇의 초대링크와 서포트 서버의 초대링크를 확인합니다.
         """
         embed = discord.Embed(title="{invitation} 끝봇 초대하기",

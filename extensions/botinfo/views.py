@@ -16,7 +16,7 @@ class HelpDropdown(discord.ui.Select):
                 option = discord.SelectOption(
                     label=cmd.name,
                     value=cmd.name,
-                    description=cmd.short_doc[2:],
+                    description=cmd.short_doc,
                     emoji=cmd.usage
                 )
                 options.append(option)
@@ -26,7 +26,7 @@ class HelpDropdown(discord.ui.Select):
         cmd = self.ctx.bot.get_command(self.values[0])
         embed = discord.Embed(
             title=f"{{help}} {self.values[0]} 명령어 도움말",
-            description=cmd.help or "도움말이 없습니다.",
+            description=f"🔸 {cmd.help.replace('--', '🔹 ') or '도움말이 없습니다.'}",
             color=config.colors.help
         )
         embed.set_thumbnail(url=self.ctx.bot.user.display_avatar.url)

@@ -23,12 +23,12 @@ class Profile(commands.Cog, name="사용자"):
     @commands.bot_has_permissions(external_emojis=True)
     async def profile(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author)):
         """
-        🔸 유저의 프로필과 자세한 통계를 확인합니다.
+        유저의 프로필과 자세한 통계를 확인합니다.
 
         아래 버튼을 눌러 유저의 자세한 통계를 확인할 수 있습니다.
         자신의 프로필을 확인한 경우, 아래 버튼을 눌러 소개말을 변경할 수 있습니다!
 
-        🔹 사용법
+        --사용법
         `/프로필`을 사용하여 자신의 프로필을 확인하고, 소개말을 변경합니다.
         `/프로필 @가나다` - 유저 '가나다'의 프로필과 통계를 확인합니다.
         """
