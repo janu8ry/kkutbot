@@ -214,11 +214,11 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
-            description=f"`{ctx.command}` 사용법:\n{ctx.command.usage}\n\n",
+            description=f"🔹 {ctx.command} 사용법\n{ctx.command.help.split('--사용법')[1]}",
             color=config.colors.general
         )
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
-        embed.set_footer(text=f"명령어 'ㄲ도움 {ctx.command.name}'을(를) 사용하여 자세한 설명을 확인할 수 있습니다.")
+        embed.set_footer(text=f"명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):
         if ctx.author.id in config.admin:
