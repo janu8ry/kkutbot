@@ -68,7 +68,6 @@ class Game(BaseModel):
 class Alerts(BaseModel):
     attendance: bool = False
     reward: bool = False
-    mails: bool = True
     announcements: bool = True
 
 
@@ -85,7 +84,6 @@ class User(Document):
     game: Game = Field(default_factory=Game)
     command_used: int = 0
     latest_usage: Optional[int] = None
-    mails: list[dict[str, Any]] = Field(default_factory=list)
     alerts: Alerts = Field(default_factory=Alerts)
 
     class Settings:
