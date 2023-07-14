@@ -23,8 +23,7 @@
         },
         "command_used": 0,
         "latest_usage": null,
-        "mails": [],
-        "alerts": {"attendance": false, "reward": false, "mails": true, "announcements": true}
+        "alerts": {"attendance": false, "reward": false, "announcements": true}
     },
     "guild": {
         "_id": null,

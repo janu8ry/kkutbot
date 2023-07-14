@@ -131,10 +131,9 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
 
     alert_message = []
     alerts = {
-        "attendance": "오늘의 출석체크를 완료하지 않았습니다.\n`ㄲ출석`을 입력하여 오늘의 출석체크를 완료하세요!",
-        "reward": "일일 포인트를 받지 않았습니다.\n`ㄲ포인트`을 입력하여 일일 포인트를 받아가세요!",
-        "mails": "읽지 않은 메일이 있습니다.\n`ㄲ메일`을 입력하여 읽지 않은 메일을 확인해 보세요!",
-        "announcements": "읽지 않은 공지가 있습니다.\n`ㄲ메일`을 입력하여 읽지 않은 공지를 확인해 보세요!"
+        "attendance": "오늘의 출석체크를 완료하지 않았습니다.\n`/출석` 명령어를 사용하여 오늘의 출석체크를 완료하세요!",
+        "reward": "일일 포인트를 받지 않았습니다.\n`/포인트` 명령어를 사용하여 일일 포인트를 받아가세요!",
+        "announcements": "읽지 않은 공지가 있습니다.\n`/공지` 명령어를 사용하여 읽지 않은 공지를 확인해 보세요!"
     }
     for path, msg in alerts.items():
         if not getattr(user.alerts, path):

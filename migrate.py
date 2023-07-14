@@ -32,7 +32,9 @@ async def main() -> None:
         },
         "$unset": {
             "banned": 1,
-            "last_command": 1
+            "last_command": 1,
+            "mails": 1,
+            "alerts.mails": 1
         }
     })
     for user in await (db.user.find()).to_list(None):
@@ -49,7 +51,9 @@ async def main() -> None:
         },
         "$unset": {
             "banned": 1,
-            "last_command": 1
+            "last_command": 1,
+            "mails": 1,
+            "alerts.mails": 1
         }
     })
     for unused in await (db.unused.find()).to_list(None):
