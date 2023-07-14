@@ -17,7 +17,7 @@ class HelpDropdown(discord.ui.Select):
                     label=cmd.name,
                     value=cmd.name,
                     description=cmd.short_doc[2:],
-                    emoji=cmd.description
+                    emoji=cmd.usage
                 )
                 options.append(option)
         super().__init__(placeholder="도움말을 확인할 명령어를 선택해 주세요.", options=options, row=1)

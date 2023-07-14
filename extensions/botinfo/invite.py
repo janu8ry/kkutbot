@@ -12,7 +12,7 @@ class Invite(commands.Cog, name="초대"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="초대", usage="/초대", aliases=("링크", "ㅊㄷ"), description="<:invitation:984371930717118484>")
+    @commands.hybrid_command(name="초대", usage="<:invitation:984371930717118484>", aliases=("링크", "ㅊㄷ"))
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     async def kkutbot_invite(self, ctx: KkutbotContext):
         """

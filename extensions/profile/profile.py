@@ -17,13 +17,13 @@ class Profile(commands.Cog, name="사용자"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="프로필", usage="/프로필", aliases=("ㅍ", "ㅍㄹㅍ"), description="<:profile:985186983666155541>")
+    @commands.hybrid_command(name="프로필", usage="<:profile:985186983666155541>", aliases=("ㅍ", "ㅍㄹㅍ"))
     @app_commands.autocomplete(user=member_autocomplete)
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
     async def profile(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author)):
         """
-        🔸 유저의 티어 등의 프로필과 자세한 통계를 확인합니다.
+        🔸 유저의 프로필과 자세한 통계를 확인합니다.
 
         아래 버튼을 눌러 유저의 자세한 통계를 확인할 수 있습니다.
         자신의 프로필을 확인한 경우, 아래 버튼을 눌러 소개말을 변경할 수 있습니다!

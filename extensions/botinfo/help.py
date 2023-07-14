@@ -14,7 +14,7 @@ class Help(commands.Cog, name="일반"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="도움", usage="/도움", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"), description="<:help:715549237022163005>")
+    @commands.hybrid_command(name="도움", usage="<:help:715549237022163005>", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
     async def help(self, ctx: KkutbotContext):
         """
