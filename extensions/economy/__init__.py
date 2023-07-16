@@ -1,5 +1,6 @@
 import core
+from .point import Reward
 
 
 async def setup(bot: core.Kkutbot):
-    pass
+    await bot.add_cog(Reward(bot=bot))
