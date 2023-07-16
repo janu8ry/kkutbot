@@ -198,9 +198,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
     elif isinstance(error, commands.errors.DisabledCommand):
         await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
     elif isinstance(error, commands.CommandOnCooldown):
-        if ctx.author.id in config.admin:
+        if ctx.author.id in config.admin and ctx.command.name != "override":
             try:
-                await ctx.reinvoke()
+                return await ctx.reinvoke()
             except TypeError:
                 pass
         embed = discord.Embed(
@@ -211,9 +211,16 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
+        usage = "사용법 도움말이 없습니다."
+        if ctx.command.name != "jishaku":
+            for text in ctx.command.help.split("--"):
+                if text.startswith("사용법"):
+                    usage = text[3:]
+        else:
+            usage = ctx.command.help
         embed = discord.Embed(
             title="잘못된 사용법입니다.",
-            description=f"🔹 {ctx.command} 사용법\n{ctx.command.help.split('--사용법')[1]}",
+            description=f"🔹 `{ctx.command}` **사용법**\n{usage}",
             color=config.colors.general
         )
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
