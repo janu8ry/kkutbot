@@ -112,7 +112,7 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
             color=config.colors.help
         )
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["congrats"]).url)
-        embed.set_footer(text="'ㄲ퀘스트' 명령어를 입력하여 남은 퀘스트를 확인해 보세요!")
+        embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
         if len(user.quest.status.completed) == 3:
