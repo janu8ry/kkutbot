@@ -33,6 +33,7 @@ async def main() -> None:
         "$unset": {
             "banned": 1,
             "last_command": 1,
+            "last_reward": 1,
             "mails": 1,
             "alerts.mails": 1
         }
@@ -52,6 +53,7 @@ async def main() -> None:
         "$unset": {
             "banned": 1,
             "last_command": 1,
+            "last_reward": 1,
             "mails": 1,
             "alerts.mails": 1
         }
