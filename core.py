@@ -127,6 +127,11 @@ class Kkutbot(commands.AutoShardedBot):
     async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
         return await super().get_context(origin, cls=cls)
 
+    async def is_owner(self, user: discord.User, /) -> bool:
+        if user.id in config.admin:
+            return True
+        return await super().is_owner(user)
+
     async def try_reload(self, name: str) -> None:
         path = f"extensions.{name}"
         try:
