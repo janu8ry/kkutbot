@@ -22,7 +22,7 @@ class Reward(commands.Cog, name="포인트"):
         """
         한국 디스코드 리스트에서 하트 추가를 누르고 포인트를 받습니다.
 
-        하루에 한번씩만 수령 가능합니다.
+        포인트는 하루에 한번씩만 수령 가능합니다.
          - 한국 디스코드 리스트: https://koreanbots.dev/bots/703956235900420226/vote
 
         --사용법
@@ -48,7 +48,7 @@ class Reward(commands.Cog, name="포인트"):
                 await ctx.reply(embed=embed)
             else:
                 embed = discord.Embed(
-                    description="{denyed} 이미 지원금을 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!",
+                    description="{denyed} 이미 포인트를 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!",
                     color=config.colors.error
                 )
                 await ctx.reply(embed=embed)
