@@ -1,7 +1,6 @@
 import logging
 import random
 import time
-import traceback
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Type, Union
@@ -244,10 +243,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         if error.__cause__:
             error = error.__cause__
 
-        error_log = ''.join(traceback.format_exception(error, error, error.__traceback__, chain=False))
-        error_log = error_log.replace("```", "\\`\\`\\`")
         error_id = str(uuid.uuid4())[:6]
-
         error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
         error_embed.add_field(name="에러 발생 위치", value=f"유저: {ctx.author}(`{ctx.author.id}`)\n서버: {ctx.guild}(`{ctx.guild.id}`)\n채널: {ctx.channel}(`{ctx.channel.id}`)")
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
