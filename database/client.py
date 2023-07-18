@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Union, Annotated, Optional
+from typing import Annotated, Any
 from typing_extensions import TypeAlias
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,16 +8,16 @@ from beanie import init_beanie
 import discord
 
 from config import config, get_nested_dict, MainDBData, TestDBData  # noqa
-from .models import User, Guild, Public  # type: ignore
+from .models import User, Guild, Public
 
 __all__ = ["Client"]
 
 
 logger = logging.getLogger("kkutbot")
 
-dbconfig: Union[MainDBData, TestDBData] = getattr(config.mongo, "test" if config.is_test else "main")
-UserType: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, int]
-DocumentType: TypeAlias = Union[User, Guild, Public]
+dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
+UserType: TypeAlias = discord.User | discord.Member | discord.ClientUser | int
+DocumentType: TypeAlias = User | Guild | Public
 
 
 class Client:
@@ -41,7 +41,7 @@ class Client:
         logger.info("Beaine 설정 완료!")
 
     @staticmethod
-    async def get_user(user: UserType, *, safe: bool = True) -> Optional[User]:
+    async def get_user(user: UserType, *, safe: bool = True) -> User | None:
         """
         gets user model from database.
         Parameters
@@ -69,7 +69,7 @@ class Client:
         return document
 
     @staticmethod
-    async def get_guild(guild: Union[discord.Guild, int], *, safe: bool = True) -> Optional[Guild]:
+    async def get_guild(guild: discord.Guild | int, *, safe: bool = True) -> Guild | None:
         """
         gets user model from database.
         Parameters
@@ -123,7 +123,7 @@ class Client:
         return document
 
     @staticmethod
-    async def save(document: Union[User, Guild, Public]) -> DocumentType:
+    async def save(document: User | Guild | Public) -> DocumentType:
         if isinstance(document, User) and not document.registered:
             document.registered = round(time.time())
             await document.insert()
@@ -140,3 +140,9 @@ class Client:
         else:
             await document.save_changes()
             return document
+
+    async def read_user(self, target: int, path: str | None = None) -> Any:
+        main_data: dict[Any, Any] = await self.client.user.find_one({"_id": getattr(target, "id", target)})
+        if path is None:
+            return main_data
+        return get_nested_dict(main_data, path.split("."))
