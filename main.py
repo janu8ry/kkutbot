@@ -9,14 +9,12 @@ from typing import Type, Union
 import discord
 from discord.ext import commands
 from rich.traceback import install as rich_install
-from beanie.operators import Push
 
 import core
-from config import config, get_nested_dict
+from config import config, get_nested_dict, get_nested_property
 from tools.logger import setup_logger
 from tools.utils import is_admin
 from views import ServerInvite
-from database.models import User
 
 logger = logging.getLogger("kkutbot")
 
@@ -97,12 +95,12 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
     user = await bot.db.get_user(ctx.author)
     desc = ""
     for data, info in public.quests.items():
-        current = get_nested_dict(user.dict(), data.split("/")) - user.quest.cache[data]
+        current = get_nested_property(user, data.split("/")) - user.quest.cache[data]
         if current < 0:
-            user.quest.cache[data] = get_nested_dict(user.dict(), data.split("/"))
+            user.quest.cache[data] = get_nested_property(user, data.split("/"))
         elif (current >= info["target"]) and (data not in user.quest.status.completed):
-            await user.inc({getattr(User, info["reward"][1]): info["reward"][0]})
-            await user.update(Push({User.quest.status.completed: data}))
+            setattr(user, info["reward"][1], getattr(user, info["reward"][1]) + info["reward"][0])
+            user.quest.status.completed.append(data)
             user.quest.total += 1
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
