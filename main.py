@@ -251,7 +251,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.
         error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
         error_embed.add_field(name="에러 발생 위치", value=f"유저: {ctx.author}(`{ctx.author.id}`)\n서버: {ctx.guild}(`{ctx.guild.id}`)\n채널: {ctx.channel}(`{ctx.channel.id}`)")
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
-        error_embed.add_field(name="에러 내용", value=f"```{error_log}```", inline=False)
+        error_embed.add_field(name="에러 내용", value=f"```{error}```", inline=False)
 
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)
