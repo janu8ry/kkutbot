@@ -26,9 +26,13 @@ class HelpDropdown(discord.ui.Select):
         cmd = self.ctx.bot.get_command(self.values[0])
         embed = discord.Embed(
             title=f"{{help}} {self.values[0]} 명령어 도움말",
-            description=f"🔸 {cmd.help.replace('--', '🔹 ') or '도움말이 없습니다.'}",
+            description=f"🔸 {cmd.help.split('--')[0] or '도움말이 없습니다.'}",
             color=config.colors.help
         )
+        if len(body := cmd.help.split("--")) > 1:
+            embed.add_field(name="", value="", inline=False)
+            for section in body[1:]:
+                embed.add_field(name="🔹 " + section.split("\n")[0], value="\n".join(section.split("\n")[1:]), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.user.display_avatar.url)
         embed.set_footer(text="도움이 필요하다면 서포트 서버에 참가해보세요!")
         self.view.children[0].disabled = False
