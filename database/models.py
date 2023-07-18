@@ -90,6 +90,7 @@ class User(Document):
         name = "user"
         use_state_management = True
         state_management_replace_objects = True
+        validate_on_save = True
 
 
 class Guild(Document):
@@ -102,6 +103,7 @@ class Guild(Document):
         name = "guild"
         use_state_management = True
         state_management_replace_objects = True
+        validate_on_save = True
 
 
 class Public(Document):
@@ -118,3 +120,4 @@ class Public(Document):
         name = "public"
         use_state_management = True
         state_management_replace_objects = True
+        validate_on_save = True
