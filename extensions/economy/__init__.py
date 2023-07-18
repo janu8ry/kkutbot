@@ -1,6 +1,7 @@
 import core
-from .point import Reward
+
 from .attendance import Attendance
+from .point import Reward
 from .quest import Quest
 
 

@@ -1,8 +1,8 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
+import pymongo
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
-import pymongo
 
 __all__ = ["User", "Guild", "Public"]
 

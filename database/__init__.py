@@ -1,2 +1,2 @@
 from .client import Client
-from .models import User, Guild, Public
+from .models import Guild, Public, User

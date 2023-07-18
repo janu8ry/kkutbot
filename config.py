@@ -1,7 +1,7 @@
 import json
 import os
-from typing import Any
 from dataclasses import dataclass, field
+from typing import Any
 
 import yaml
 

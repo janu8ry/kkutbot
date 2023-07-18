@@ -1,5 +1,6 @@
 import discord
-from discord.utils import escape_markdown as e_mk, escape_mentions as e_mt
+from discord.utils import escape_markdown as e_mk
+from discord.utils import escape_mentions as e_mt
 
 from config import config
 from core import KkutbotContext

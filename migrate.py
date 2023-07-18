@@ -1,11 +1,11 @@
+import asyncio
 from typing import Union
 from typing_extensions import TypeAlias
-import asyncio
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
-from config import config, get_nested_dict, MainDBData, TestDBData  # noqa
+from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
 
 TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
 

@@ -4,7 +4,7 @@ from typing import Union
 
 import discord
 from discord.ext.commands import Context, errors
-from discord.ext.commands.converter import Converter, MemberConverter, UserConverter, GuildConverter
+from discord.ext.commands.converter import Converter, GuildConverter, MemberConverter, UserConverter
 
 from database.models import User
 

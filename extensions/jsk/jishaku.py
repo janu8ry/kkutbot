@@ -4,7 +4,7 @@ import os.path
 import re
 import sys
 import traceback
-from typing import TYPE_CHECKING, Callable, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 import discord
 import jishaku.repl.repl_builtins
@@ -28,8 +28,8 @@ except ImportError:
 
 import core
 from config import config
+from database.models import Guild, Public, User
 from tools.utils import get_timestamp
-from database.models import User, Guild, Public
 
 logger = logging.getLogger("kkutbot")
 

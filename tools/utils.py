@@ -2,12 +2,12 @@ import json
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Any, Union, Type
+from typing import Any, Type, Union
 
 from discord.ext import commands
 
 from config import config, get_nested_dict, get_nested_property
-from database.models import User, GameBase  # noqa
+from database.models import GameBase, User  # noqa
 
 __all__ = [
     "time_convert", "get_timestamp", "is_admin", "split_string", "get_winrate",

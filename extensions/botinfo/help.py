@@ -3,9 +3,9 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot, KkutbotContext
-from .views import HelpMenu
-
 from database.models import User
+
+from .views import HelpMenu
 
 
 class Help(commands.Cog, name="일반"):

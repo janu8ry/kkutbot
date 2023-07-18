@@ -5,9 +5,10 @@ from discord.utils import escape_markdown as e_mk
 
 from config import config
 from core import Kkutbot, KkutbotContext
+from tools.autocomplete import member_autocomplete
 from tools.converter import KkutbotUserConverter
 from tools.utils import get_tier, is_admin
-from tools.autocomplete import member_autocomplete
+
 from .views import ProfileMenu, SelfProfileMenu
 
 

@@ -3,12 +3,13 @@ import time
 from typing import Annotated, Any
 from typing_extensions import TypeAlias
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 import discord
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
-from config import config, get_nested_dict, MainDBData, TestDBData  # noqa
-from .models import User, Guild, Public
+from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
+
+from .models import Guild, Public, User
 
 __all__ = ["Client"]
 
