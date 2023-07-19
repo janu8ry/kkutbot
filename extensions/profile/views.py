@@ -55,5 +55,5 @@ class ProfileMenu(BaseView):
 
 class SelfProfileMenu(ProfileMenu):
     @discord.ui.button(label="소개말 수정하기", style=discord.ButtonStyle.blurple, row=2, emoji="<:edit:984405210870988870>")
-    async def edit_info(self, interaction: discord.Interaction, _: discord.ui.Button):
+    async def edit_info(self, interaction: discord.Interaction, _button: discord.ui.Button):
         await interaction.response.send_modal(InfoInput(ctx=self.ctx, view=self))
