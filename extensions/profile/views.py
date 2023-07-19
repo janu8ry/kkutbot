@@ -14,7 +14,7 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         label="소개말 내용 (최대 50자)", min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True
     )
 
-    def __init__(self, ctx: KkutbotContext, view: discord.ui.View):
+    def __init__(self, ctx: KkutbotContext, view: BaseView):
         super().__init__()
         self.ctx = ctx
         self.view = view
@@ -54,6 +54,6 @@ class ProfileMenu(BaseView):
 
 
 class SelfProfileMenu(ProfileMenu):
-    @discord.ui.button(label="소개말 수정하기", style=discord.ButtonStyle.blurple, row=2, emoji="<:edit:984405210870988870>")
+    @discord.ui.button(label="소개말 수정하기", style=discord.ButtonStyle.blurple, row=1, emoji="<:edit:984405210870988870>")
     async def edit_info(self, interaction: discord.Interaction, _button: discord.ui.Button):
         await interaction.response.send_modal(InfoInput(ctx=self.ctx, view=self))
