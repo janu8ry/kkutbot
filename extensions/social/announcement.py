@@ -30,7 +30,7 @@ class Announcement(commands.Cog, name="공지"):
         pages = []
         if msgs:
             for msg in msgs:
-                embed = discord.Embed(title=f"{{email}} 공지사항", color=config.colors.help)
+                embed = discord.Embed(title="{email} 끝봇 공지사항", color=config.colors.help)
                 embed.add_field(
                     name=f"🔹 {msg['title']} - `{time_convert(time.time() - msg['time'])} 전`",
                     value=msg["value"],
