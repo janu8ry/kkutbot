@@ -2,11 +2,11 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
+from discord.ext.commands.converter import UserConverter
 
 from config import config
 from core import Kkutbot, KkutbotContext
 from tools.autocomplete import member_autocomplete
-from tools.converter import KkutbotUserConverter
 from tools.utils import get_tier, is_admin
 
 from .views import ProfileMenu, SelfProfileMenu
@@ -22,7 +22,7 @@ class Profile(commands.Cog, name="사용자"):
     @app_commands.autocomplete(user=member_autocomplete)
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
-    async def profile(self, ctx: KkutbotContext, *, user: discord.Member = commands.parameter(converter=KkutbotUserConverter, default=lambda ctx: ctx.author)):
+    async def profile(self, ctx: KkutbotContext, *, user: discord.User = commands.parameter(converter=UserConverter, default=lambda ctx: ctx.author)):
         """
         유저의 프로필과 자세한 통계를 확인합니다.
 
