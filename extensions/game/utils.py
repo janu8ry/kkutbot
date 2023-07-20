@@ -1,7 +1,6 @@
 import json
 import random
 
-
 __all__ = ["get_transition", "get_word", "choose_first_word", "is_hanbang"]
 
 
