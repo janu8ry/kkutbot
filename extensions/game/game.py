@@ -9,8 +9,8 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot, KkutbotContext
-from .views import SelectMode
-from .models import SoloGame
+from .views import SelectMode, HostGuildGame
+from .models import SoloGame, MultiGame
 from .utils import get_word, get_transition, is_hanbang
 
 
@@ -79,7 +79,7 @@ class Game(commands.Cog, name="게임"):
             embed.add_field(name=":one:", value="- 솔로 랭킹전", inline=False)
             embed.add_field(name=":two:", value="- 서버원들과 친선전", inline=False)
             embed.add_field(name=":three:", value="- 쿵쿵따", inline=False)
-            embed.set_footer(text="/ㄲ도움'을 사용하여 자세한 도움말을 확인해 보세요!")
+            embed.set_footer(text="'/도움'을 사용하여 자세한 도움말을 확인해 보세요!")
             view = SelectMode(ctx)
             view.message = await ctx.reply(embed=embed, view=view)
             await view.wait()
@@ -143,6 +143,87 @@ class Game(commands.Cog, name="게임"):
                         return
                     else:
                         await game.send_info_embed(msg)
+
+        elif mode == 2:
+            if isinstance(ctx.channel, discord.DMChannel):
+                raise commands.errors.NoPrivateMessage
+            if ctx.channel.id in self.bot.guild_multi_games:
+                return await ctx.reply("{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다.")
+
+            self.bot.guild_multi_games.append(ctx.channel.id)
+            game = MultiGame(ctx, hosting_time=round(time.time()))
+            view = HostGuildGame(ctx, game=game)
+            view.message = await ctx.reply(embed=game.hosting_embed(), view=view)
+            game.msg = view.message
+            is_timeout = await view.wait()
+            if view.value == "stop" or is_timeout:
+                self.bot.guild_multi_games.append(ctx.channel.id)
+                return
+
+            await game.update_embed(game.game_embed())
+            game.begin_time = time.time()
+            await game.send_info_embed()
+            while True:
+                try:
+                    m = await self.bot.wait_for(
+                        "message",
+                        check=lambda _x: _x.author in game.players and _x.channel == ctx.channel and game.alive[game.turn % len(game.alive)] == _x.author,
+                        timeout=game.time_left
+                    )
+                    user_word = m.content
+                except asyncio.TimeoutError:
+                    await game.player_out()
+                    if len(game.players) - len(game.final_score) == 1:
+                        await game.game_end()
+                        return
+                    else:
+                        await game.update_embed(game.game_embed())
+                        await game.send_info_embed()
+
+                else:
+                    du = get_transition(game.word)
+                    if user_word in ("ㅈㅈ", "gg", "GG"):
+                        if game.turn < 5:
+                            await game.send_info_embed("{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                            continue
+                        else:
+                            await game.player_out(gg=True)
+                            if len(game.players) - len(game.final_score) == 1:
+                                await game.game_end()
+                                return
+                            else:
+                                await game.update_embed(game.game_embed())
+                                await game.send_info_embed()
+                    elif user_word in game.used_words:
+                        await game.send_info_embed(f"{{denyed}} **{user_word}** (은)는 이미 사용한 단어입니다.")
+                        continue
+                    elif user_word[0] not in du:
+                        await game.send_info_embed(f"{{denyed}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력 해 주세요.")
+                        continue
+                    elif user_word in get_word(game.word):
+                        if ((game.turn // len(game.alive)) == 0) and is_hanbang(user_word, game.used_words):
+                            await game.send_info_embed("{denyed} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
+                            continue
+                        elif user_word[0] in du:
+                            game.used_words.append(user_word)
+                            game.word = user_word
+                            game.turn += 1
+                            game.score += 1
+                            await game.update_embed(game.game_embed())
+                            game.begin_time = time.time()
+                            if is_hanbang(game.word, game.used_words):
+                                await game.player_out()
+                                if len(game.players) - len(game.final_score) == 1:
+                                    await game.game_end()
+                                    return
+                                else:
+                                    await game.update_embed(game.game_embed())
+                                    await game.send_info_embed()
+                            else:
+                                await game.send_info_embed()
+                    else:
+                        await game.send_info_embed(f"**{user_word}** (은)는 없는 단어입니다.")
+                        continue
 
         elif mode == 0:
             return await ctx.send("취소되었습니다.")
