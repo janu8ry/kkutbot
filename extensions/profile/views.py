@@ -24,7 +24,8 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         user = await self.ctx.bot.db.get_user(interaction.user)
         user.bio = self.bio_text.value
         await self.ctx.bot.db.save(user)
-        self.view.children[2].disabled = True
+        for btn in self.view.children:
+            btn.disabled = True
         await self.view.message.edit(view=self.view)  # type: ignore
         await interaction.response.send_message(
             f"<:done:{config.emojis['done']}> 소개말을 '{e_mk(e_mt(self.bio_text.value))}'(으)로 변경했습니다!", ephemeral=True
