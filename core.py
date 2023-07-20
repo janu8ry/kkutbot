@@ -196,7 +196,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def reload_all(self) -> None:
         for package in os.listdir("extensions"):
-            if os.path.isdir(f"extensions/{package}"):
+            if os.path.isdir(f"extensions/{package}") and package != "__pycache__":
                 await self.try_reload(package)
 
     @staticmethod
