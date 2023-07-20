@@ -160,6 +160,7 @@ class Kkutbot(commands.AutoShardedBot):
         public.attendance = 0
         await User.find(User.alerts.attendance == True).update(Set({User.alerts.attendance: False}))  # noqa
         await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
+        await self.db.save(public)
 
     async def backup_data(self) -> None:
         for filename in os.listdir("backup"):
