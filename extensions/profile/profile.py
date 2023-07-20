@@ -20,6 +20,7 @@ class Profile(commands.Cog, name="사용자"):
 
     @commands.hybrid_command(name="프로필", usage="<:profile:985186983666155541>", aliases=("ㅍ", "ㅍㄹㅍ"))
     @app_commands.autocomplete(user=member_autocomplete)
+    @app_commands.rename(user="유저")
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
     async def profile(self, ctx: KkutbotContext, *, user: discord.User = commands.parameter(converter=UserConverter, default=lambda ctx: ctx.author)):
