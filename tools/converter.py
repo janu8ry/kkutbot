@@ -1,6 +1,5 @@
 import random
 import re
-from typing import Union
 
 import discord
 from discord.ext.commands import Context, errors
@@ -11,10 +10,10 @@ from database.models import User
 __all__ = ["KkutbotUserConverter", "UserGuildConverter"]
 
 
-class KkutbotUserConverter(Converter[Union[discord.Member, discord.User]]):
+class KkutbotUserConverter(Converter[discord.Member | discord.User]):
     """User & Member Converter without Member Intents"""
 
-    async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member]:
+    async def convert(self, ctx: Context, argument: str) -> discord.User | discord.Member:
         argument = argument.lstrip()
 
         if not argument:
@@ -44,14 +43,14 @@ class KkutbotUserConverter(Converter[Union[discord.Member, discord.User]]):
                     raise errors.BadArgument
 
 
-class UserGuildConverter(Converter[Union[discord.Member, discord.User, discord.Guild, str]]):
+class UserGuildConverter(Converter[discord.Member | discord.User | discord.Guild | str]):
     """Convert argument to User or Guild"""
 
-    async def convert(self, ctx: Context, argument: str) -> Union[discord.User, discord.Member, discord.Guild, str]:
+    async def convert(self, ctx: Context, argument: str) -> discord.User | discord.Member | discord.Guild | str:
         argument = argument.lstrip()
 
         if not argument:
-            return "general"
+            return "public"
         try:
             return await KkutbotUserConverter().convert(ctx, argument)
         except errors.BadArgument:
