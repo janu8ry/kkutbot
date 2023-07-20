@@ -19,6 +19,7 @@ koreanbots = "^2.1.0"
 topggpy = "^1.4.0"
 apscheduler = "^3.10.1"
 jishaku = {extras = ["procinfo"], version = "^2.5.1"}
+humanize = "^4.7.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.12.0"

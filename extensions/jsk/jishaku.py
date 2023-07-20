@@ -5,6 +5,7 @@ import re
 import sys
 import traceback
 from typing import TYPE_CHECKING, Any, Callable
+import time
 
 import discord
 import jishaku.repl.repl_builtins
@@ -20,13 +21,13 @@ from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.types import ContextA
+from humanize import naturalsize
 
 try:
     from importlib.metadata import distribution, packages_distributions
 except ImportError:
     from importlib_metadata import distribution, packages_distributions  # noqa
 
-import core
 from config import config
 from database.models import Guild, Public, User
 from tools.utils import get_timestamp
@@ -37,7 +38,7 @@ Flags.NO_UNDERSCORE = True
 Flags.FORCE_PAGINATOR = True
 
 
-def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
+def get_var_dict_from_ctx(ctx: ContextA, prefix: str = "_"):
     """
     Returns the dict to be used in REPL for a given Context.
     """
@@ -58,7 +59,7 @@ def get_var_dict_from_ctx(ctx: commands.Context, prefix: str = "_"):
         "http_post_json": jishaku.repl.repl_builtins.http_post_json,
         "message": ctx.message,
         "msg": ctx.message,
-        "db": ctx.bot.db,
+        "db": ctx.bot.db,  # noqa
         "User": User,
         "Guild": Guild,
         "General": Public,
@@ -76,7 +77,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
     filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
 
     @Feature.Command(name="jishaku", aliases=["ㅈ", "jsk"], invoke_without_command=True, ignore_extra=False)
-    async def jsk(self, ctx: ContextA):
+    async def jsk(self, ctx: ContextA, days: int = 7):
         """
         The Jishaku debug and diagnostic commands.
         This command on its own gives a status brief.
@@ -132,7 +133,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
             summary.append("")  # blank line
 
-        cache_summary = f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.client.user.count_documents({})}`명의 사용자"
+        cache_summary = f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.count_users()}`명의 유저,\n" \
+                        f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, " \
+                        f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"
 
         summary.append(
             f"샤드 수는 `{self.bot.shard_count}`개이며,"
@@ -161,15 +164,32 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"{', '.join(group)}, {last}.")
         summary.append("")  # blank line
 
-        # pylint: enable=protected-access
+        size = 0
+        for collection in ("user", "guild", "public"):
+            size += float((await self.bot.db.client.command('collstats', collection))['size'])
+
+        t1 = time.time()
+        await self.bot.db.client.general.find_one({"_id": "test"})
+        t1 = time.time() - t1
+
+        t2 = time.time()
+        await self.bot.db.client.general.update_one({"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True)
+        t2 = time.time() - t2
+        database_summary = f"데이터베이스의 용량은 `{naturalsize(size)}`이며,\n" \
+                           f"조회 지연 시간은 `{round(t1 * 1000)}`ms, 업데이트 지연 시간은 `{round(t2 * 1000)}`ms 입니다."
+
+        summary.append(database_summary)
+        summary.append("")  # blank line
 
         # Show websocket latency in milliseconds
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
+        summary.append("")  # blank line
+        summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
 
         await ctx.reply("\n".join(summary), mention_author=False)
 
     @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
-    async def jsk_python(self, ctx: commands.Context, *, argument: codeblock_converter):
+    async def jsk_python(self, ctx: ContextA, *, argument: codeblock_converter):
         """
         Direct evaluation of Python code.
         """
