@@ -1,4 +1,5 @@
 import asyncio
+import time
 from typing import Union
 from typing_extensions import TypeAlias
 
@@ -83,6 +84,12 @@ async def main() -> None:
             update = True
         if update:
             await db.guild.update_one({"_id": guild["_id"]}, {"$set": db_set})
+
+    public = await db.general.find_one({"_id": "general"})
+    public["_id"] = "public"
+    await db.public.insert_one(public)
+    await db.public.insert_one({"_id": "test", "latest": time.time()})
+    await db.general.drop()
 
 
 asyncio.get_event_loop().run_until_complete(main())
