@@ -129,13 +129,11 @@ class Client:
             document.registered = round(time.time())
             await document.insert()
             return document
-        elif isinstance(document, Guild) and not document.invited and not document.command_used:
-            print(document)
+        elif isinstance(document, Guild) and not document.invited and document.command_used <= 1:
             document.invited = round(time.time())
             await document.insert()
             return document
-        elif isinstance(document, Public) and not document.announcements and not document.command_used:
-            print(document)
+        elif isinstance(document, Public) and not document.announcements and document.command_used <= 1:
             await document.insert()
             return document
         else:
