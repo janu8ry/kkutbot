@@ -5,7 +5,7 @@ from typing_extensions import TypeAlias
 
 import discord
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 
 from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
 
@@ -28,7 +28,7 @@ class Client:
         self.db = dbconfig.db
         self.user = dbconfig.user
         self.password = dbconfig.password
-        self.client = Annotated[AsyncIOMotorClient, None]
+        self.client = Annotated[AsyncIOMotorDatabase, None]
 
     async def setup_db(self) -> None:
         db_options = {}
