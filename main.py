@@ -61,7 +61,7 @@ async def before_command(ctx: core.KkutbotContext) -> None:
     public = await bot.db.get_public()
     public.command_used += 1
     public.latest_usage = round(time.time())
-    cmd_name = ctx.command.qualified_name.replace('$', '_')  # TODO: 뭔지모를 버그 해결
+    cmd_name = ctx.command.qualified_name.replace('$', '_')
     if cmd_name in public.commands:
         public.commands[cmd_name] += 1
     else:
