@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot, KkutbotContext
-from views import KoreanBotsVote
+from .views import KoreanBotsVote
 
 
 class Reward(commands.Cog, name="포인트"):

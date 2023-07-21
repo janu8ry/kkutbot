@@ -1,11 +1,11 @@
-from typing import Any, Optional
+from typing import Any
 
 import discord
 
 from config import config
 from core import KkutbotContext
 
-__all__ = ["BaseView", "BaseModal", "ServerInvite", "KoreanBotsVote", "Paginator"]
+__all__ = ["BaseView", "BaseModal", "ServerInvite", "Paginator"]
 
 
 class BaseView(discord.ui.View):
@@ -14,7 +14,7 @@ class BaseView(discord.ui.View):
         self.ctx = ctx
         self.author_only = author_only
         self.timeout = 120
-        self.message: Optional[discord.Message] = None
+        self.message: discord.Message | None = None
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.author_only and (interaction.user != self.ctx.author):
@@ -57,16 +57,6 @@ class ServerInvite(discord.ui.View):
         self.add_item(
             discord.ui.Button(
                 label=text, style=discord.ButtonStyle.grey, url=config.links.invite.server
-            )
-        )
-
-
-class KoreanBotsVote(discord.ui.View):
-    def __init__(self) -> None:
-        super().__init__()
-        self.add_item(
-            discord.ui.Button(
-                label="끝봇에게 하트추가", style=discord.ButtonStyle.grey, url=config.links.koreanbots
             )
         )
 
