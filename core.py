@@ -4,7 +4,6 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Any, Optional, Sequence, Union
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -16,74 +15,13 @@ from topgg import DBLClient
 from config import config
 from database import Client
 from database.models import User
+from tools.overides import KkutbotContext
 
 logger = logging.getLogger("kkutbot")
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-
-class FormattingDict(dict[str, str]):
-    def __missing__(self, key: str) -> str:
-        return "{" + key + "}"
-
-
-class KkutbotContext(commands.Context):
-    def __init__(self, bot: "Kkutbot", **kwargs: Any) -> None:
-        super().__init__(bot=bot, **kwargs)
-        self.bot: "Kkutbot" = bot
-
-    async def send(
-            self,
-            content: Optional[str] = None,
-            *,
-            tts: bool = False,
-            embed: Optional[discord.Embed] = None,
-            embeds: Optional[Sequence[discord.Embed]] = None,
-            file: Optional[discord.File] = None,
-            files: Optional[Sequence[discord.File]] = None,
-            stickers: Optional[Sequence[Union[discord.GuildSticker, discord.StickerItem]]] = None,
-            delete_after: Optional[float] = None,
-            nonce: Optional[Union[str, int]] = None,
-            allowed_mentions: Optional[discord.AllowedMentions] = None,
-            reference: Optional[Union[discord.Message, discord.MessageReference, discord.PartialMessage]] = None,
-            mention_author: Optional[bool] = None,
-            view: Optional[discord.ui.View] = None,
-            suppress_embeds: bool = False,
-            ephemeral: bool = False,
-            silent: bool = False,
-            escape_emoji_formatting: bool = False
-    ) -> discord.Message:
-        if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
-        return await super().send(content=content,  # noqa
-                                  tts=tts,
-                                  embed=embed,
-                                  file=file,
-                                  files=files,
-                                  nonce=nonce,
-                                  delete_after=delete_after,
-                                  allowed_mentions=allowed_mentions,
-                                  reference=reference,
-                                  mention_author=mention_author,
-                                  view=view,
-                                  embeds=embeds,
-                                  stickers=stickers,
-                                  suppress_embeds=suppress_embeds,
-                                  ephemeral=ephemeral,
-                                  silent=silent
-                                  )
-
-    async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
-        if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
-            content = content.format_map(FormattingDict(self.bot.dict_emojis())) if content else None
-        if self.interaction is None:
-            return await self.send(
-                content, reference=self.message, mention_author=mention_author, **kwargs
-            )
-        else:
-            return await self.send(content, mention_author=mention_author, **kwargs)
 
 
 class Kkutbot(commands.AutoShardedBot):
@@ -198,83 +136,6 @@ class Kkutbot(commands.AutoShardedBot):
             if os.path.isdir(f"extensions/{package}") and package != "__pycache__":
                 await self.try_reload(package)
 
-    @staticmethod
-    def dict_emojis() -> dict[str, str]:
-        return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
-
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)  # noqa
         return data.voted
-
-
-class KkutbotEmbed(discord.Embed):
-    def __init__(self, **kwargs: Any) -> None:
-        if not kwargs.get("escape_emoji_formatting", False):
-            if title := kwargs.get("title"):
-                kwargs["title"] = title.format_map(FormattingDict(Kkutbot.dict_emojis()))
-            if description := kwargs.get("description"):
-                kwargs["description"] = description.format_map(FormattingDict(Kkutbot.dict_emojis()))
-        super().__init__(**kwargs)
-
-    def add_field(self, *, name: str, value: str, inline: bool = True, escape_emoji_formatting: bool = False) -> discord.Embed:
-        if escape_emoji_formatting is False:
-            name = name.format_map(FormattingDict(Kkutbot.dict_emojis()))
-            value = value.format_map(FormattingDict(Kkutbot.dict_emojis()))
-        return super().add_field(name=name, value=value, inline=inline)
-
-
-discord.Embed = KkutbotEmbed
-
-
-class KkutbotInteractionResponse(discord.InteractionResponse):
-    async def send_message(
-        self,
-        content: Optional[Any] = None,
-        *,
-        embed: discord.Embed = discord.utils.MISSING,
-        embeds: Sequence[discord.Embed] = discord.utils.MISSING,
-        file: discord.File = discord.utils.MISSING,
-        files: Sequence[discord.File] = discord.utils.MISSING,
-        view: discord.ui.View = discord.utils.MISSING,
-        tts: bool = False,
-        ephemeral: bool = False,
-        allowed_mentions: discord.AllowedMentions = discord.utils.MISSING,
-        suppress_embeds: bool = False,
-        silent: bool = False,
-        delete_after: Optional[float] = None
-    ) -> None:
-        content = content.format_map(FormattingDict(Kkutbot.dict_emojis())) if content else None
-        await super().send_message(
-            content,
-            embed=embed,
-            embeds=embeds,
-            file=file,
-            files=files,
-            view=view,
-            tts=tts,
-            ephemeral=ephemeral,
-            allowed_mentions=allowed_mentions,
-            suppress_embeds=suppress_embeds,
-            silent=silent,
-            delete_after=delete_after
-        )
-
-
-discord.interactions.InteractionResponse = KkutbotInteractionResponse
-
-
-class KkutbotSelectOption(discord.SelectOption):
-    def __init__(
-            self,
-            *,
-            label: str,
-            value: str = discord.utils.MISSING,
-            description: Optional[str] = None,
-            emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
-            default: bool = False,
-    ) -> None:
-        emoji = emoji.format_map(FormattingDict(Kkutbot.dict_emojis())) if emoji else None
-        super().__init__(label=label, value=value, description=description, emoji=emoji, default=default)
-
-
-discord.SelectOption = KkutbotSelectOption

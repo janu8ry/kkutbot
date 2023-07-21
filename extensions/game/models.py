@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from config import config
 from core import KkutbotContext
-from tools.utils import get_tier, get_winrate
+from tools.utils import get_tier, get_winrate, dict_emojis
 
 from .utils import choose_first_word, get_transition, get_word
 
@@ -71,7 +71,7 @@ class SoloGame(GameBase):
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
         if self.kkd:
             desc = desc.replace("10", "15")
-        desc = desc.format(**self.ctx.bot.dict_emojis())
+        desc = desc.format(**dict_emojis())
         try:
             return await msg.reply(desc, embed=embed, delete_after=self.time_left, mention_author=True)
         except discord.HTTPException as e:
@@ -232,7 +232,7 @@ class MultiGame(GameBase):
 
     async def send_info_embed(self, desc: str = "⏰ 10초 안에 단어를 이어주세요!") -> discord.Message:
         du_word = get_transition(self.word)
-        desc = desc.format(**self.ctx.bot.dict_emojis())
+        desc = desc.format(**dict_emojis())
         embed = discord.Embed(
             title=self.word,
             description=f"<t:{round(10 + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",

@@ -62,7 +62,7 @@ class HostGuildGame(BaseView):
         self.game = game
         self.value = None
 
-    @discord.ui.button(label="참가하기", style=discord.ButtonStyle.blurple, emoji="<:join:988350647093063681>")
+    @discord.ui.button(label="참가하기", style=discord.ButtonStyle.blurple, emoji="{join}")
     async def join_game(self, interaction: discord.Interaction, _button: discord.ui.Button):
         if interaction.user in self.game.players:
             return await interaction.response.send_message("{denyed} 이미 게임에 참가했습니다.", ephemeral=True)
@@ -76,7 +76,7 @@ class HostGuildGame(BaseView):
         await interaction.response.defer()
         self.message = await self.game.update_embed(self.game.hosting_embed(), view=self)
 
-    @discord.ui.button(label="나가기", style=discord.ButtonStyle.red, emoji="<:leave:988350673223548949>")
+    @discord.ui.button(label="나가기", style=discord.ButtonStyle.red, emoji="{leave}")
     async def leave_game(self, interaction: discord.Interaction, _button: discord.ui.Button):
         if interaction.user not in self.game.players:
             return await interaction.response.send_message("{denyed} 게임에 참가하지 않았습니다.", ephemeral=True)
@@ -92,7 +92,7 @@ class HostGuildGame(BaseView):
         await interaction.response.defer()
         self.message = await self.game.update_embed(self.game.hosting_embed(), view=self)
 
-    @discord.ui.button(label="게임 시작", style=discord.ButtonStyle.green, emoji="<:start:988350697873477683>")
+    @discord.ui.button(label="게임 시작", style=discord.ButtonStyle.green, emoji="{start}")
     async def start_game(self, interaction: discord.Interaction, _button: discord.ui.Button):
         if interaction.user != self.game.host:
             return await interaction.response.send_message("{denyed} 호스트만 게임을 시작할 수 있습니다.", ephemeral=True)

@@ -8,9 +8,13 @@ from config import config, get_nested_dict, get_nested_property
 from database.models import GameBase, User  # noqa
 
 __all__ = [
-    "time_convert", "get_timestamp", "is_admin", "split_string", "get_winrate",
-    "get_tier", "get_nested_dict", "get_nested_property"
+    "dict_emojis", "time_convert", "get_timestamp", "is_admin", "split_string",
+    "get_winrate", "get_tier", "get_nested_dict", "get_nested_property"
 ]
+
+
+def dict_emojis() -> dict[str, str]:
+    return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
 
 
 def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
