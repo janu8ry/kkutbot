@@ -92,7 +92,7 @@ class SoloGame(GameBase):
             modes[mode].win += 1
         elif result == "패배":
             points = -30
-            desc = f"대답시간이 {15 if self.kkd else 10}초를 초과했습니다..."
+            desc = f"대답시간이 {self.timeout}초를 초과했습니다..."
             color = config.colors.error
             emoji = "gameover"
         elif result == "포기":
