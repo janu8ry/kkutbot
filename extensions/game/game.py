@@ -1,7 +1,6 @@
 import asyncio
 import random
 import time
-from typing import Union
 
 import discord
 from discord import app_commands
@@ -68,7 +67,7 @@ class Game(commands.Cog, name="게임"):
         `/끝말잇기`를 사용하여 원하는 게임 모드를 선택 후 플레이합니다.
         `/끝말잇기 <모드>`를 사용하여 원하는 게임 모드를 바로 플레이합니다.
         """
-        def check(x: Union[discord.Message, KkutbotContext]) -> bool:
+        def check(x: discord.Message | KkutbotContext) -> bool:
             return x.author == ctx.author and x.channel == ctx.channel
 
         user = await ctx.bot.db.get_user(ctx.author)
@@ -130,7 +129,6 @@ class Game(commands.Cog, name="게임"):
                         await game.send_info_embed(msg, f"{{denyed}} **{user_word}** (은)는 없는 단어입니다.")
                         continue
                 final_list = [x for x in get_word(user_word) if x not in game.used_words and (len(x) == 3 if is_kkd else True)]
-                print(final_list)
                 if not final_list:
                     await game.game_end("승리")
                     return
