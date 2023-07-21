@@ -29,7 +29,7 @@
     "manage_nicknames": "별명 관리하기",
     "manage_roles": "역할 관리하기",
     "manage_webhooks": "웹후크 관리하기",
-    "manage_emojis": "이모티콘 및 스티커 관리",
+    "manage_expressions": "표현 관리하기",
     "use_application_commands": "애플리케이션 명령어 사용",
     "request_to_speak": "발언권 요청하기",
     "manage_events": "이벤트 관리",
@@ -39,5 +39,9 @@
     "external_stickers": "외부 스티커 사용",
     "send_messages_in_threads": "스레드에서 메시지 보내기",
     "use_embedded_activities": "활동 사용하기",
-    "moderate_members": "타임아웃 멤버"
+    "moderate_members": "타임아웃 멤버",
+    "use_soundboard": "사운드보드 사용",
+    "create_expressions": "표현 생성하기",
+    "use_external_sounds": "외부 사운드 사용",
+    "send_voice_messages": "음성 메시지 보내기"
 }

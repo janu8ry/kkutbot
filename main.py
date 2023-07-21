@@ -3,7 +3,7 @@ import random
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Type, Union
+from typing import Type
 
 import discord
 from discord.ext import commands
@@ -178,7 +178,7 @@ async def on_interaction(interaction: discord.Interaction) -> None:
 
 
 @bot.event
-async def on_command_error(ctx: core.KkutbotContext, error: Type[Union[commands.CommandError, commands.HybridCommandError]]) -> None:
+async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.CommandError | commands.HybridCommandError]) -> None:
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다.")
     elif isinstance(error, commands.MissingPermissions):
