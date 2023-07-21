@@ -45,11 +45,15 @@ class Profile(commands.Cog, name="사용자"):
             embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["denyed"]).url)
             return await ctx.reply(embed=embed)
 
+        if (color := user.color.value) == 0:
+            if not (color := (await self.bot.fetch_user(user.id)).accent_color):
+                color = discord.Color(0xFFFFFF)
+
         profile_embed = discord.Embed(
             title=f"{{profile}} {e_mk(name)} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}",
             description=f"```yaml\n{user_data.bio}```\n"
                         f"{{tier}} 랭킹전 티어 - **{get_tier(user_data, 'rank_solo')}** | **{get_tier(user_data, 'rank_online')}**\n​",
-            color=user.color
+            color=color
         )
         profile_embed.add_field(name="{points} **포인트**", value=f"{user_data.points}")
         profile_embed.add_field(name="{starter} **승률**", value=f"{user_data.game.rank_solo.winrate}% | {user_data.game.rank_online.winrate}%")
