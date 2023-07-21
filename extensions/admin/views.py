@@ -2,13 +2,12 @@ import ast
 import time
 
 import discord
-from motor.motor_asyncio import AsyncIOMotorCollection
 from beanie.operators import Set
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import config
 from core import KkutbotContext
 from database.models import User
-
 from views import BaseModal, BaseView
 
 __all__ = ["ModifyData", "SendAnnouncement"]

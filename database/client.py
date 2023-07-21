@@ -5,7 +5,7 @@ from typing_extensions import TypeAlias
 
 import discord
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
 

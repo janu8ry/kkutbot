@@ -3,14 +3,15 @@ import logging
 import os.path
 import re
 import sys
+import time
 import traceback
 from typing import TYPE_CHECKING, Any, Callable
-import time
 
 import discord
 import jishaku.repl.repl_builtins
 import psutil
 from discord.ext import commands
+from humanize import naturalsize
 from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 from jishaku.exception_handling import ReplResponseReactor
@@ -21,7 +22,6 @@ from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
 from jishaku.repl import AsyncCodeExecutor
 from jishaku.types import ContextA
-from humanize import naturalsize
 
 try:
     from importlib.metadata import distribution, packages_distributions
