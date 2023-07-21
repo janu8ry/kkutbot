@@ -19,9 +19,15 @@ from tools.overides import KkutbotContext
 
 logger = logging.getLogger("kkutbot")
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
+intents = discord.Intents(
+    message_content=True,
+    members=True,
+    guilds=True,
+    emojis=True,
+    messages=True,
+    reactions=True,
+    typing=True
+)
 
 
 class Kkutbot(commands.AutoShardedBot):
