@@ -10,7 +10,7 @@
 끝봇은 재미를 위한 한국 디스코드 봇입니다.
 주 기능은 **끝말잇기**입니다.   
 끝봇은 인증된 봇으로, 걱정 없이 사용하실 수 있습니다.    
-끝봇의 접두사는 ``ㄲ``입니다!
+끝봇의 접두사는 ``ㄲ``이며, 빗금 명령어로도 사용하실 수 있습니다!
 
 **[![봇 초대하기](https://img.shields.io/badge/%EB%B4%87%20%EC%B4%88%EB%8C%80%ED%95%98%EA%B8%B0-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=703956235900420226&permissions=126016&scope=bot)**
 
@@ -18,7 +18,7 @@
 ## 정보
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
 - 개발 언어: python 3.10.12 ([discord.py 2.3.1](https://discordpy.readthedocs.io/en/latest/index.html))
-- 버전: 2.1.0-a
+- 버전: 2.1.0
 - 데이터베이스: mongoDB 4.4   
 - 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님, 끝봇의 프로필 사진을 만들어주신 [Tim232](https://github.com/Tim232)님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
@@ -35,7 +35,6 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 버그를 해결하는 방법을 아시면 Pull Request 부탁드립니다!
 
 # 다음 업데이트 TODO
-- [ ] 디코 신규 이름 시스템 적용
 - [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
 - [ ] 연승 시스템
 - [ ] 티어별 난이도 조정
