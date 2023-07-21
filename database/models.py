@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-import pymongo
+from pymongo import TEXT
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
@@ -73,10 +73,10 @@ class Alerts(BaseModel):
 
 class User(Document):
     id: int
-    name: str
+    name: Indexed(str, TEXT)
     registered: Optional[int] = None
     bio: str = "소개말이 없습니다."
-    points: Indexed(int, pymongo.DESCENDING) = 1000  # type: ignore
+    points: int = 1000
     medals: int = 0
     latest_reward: Optional[int] = None
     attendance: dict[str, int] = Field(default_factory=attendance.copy)
@@ -97,7 +97,7 @@ class Guild(Document):
     id: int
     invited: Optional[int] = None
     latest_usage: Optional[int] = None
-    command_used: Indexed(int, pymongo.DESCENDING) = 0  # type: ignore
+    command_used: int = 0
 
     class Settings:
         name = "guild"
