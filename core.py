@@ -4,14 +4,13 @@ import os
 import random
 import time
 from datetime import datetime, timedelta
-from typing import Annotated, Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from beanie.operators import Set
 from discord.ext import commands
 from koreanbots.integrations.discord import DiscordpyKoreanbots
-from motor.motor_asyncio import AsyncIOMotorDatabase  # noqa
 from topgg import DBLClient
 
 from config import config
@@ -101,9 +100,9 @@ class Kkutbot(commands.AutoShardedBot):
             strip_after_prefix=True
         )
         self.guild_multi_games: list[int] = []
-        self.koreanbots = Annotated[DiscordpyKoreanbots, None]
-        self.dbl = Annotated[DBLClient, None]
-        self.started_at = Annotated[int, None]
+        self.koreanbots: DiscordpyKoreanbots | None = None
+        self.dbl: DBLClient | None = None
+        self.started_at: int | None = None
         self.db: Client = Client()
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
@@ -124,7 +123,7 @@ class Kkutbot(commands.AutoShardedBot):
     def run_bot(self) -> None:
         super().run(getattr(config.token, "test" if config.is_test else "main"))
 
-    async def get_context(self, origin: Union[discord.Message, discord.Interaction], /, *, cls=KkutbotContext) -> KkutbotContext:
+    async def get_context(self, origin: discord.Message | discord.Interaction, /, *, cls=KkutbotContext) -> KkutbotContext:
         return await super().get_context(origin, cls=cls)
 
     async def is_owner(self, user: discord.User, /) -> bool:
