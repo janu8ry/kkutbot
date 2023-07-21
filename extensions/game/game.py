@@ -117,11 +117,11 @@ class Game(commands.Cog, name="게임"):
                         await game.send_info_embed(msg, f"{{denyed}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력해 주세요.")
                         continue
                     elif len(user_word) != 3 and is_kkd:
-                        await game.send_info_embed(msg, "{{denyed}} 세글자 단어만 사용 가능합니다.")
+                        await game.send_info_embed(msg, "{denyed} 세글자 단어만 사용 가능합니다.")
                         continue
                     elif user_word in get_word(game.bot_word):
                         if (game.score == 0) and is_hanbang(user_word, game.used_words, kkd=is_kkd):
-                            await game.send_info_embed(msg, "{{denyed}} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
+                            await game.send_info_embed(msg, "{denyed} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
                             game.used_words.append(user_word)
@@ -222,8 +222,32 @@ class Game(commands.Cog, name="게임"):
                             else:
                                 await game.send_info_embed()
                     else:
-                        await game.send_info_embed(f"**{user_word}** (은)는 없는 단어입니다.")
+                        await game.send_info_embed(f"{{denyed}} **{user_word}** (은)는 없는 단어입니다.")
                         continue
 
         elif mode == 0:
             return await ctx.send("취소되었습니다.")
+
+    @commands.command(name="끝말잇기1", usage="ㄲ끝말잇기1", aliases=("ㄲ1", "끝1", "ㄲㅁㅇㄱ1"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game1(self, ctx: KkutbotContext):
+        """끝말잇기 '솔로 랭킹전' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
+
+    @commands.command(name="끝말잇기2", usage="ㄲ끝말잇기2", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game2(self, ctx: KkutbotContext):
+        """끝말잇기 '서버원들과 친선전' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
+
+    @commands.command(name="끝말잇기3", usage="ㄲ끝말잇기3", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"), hidden=True)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_permissions(external_emojis=True)
+    @commands.max_concurrency(1, per=commands.BucketType.user)
+    async def game3(self, ctx: KkutbotContext):
+        """끝말잇기 '쿵쿵따' 모드를 플레이합니다."""
+        await self.game(ctx, app_commands.Choice(name="쿵쿵따", value=3))
