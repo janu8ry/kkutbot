@@ -87,6 +87,7 @@ async def main() -> None:
 
     public = await db.general.find_one({"_id": "general"})
     public["_id"] = "public"
+    await db.public.drop()
     await db.public.insert_one(public)
     await db.public.insert_one({"_id": "test", "latest": time.time()})
     await db.general.drop()
