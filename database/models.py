@@ -72,7 +72,7 @@ class Alerts(BaseModel):
 
 
 class User(Document):
-    id: int  # type: ignore
+    id: int
     name: str
     registered: Optional[int] = None
     bio: str = "소개말이 없습니다."
@@ -94,7 +94,7 @@ class User(Document):
 
 
 class Guild(Document):
-    id: int  # type: ignore
+    id: int
     invited: Optional[int] = None
     latest_usage: Optional[int] = None
     command_used: Indexed(int, pymongo.DESCENDING) = 0  # type: ignore
@@ -107,7 +107,7 @@ class Guild(Document):
 
 
 class Public(Document):
-    id: str  # type: ignore
+    id: str
     attendance: int = 0
     reward: int = 0
     command_used: int = 0

@@ -3,7 +3,7 @@ from typing import Coroutine
 
 import discord
 from discord.utils import escape_markdown as e_mk
-from motor.motor_asyncio import AsyncIOMotorCursor  # noqa
+from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
 from core import KkutbotContext
@@ -31,7 +31,7 @@ class RankDropdown(discord.ui.Select):
                 label="종합 랭킹",
                 value="종합 랭킹",
                 description="여러 분야의 랭킹을 한번에 확인합니다.",
-                emoji="<:ranking:985439871004995634>"
+                emoji="{ranking}"
             )
         ]
         for category in (self.categories["general"] | self.categories["game"]):
@@ -39,7 +39,7 @@ class RankDropdown(discord.ui.Select):
                 label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드' }의 랭킹을 확인합니다.",
-                emoji="<:ranking:985439871004995634>"
+                emoji="{ranking}"
             )
             options.append(option)
         super().__init__(placeholder="분야를 선택해 주세요.", options=options, row=1)

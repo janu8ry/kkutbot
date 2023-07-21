@@ -2,7 +2,6 @@ import discord
 from discord.utils import escape_markdown as e_mk
 from discord.utils import escape_mentions as e_mt
 
-from config import config
 from core import KkutbotContext
 from views import BaseModal, BaseView
 
@@ -26,9 +25,9 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         await self.ctx.bot.db.save(user)
         for btn in self.view.children:
             btn.disabled = True
-        await self.view.message.edit(view=self.view)  # type: ignore
+        await self.view.message.edit(view=self.view)
         await interaction.response.send_message(
-            f"<:done:{config.emojis['done']}> 소개말을 '{e_mk(e_mt(self.bio_text.value))}'(으)로 변경했습니다!", ephemeral=True
+            f"{{done}} 소개말을 '{e_mk(e_mt(self.bio_text.value))}'(으)로 변경했습니다!", ephemeral=True
         )
         self.view.stop()
 

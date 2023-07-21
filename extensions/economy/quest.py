@@ -12,7 +12,7 @@ class Quest(commands.Cog, name="퀘스트"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="퀘스트", usage="<:quest:984725770293366794>", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
+    @commands.hybrid_command(name="퀘스트", usage="{quest}", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def quest(self, ctx: KkutbotContext):
         """

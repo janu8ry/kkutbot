@@ -11,7 +11,7 @@ class Ranking(commands.Cog, name="랭킹"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="랭킹", usage="<:ranking:985439871004995634>", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
+    @commands.hybrid_command(name="랭킹", usage="{ranking}", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def ranking(self, ctx: KkutbotContext):
         """

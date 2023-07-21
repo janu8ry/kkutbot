@@ -224,3 +224,57 @@ class KkutbotEmbed(discord.Embed):
 
 
 discord.Embed = KkutbotEmbed
+
+
+class KkutbotInteractionResponse(discord.InteractionResponse):
+    async def send_message(
+        self,
+        content: Optional[Any] = None,
+        *,
+        embed: discord.Embed = discord.utils.MISSING,
+        embeds: Sequence[discord.Embed] = discord.utils.MISSING,
+        file: discord.File = discord.utils.MISSING,
+        files: Sequence[discord.File] = discord.utils.MISSING,
+        view: discord.ui.View = discord.utils.MISSING,
+        tts: bool = False,
+        ephemeral: bool = False,
+        allowed_mentions: discord.AllowedMentions = discord.utils.MISSING,
+        suppress_embeds: bool = False,
+        silent: bool = False,
+        delete_after: Optional[float] = None
+    ) -> None:
+        content = content.format_map(FormattingDict(Kkutbot.dict_emojis())) if content else None
+        await super().send_message(
+            content,
+            embed=embed,
+            embeds=embeds,
+            file=file,
+            files=files,
+            view=view,
+            tts=tts,
+            ephemeral=ephemeral,
+            allowed_mentions=allowed_mentions,
+            suppress_embeds=suppress_embeds,
+            silent=silent,
+            delete_after=delete_after
+        )
+
+
+discord.interactions.InteractionResponse = KkutbotInteractionResponse
+
+
+class KkutbotSelectOption(discord.SelectOption):
+    def __init__(
+            self,
+            *,
+            label: str,
+            value: str = discord.utils.MISSING,
+            description: Optional[str] = None,
+            emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
+            default: bool = False,
+    ) -> None:
+        emoji = emoji.format_map(FormattingDict(Kkutbot.dict_emojis())) if emoji else None
+        super().__init__(label=label, value=value, description=description, emoji=emoji, default=default)
+
+
+discord.SelectOption = KkutbotSelectOption

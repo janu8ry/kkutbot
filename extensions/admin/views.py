@@ -2,7 +2,7 @@ import ast
 import time
 
 import discord
-from motor.motor_asyncio import AsyncIOMotorCollection  # noqa
+from motor.motor_asyncio import AsyncIOMotorCollection
 from beanie.operators import Set
 
 from config import config

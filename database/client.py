@@ -57,9 +57,9 @@ class Client:
             User model from database
         """
         if isinstance(user, int):
-            document: User = await User.get(user)  # type: ignore
+            document: User = await User.get(user)
         else:
-            document: User = await User.get(user.id)  # type: ignore
+            document: User = await User.get(user.id)
         if document:
             if document.name and document.name != user.name:
                 document.name = user.name
@@ -85,9 +85,9 @@ class Client:
             Guild model from database
         """
         if isinstance(guild, int):
-            document: Guild = await Guild.get(guild)  # type: ignore
+            document: Guild = await Guild.get(guild)
         else:
-            document: Guild = await Guild.get(guild.id)  # type: ignore
+            document: Guild = await Guild.get(guild.id)
         if not document and safe:
             document = Guild(id=guild.id, name=guild.name)
 
@@ -117,7 +117,7 @@ class Client:
 
     @staticmethod
     async def get_public() -> Public:
-        document: Public = await Public.get("public")  # type: ignore
+        document: Public = await Public.get("public")
         if not document:
             document = Public(id="public")
 

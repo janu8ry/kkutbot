@@ -16,7 +16,7 @@ class Profile(commands.Cog, name="사용자"):
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
-    @commands.hybrid_command(name="프로필", usage="<:profile:985186983666155541>", aliases=("ㅍ", "ㅍㄹㅍ"))
+    @commands.hybrid_command(name="프로필", usage="{profile}", aliases=("ㅍ", "ㅍㄹㅍ"))
     @app_commands.rename(user="유저")
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
