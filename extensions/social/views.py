@@ -21,7 +21,6 @@ class RankDropdown(discord.ui.Select):
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"]  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
         self.query = {
-            "banned.isbanned": False,
             "_id": {
                 "$ne": self.ctx.bot.owner_id
             }
