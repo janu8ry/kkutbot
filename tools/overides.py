@@ -1,9 +1,9 @@
-from typing import Any, Optional, Sequence, Union, Callable, TYPE_CHECKING, TypeVar, Coroutine
 import inspect
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional, Sequence, TypeVar, Union
 
 import discord
-from discord.ext import commands
 from discord.enums import ButtonStyle
+from discord.ext import commands
 from discord.ui import Button
 
 from .utils import dict_emojis

@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from config import config
 from core import KkutbotContext
-from tools.utils import get_tier, get_winrate, dict_emojis
+from tools.utils import dict_emojis, get_tier, get_winrate
 
 from .utils import choose_first_word, get_transition, get_word
 
