@@ -115,10 +115,8 @@ class Kkutbot(commands.AutoShardedBot):
                 logger.info("몽고DB 데이터 백업 완료!")
 
     async def backup_log(self) -> None:
-        fp_before = f"logs/{datetime.now().strftime('%Y-%m-%d')}.log.gz"
-        fp_after = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
-        os.replace(fp_before, fp_after)
-        await (self.get_channel(config.channels.backup_log)).send(file=discord.File(fp=fp_after))
+        fp = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
+        await (self.get_channel(config.channels.backup_log)).send(file=discord.File(fp=fp))
         logger.info("로그 백업 완료!")
 
     async def reset_quest(self) -> None:
@@ -143,5 +141,5 @@ class Kkutbot(commands.AutoShardedBot):
                 await self.try_reload(package)
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)  # noqa
+        data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)
         return data.voted
