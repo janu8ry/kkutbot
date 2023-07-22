@@ -103,13 +103,14 @@ class DataInput(BaseModal, title="데이터 수정하기"):
     async def on_submit(self, interaction: discord.Interaction):
         try:
             data = self.data_value.value.strip()
-            if isinstance(data, str):
-                data = "\"" + data + "\""
-            print(data)
             final_data = ast.literal_eval(data)
         except SyntaxError:
-            await interaction.response.send_message("올바른 값이 아닙니다.")
-            return self.stop()
+            try:
+                data = "\"" + self.data_value.value.strip() + "\""
+                final_data = ast.literal_eval(data)
+            except SyntaxError:
+                await interaction.response.send_message("올바른 값이 아닙니다.")
+                return self.stop()
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
