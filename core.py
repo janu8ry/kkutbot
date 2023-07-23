@@ -106,13 +106,18 @@ class Kkutbot(commands.AutoShardedBot):
         await self.db.save(public)
 
     async def backup_data(self) -> None:
+        files = []
         for filename in os.listdir("backup"):
             if filename[:10].isdecimal():
-                date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-                fp = f"backup/{date}.gz"
-                os.replace(f"backup/{filename}", fp)
-                await (self.get_channel(config.channels.backup_data)).send(file=discord.File(fp=fp))
-                logger.info("몽고DB 데이터 백업 완료!")
+                files.append(filename)
+        files.sort(key=lambda f: int(f[:10]), reverse=True)
+        date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        fp = f"backup/{date}.gz"
+        os.replace(f"backup/{files[0]}", fp)
+        await (self.get_channel(config.channels.backup_data)).send(file=discord.File(fp=fp))
+        logger.info("몽고DB 데이터 백업 완료!")
+        for filename in files[1:]:
+            os.remove(f"backup/{filename}")
 
     async def backup_log(self) -> None:
         fp = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
