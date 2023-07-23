@@ -209,7 +209,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.BadUnionArgument):
         embed = discord.Embed(
-            title=f"프로필 조회 불가",
+            title="{stats} 프로필 조회 불가",
             description="존재하지 않는 유저입니다.",
             color=config.colors.error
         )
