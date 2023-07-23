@@ -91,6 +91,8 @@ class Kkutbot(commands.AutoShardedBot):
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
+        if not cmd:
+            return
         cmd.aliases = list(cmd.aliases)
         cmd.aliases.extend(aliases)
         cmd.aliases = tuple(cmd.aliases)
