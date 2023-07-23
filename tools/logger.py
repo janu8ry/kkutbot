@@ -22,7 +22,7 @@ def rotator(source: str, dest: str) -> None:
 
 
 def namer(_: Any) -> str:
-    return os.path.join("logs", time.strftime("%Y-%m-%d", time.localtime(time.time())) + ".log")
+    return os.path.join("logs", time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400)) + ".log")
 
 
 def setup_logger() -> None:
