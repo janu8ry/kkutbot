@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional, Sequence, 
 import discord
 from discord.enums import ButtonStyle
 from discord.ext import commands
-from discord.ui import Button, View, Item
+from discord.ui import Button, Item, View
 
 from .utils import dict_emojis
 

@@ -1,8 +1,8 @@
 from typing import Any, Optional
 
-from pymongo import TEXT
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
+from pymongo import TEXT
 
 __all__ = ["User", "Guild", "Public"]
 
