@@ -64,7 +64,6 @@ class Kkutbot(commands.AutoShardedBot):
         self.dbl = DBLClient(self, config.token.dbl, autopost=not config.is_test, post_shard_count=not config.is_test)
         self.scheduler.start()
         await self.db.setup_db()
-        await self.tree.sync()
 
     def run_bot(self) -> None:
         super().run(getattr(config.token, "test" if config.is_test else "main"))
