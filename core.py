@@ -77,6 +77,8 @@ class Kkutbot(commands.AutoShardedBot):
         return await super().is_owner(user)
 
     async def try_reload(self, name: str) -> None:
+        if name != "__pycache__":
+            return
         path = f"extensions.{name}"
         try:
             await self.reload_extension(path)
@@ -143,7 +145,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def reload_all(self) -> None:
         for package in os.listdir("extensions"):
-            if os.path.isdir(f"extensions/{package}") and package != "__pycache__":
+            if os.path.isdir(f"extensions/{package}"):
                 await self.try_reload(package)
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
