@@ -5,7 +5,7 @@ import re
 import sys
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 import discord
 import jishaku.repl.repl_builtins
@@ -221,7 +221,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             scope.clear_intersection(arg_dict)
 
     @Feature.Command(parent="jsk", name="load", aliases=["reload", "ㄹ"])
-    async def jsk_load(self, ctx: ContextA, *extensions: ExtensionConverter):  # type: ignore
+    async def jsk_load(self, ctx: ContextA, *extensions: ExtensionConverter):
         """
         Loads or reloads the given extension names.
         Reports any extensions that failed to load.
