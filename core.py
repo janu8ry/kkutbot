@@ -77,7 +77,7 @@ class Kkutbot(commands.AutoShardedBot):
         return await super().is_owner(user)
 
     async def try_reload(self, name: str) -> None:
-        if name != "__pycache__":
+        if name == "__pycache__":
             return
         path = f"extensions.{name}"
         try:
