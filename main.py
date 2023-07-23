@@ -58,6 +58,9 @@ async def before_command(ctx: core.KkutbotContext) -> None:
         guild.command_used += 1
         await bot.db.save(guild)
 
+        if not ctx.guild.chunked:
+            await ctx.guild.chunk()
+
     public = await bot.db.get_public()
     public.command_used += 1
     public.latest_usage = round(time.time())

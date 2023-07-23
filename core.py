@@ -42,7 +42,8 @@ class Kkutbot(commands.AutoShardedBot):
             owner_id=610625541157945344,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True,
-            member_cache_flags=discord.MemberCacheFlags.from_intents(intents)
+            member_cache_flags=discord.MemberCacheFlags.from_intents(intents),
+            chunk_guilds_at_startup=False
         )
         self.guild_multi_games: list[int] = []
         self.koreanbots: DiscordpyKoreanbots | None = None
@@ -91,8 +92,6 @@ class Kkutbot(commands.AutoShardedBot):
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
-        if not cmd:
-            return
         cmd.aliases = list(cmd.aliases)
         cmd.aliases.extend(aliases)
         cmd.aliases = tuple(cmd.aliases)
