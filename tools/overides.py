@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from core import Kkutbot
 
 
+__all__ = ["KkutbotContext"]
+
+
 class FormattingDict(dict[str, str]):
     def __missing__(self, key: str) -> str:
         return "{" + key + "}"
