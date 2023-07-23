@@ -90,7 +90,7 @@ class Game(commands.Cog, name="게임"):
             if not (1 <= mode <= 3):
                 return await ctx.reply("{denyed} 존재하지 않는 모드입니다.")
 
-        if mode == 1 or mode == 3:
+        if mode in (1, 3):
             is_kkd = mode == 3
             game = SoloGame(ctx, kkd=is_kkd)
             await game.send_info_embed(ctx)
