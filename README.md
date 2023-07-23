@@ -38,8 +38,6 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 - [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
 - [ ] 연승 시스템
 - [ ] 티어별 난이도 조정
-- [ ] 서버 랭킹
-- [ ] mongo-express 적용
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
@@ -81,10 +79,8 @@ python3 main.py
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
 nano config.yml # config.yml 수정
-nano docker-compose.yml # docker-compose.yml 수정
-nano mgob.yml # mgob.yml 수정
-nano mongo_username.txt # mongoDB 사용자 이름 입력
-nano mongo_password.txt # mongoDB 비밀번호 입력
+nano mongob.yml # mongob.yml 수정
+nano .env # mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
 docker build -t kkutbot:latest .
 docker compose up -d
 ```
