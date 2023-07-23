@@ -207,6 +207,14 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         )
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
+    elif isinstance(error, commands.BadUnionArgument):
+        embed = discord.Embed(
+            title=f"프로필 조회 불가",
+            description="존재하지 않는 유저입니다.",
+            color=config.colors.error
+        )
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
+        await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         usage = "사용법 도움말이 없습니다."
         if ctx.command.name != "jishaku":
@@ -255,7 +263,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.error)
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)
-        logger.error(f"에러 발생함. (명령어: {ctx.command.name})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}")
+        logger.error(
+            f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}"
+        )
         raise error
 
 
