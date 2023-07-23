@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: [3.10]
 
     steps:
       - uses: actions/checkout@v3
@@ -40,5 +40,5 @@ jobs:
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "style(isort): sort imports"
+          commit_message: "chore(isort): sort imports"
           commit_user_name: Isort Action
