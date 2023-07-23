@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional, Sequence, 
 import discord
 from discord.enums import ButtonStyle
 from discord.ext import commands
-from discord.ui import Button
+from discord.ui import Button, View, Item
 
 from .utils import dict_emojis
 
@@ -146,8 +146,8 @@ class KkutbotSelectOption(discord.SelectOption):
 
 discord.SelectOption = KkutbotSelectOption
 
-V = TypeVar("V", bound="View", covariant=True)
-I = TypeVar("I", bound="Item[Any]")  # noqa
+V = TypeVar("V", bound=View, covariant=True)
+I = TypeVar("I", bound=Item[Any])  # noqa
 ItemCallbackType = Callable[[V, discord.Interaction[Any], I], Coroutine[Any, Any, Any]]
 
 
