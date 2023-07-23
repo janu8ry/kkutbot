@@ -221,7 +221,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             color=config.colors.general
         )
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
-        embed.set_footer(text=f"명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
+        embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):
         if ctx.author.id in config.admin:

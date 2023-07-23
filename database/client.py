@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Annotated, Any
+from typing import Any
 from typing_extensions import TypeAlias
 
 import discord
@@ -28,7 +28,7 @@ class Client:
         self.db = dbconfig.db
         self.user = dbconfig.user
         self.password = dbconfig.password
-        self.client = Annotated[AsyncIOMotorDatabase, None]
+        self.client: AsyncIOMotorDatabase | None
 
     async def setup_db(self) -> None:
         db_options = {}
