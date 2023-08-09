@@ -88,6 +88,7 @@ class HostGuildGame(BaseView):
             self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
             self.value = "stop"
             await self.disable_buttons(interaction)
+            self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
             return self.stop()
         await interaction.response.defer()
         self.message = await self.game.update_embed(self.game.hosting_embed(), view=self)
