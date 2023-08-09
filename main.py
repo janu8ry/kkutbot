@@ -1,6 +1,9 @@
+import linecache
 import logging
+import os
 import random
 import time
+import traceback
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Type
@@ -251,14 +254,25 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
-        if error.__cause__:
-            error = error.__cause__
+        if hasattr(error, "original"):
+            error = error.original
+
+        exc_traceback = error.__traceback__
+        tb_lines = traceback.extract_tb(exc_traceback)
+        tb_lines = [line for line in tb_lines if os.path.dirname(line.filename).startswith(os.getcwd())] or tb_lines
+        frame = tb_lines[-1]
+        filename = frame.filename
+        line_no = frame.lineno
+        line_text = linecache.getline(filename, line_no).strip()
+        if "kkutbot" in filename:
+            filename = filename.split('kkutbot/')[1]
 
         error_id = str(uuid.uuid4())[:6]
-        error_embed = discord.Embed(title="에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
-        error_embed.add_field(name="에러 발생 위치", value=f"유저: {ctx.author}(`{ctx.author.id}`)\n서버: {ctx.guild}(`{ctx.guild.id}`)\n채널: {ctx.channel}(`{ctx.channel.id}`)")
+        error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
+        error_embed.add_field(name="에러 발생 위치", value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)")
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
-        error_embed.add_field(name="에러 내용", value=f"```{error}```", inline=False)
+        error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
+        error_embed.add_field(name="에러 코드", value=f"- 파일: {filename} (`line {line_no}`)\n```py\n{line_text}```")
 
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)
@@ -267,9 +281,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)
         logger.error(
-            f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}"
+            f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}\n"
+            f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})"
         )
-        raise error
 
 
 @bot.event
