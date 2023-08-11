@@ -145,9 +145,6 @@ class MultiGame(GameBase):
         self.hosting_time = hosting_time
         self.last_host = ctx.author
 
-    def __del__(self):
-        self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
-
     @property
     def host(self) -> discord.User:
         return self.players[0] if self.players else self.last_host
