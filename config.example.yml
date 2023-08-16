@@ -2,6 +2,9 @@
 # 'true' to run testbot, 'false' to run the main bot.
 testmode: false
 
+# bot version
+version: 0.1
+
 # bot prefix
 prefix:
   main: ㄲ
@@ -38,6 +41,11 @@ channels:
   backup_data:
   backup_log:
   error_log:
+
+# sentry dsn for error logging
+sentry:
+  dsn: sentry dsn url
+  url: sentry dashboard url
 
 # useful links
 links:

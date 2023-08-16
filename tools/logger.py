@@ -9,6 +9,9 @@ from typing import Any
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
+import sentry_sdk
+from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from config import config
 
@@ -25,7 +28,7 @@ def namer(_: Any) -> str:
     return os.path.join("logs", time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400)) + ".log")
 
 
-def setup_logger() -> None:
+def setup_command_logger() -> None:
     if "logs" not in os.listdir():
         os.mkdir("logs")
     logger = logging.getLogger("kkutbot")
@@ -81,4 +84,26 @@ def setup_logger() -> None:
 
     logging.Logger.leave = leave  # type: ignore
 
-    logger.info("로깅 설정 완료!")
+    logger.info("명령어 로깅 설정 완료!")
+
+
+def setup_error_logger() -> None:
+    logger = logging.getLogger("kkutbot")
+
+    sentry_sdk.init(
+        dsn=config.sentry.dsn,
+        traces_sample_rate=1.0,
+        release=str(config.version),
+        environment="test" if config.is_test else "production",
+        integrations=[
+            AsyncioIntegration(),
+            LoggingIntegration(event_level=None)
+        ],
+    )
+
+    logger.info("에러 로깅 설정 완료!")
+
+
+def setup_logger() -> None:
+    setup_command_logger()
+    setup_error_logger()

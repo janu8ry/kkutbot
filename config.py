@@ -120,6 +120,12 @@ class InviteLink:
 
 
 @dataclass(frozen=True)
+class Sentry:
+    dsn: str = field(default_factory=lambda: _config("sentry.dsn"))
+    url: str = field(default_factory=lambda: _config("sentry.url"))
+
+
+@dataclass(frozen=True)
 class Links:
     invite: InviteLink = InviteLink()
     privacy_policy: str = field(default_factory=lambda: _config("links.privacy-policy"))
@@ -133,12 +139,14 @@ class Links:
 @dataclass(frozen=True)
 class Config:
     is_test: bool = field(default_factory=lambda: _config("testmode"))
+    version: str = field(default_factory=lambda: _config("version"))
     prefix: Prefix = Prefix()
     token: Token = Token()
     colors: Color = Color()
     admin: list[int] = field(default_factory=lambda: _config("admin"))
     mongo: Mongo = Mongo()
     channels: Channels = Channels()
+    sentry: Sentry = Sentry()
     links: Links = Links()
     default_data: dict[str, dict[str, Any]] = field(default_factory=lambda: _config("default_data"))
     emojis: dict[str, int] = field(default_factory=lambda: _config("emojis"))

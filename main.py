@@ -11,6 +11,7 @@ from typing import Type
 import discord
 from discord.ext import commands
 from rich.traceback import install as rich_install
+from sentry_sdk import capture_exception
 
 import core
 from config import config, get_nested_dict
@@ -272,7 +273,8 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         error_embed.add_field(name="에러 발생 위치", value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)")
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
-        error_embed.add_field(name="에러 코드", value=f"- 파일: {filename} (`line {line_no}`)\n```py\n{line_text}```")
+        error_embed.add_field(name="에러 코드", value=f"- 파일: {filename} (`line {line_no}`)\n```py\n{line_text}```", inline=False)
+        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False)
 
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)
@@ -284,6 +286,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}\n"
             f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})"
         )
+        capture_exception(error)
 
 
 @bot.event
