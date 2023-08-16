@@ -6,10 +6,10 @@ import time
 from logging.handlers import TimedRotatingFileHandler
 from typing import Any
 
+import sentry_sdk
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
-import sentry_sdk
 from sentry_sdk.integrations.asyncio import AsyncioIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
