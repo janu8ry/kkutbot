@@ -1,6 +1,5 @@
 # 디스코드봇, 끝봇
 [![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/703956235900420226)
-[![topgg](https://top.gg/api/widget/servers/703956235900420226.svg)](https://top.gg/bot/703956235900420226)
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6716eb15f92f4bb29c3da2f09d8e2483)](https://www.codacy.com/gh/janu8ry/kkutbot/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=janu8ry/kkutbot&amp;utm_campaign=Badge_Grade)
@@ -43,44 +42,30 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
 
 ## 요구사항
-- python 3.10
+- python 3.10.17
 - git
 - mongoDB 4.4
-- [poetry](https://python-poetry.org)
-- [pyenv](https://github.com/pyenv/pyenv), [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) (선택)
+- [uv](https://docs.astral.sh/uv/)
+- [pyenv](https://github.com/pyenv/pyenv)
 - [docker](https://www.docker.com/) (배포시)
 - 디스코드 봇의 '메시지 인텐트', '멤버 인텐트' 활성화
 
-### poetry 가상환경 사용 (기본)
+### uv 사용 (개발)
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
-poetry install
-nano config.yml # config.yml 수정
-poetry shell
+uv sync
+vi config.yml # config.yml 수정
 python3 main.py
 ```
 
-### pyenv 가상환경 사용 (추천)
-```shell
-pyenv install 3.10.12
-pyenv virtualenv 3.10.12 kkutbot
-git clone https://github.com/janu8ry/kkutbot.git
-cd kkutbot
-poetry config virtualenvs.create false --local
-pyenv local kkutbot
-poetry install
-nano config.yml # config.yml 수정
-python3 main.py
-```
-
-### docker 사용 (배포시)
+### docker 사용 (배포)
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
-nano config.yml # config.yml 수정
-nano mongob.yml # mongob.yml 수정
-nano .env # mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
+vi config.yml # config.yml 수정
+vi mongob.yml # mongob.yml 수정
+vi .env # mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
 docker build -t kkutbot:latest .
 docker compose up -d
 ```
