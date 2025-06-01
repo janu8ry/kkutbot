@@ -3,7 +3,7 @@ name = "kkutbot"
 version = "2.2-a"
 description = "끝말잇기 디스코드봇"
 readme = "README.md"
-requires-python = ">=3.10.17"
+requires-python = "==3.10.17"
 dependencies = [
     "apscheduler==3.10.1",
     "beanie==1.20.0",
