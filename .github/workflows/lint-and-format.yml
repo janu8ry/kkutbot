@@ -10,35 +10,40 @@ on:
 
 jobs:
   lint-format:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.10']
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
       - name: Install dependencies
-        run: |
-          poetry install
+        run: uv sync --locked --all-extras --dev
+
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
           ./.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude ./.venv
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           ./.venv/bin/flake8 . --count --exit-zero --max-complexity=10 --max-line-length=300 --statistics --exclude ./.venv
+
       - name: Sort with isort
         run: |
           ./.venv/bin/isort . --gitignore
+
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(isort): sort imports"
-          commit_user_name: Isort Action
