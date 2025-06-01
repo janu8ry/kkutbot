@@ -2,8 +2,8 @@
 [![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/703956235900420226)
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6716eb15f92f4bb29c3da2f09d8e2483)](https://www.codacy.com/gh/janu8ry/kkutbot/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=janu8ry/kkutbot&amp;utm_campaign=Badge_Grade)
-[![DeepSource](https://deepsource.io/gh/janu8ry/kkutbot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janu8ry/kkutbot/?ref=repository-badge)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6716eb15f92f4bb29c3da2f09d8e2483)](https://app.codacy.com/gh/janu8ry/kkutbot/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![DeepSource](https://app.deepsource.com/gh/janu8ry/kkutbot.svg/?label=active+issues&show_trend=true&token=XhxwNVJ7ERPX5kd7hNF2otlS)](https://app.deepsource.com/gh/janu8ry/kkutbot/)
 
 # 소개
 📔 끝말잇기 디스코드 봇 - 끝말잇기 게임을 디스코드에서 플레이하세요!
