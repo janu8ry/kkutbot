@@ -5,13 +5,13 @@ description = "끝말잇기 디스코드봇"
 readme = "README.md"
 requires-python = "==3.10.17"
 dependencies = [
-    "apscheduler==3.10.1",
-    "beanie==1.20.0",
+    "apscheduler>=3.11.0",
+    "beanie>=1.29.0",
     "discord-py[speed]==2.3.1",
     "humanize==4.7.0",
     "jishaku[procinfo]==2.5.1",
     "koreanbots==2.1.0",
-    "motor==3.2.0",
+    "motor>=3.7.1",
     "pyyaml==6.0",
     "rich==13.4.2",
     "sentry-sdk==1.29.2",

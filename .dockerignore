@@ -1,6 +1,9 @@
 # Jetbrains IDE config
 .idea/
 
+# Docker
+Dockerfile
+
 # virtualenv
 venv/
 .venv/
