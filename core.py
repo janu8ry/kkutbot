@@ -97,8 +97,8 @@ class Kkutbot(commands.AutoShardedBot):
     async def reset_alerts(self) -> None:
         public = await self.db.get_public()
         public.attendance = 0
-        await User.find(User.alerts.attendance == True).update(Set({User.alerts.attendance: False}))  # noqa
-        await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
+        await User.find(User.alerts.attendance == True).update(Set({User.alerts.attendance: False}))
+        await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))
         await self.db.save(public)
 
     async def backup_data(self) -> None:
@@ -142,5 +142,5 @@ class Kkutbot(commands.AutoShardedBot):
                 await self.try_reload(package)
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)
-        return data.voted
+        response = await self.koreanbots.get_bot_vote(user.id, 703956235900420226)
+        return response.data.voted
