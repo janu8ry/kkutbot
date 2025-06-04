@@ -1,4 +1,4 @@
-FROM python:3.10.17-bookworm AS builder
+FROM python:3.13.3-bookworm AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 ENV UV_COMPILE_BYTECODE=1 \
@@ -15,7 +15,7 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
-FROM python:3.10.17-slim-bookworm
+FROM python:3.13.3-slim-bookworm
 
 WORKDIR /app
 
