@@ -21,22 +21,15 @@ class RankDropdown(discord.ui.Select):
         self.categories = {
             "general": {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"},
             "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
-            "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"]  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
+            "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
-        options = [
-            discord.SelectOption(
-                label="종합 랭킹",
-                value="종합 랭킹",
-                description="여러 분야의 랭킹을 한번에 확인합니다.",
-                emoji="{ranking}"
-            )
-        ]
-        for category in (self.categories["general"] | self.categories["game"]):
+        options = [discord.SelectOption(label="종합 랭킹", value="종합 랭킹", description="여러 분야의 랭킹을 한번에 확인합니다.", emoji="{ranking}")]
+        for category in self.categories["general"] | self.categories["game"]:
             option = discord.SelectOption(
                 label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드'}의 랭킹을 확인합니다.",
-                emoji="{ranking}"
+                emoji="{ranking}",
             )
             options.append(option)
         super().__init__(placeholder="분야를 선택해 주세요.", options=options, row=1)
@@ -44,17 +37,8 @@ class RankDropdown(discord.ui.Select):
     @property
     def query(self) -> dict:
         if self.guild:
-            return {
-                "_id": {
-                    "$ne": self.ctx.bot.owner_id,
-                    "$in": self.guild_ids
-                }
-            }
-        return {
-            "_id": {
-                "$ne": self.ctx.bot.owner_id
-            }
-        }
+            return {"_id": {"$ne": self.ctx.bot.owner_id, "$in": self.guild_ids}}
+        return {"_id": {"$ne": self.ctx.bot.owner_id}}
 
     def game_query(self, path: str) -> dict:
         query = self.query.copy()
@@ -85,7 +69,10 @@ class RankDropdown(discord.ui.Select):
         for path in self.categories["main"]:
             if path in self.categories["general"]:
                 coros.append(
-                    self.format_rank(self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][path], -1).limit(5), self.categories["general"][path]),
+                    self.format_rank(
+                        self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][path], -1).limit(5),
+                        self.categories["general"][path],
+                    ),
                 )
             else:
                 for gpath in ("win", "best", "winrate"):
@@ -101,7 +88,9 @@ class RankDropdown(discord.ui.Select):
             elif 3 <= i <= 5:
                 embed.add_field(name=f"🔹 솔로 모드 - {gpath[i % 3]}", value="\n".join(rank))
             else:
-                embed.add_field(name=f"🔹 쿵쿵따 모드 - {gpath[i % 3]}", value="\n".join(rank))  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
+                embed.add_field(
+                    name=f"🔹 쿵쿵따 모드 - {gpath[i % 3]}", value="\n".join(rank)
+                )  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
 
         return embed, coros
 
@@ -113,7 +102,7 @@ class RankDropdown(discord.ui.Select):
             embed = discord.Embed(
                 title=f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {self.values[0]}",
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
-                color=config.colors.help
+                color=config.colors.help,
             )
         else:
             embed = discord.Embed(title=f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드", color=config.colors.help)

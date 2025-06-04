@@ -26,53 +26,52 @@ class KkutbotContext(commands.Context):
         self.bot: "Kkutbot" = bot
 
     async def send(
-            self,
-            content: Optional[str] = None,
-            *,
-            tts: bool = False,
-            embed: Optional[discord.Embed] = None,
-            embeds: Optional[Sequence[discord.Embed]] = None,
-            file: Optional[discord.File] = None,
-            files: Optional[Sequence[discord.File]] = None,
-            stickers: Optional[Sequence[Union[discord.GuildSticker, discord.StickerItem]]] = None,
-            delete_after: Optional[float] = None,
-            nonce: Optional[Union[str, int]] = None,
-            allowed_mentions: Optional[discord.AllowedMentions] = None,
-            reference: Optional[Union[discord.Message, discord.MessageReference, discord.PartialMessage]] = None,
-            mention_author: Optional[bool] = None,
-            view: Optional[discord.ui.View] = None,
-            suppress_embeds: bool = False,
-            ephemeral: bool = False,
-            silent: bool = False,
-            escape_emoji_formatting: bool = False
+        self,
+        content: Optional[str] = None,
+        *,
+        tts: bool = False,
+        embed: Optional[discord.Embed] = None,
+        embeds: Optional[Sequence[discord.Embed]] = None,
+        file: Optional[discord.File] = None,
+        files: Optional[Sequence[discord.File]] = None,
+        stickers: Optional[Sequence[Union[discord.GuildSticker, discord.StickerItem]]] = None,
+        delete_after: Optional[float] = None,
+        nonce: Optional[Union[str, int]] = None,
+        allowed_mentions: Optional[discord.AllowedMentions] = None,
+        reference: Optional[Union[discord.Message, discord.MessageReference, discord.PartialMessage]] = None,
+        mention_author: Optional[bool] = None,
+        view: Optional[discord.ui.View] = None,
+        suppress_embeds: bool = False,
+        ephemeral: bool = False,
+        silent: bool = False,
+        escape_emoji_formatting: bool = False,
     ) -> discord.Message:
         if (escape_emoji_formatting is False) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format_map(FormattingDict(dict_emojis())) if content else None
-        return await super().send(content=content,  # noqa
-                                  tts=tts,
-                                  embed=embed,
-                                  file=file,
-                                  files=files,
-                                  nonce=nonce,
-                                  delete_after=delete_after,
-                                  allowed_mentions=allowed_mentions,
-                                  reference=reference,
-                                  mention_author=mention_author,
-                                  view=view,
-                                  embeds=embeds,
-                                  stickers=stickers,
-                                  suppress_embeds=suppress_embeds,
-                                  ephemeral=ephemeral,
-                                  silent=silent
-                                  )
+        return await super().send(
+            content=content,  # noqa
+            tts=tts,
+            embed=embed,
+            file=file,
+            files=files,
+            nonce=nonce,
+            delete_after=delete_after,
+            allowed_mentions=allowed_mentions,
+            reference=reference,
+            mention_author=mention_author,
+            view=view,
+            embeds=embeds,
+            stickers=stickers,
+            suppress_embeds=suppress_embeds,
+            ephemeral=ephemeral,
+            silent=silent,
+        )
 
     async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
         if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format_map(FormattingDict(dict_emojis())) if content else None
         if self.interaction is None:
-            return await self.send(
-                content, reference=self.message, mention_author=mention_author, **kwargs
-            )
+            return await self.send(content, reference=self.message, mention_author=mention_author, **kwargs)
         else:
             return await self.send(content, mention_author=mention_author, **kwargs)
 
@@ -98,20 +97,20 @@ discord.Embed = KkutbotEmbed
 
 class KkutbotInteractionResponse(discord.InteractionResponse):
     async def send_message(
-            self,
-            content: Optional[Any] = None,
-            *,
-            embed: discord.Embed = discord.utils.MISSING,
-            embeds: Sequence[discord.Embed] = discord.utils.MISSING,
-            file: discord.File = discord.utils.MISSING,
-            files: Sequence[discord.File] = discord.utils.MISSING,
-            view: discord.ui.View = discord.utils.MISSING,
-            tts: bool = False,
-            ephemeral: bool = False,
-            allowed_mentions: discord.AllowedMentions = discord.utils.MISSING,
-            suppress_embeds: bool = False,
-            silent: bool = False,
-            delete_after: Optional[float] = None
+        self,
+        content: Optional[Any] = None,
+        *,
+        embed: discord.Embed = discord.utils.MISSING,
+        embeds: Sequence[discord.Embed] = discord.utils.MISSING,
+        file: discord.File = discord.utils.MISSING,
+        files: Sequence[discord.File] = discord.utils.MISSING,
+        view: discord.ui.View = discord.utils.MISSING,
+        tts: bool = False,
+        ephemeral: bool = False,
+        allowed_mentions: discord.AllowedMentions = discord.utils.MISSING,
+        suppress_embeds: bool = False,
+        silent: bool = False,
+        delete_after: Optional[float] = None,
     ) -> None:
         content = content.format_map(FormattingDict(dict_emojis())) if content else None
         await super().send_message(
@@ -126,7 +125,7 @@ class KkutbotInteractionResponse(discord.InteractionResponse):
             allowed_mentions=allowed_mentions,
             suppress_embeds=suppress_embeds,
             silent=silent,
-            delete_after=delete_after
+            delete_after=delete_after,
         )
 
 
@@ -135,13 +134,13 @@ discord.interactions.InteractionResponse = KkutbotInteractionResponse
 
 class KkutbotSelectOption(discord.SelectOption):
     def __init__(
-            self,
-            *,
-            label: str,
-            value: str = discord.utils.MISSING,
-            description: Optional[str] = None,
-            emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
-            default: bool = False,
+        self,
+        *,
+        label: str,
+        value: str = discord.utils.MISSING,
+        description: Optional[str] = None,
+        emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
+        default: bool = False,
     ) -> None:
         emoji = emoji.format_map(FormattingDict(dict_emojis())) if emoji else None
         super().__init__(label=label, value=value, description=description, emoji=emoji, default=default)
@@ -155,13 +154,13 @@ ItemCallbackType = Callable[[V, discord.Interaction[Any], I], Coroutine[Any, Any
 
 
 def button(
-        *,
-        label: Optional[str] = None,
-        custom_id: Optional[str] = None,
-        disabled: bool = False,
-        style: ButtonStyle = ButtonStyle.secondary,
-        emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
-        row: Optional[int] = None,
+    *,
+    label: Optional[str] = None,
+    custom_id: Optional[str] = None,
+    disabled: bool = False,
+    style: ButtonStyle = ButtonStyle.secondary,
+    emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
+    row: Optional[int] = None,
 ) -> Callable[[ItemCallbackType[V, Button[V]]], Button[V]]:
     """A decorator that attaches a button to a component.
 
@@ -201,17 +200,17 @@ def button(
 
     def decorator(func: ItemCallbackType[V, Button[V]]) -> ItemCallbackType[V, Button[V]]:
         if not inspect.iscoroutinefunction(func):
-            raise TypeError('button function must be a coroutine function')
+            raise TypeError("button function must be a coroutine function")
 
         func.__discord_ui_model_type__ = Button
         func.__discord_ui_model_kwargs__ = {
-            'style': style,
-            'custom_id': custom_id,
-            'url': None,
-            'disabled': disabled,
-            'label': label,
-            'emoji': emoji.format_map(FormattingDict(dict_emojis())) if emoji else emoji,
-            'row': row,
+            "style": style,
+            "custom_id": custom_id,
+            "url": None,
+            "disabled": disabled,
+            "label": label,
+            "emoji": emoji.format_map(FormattingDict(dict_emojis())) if emoji else emoji,
+            "row": row,
         }
         return func
 

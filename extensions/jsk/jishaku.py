@@ -65,7 +65,7 @@ def get_var_dict_from_ctx(ctx: ContextA, prefix: str = "_"):
         "General": Public,
         "config": config,
         "logger": logger,
-        "get_timestamp": get_timestamp
+        "get_timestamp": get_timestamp,
     }
 
     return {f"{prefix}{k}": v for k, v in raw_var_dict.items()}
@@ -86,11 +86,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         # Try to locate what vends the `discord` package
         distributions: list[str] = [
-            dist for dist in packages_distributions()["discord"]
-            if any(
-                file.parts == ("discord", "__init__.py")
-                for file in distribution(dist).files
-            )
+            dist for dist in packages_distributions()["discord"] if any(file.parts == ("discord", "__init__.py") for file in distribution(dist).files)
         ]
 
         if distributions:
@@ -102,9 +98,8 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             f"Jishaku `{package_version('jishaku')}`",
             f"{dist_version}",
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
-            f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, "
-            f"카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
-            ""
+            f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, 카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
+            "",
         ]
 
         try:
@@ -113,9 +108,11 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             with proc.oneshot():
                 try:
                     mem = proc.memory_full_info()
-                    summary.append(f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
-                                   f"`{natural_size(mem.vms)}`의 가상 메모리, "
-                                   f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다.")
+                    summary.append(
+                        f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
+                        f"`{natural_size(mem.vms)}`의 가상 메모리, "
+                        f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다."
+                    )
                 except psutil.AccessDenied:
                     pass
 
@@ -133,14 +130,13 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
             summary.append("")  # blank line
 
-        cache_summary = f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.count_users()}`명의 유저,\n" \
-                        f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, " \
-                        f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"
-
-        summary.append(
-            f"샤드 수는 `{self.bot.shard_count}`개이며,"
-            f" {cache_summary}와 활동하고 있습니다."
+        cache_summary = (
+            f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.count_users()}`명의 유저,\n"
+            f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, "
+            f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"
         )
+
+        summary.append(f"샤드 수는 `{self.bot.shard_count}`개이며, {cache_summary}와 활동하고 있습니다.")
 
         # pylint: disable=protected-access
         if self.bot._connection.max_messages:  # noqa
@@ -148,16 +144,11 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         else:
             message_cache = "메시지 캐시가 비활성화 되어있습니다."
 
-        remarks = {
-            True: "enabled",
-            False: "disabled",
-            None: "unknown"
-        }
+        remarks = {True: "enabled", False: "disabled", None: "unknown"}
 
         *group, last = (
             f"{intent.replace('_', ' ')} 인텐트: `{'활성화' if remarks.get(getattr(self.bot.intents, intent, None)) == 'enabled' else '비활성화'}`"
-            for intent in
-            ('presences', 'members', 'message_content')
+            for intent in ("presences", "members", "message_content")
         )
 
         summary.append(message_cache)
@@ -166,7 +157,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         size = 0
         for collection in ("user", "guild", "public"):
-            size += float((await self.bot.db.client.command('collstats', collection))['size'])
+            size += float((await self.bot.db.client.command("collstats", collection))["size"])
 
         t1 = time.time()
         await self.bot.db.client.general.find_one({"_id": "test"})
@@ -175,8 +166,10 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         t2 = time.time()
         await self.bot.db.client.general.update_one({"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True)
         t2 = time.time() - t2
-        database_summary = f"데이터베이스의 용량은 `{naturalsize(size)}`이며,\n" \
-                           f"조회 지연 시간은 `{round(t1 * 1000)}`ms, 업데이트 지연 시간은 `{round(t2 * 1000)}`ms 입니다."
+        database_summary = (
+            f"데이터베이스의 용량은 `{naturalsize(size)}`이며,\n"
+            f"조회 지연 시간은 `{round(t1 * 1000)}`ms, 업데이트 지연 시간은 `{round(t2 * 1000)}`ms 입니다."
+        )
 
         summary.append(database_summary)
         summary.append("")  # blank line
@@ -229,7 +222,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         extensions: Iterable[list[str]] = extensions  # type: ignore
 
-        paginator = commands.Paginator(prefix='', suffix='')
+        paginator = commands.Paginator(prefix="", suffix="")
 
         # 'jsk reload' on its own just reloads jishaku
         if ctx.invoked_with == "reload" and not extensions:
@@ -240,20 +233,17 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         for extension in itertools.chain(*extensions):
             method, icon = (
                 (self.bot.try_reload, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
-                if extension in self.bot.extensions else
-                (self.bot.load_extension, "\N{INBOX TRAY}")
+                if extension in self.bot.extensions
+                else (self.bot.load_extension, "\N{INBOX TRAY}")
             )
 
             try:
                 await discord.utils.maybe_coroutine(method, extension)
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
             except Exception as exc:  # pylint: disable=broad-except
-                traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
+                traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
 
-                paginator.add_line(
-                    f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```",
-                    empty=True
-                )
+                paginator.add_line(f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```", empty=True)
             else:
                 paginator.add_line(f"{icon} `{extension}`", empty=True)
 

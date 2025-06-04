@@ -38,9 +38,7 @@ class Profile(commands.Cog, name="사용자"):
             name = f"{user.display_name} ({user.name})"
         if not user_data.registered:
             embed = discord.Embed(
-                title=f"{{stats}} {e_mk(name)} 님의 통계",
-                description="끝봇을 사용중인 유저가 아닙니다.",
-                color=config.colors.error
+                title=f"{{stats}} {e_mk(name)} 님의 통계", description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.error
             )
             embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["denyed"]).url)
             return await ctx.reply(embed=embed)
@@ -52,8 +50,8 @@ class Profile(commands.Cog, name="사용자"):
         profile_embed = discord.Embed(
             title=f"{{profile}} {e_mk(name)} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}",
             description=f"```yaml\n{user_data.bio}```\n"
-                        f"{{tier}} 랭킹전 티어 - **{get_tier(user_data, 'rank_solo')}** | **{get_tier(user_data, 'rank_online')}**\n​",
-            color=color
+            f"{{tier}} 랭킹전 티어 - **{get_tier(user_data, 'rank_solo')}** | **{get_tier(user_data, 'rank_online')}**\n​",
+            color=color,
         )
         profile_embed.add_field(name="{points} **포인트**", value=f"{user_data.points}")
         profile_embed.add_field(name="{starter} **승률**", value=f"{user_data.game.rank_solo.winrate}% | {user_data.game.rank_online.winrate}%")
@@ -63,24 +61,27 @@ class Profile(commands.Cog, name="사용자"):
 
         stats_embed = discord.Embed(
             title=f"{{stats}} {e_mk(name)} 님의 통계",
-            description=f"가입일 : <t:{user_data.registered}:D>\n"
-                        f"마지막 사용일 : <t:{user_data.latest_usage}:D>",
-            color=config.colors.general
+            description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : <t:{user_data.latest_usage}:D>",
+            color=config.colors.general,
         )
 
-        modes = {"rank_solo": user_data.game.rank_solo, "rank_online": user_data.game.rank_online, "kkd": user_data.game.kkd,
-                 "long": user_data.game.long, "guild_multi": user_data.game.guild_multi, "online_multi": user_data.game.online_multi}
+        modes = {
+            "rank_solo": user_data.game.rank_solo,
+            "rank_online": user_data.game.rank_online,
+            "kkd": user_data.game.kkd,
+            "long": user_data.game.long,
+            "guild_multi": user_data.game.guild_multi,
+            "online_multi": user_data.game.online_multi,
+        }
         for k, v in config.modelist.items():
-            stats_embed.add_field(name=f"🔸 {k}",
-                                  value=f"`{modes[v].win}` / `{modes[v].times}`회 승리 "
-                                        f"(`{modes[v].winrate}%`)\n"
-                                        f"최고 점수 : `{modes[v].best}`"
-                                  )
+            stats_embed.add_field(
+                name=f"🔸 {k}", value=f"`{modes[v].win}` / `{modes[v].times}`회 승리 (`{modes[v].winrate}%`)\n최고 점수 : `{modes[v].best}`"
+            )
         stats_embed.add_field(
             name="🔸 기타",
             value=f"출석 횟수 : `{user_data.attendance['times']}`\n"
-                  f"명령어 사용 횟수 : `{user_data.command_used}`\n"
-                  f"클리어한 퀘스트: `{user_data.quest.total}`"
+            f"명령어 사용 횟수 : `{user_data.command_used}`\n"
+            f"클리어한 퀘스트: `{user_data.quest.total}`",
         )
         stats_embed.set_footer(text=f"티어 정보는 웹사이트에서 확인할 수 있어요.{' ' * 100}​​​")
 

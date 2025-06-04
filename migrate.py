@@ -19,52 +19,28 @@ if all([username := dbconfig.user, password := dbconfig.password]):
     db_options["password"] = password
     db_options["authSource"] = "admin"
 
-_client = AsyncIOMotorClient(
-    host=dbconfig.ip, port=dbconfig.port, **db_options
-)
+_client = AsyncIOMotorClient(host=dbconfig.ip, port=dbconfig.port, **db_options)
 
 db = _client[dbconfig.db]
 
 
 async def main() -> None:
-    await db.user.update_many({}, {
-        "$rename": {
-            "info": "bio"
-        },
-        "$unset": {
-            "banned": 1,
-            "last_command": 1,
-            "last_reward": 1,
-            "mails": 1,
-            "alerts.mails": 1
-        }
-    })
+    await db.user.update_many(
+        {}, {"$rename": {"info": "bio"}, "$unset": {"banned": 1, "last_command": 1, "last_reward": 1, "mails": 1, "alerts.mails": 1}}
+    )
     for user in await (db.user.find()).to_list(None):
         if isinstance(user["latest_usage"], float):
             ts = round(user["latest_usage"])
-            db_set = {
-                "latest_usage": ts
-            }
+            db_set = {"latest_usage": ts}
             await db.user.update_one({"_id": user["_id"]}, {"$set": db_set})
 
-    await db.unused.update_many({}, {
-        "$rename": {
-            "info": "bio"
-        },
-        "$unset": {
-            "banned": 1,
-            "last_command": 1,
-            "last_reward": 1,
-            "mails": 1,
-            "alerts.mails": 1
-        }
-    })
+    await db.unused.update_many(
+        {}, {"$rename": {"info": "bio"}, "$unset": {"banned": 1, "last_command": 1, "last_reward": 1, "mails": 1, "alerts.mails": 1}}
+    )
     for unused in await (db.unused.find()).to_list(None):
         if isinstance(unused["latest_usage"], float):
             ts = round(unused["latest_usage"])
-            db_set = {
-                "latest_usage": ts
-            }
+            db_set = {"latest_usage": ts}
             await db.unused.update_one({"_id": unused["_id"]}, {"$set": db_set})
 
     for unused in await (db.unused.find()).to_list(None):

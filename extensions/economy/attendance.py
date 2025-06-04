@@ -30,7 +30,7 @@ class Attendance(commands.Cog, name="출석"):
         user.alerts.attendance = True
         today = datetime.today().toordinal()
         week_today = datetime.today().weekday()
-        weekdays = [divmod(today-1, 7)[0] * 7 + i + 1 for i in range(7)]
+        weekdays = [divmod(today - 1, 7)[0] * 7 + i + 1 for i in range(7)]
         bonus = False
 
         if user.attendance[str(week_today)] == today:

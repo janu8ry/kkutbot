@@ -19,15 +19,7 @@ from tools.overides import KkutbotContext
 
 logger = logging.getLogger("kkutbot")
 
-intents = discord.Intents(
-    message_content=True,
-    members=True,
-    guilds=True,
-    emojis=True,
-    messages=True,
-    reactions=True,
-    typing=True
-)
+intents = discord.Intents(message_content=True, members=True, guilds=True, emojis=True, messages=True, reactions=True, typing=True)
 
 
 class Kkutbot(commands.AutoShardedBot):
@@ -43,7 +35,7 @@ class Kkutbot(commands.AutoShardedBot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             strip_after_prefix=True,
             member_cache_flags=discord.MemberCacheFlags.from_intents(intents),
-            chunk_guilds_at_startup=False
+            chunk_guilds_at_startup=False,
         )
         self.guild_multi_games: list[int] = []
         self.koreanbots: DiscordpyKoreanbots | None = None
