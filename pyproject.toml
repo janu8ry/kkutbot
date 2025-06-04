@@ -5,23 +5,23 @@ description = "끝말잇기 디스코드봇"
 readme = "README.md"
 requires-python = "==3.10.17"
 dependencies = [
-    "apscheduler>=3.11.0",
-    "beanie>=1.29.0",
-    "discord-py[speed]>=2.5.2",
-    "humanize>=4.12.3",
-    "jishaku[procinfo]>=2.6.0",
-    "koreanbots>=3.1.0",
-    "motor>=3.7.1",
-    "pyyaml>=6.0.2",
-    "rich>=14.0.0",
-    "sentry-sdk>=2.29.1",
-    "topggpy>=1.4.0",
+    "apscheduler==3.11.0",
+    "beanie==1.29.0",
+    "discord-py[speed]==2.5.2",
+    "humanize==4.12.3",
+    "jishaku[procinfo]==2.6.0",
+    "koreanbots==3.1.0",
+    "motor==3.7.1",
+    "pyyaml==6.0.2",
+    "rich==14.0.0",
+    "sentry-sdk==2.29.1",
+    "topggpy==1.4.0",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=1.16.0",
-    "ruff>=0.11.12",
+    "mypy==1.16.0",
+    "ruff==0.11.12",
 ]
 
 [tool.ruff]

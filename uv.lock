@@ -342,23 +342,23 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "apscheduler", specifier = ">=3.11.0" },
-    { name = "beanie", specifier = ">=1.29.0" },
-    { name = "discord-py", extras = ["speed"], specifier = ">=2.5.2" },
-    { name = "humanize", specifier = ">=4.12.3" },
-    { name = "jishaku", extras = ["procinfo"], specifier = ">=2.6.0" },
-    { name = "koreanbots", specifier = ">=3.1.0" },
-    { name = "motor", specifier = ">=3.7.1" },
-    { name = "pyyaml", specifier = ">=6.0.2" },
-    { name = "rich", specifier = ">=14.0.0" },
-    { name = "sentry-sdk", specifier = ">=2.29.1" },
-    { name = "topggpy", specifier = ">=1.4.0" },
+    { name = "apscheduler", specifier = "==3.11.0" },
+    { name = "beanie", specifier = "==1.29.0" },
+    { name = "discord-py", extras = ["speed"], specifier = "==2.5.2" },
+    { name = "humanize", specifier = "==4.12.3" },
+    { name = "jishaku", extras = ["procinfo"], specifier = "==2.6.0" },
+    { name = "koreanbots", specifier = "==3.1.0" },
+    { name = "motor", specifier = "==3.7.1" },
+    { name = "pyyaml", specifier = "==6.0.2" },
+    { name = "rich", specifier = "==14.0.0" },
+    { name = "sentry-sdk", specifier = "==2.29.1" },
+    { name = "topggpy", specifier = "==1.4.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "mypy", specifier = ">=1.16.0" },
-    { name = "ruff", specifier = ">=0.11.12" },
+    { name = "mypy", specifier = "==1.16.0" },
+    { name = "ruff", specifier = "==0.11.12" },
 ]
 
 [[package]]
