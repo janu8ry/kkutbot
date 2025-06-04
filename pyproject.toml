@@ -20,15 +20,23 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "flake8>=7.2.0",
-    "isort>=6.0.1",
     "mypy>=1.16.0",
+    "ruff>=0.11.12",
 ]
 
-[tool.isort]
-skip_gitignore = true
-line_length = "150"
-extra_standard_library = ["typing_extensions"]
+[tool.ruff]
+line-length = 150
+indent-width = 4
+respect-gitignore = true
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E203", "E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
 
 [tool.mypy]
 strict = false
