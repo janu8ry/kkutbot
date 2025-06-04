@@ -1,7 +1,6 @@
 import logging
 import time
 from typing import Any
-from typing_extensions import TypeAlias
 
 import discord
 from beanie import init_beanie
@@ -13,12 +12,12 @@ from .models import Guild, Public, User
 
 __all__ = ["Client"]
 
+type UserType = discord.User | discord.Member | discord.ClientUser | int
+type DocumentType = User | Guild | Public
 
 logger = logging.getLogger("kkutbot")
 
 dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
-UserType: TypeAlias = discord.User | discord.Member | discord.ClientUser | int
-DocumentType: TypeAlias = User | Guild | Public
 
 
 class Client:
@@ -28,7 +27,7 @@ class Client:
         self.db = dbconfig.db
         self.user = dbconfig.user
         self.password = dbconfig.password
-        self.client: AsyncIOMotorDatabase | None
+        self.client: AsyncIOMotorDatabase | None = None
 
     async def setup_db(self) -> None:
         db_options = {}
@@ -44,7 +43,7 @@ class Client:
     @staticmethod
     async def get_user(user: UserType, *, safe: bool = True) -> User | None:
         """
-        gets user model from database.
+        gets a user model from the database.
         Parameters
         ----------
         user : UserType
@@ -54,7 +53,7 @@ class Client:
         Returns
         -------
         Optional[User]
-            User model from database
+            User model from the database
         """
         if isinstance(user, int):
             document: User = await User.get(user)
@@ -72,7 +71,7 @@ class Client:
     @staticmethod
     async def get_guild(guild: discord.Guild | int, *, safe: bool = True) -> Guild | None:
         """
-        gets user model from database.
+        gets a user model from the database.
         Parameters
         ----------
         guild : Union[discord.Guild, int]
@@ -82,14 +81,14 @@ class Client:
         Returns
         -------
         Optional[Guild]
-            Guild model from database
+            Guild model from the database
         """
         if isinstance(guild, int):
             document: Guild = await Guild.get(guild)
         else:
             document: Guild = await Guild.get(guild.id)
         if not document and safe:
-            document = Guild(id=guild.id, name=guild.name)
+            document = Guild(id=guild.id)
 
         return document
 
@@ -100,7 +99,7 @@ class Client:
         Returns
         -------
         int
-            total user count in database
+            total user count in the database
         """
         return await User.count()
 
@@ -111,7 +110,7 @@ class Client:
         Returns
         -------
         int
-            total guild count in database
+            total guild count in the database
         """
         return await Guild.count()
 
@@ -128,17 +127,14 @@ class Client:
         if isinstance(document, User) and not document.registered:
             document.registered = round(time.time())
             await document.insert()
-            return document
         elif isinstance(document, Guild) and not document.invited and document.command_used <= 1:
             document.invited = round(time.time())
             await document.insert()
-            return document
         elif isinstance(document, Public) and not document.announcements and document.command_used <= 1:
             await document.insert()
-            return document
         else:
             await document.save_changes()
-            return document
+        return document
 
     async def read_user(self, target: int, path: str | None = None) -> Any:
         main_data: dict[Any, Any] = await self.client.user.find_one({"_id": getattr(target, "id", target)})

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
@@ -74,16 +74,16 @@ class Alerts(BaseModel):
 class User(Document):
     id: int
     name: Indexed(str, TEXT)
-    registered: Optional[int] = None
+    registered: int | None = None
     bio: str = "소개말이 없습니다."
     points: int = 1000
     medals: int = 0
-    latest_reward: Optional[int] = None
+    latest_reward: int | None = None
     attendance: dict[str, int] = Field(default_factory=attendance.copy)
     quest: Quest = Field(default_factory=Quest)
     game: Game = Field(default_factory=Game)
     command_used: int = 0
-    latest_usage: Optional[int] = None
+    latest_usage: int | None = None
     alerts: Alerts = Field(default_factory=Alerts)
 
     class Settings:
@@ -95,8 +95,8 @@ class User(Document):
 
 class Guild(Document):
     id: int
-    invited: Optional[int] = None
-    latest_usage: Optional[int] = None
+    invited: int | None = None
+    latest_usage: int | None = None
     command_used: int = 0
 
     class Settings:
@@ -111,7 +111,7 @@ class Public(Document):
     attendance: int = 0
     reward: int = 0
     command_used: int = 0
-    latest_usage: Optional[int] = None
+    latest_usage: int | None = None
     commands: dict[str, int] = Field(default_factory=dict)
     quests: dict[str, dict[str, Any]] = Field(default_factory=dict)
     announcements: list[dict[str, Any]] = Field(default_factory=list)

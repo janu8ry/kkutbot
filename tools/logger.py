@@ -50,7 +50,7 @@ def setup_command_logger() -> None:
 
     file_handler = TimedRotatingFileHandler(
         filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8", atTime=datetime.time(23, 59, 59)
-    )  # type: ignore
+    )
     file_handler.setFormatter(
         logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",

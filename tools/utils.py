@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-from typing import Any, Type, Union
+from typing import Any
 
 from discord.ext import commands
 
@@ -24,9 +24,9 @@ def dict_emojis() -> dict[str, str]:
     return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
 
 
-def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
+def time_convert(timeinfo: int | float | timedelta) -> str:
     """
-    converts time into biggest unit.
+    converts time into the biggest unit.
     Parameters
     ----------
     timeinfo : Union[int, float, timedelta]
@@ -36,7 +36,7 @@ def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
     str
         converted time unit
     """
-    if isinstance(timeinfo, (int, float)):
+    if isinstance(timeinfo, int | float):
         timeinfo = timedelta(seconds=timeinfo)
     if timeinfo.days > 365:
         return f"{timeinfo.days // 365}년"
@@ -82,22 +82,22 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     Returns
     -------
     tuple[str, ...]
-        tuple of splitted string
+        Tuple of split string
     """
     n = w.split(t)
     x: list[str] = []
     r: list[str] = []
     for idx, i in enumerate(n):
         x.append(i)
-        if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx + 1]]]) + len(x) > unit:
+        if idx + 1 == len(n) or sum(len(j) for j in x + [n[idx + 1]]) + len(x) > unit:
             r.append("\n".join(x))
             x = []
     return tuple(r)
 
 
-def get_winrate(data: Type[GameBase]) -> Any:
+def get_winrate(data: GameBase) -> Any:
     game_times = data.times
-    game_win_times: int = data.win
+    game_win_times = data.win
     if 0 in (game_times, game_win_times):
         return 0
     else:
