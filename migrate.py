@@ -67,4 +67,4 @@ async def main() -> None:
     await db.general.drop()
 
 
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.run(main())
