@@ -1,17 +1,15 @@
 import asyncio
 import time
-from typing import Union
-from typing_extensions import TypeAlias
 
 import discord
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa
 
 from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
 
-TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser, discord.Guild, None, int, str]
+type TargetObject = discord.User | discord.Member | discord.ClientUser | discord.Guild | None | int | str
 
 
-dbconfig: Union[MainDBData, TestDBData] = getattr(config.mongo, "test" if config.is_test else "main")
+dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
 db_options = {}
 
 if all([username := dbconfig.username, password := dbconfig.password]):

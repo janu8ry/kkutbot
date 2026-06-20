@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Optional, Sequence, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Sequence, TypeVar
 
 import discord
 from discord.enums import ButtonStyle
@@ -27,20 +27,20 @@ class KkutbotContext(commands.Context):
 
     async def send(
         self,
-        content: Optional[str] = None,
+        content: str | None = None,
         *,
         tts: bool = False,
-        embed: Optional[discord.Embed] = None,
-        embeds: Optional[Sequence[discord.Embed]] = None,
-        file: Optional[discord.File] = None,
-        files: Optional[Sequence[discord.File]] = None,
-        stickers: Optional[Sequence[Union[discord.GuildSticker, discord.StickerItem]]] = None,
-        delete_after: Optional[float] = None,
-        nonce: Optional[Union[str, int]] = None,
-        allowed_mentions: Optional[discord.AllowedMentions] = None,
-        reference: Optional[Union[discord.Message, discord.MessageReference, discord.PartialMessage]] = None,
-        mention_author: Optional[bool] = None,
-        view: Optional[discord.ui.View] = None,
+        embed: discord.Embed | None = None,
+        embeds: Sequence[discord.Embed] | None = None,
+        file: discord.File | None = None,
+        files: Sequence[discord.File] | None = None,
+        stickers: Sequence[discord.GuildSticker | discord.StickerItem] | None = None,
+        delete_after: float | None = None,
+        nonce: str | int | None = None,
+        allowed_mentions: discord.AllowedMentions | None = None,
+        reference: discord.Message | discord.MessageReference | discord.PartialMessage | None = None,
+        mention_author: bool | None = None,
+        view: discord.ui.View | None = None,
         suppress_embeds: bool = False,
         ephemeral: bool = False,
         silent: bool = False,
@@ -67,7 +67,7 @@ class KkutbotContext(commands.Context):
             silent=silent,
         )
 
-    async def reply(self, content: Optional[str] = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
+    async def reply(self, content: str | None = None, mention_author: bool = False, **kwargs: Any) -> discord.Message:
         if (not kwargs.get("escape_emoji_formatting", False)) and (self.command.qualified_name.split(" ")[0] != "jishaku"):
             content = content.format_map(FormattingDict(dict_emojis())) if content else None
         if self.interaction is None:
@@ -98,7 +98,7 @@ discord.Embed = KkutbotEmbed
 class KkutbotInteractionResponse(discord.InteractionResponse):
     async def send_message(
         self,
-        content: Optional[Any] = None,
+        content: Any | None = None,
         *,
         embed: discord.Embed = discord.utils.MISSING,
         embeds: Sequence[discord.Embed] = discord.utils.MISSING,
@@ -110,7 +110,7 @@ class KkutbotInteractionResponse(discord.InteractionResponse):
         allowed_mentions: discord.AllowedMentions = discord.utils.MISSING,
         suppress_embeds: bool = False,
         silent: bool = False,
-        delete_after: Optional[float] = None,
+        delete_after: float | None = None,
     ) -> None:
         content = content.format_map(FormattingDict(dict_emojis())) if content else None
         await super().send_message(
@@ -138,8 +138,8 @@ class KkutbotSelectOption(discord.SelectOption):
         *,
         label: str,
         value: str = discord.utils.MISSING,
-        description: Optional[str] = None,
-        emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
+        description: str | None = None,
+        emoji: str | discord.Emoji | discord.PartialEmoji | None = None,
         default: bool = False,
     ) -> None:
         emoji = emoji.format_map(FormattingDict(dict_emojis())) if emoji else None
@@ -155,12 +155,12 @@ ItemCallbackType = Callable[[V, discord.Interaction[Any], I], Coroutine[Any, Any
 
 def button(
     *,
-    label: Optional[str] = None,
-    custom_id: Optional[str] = None,
+    label: str | None = None,
+    custom_id: str | None = None,
     disabled: bool = False,
     style: ButtonStyle = ButtonStyle.secondary,
-    emoji: Optional[Union[str, discord.Emoji, discord.PartialEmoji]] = None,
-    row: Optional[int] = None,
+    emoji: str | discord.Emoji | discord.PartialEmoji | None = None,
+    row: int | None = None,
 ) -> Callable[[ItemCallbackType[V, Button[V]]], Button[V]]:
     """A decorator that attaches a button to a component.
 

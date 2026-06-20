@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-from typing import Any, Type, Union
+from typing import Any
 
 from discord.ext import commands
 
@@ -24,12 +24,12 @@ def dict_emojis() -> dict[str, str]:
     return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
 
 
-def time_convert(timeinfo: Union[int, float, timedelta]) -> str:
+def time_convert(timeinfo: int | float | timedelta) -> str:
     """
     converts time into biggest unit.
     Parameters
     ----------
-    timeinfo : Union[int, float, timedelta]
+    timeinfo : int | float | timedelta
         time object to convert
     Returns
     -------
@@ -95,7 +95,7 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     return tuple(r)
 
 
-def get_winrate(data: Type[GameBase]) -> Any:
+def get_winrate(data: type[GameBase]) -> Any:
     game_times = data.times
     game_win_times: int = data.win
     if 0 in (game_times, game_win_times):

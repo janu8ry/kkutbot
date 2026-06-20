@@ -1,7 +1,6 @@
 import logging
 import time
 from typing import Any
-from typing_extensions import TypeAlias
 
 import discord
 from beanie import init_beanie
@@ -17,8 +16,8 @@ __all__ = ["Client"]
 logger = logging.getLogger("kkutbot")
 
 dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
-UserType: TypeAlias = discord.User | discord.Member | discord.ClientUser | int
-DocumentType: TypeAlias = User | Guild | Public
+type UserType = discord.User | discord.Member | discord.ClientUser | int
+type DocumentType = User | Guild | Public
 
 
 class Client:
@@ -55,7 +54,7 @@ class Client:
             return model with id and name if safe=True
         Returns
         -------
-        Optional[User]
+        User | None
             User model from database
         """
         if isinstance(user, int):
@@ -77,13 +76,13 @@ class Client:
         gets user model from database.
         Parameters
         ----------
-        guild : Union[discord.Guild, int]
+        guild : discord.Guild | int
             target Guild object to get data
         safe : bool
             return model with id and name if safe=True
         Returns
         -------
-        Optional[Guild]
+        Guild | None
             Guild model from database
         """
         if isinstance(guild, int):
