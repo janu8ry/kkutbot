@@ -40,14 +40,14 @@ mongo:
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
   test:
-    host: mongo
+    host: localhost
     port: 27017
     db: kkutbot
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
   scheduler:
-    hour: "2"
-    minute: "47"
+    hour: "5"
+    minute: "0"
 
 # mongodb & log backup channel id
 channels:
