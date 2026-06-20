@@ -93,7 +93,7 @@ def setup_error_logger() -> None:
     logger = logging.getLogger("kkutbot")
 
     sentry_sdk.init(
-        dsn=config.sentry.dsn,
+        dsn=config.sentry.dsn if not config.is_test else "",
         traces_sample_rate=1.0,
         release=str(config.version),
         environment="test" if config.is_test else "production",
