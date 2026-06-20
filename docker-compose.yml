@@ -50,13 +50,11 @@ services:
     restart: always
     container_name: "kkutbot-mongob"
     volumes:
-      - ./mongob.yml:/mongob/config.yml
+      - ./config.yml:/mongob/config.yml
       - ./backup:/backup
     env_file:
       - .env
     environment:
       - TZ=Asia/Seoul
-      - MONGOB_USERNAME=${MONGO_USERNAME}
-      - MONGOB_PASSWORD=${MONGO_PASSWORD}
     depends_on:
       - mongo

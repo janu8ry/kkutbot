@@ -14,12 +14,12 @@ TargetObject: TypeAlias = Union[discord.User, discord.Member, discord.ClientUser
 dbconfig: Union[MainDBData, TestDBData] = getattr(config.mongo, "test" if config.is_test else "main")
 db_options = {}
 
-if all([username := dbconfig.user, password := dbconfig.password]):
+if all([username := dbconfig.username, password := dbconfig.password]):
     db_options["username"] = username
     db_options["password"] = password
     db_options["authSource"] = "admin"
 
-_client = AsyncIOMotorClient(host=dbconfig.ip, port=dbconfig.port, **db_options)
+_client = AsyncIOMotorClient(host=dbconfig.host, port=dbconfig.port, **db_options)
 
 db = _client[dbconfig.db]
 

@@ -99,26 +99,33 @@ class Color:
 
 @dataclass(frozen=True)
 class MainDBData:
-    ip: str = field(default_factory=lambda: _config("mongo.main.ip"))
+    host: str = field(default_factory=lambda: _config("mongo.main.host"))
     port: int = field(default_factory=lambda: _config("mongo.main.port"))
     db: str = field(default_factory=lambda: _config("mongo.main.db"))
-    user: str = field(default_factory=lambda: _config("mongo.main.user"))
+    username: str = field(default_factory=lambda: _config("mongo.main.username"))
     password: str = field(default_factory=lambda: _config("mongo.main.password"))
 
 
 @dataclass(frozen=True)
 class TestDBData:
-    ip: str = field(default_factory=lambda: _config("mongo.test.ip"))
+    host: str = field(default_factory=lambda: _config("mongo.test.host"))
     port: int = field(default_factory=lambda: _config("mongo.test.port"))
     db: str = field(default_factory=lambda: _config("mongo.test.db"))
-    user: str = field(default_factory=lambda: _config("mongo.test.user"))
+    username: str = field(default_factory=lambda: _config("mongo.test.username"))
     password: str = field(default_factory=lambda: _config("mongo.test.password"))
+
+
+@dataclass(frozen=True)
+class Scheduler:
+    hour: str = field(default_factory=lambda: _config("mongo.scheduler.hour"))
+    minute: str = field(default_factory=lambda: _config("mongo.scheduler.minute"))
 
 
 @dataclass(frozen=True)
 class Mongo:
     main: MainDBData = MainDBData()
     test: TestDBData = TestDBData()
+    scheduler: Scheduler = Scheduler()
 
 
 @dataclass(frozen=True)

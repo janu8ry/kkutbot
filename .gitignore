@@ -28,8 +28,6 @@ __pycache__/
 dmypy.json
 
 # secret config file
-config.yml
-mongob.yml
 .env
 
 # logs & backup

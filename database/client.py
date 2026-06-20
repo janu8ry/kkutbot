@@ -23,20 +23,20 @@ DocumentType: TypeAlias = User | Guild | Public
 
 class Client:
     def __init__(self) -> None:
-        self.ip = dbconfig.ip
+        self.host = dbconfig.host
         self.port = dbconfig.port
         self.db = dbconfig.db
-        self.user = dbconfig.user
+        self.username = dbconfig.username
         self.password = dbconfig.password
         self.client: AsyncIOMotorDatabase | None
 
     async def setup_db(self) -> None:
         db_options = {}
-        if all([username := self.user, password := self.password]):
+        if all([username := self.username, password := self.password]):
             db_options["username"] = username
             db_options["password"] = password
             db_options["authSource"] = "admin"
-        motor_client = AsyncIOMotorClient(host=self.ip, port=self.port, **db_options)
+        motor_client = AsyncIOMotorClient(host=self.host, port=self.port, **db_options)
         motor_client.append_metadata = motor_client.delegate.append_metadata
         self.client = motor_client[self.db]
         logger.info("DB 연결 완료!")

@@ -64,7 +64,6 @@ python3 main.py
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
 vi config.yml # config.yml 수정
-vi mongob.yml # mongob.yml 수정
 vi .env # mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
 docker build -t kkutbot:latest .
 docker compose up -d
