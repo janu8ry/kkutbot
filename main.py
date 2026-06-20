@@ -262,9 +262,9 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
             lines = line_text.splitlines()
             if len(lines) > 1:
                 candidate = f"{lines[0]}\n(...)\n{lines[-1]}"
-                line_text = candidate if len(candidate) <= max_code_len else f"{lines[0][:max_code_len - 6]}\n(...)"
+                line_text = candidate if len(candidate) <= max_code_len else f"{lines[0][: max_code_len - 6]}\n(...)"
             else:
-                line_text = f"{line_text[:max_code_len - 6]}\n(...)"
+                line_text = f"{line_text[: max_code_len - 6]}\n(...)"
 
         error_id = str(uuid.uuid4())[:6]
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
@@ -275,9 +275,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
         )
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False, escape_emoji_formatting=True)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False, escape_emoji_formatting=True)
-        error_embed.add_field(
-            name="에러 코드", value=f"{field_prefix}{line_text}```", inline=False, escape_emoji_formatting=True
-        )
+        error_embed.add_field(name="에러 코드", value=f"{field_prefix}{line_text}```", inline=False, escape_emoji_formatting=True)
         error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False, escape_emoji_formatting=True)
 
         if is_admin(ctx):
