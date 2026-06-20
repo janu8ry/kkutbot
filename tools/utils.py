@@ -8,8 +8,15 @@ from config import config, get_nested_dict, get_nested_property
 from database.models import GameBase, User  # noqa
 
 __all__ = [
-    "dict_emojis", "time_convert", "get_timestamp", "is_admin", "split_string",
-    "get_winrate", "get_tier", "get_nested_dict", "get_nested_property"
+    "dict_emojis",
+    "time_convert",
+    "get_timestamp",
+    "is_admin",
+    "split_string",
+    "get_winrate",
+    "get_tier",
+    "get_nested_dict",
+    "get_nested_property",
 ]
 
 
@@ -82,7 +89,7 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     r: list[str] = []
     for idx, i in enumerate(n):
         x.append(i)
-        if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx+1]]]) + len(x) > unit:
+        if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx + 1]]]) + len(x) > unit:
             r.append("\n".join(x))
             x = []
     return tuple(r)
@@ -101,9 +108,14 @@ def get_tier(data: User, mode: str, emoji: bool = True) -> str:
     if mode not in ("rank_solo", "rank_online"):
         raise TypeError
     tier = "언랭크 :sob:" if emoji else "언랭크"
-    modes = {'rank_solo': data.game.rank_solo, 'rank_online': data.game.rank_online}
+    modes = {"rank_solo": data.game.rank_solo, "rank_online": data.game.rank_online}
     for k, v in config.tierlist.items():
-        if data.points >= v["points"] and get_winrate(modes[mode]) >= v["winrate"] and modes[mode].times >= v["times"] and modes[mode].best >= v["best"]:
+        if (
+            data.points >= v["points"]
+            and get_winrate(modes[mode]) >= v["winrate"]
+            and modes[mode].times >= v["times"]
+            and modes[mode].best >= v["best"]
+        ):
             tier = f"{k} {v['emoji']}"
         else:
             break

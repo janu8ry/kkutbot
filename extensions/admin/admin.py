@@ -87,16 +87,14 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply("{done} 완료!")
 
     @commands.command(name="$정보수정", usage="ㄲ$정보수정 <대상>")
-    async def modify_data(self, ctx: KkutbotContext, *, target: discord.User | discord.Guild | str = commands.parameter(converter=UserGuildConverter, default="public")):
+    async def modify_data(
+        self, ctx: KkutbotContext, *, target: discord.User | discord.Guild | str = commands.parameter(converter=UserGuildConverter, default="public")
+    ):
         """
         대상의 정보를 수정합니다.
         대상이 주어지지 않았다면 공용 데이터를 수정합니다.
         """
-        embed = discord.Embed(
-            title="데이터 수정하기",
-            description=f"대상: {target}",
-            color=config.colors.help
-        )
+        embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config.colors.help)
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 

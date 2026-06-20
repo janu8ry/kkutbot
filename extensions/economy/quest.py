@@ -25,11 +25,7 @@ class Quest(commands.Cog, name="퀘스트"):
         --사용법
         `/퀘스트`를 사용하여 오늘의 퀘스트 목록을 확인합니다.
         """
-        embed = discord.Embed(
-            title="데일리 퀘스트",
-            description="끝봇을 사용하며 퀘스트를 클리어하고, 보상을 획득하세요!",
-            color=config.colors.help
-        )
+        embed = discord.Embed(title="데일리 퀘스트", description="끝봇을 사용하며 퀘스트를 클리어하고, 보상을 획득하세요!", color=config.colors.help)
         user = await self.bot.db.get_user(ctx.author)
         public = await self.bot.db.get_public()
         for data, info in public.quests.items():
@@ -40,11 +36,7 @@ class Quest(commands.Cog, name="퀘스트"):
             else:
                 desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"
                 title = f"🔹 {info['name']}"
-            embed.add_field(
-                name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}",
-                value=desc,
-                inline=False
-            )
+            embed.add_field(name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}", value=desc, inline=False)
         embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["quest"]).url)
         embed.set_footer(text="모든 퀘스트를 완료하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)

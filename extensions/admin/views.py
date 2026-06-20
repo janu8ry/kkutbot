@@ -106,7 +106,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
             final_data = ast.literal_eval(data)
         except SyntaxError:
             try:
-                data = "\"" + self.data_value.value.strip() + "\""
+                data = '"' + self.data_value.value.strip() + '"'
                 final_data = ast.literal_eval(data)
             except SyntaxError:
                 await interaction.response.send_message("올바른 값이 아닙니다.")
@@ -114,19 +114,14 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
-            color=config.colors.help
+            color=config.colors.help,
         )
         embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value, escape_emoji_formatting=True)  # noqa
         view = ConfirmModifyData(ctx=self.ctx)
         await interaction.response.send_message(embed=embed, view=view)
         await view.wait()
         if view.value:
-            await self.collection.update_one(
-                {"_id": getattr(self.target, 'id', 'public')},
-                {
-                    "$set": {self.data_path.value: final_data}
-                }
-            )
+            await self.collection.update_one({"_id": getattr(self.target, "id", "public")}, {"$set": {self.data_path.value: final_data}})
         self.stop()
 
 

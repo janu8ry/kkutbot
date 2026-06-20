@@ -48,7 +48,9 @@ def setup_command_logger() -> None:
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG + 3)
 
-    file_handler = TimedRotatingFileHandler(filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8", atTime=datetime.time(23, 59, 59))  # type: ignore
+    file_handler = TimedRotatingFileHandler(
+        filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8", atTime=datetime.time(23, 59, 59)
+    )  # type: ignore
     file_handler.setFormatter(
         logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
@@ -95,10 +97,7 @@ def setup_error_logger() -> None:
         traces_sample_rate=1.0,
         release=str(config.version),
         environment="test" if config.is_test else "production",
-        integrations=[
-            AsyncioIntegration(),
-            LoggingIntegration(event_level=None)
-        ],
+        integrations=[AsyncioIntegration(), LoggingIntegration(event_level=None)],
     )
 
     logger.info("에러 로깅 설정 완료!")

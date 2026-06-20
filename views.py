@@ -20,10 +20,9 @@ class BaseView(discord.ui.View):
         if self.author_only and (interaction.user != self.ctx.author):
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.",
-                    color=config.colors.error
+                    description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.", color=config.colors.error
                 ),
-                ephemeral=True
+                ephemeral=True,
             )
             return False
         return True
@@ -54,11 +53,7 @@ class BaseModal(discord.ui.Modal):
 class ServerInvite(discord.ui.View):
     def __init__(self, text: str = "커뮤니티 서버 참가하기") -> None:
         super().__init__()
-        self.add_item(
-            discord.ui.Button(
-                label=text, style=discord.ButtonStyle.grey, url=config.links.invite.server
-            )
-        )
+        self.add_item(discord.ui.Button(label=text, style=discord.ButtonStyle.grey, url=config.links.invite.server))
 
 
 class PageInput(BaseModal, title="페이지 이동하기"):

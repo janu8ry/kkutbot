@@ -31,17 +31,16 @@ class GameBase:
         if tierlist.index(tier) > tierlist.index(tier_past):
             embed = discord.Embed(
                 title="{tier} 티어 승급!",
-                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
-                            f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
-                color=config.colors.help
+                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> {emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
+                color=config.colors.help,
             )
             embed.set_thumbnail(url=self.ctx.bot.get_emoji(config.emojis["levelup"]).url)
         else:
             embed = discord.Embed(
                 title="{tier} 티어 강등...",
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
-                            f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
-                color=config.colors.error
+                f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
+                color=config.colors.error,
             )
             embed.set_thumbnail(url=self.ctx.bot.get_emoji(config.emojis["leveldown"]).url)
         return await self.ctx.send(player.mention, embed=embed, mention_author=True)
@@ -65,7 +64,11 @@ class SoloGame(GameBase):
         self.timeout = 15 if self.kkd else 10
 
     async def send_info_embed(self, msg: discord.Message | KkutbotContext, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message:
-        embed = discord.Embed(title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}", description=f"🔸 현재 점수: `{self.score}` 점", color=config.colors.help)
+        embed = discord.Embed(
+            title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
+            description=f"🔸 현재 점수: `{self.score}` 점",
+            color=config.colors.help,
+        )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_transition(self.bot_word))})```", inline=False)
         embed.add_field(name="🔹 남은 시간", value=f"<t:{round(self.timeout + self.begin_time)}:R>", inline=False)
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
@@ -111,7 +114,9 @@ class SoloGame(GameBase):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
             if possibles:
                 random.shuffle(possibles)
-                embed.add_field(name="🔹 가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` {'등...' if len(possibles) > 1 else ''}", inline=False)
+                embed.add_field(
+                    name="🔹 가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` {'등...' if len(possibles) > 1 else ''}", inline=False
+                )
             else:
                 embed.add_field(name="🔹 가능했던 단어", value=f"`{self.bot_word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.reply(embed=embed, mention_author=True)
@@ -131,8 +136,7 @@ class SoloGame(GameBase):
 class MultiGame(GameBase):
     """Game Model for multiple play mode"""
 
-    __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time",
-                 "final_score", "score", "hosting_time", "last_host")
+    __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time", "final_score", "score", "hosting_time", "last_host")
 
     def __init__(self, ctx: KkutbotContext, hosting_time: int):
         super().__init__(ctx)
@@ -161,13 +165,13 @@ class MultiGame(GameBase):
         embed = discord.Embed(
             title=f"📔 **{self.host}**님의 끝말잇기",
             description=f"🔸 채널: {self.ctx.channel.mention}\n"
-                        f"🔸 플레이어 모집 종료: <t:{self.hosting_time + 120}:R>\n\n"
-                        "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
-                        "**나가기** 버튼을 클릭하여 게임에서 나가기\n"
-                        f"호스트 {self.host.mention} 님은 **게임 시작** 버튼을 클릭하여 게임을 시작할 수 있습니다.",
-            color=config.colors.general)
-        embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/5)",
-                        value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
+            f"🔸 플레이어 모집 종료: <t:{self.hosting_time + 120}:R>\n\n"
+            "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
+            "**나가기** 버튼을 클릭하여 게임에서 나가기\n"
+            f"호스트 {self.host.mention} 님은 **게임 시작** 버튼을 클릭하여 게임을 시작할 수 있습니다.",
+            color=config.colors.general,
+        )
+        embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/5)", value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View = None):
@@ -180,10 +184,16 @@ class MultiGame(GameBase):
         return self.msg
 
     def game_embed(self) -> discord.Embed:
-        embed = discord.Embed(title="📔 끝말잇기 멀티플레이", description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}", color=config.colors.help)
+        embed = discord.Embed(
+            title="📔 끝말잇기 멀티플레이",
+            description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}",
+            color=config.colors.help,
+        )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.word} ({' / '.join(get_transition(self.word))})```")
         embed.add_field(name="🔹 누적 점수", value=f"`{self.score}` 점", inline=False)
-        embed.add_field(name="🔹 플레이어", value=f"`{'`, `'.join([_x.display_name for _x in self.players if _x not in self.final_score])}`", inline=False)
+        embed.add_field(
+            name="🔹 플레이어", value=f"`{'`, `'.join([_x.display_name for _x in self.players if _x not in self.final_score])}`", inline=False
+        )
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
         if self.final_score:
             embed.add_field(name="🔻 탈락자", value=f"`{'`, `'.join([_x.display_name for _x in self.final_score])}`", inline=False)
@@ -236,6 +246,6 @@ class MultiGame(GameBase):
         embed = discord.Embed(
             title=self.word,
             description=f"<t:{round(10 + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",
-            color=config.colors.general
+            color=config.colors.general,
         )
         return await self.msg.channel.send(f"{desc[0]} {self.now_player.mention}님, {desc[2:]}", embed=embed, delete_after=self.time_left)

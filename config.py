@@ -19,6 +19,7 @@ def _expand_env(value: Any) -> Any:
         return [_expand_env(item) for item in value]
     return value
 
+
 load_dotenv()
 
 with open("config.yml", encoding="utf-8") as f:
