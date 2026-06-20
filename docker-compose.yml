@@ -1,7 +1,3 @@
-# docker-compose.yml
-
-version: "3.8"
-
 services:
   kkutbot:
     build:
@@ -12,6 +8,8 @@ services:
     volumes:
       - ./logs:/kkutbot/logs
       - ./backup:/kkutbot/backup
+    env_file:
+      - .env
     environment:
       - TZ=Asia/Seoul
   mongo:
@@ -21,7 +19,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      -  ${DBPATH}:/data/db
+      - ${DBPATH}:/data/db
     env_file:
       - .env
     environment:

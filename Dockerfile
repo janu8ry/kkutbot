@@ -1,22 +1,26 @@
-FROM python:3.10.12-bullseye AS builder
+FROM python:3.14-bookworm AS builder
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /kkutbot
 
-COPY pyproject.toml poetry.lock ./
+RUN apt-get update && apt-get install -y --no-install-recommends cmake && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir poetry==1.5.1 && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-root --no-dev
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 
-FROM python:3.10.12-slim-bullseye
+FROM python:3.14-slim-bookworm
 
 WORKDIR /kkutbot
 
-COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /kkutbot/.venv /kkutbot/.venv
 COPY . .
 
-ENV PYTHONUNBUFFERED=0
-
+ENV PATH="/kkutbot/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
 
 CMD ["python", "main.py"]

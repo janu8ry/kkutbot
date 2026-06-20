@@ -270,11 +270,11 @@ async def on_command_error(ctx: core.KkutbotContext, error: Type[commands.Comman
 
         error_id = str(uuid.uuid4())[:6]
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
-        error_embed.add_field(name="에러 발생 위치", value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)")
-        error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
-        error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
-        error_embed.add_field(name="에러 코드", value=f"- 파일: {filename} (`line {line_no}`)\n```py\n{line_text}```", inline=False)
-        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False)
+        error_embed.add_field(name="에러 발생 위치", value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)", escape_emoji_formatting=True)
+        error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False, escape_emoji_formatting=True)
+        error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False, escape_emoji_formatting=True)
+        error_embed.add_field(name="에러 코드", value=f"- 파일: {filename} (`line {line_no}`)\n```py\n{line_text}```", inline=False, escape_emoji_formatting=True)
+        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False, escape_emoji_formatting=True)
 
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)

@@ -9,7 +9,7 @@ import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from beanie.operators import Set
 from discord.ext import commands
-from koreanbots.integrations.discord import DiscordpyKoreanbots
+from koreanbots.client import Koreanbots
 from topgg import DBLClient
 
 from config import config
@@ -46,7 +46,7 @@ class Kkutbot(commands.AutoShardedBot):
             chunk_guilds_at_startup=False
         )
         self.guild_multi_games: list[int] = []
-        self.koreanbots: DiscordpyKoreanbots | None = None
+        self.koreanbots: Koreanbots | None = None
         self.dbl: DBLClient | None = None
         self.started_at: int | None = None
         self.db: Client = Client()
@@ -58,10 +58,11 @@ class Kkutbot(commands.AutoShardedBot):
         if not config.is_test:
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
             self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
+            self.scheduler.add_job(self.update_koreanbots, "interval", minutes=30)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
-        self.koreanbots = DiscordpyKoreanbots(self, config.token.koreanbots, run_task=not config.is_test, include_shard_count=True)
+        self.koreanbots = Koreanbots(config.token.koreanbots)
         self.dbl = DBLClient(self, config.token.dbl, autopost=not config.is_test, post_shard_count=not config.is_test)
         self.scheduler.start()
         await self.db.setup_db()
@@ -149,6 +150,12 @@ class Kkutbot(commands.AutoShardedBot):
             if os.path.isdir(f"extensions/{package}"):
                 await self.try_reload(package)
 
+    async def update_koreanbots(self) -> None:
+        await self.koreanbots.update_bot_info(self.application_id, len(self.guilds), self.shard_count or 1)
+
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
-        data = await self.koreanbots.is_voted_bot(user.id, 703956235900420226)
-        return data.voted
+        try:
+            response = await self.koreanbots.get_user_is_voted_bot(config.bot_id, user.id)
+            return response.data.voted
+        except TypeError:
+            return False

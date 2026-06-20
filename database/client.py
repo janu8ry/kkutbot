@@ -36,7 +36,9 @@ class Client:
             db_options["username"] = username
             db_options["password"] = password
             db_options["authSource"] = "admin"
-        self.client = AsyncIOMotorClient(host=self.ip, port=self.port, **db_options)[self.db]
+        motor_client = AsyncIOMotorClient(host=self.ip, port=self.port, **db_options)
+        motor_client.append_metadata = motor_client.delegate.append_metadata
+        self.client = motor_client[self.db]
         logger.info("DB 연결 완료!")
         await init_beanie(database=self.client, document_models=[User, Guild, Public])
         logger.info("Beaine 설정 완료!")

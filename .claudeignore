@@ -1,15 +1,9 @@
 # Jetbrains IDE config
 .idea/
 
-# AI
-.understand-anything
-CLAUDE.md
-.claude/
-
 # virtualenv
 venv/
 .venv/
-.python-version
 
 # macOS
 .DS_Store

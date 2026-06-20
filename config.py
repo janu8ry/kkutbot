@@ -1,14 +1,28 @@
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
 import yaml
+from dotenv import load_dotenv
 
 __all__ = ["get_nested_dict", "get_nested_property", "config"]
 
+
+def _expand_env(value: Any) -> Any:
+    if isinstance(value, str):
+        return re.sub(r"\$\{([^}]+)\}", lambda m: os.environ.get(m.group(1), m.group(0)), value)
+    if isinstance(value, dict):
+        return {k: _expand_env(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_expand_env(item) for item in value]
+    return value
+
+load_dotenv()
+
 with open("config.yml", encoding="utf-8") as f:
-    config_data = yaml.safe_load(f)
+    config_data = _expand_env(yaml.safe_load(f))
 
 for file in os.listdir("static"):
     if file not in ("wordlist.json", "transition.json", "quests.json"):
@@ -77,9 +91,9 @@ class Token:
 
 @dataclass(frozen=True)
 class Color:
-    general: int = 0x4374D9
-    error: int = 0xCC3D3D
-    help: int = 0x47C83E
+    general: int = field(default_factory=lambda: _config("colors.general"))
+    error: int = field(default_factory=lambda: _config("colors.error"))
+    help: int = field(default_factory=lambda: _config("colors.help"))
 
 
 @dataclass(frozen=True)
@@ -140,6 +154,7 @@ class Links:
 class Config:
     is_test: bool = field(default_factory=lambda: _config("testmode"))
     version: str = field(default_factory=lambda: _config("version"))
+    bot_id: int = field(default_factory=lambda: _config("bot_id"))
     prefix: Prefix = Prefix()
     token: Token = Token()
     colors: Color = Color()
