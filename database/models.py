@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
@@ -73,7 +73,7 @@ class Alerts(BaseModel):
 
 class User(Document):
     id: int
-    name: Indexed(str, TEXT)
+    name: Annotated[str, Indexed(index_type=TEXT)]
     registered: int | None = None
     bio: str = "소개말이 없습니다."
     points: int = 1000

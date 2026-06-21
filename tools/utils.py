@@ -95,7 +95,7 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     return tuple(r)
 
 
-def get_winrate(data: type[GameBase]) -> Any:
+def get_winrate(data: GameBase) -> Any:
     game_times = data.times
     game_win_times: int = data.win
     if 0 in (game_times, game_win_times):
