@@ -34,7 +34,7 @@ async def on_ready() -> None:
     guilds = len(bot.guilds)
     users = await bot.db.client.user.count_documents({})
 
-    logger.info(f"'{bot.user.name}'으로 로그인됨\n서버수: {guilds}, 유저수: {users}")
+    logger.info(f"'{getattr(bot.user, "name", "_")}'으로 로그인됨\n서버수: {guilds}, 유저수: {users}")
 
     await bot.update_presence()
 

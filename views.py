@@ -39,7 +39,7 @@ class BaseView(discord.ui.View):
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
         if use_msg:
-            await self.message.edit(view=self)
+            await self.message.edit(view=self)  # type: ignore
         else:
             await interaction.response.edit_message(view=self)
 
@@ -69,18 +69,22 @@ class PageInput(BaseModal, title="페이지 이동하기"):
     async def on_submit(self, interaction: discord.Interaction) -> None:
         if self.target_page.value.isdecimal() and (1 <= int(self.target_page.value) <= self.view.page_count):
             self.view.index = int(self.target_page.value) - 1
-            await self.view.children[2].update_buttons(interaction)
+            await self.view.children[2].update_buttons(interaction)  # type: ignore
         else:
             await interaction.response.send_message(f"올바른 값이 아닙니다.\n가능한 값: (1~{self.view.page_count})", ephemeral=True)
             self.stop()
             return
 
 
-class PaginatorButton(discord.ui.Button):
+class PaginatorButton(discord.ui.Button["Paginator"]):
+    @property
+    def view(self) -> "Paginator":
+        return super().view  # type: ignore[return-value]
+
     async def update_buttons(self, interaction: discord.Interaction) -> None:
         self.view.children[0].disabled = bool(self.view.index == 0)
         self.view.children[1].disabled = bool(self.view.index == 0)
-        self.view.children[2].label = f"{self.view.index + 1}/{self.view.page_count}"
+        self.view.children[2].label = f"{self.view.index + 1}/{self.view.page_count}"  # type: ignore
         self.view.children[3].disabled = bool(self.view.index == self.view.page_count - 1)
         self.view.children[4].disabled = bool(self.view.index == self.view.page_count - 1)
         await interaction.response.edit_message(embed=self.view.pages[self.view.index], view=self.view)
@@ -144,8 +148,8 @@ class Paginator(BaseView):
         self.add_item(ToNext())
         self.add_item(ToLast())
         if self.page_count == 1:
-            self.children[3].disabled = True
-            self.children[4].disabled = True
+            self.children[3].disabled = True  # type: ignore
+            self.children[4].disabled = True  # type: ignore
 
     async def run(self) -> None:
         await self.ctx.reply(embed=self.pages[0], view=self)
