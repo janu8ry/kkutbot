@@ -26,15 +26,15 @@ def dict_emojis() -> dict[str, str]:
 
 def time_convert(timeinfo: int | float | timedelta) -> str:
     """
-    converts time into biggest unit.
+    Converts time to the largest unit.
     Parameters
     ----------
     timeinfo : int | float | timedelta
-        time object to convert
+        Time value to convert
     Returns
     -------
     str
-        converted time unit
+        Converted time string
     """
     if isinstance(timeinfo, (int, float)):
         timeinfo = timedelta(seconds=timeinfo)
@@ -51,15 +51,15 @@ def time_convert(timeinfo: int | float | timedelta) -> str:
 
 def get_timestamp(date: str) -> int:
     """
-    converts date into unix timestamp.
+    Converts a date string to a Unix timestamp.
     Parameters
     ----------
     date : str
-        time object to convert
+        Date string to convert
     Returns
     -------
     int
-        converted unix timestamp
+        Converted Unix timestamp
     """
     return int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple()))
 
@@ -70,19 +70,19 @@ def is_admin(ctx: commands.Context) -> bool:
 
 def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     """
-    splits given strings into unit.
+    Splits a given string into chunks.
     Parameters
     ----------
     w : str
-        target string to split
-    unit: int
-        size of unit
-    t: str
-        end char of each unit
+        Target string to split
+    unit : int
+        Maximum size of each chunk
+    t : str
+        End character of each chunk
     Returns
     -------
     tuple[str, ...]
-        tuple of splitted string
+        Tuple of split strings
     """
     n = w.split(t)
     x: list[str] = []

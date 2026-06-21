@@ -45,13 +45,13 @@ class Client:
     @staticmethod
     async def get_user(user: UserType, *, safe: bool = True) -> User | None:
         """
-        gets user model from database.
+        Gets a user model from the database.
         Parameters
         ----------
         user : UserType
-            Target User object to get data
+            Target User object to get data from
         safe : bool
-            return model with id and name if safe=True
+            Returns the model with id and name if safe=True
         Returns
         -------
         User | None
@@ -73,13 +73,13 @@ class Client:
     @staticmethod
     async def get_guild(guild: discord.Guild | int, *, safe: bool = True) -> Guild | None:
         """
-        gets user model from database.
+        Gets a guild model from the database.
         Parameters
         ----------
         guild : discord.Guild | int
-            target Guild object to get data
+            Target Guild object to get data from
         safe : bool
-            return model with id and name if safe=True
+            Returns the model with id and name if safe=True
         Returns
         -------
         Guild | None
@@ -97,22 +97,22 @@ class Client:
     @staticmethod
     async def count_users() -> int:
         """
-        counts total user in database
+        Counts the total number of users in the database.
         Returns
         -------
         int
-            total user count in database
+            Total user count in the database
         """
         return await User.count()
 
     @staticmethod
     async def count_guilds() -> int:
         """
-        counts total guild in database
+        Counts the total number of guilds in the database.
         Returns
         -------
         int
-            total guild count in database
+            Total guild count in the database
         """
         return await Guild.count()
 

@@ -33,17 +33,17 @@ for file in os.listdir("static"):
 
 def get_nested_dict(data: dict[str, Any], path: list[str]) -> Any:
     """
-    gets value in nested dictionary.
+    Gets a value from a nested dictionary.
     Parameters
     ----------
-    data : dict
-        Target dictionary to get value
+    data : dict[str, Any]
+        Target dictionary to get the value from
     path : list[str]
-        list of keys to get value
+        List of keys to retrieve the value
     Returns
     -------
     Any
-        value in targeted dictionary
+        Value from the targeted dictionary
     """
     for i in path:
         data = data.get(i, None)
@@ -52,17 +52,17 @@ def get_nested_dict(data: dict[str, Any], path: list[str]) -> Any:
 
 def get_nested_property(data: Any, path: list[str]) -> Any:
     """
-    gets property in nested dataclass.
+    Gets a property from a nested dataclass.
     Parameters
     ----------
     data : Any
-        Target dataclass to get value
+        Target dataclass to get the value from
     path : list[str]
-        list of properties to get value
+        List of properties to retrieve the value
     Returns
     -------
     Any
-        value in targeted dataclass
+        Value from the targeted dataclass
     """
     for i in path:
         data = getattr(data, i)
