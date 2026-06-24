@@ -15,7 +15,7 @@ from sentry_sdk import capture_exception
 import core
 from config import config, get_nested_dict
 from tools.logger import setup_logger
-from tools.utils import is_admin
+from tools.utils import fmt, is_admin
 from views import ServerInvite
 
 logger = logging.getLogger("kkutbot")
@@ -34,7 +34,7 @@ async def on_ready() -> None:
     guilds = len(bot.guilds)
     users = await bot.db.client.user.count_documents({})
 
-    logger.info(f"'{getattr(bot.user, "name", "_")}'으로 로그인됨\n서버수: {guilds}, 유저수: {users}")
+    logger.info(f"'{getattr(bot.user, 'name', '_')}'으로 로그인됨\n서버수: {guilds}, 유저수: {users}")
 
     await bot.update_presence()
 
@@ -45,7 +45,7 @@ async def on_shard_ready(shard_id: int) -> None:
 
 
 @bot.before_invoke
-async def before_command(ctx: core.KkutbotContext) -> None:
+async def before_command(ctx: commands.Context) -> None:
     user = await bot.db.get_user(ctx.author)
     user.command_used += 1
     user.latest_usage = round(time.time())
@@ -90,7 +90,7 @@ async def before_command(ctx: core.KkutbotContext) -> None:
 
 
 @bot.event
-async def on_command_completion(ctx: core.KkutbotContext) -> None:
+async def on_command_completion(ctx: commands.Context) -> None:
     public = await bot.db.get_public()
     user = await bot.db.get_user(ctx.author)
     desc = ""
@@ -115,7 +115,7 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
             bonus_medal = random.randint(1, 5)
             user.points += bonus_point
             user.medals += bonus_medal
-            bonus_embed.add_field(name="추가 보상", value=f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}")
+            bonus_embed.add_field(name="추가 보상", value=fmt(f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}"))
             bonus_embed.set_thumbnail(url=bot.get_emoji(config.emojis["bonus"]).url)
             await ctx.reply(embed=bonus_embed)
 
@@ -136,7 +136,7 @@ async def on_command_completion(ctx: core.KkutbotContext) -> None:
 
 
 @bot.check
-async def check(ctx: core.KkutbotContext) -> bool:
+async def check(ctx: commands.Context) -> bool:
     if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
         try:
             embed = discord.Embed(
@@ -162,8 +162,9 @@ async def on_interaction(interaction: discord.Interaction) -> None:
             types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    description=f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n"
-                    f"명령어를 새로 입력해주세요.",
+                    description=fmt(
+                        f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."
+                    ),
                     color=config.colors.error,
                 ),
                 ephemeral=True,
@@ -171,26 +172,30 @@ async def on_interaction(interaction: discord.Interaction) -> None:
 
 
 @bot.event
-async def on_command_error(ctx: core.KkutbotContext, error: type[commands.CommandError | commands.HybridCommandError]) -> None:
+async def on_command_error(ctx: commands.Context, error: type[commands.CommandError | commands.HybridCommandError]) -> None:
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(
-            f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다."
+            fmt(
+                f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다."
+            )
         )
     elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(
-            f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
+            fmt(
+                f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
+            )
         )
     elif isinstance(error, commands.errors.NotOwner):
         return
     elif isinstance(error, commands.NoPrivateMessage):
-        await ctx.reply("{denyed} DM으로는 실행할 수 없는 기능입니다.")
+        await ctx.reply(fmt("{denyed} DM으로는 실행할 수 없는 기능입니다."))
     elif isinstance(error, commands.errors.PrivateMessageOnly):
-        await ctx.reply("{denyed} DM으로만 실행할 수 있는 기능입니다.")
+        await ctx.reply(fmt("{denyed} DM으로만 실행할 수 있는 기능입니다."))
     elif isinstance(error, commands.CheckFailure):
         if ctx.command.name.startswith("$"):
             return
     elif isinstance(error, commands.errors.DisabledCommand):
-        await ctx.reply("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!")
+        await ctx.reply(fmt("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!"))
     elif isinstance(error, commands.CommandOnCooldown):
         if ctx.author.id in config.admin and ctx.command.name != "override":
             try:
@@ -203,7 +208,7 @@ async def on_command_error(ctx: core.KkutbotContext, error: type[commands.Comman
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.BadUnionArgument):
-        embed = discord.Embed(title="{stats} 프로필 조회 불가", description="존재하지 않는 유저입니다.", color=config.colors.error)
+        embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.error)
         embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
@@ -225,13 +230,13 @@ async def on_command_error(ctx: core.KkutbotContext, error: type[commands.Comman
             except TypeError:
                 pass
         if error.per == commands.BucketType.guild:
-            await ctx.reply(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다.")
+            await ctx.reply(fmt(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
         elif error.per == commands.BucketType.channel:
-            await ctx.reply(f"{{denyed}} 해당 채널에서 이미 `{ctx.command}` 명령어가 진행중입니다.")
+            await ctx.reply(fmt(f"{{denyed}} 해당 채널에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
         elif error.per == commands.BucketType.user:
-            await ctx.reply(f"{{denyed}} 이미 `{ctx.command}` 명령어가 진행중입니다.")
+            await ctx.reply(fmt(f"{{denyed}} 이미 `{ctx.command}` 명령어가 진행중입니다."))
         else:
-            await ctx.reply(f"{{denyed}} 이 명령어는 이미 {error.number}개 실행되어 있어 더 이상 실행할 수 없습니다.")
+            await ctx.reply(fmt(f"{{denyed}} 이 명령어는 이미 {error.number}개 실행되어 있어 더 이상 실행할 수 없습니다."))
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
@@ -270,12 +275,11 @@ async def on_command_error(ctx: core.KkutbotContext, error: type[commands.Comman
         error_embed.add_field(
             name="에러 발생 위치",
             value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)",
-            escape_emoji_formatting=True,
         )
-        error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False, escape_emoji_formatting=True)
-        error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False, escape_emoji_formatting=True)
-        error_embed.add_field(name="에러 코드", value=f"{field_prefix}{line_text}```", inline=False, escape_emoji_formatting=True)
-        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False, escape_emoji_formatting=True)
+        error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
+        error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
+        error_embed.add_field(name="에러 코드", value=f"{field_prefix}{line_text}```", inline=False)
+        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False)
 
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)

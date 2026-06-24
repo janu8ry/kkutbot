@@ -3,18 +3,19 @@ import time
 
 import discord
 from beanie.operators import Set
+from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import config
-from core import KkutbotContext
 from database.models import User
+from tools import fmt
 from views import BaseModal, BaseView
 
 __all__ = ["ModifyData", "SendAnnouncement"]
 
 
 class ConfirmSendAnnouncement(BaseView):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
@@ -37,12 +38,12 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
     a_title = discord.ui.TextInput(label="공지 제목", required=True, max_length=256)
     description = discord.ui.TextInput(label="공지 본문", style=discord.TextStyle.long, required=True, max_length=1024)
 
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         super().__init__()
         self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="{email} 끝봇 공지사항", color=config.colors.help)
+        embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.help)
         embed.add_field(name=f"🔹 {self.a_title.value} - `1초 전`", value=self.description.value)
         view = ConfirmSendAnnouncement(ctx=self.ctx)
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
@@ -56,7 +57,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
 
 
 class SendAnnouncement(BaseView):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.ctx = ctx
@@ -71,7 +72,7 @@ class SendAnnouncement(BaseView):
 
 
 class ConfirmModifyData(BaseView):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
 
@@ -94,7 +95,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
     data_path = discord.ui.TextInput(label="수정할 데이터 경로", required=True)
     data_value = discord.ui.TextInput(label="수정할 값", style=discord.TextStyle.long, required=True)
 
-    def __init__(self, ctx: KkutbotContext, target: discord.User | discord.Guild | str, collection: AsyncIOMotorCollection):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | str, collection: AsyncIOMotorCollection):
         super().__init__()
         self.ctx = ctx
         self.target = target
@@ -116,7 +117,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
             color=config.colors.help,
         )
-        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value, escape_emoji_formatting=True)  # noqa
+        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)  # noqa
         view = ConfirmModifyData(ctx=self.ctx)
         await interaction.response.send_message(embed=embed, view=view)
         await view.wait()
@@ -126,7 +127,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
 
 
 class ModifyData(BaseView):
-    def __init__(self, ctx: KkutbotContext, target: discord.User | discord.Guild | str):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | str):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target

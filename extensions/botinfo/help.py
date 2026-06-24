@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 
 from config import config
-from core import Kkutbot, KkutbotContext
+from core import Kkutbot
 from database.models import User
+from tools import fmt
 
 from .views import HelpMenu
 
@@ -16,7 +17,7 @@ class Help(commands.Cog, name="일반"):
 
     @commands.hybrid_command(name="도움", usage="{help}", aliases=("도움말", "help", "ㄷㅇ", "ㄷ", "정보", "봇정보", "ㅈㅂ"))
     @commands.cooldown(rate=1, per=1, type=commands.BucketType.user)
-    async def help(self, ctx: KkutbotContext):
+    async def help(self, ctx: commands.Context):
         """
         끝봇의 명령어 목록을 확인합니다.
 
@@ -24,7 +25,7 @@ class Help(commands.Cog, name="일반"):
         `/도움`을 사용하여 도움말을 확인합니다.
         """
         embed = discord.Embed(
-            title="{help} 끝봇 도움말",
+            title=fmt("{help} 끝봇 도움말"),
             description="🔸 끝봇은 끝말잇기가 주 기능인 디스코드 봇입니다!\n\n"
             f"🔹 **개발자**: `{(await self.bot.application_info()).owner}`\n"
             f"🔹 **서버 /사용자 수**: `{len(self.bot.guilds)}`개/`{await User.count()}`명\n"

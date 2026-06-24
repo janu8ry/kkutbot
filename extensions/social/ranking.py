@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from core import Kkutbot, KkutbotContext
+from core import Kkutbot
 
 from .views import RankMenu
 
@@ -13,7 +13,7 @@ class Ranking(commands.Cog, name="랭킹"):
 
     @commands.hybrid_command(name="랭킹", usage="{ranking}", aliases=("ㄹ", "리더보드", "순위", "ㄹㅋ"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def ranking(self, ctx: KkutbotContext):
+    async def ranking(self, ctx: commands.Context):
         """
         여러 분야의 랭킹을 확인합니다.
 

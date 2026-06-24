@@ -6,8 +6,7 @@ import discord
 from discord.ext import commands
 
 from config import config
-from core import KkutbotContext
-from tools.utils import dict_emojis, get_tier, get_winrate
+from tools.utils import fmt, get_tier, get_winrate
 
 from .utils import choose_first_word, get_transition, get_word
 
@@ -19,7 +18,7 @@ class GameBase:
 
     __slots__ = ("ctx", "score", "begin_time", "timeout")
 
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.score = 0
         self.begin_time = time.time()
@@ -30,14 +29,14 @@ class GameBase:
         emojis = [data["emoji"] for data in config.tierlist.values()]
         if tierlist.index(tier) > tierlist.index(tier_past):
             embed = discord.Embed(
-                title="{tier} 티어 승급!",
+                title=fmt("{tier} 티어 승급!"),
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> {emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
                 color=config.colors.help,
             )
             embed.set_thumbnail(url=self.ctx.bot.get_emoji(config.emojis["levelup"]).url)
         else:
             embed = discord.Embed(
-                title="{tier} 티어 강등...",
+                title=fmt("{tier} 티어 강등..."),
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
                 f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
                 color=config.colors.error,
@@ -55,7 +54,7 @@ class SoloGame(GameBase):
 
     __slots__ = ("player", "kkd", "score", "begin_time", "bot_word", "used_words", "ctx", "timeout")
 
-    def __init__(self, ctx: KkutbotContext, kkd: bool = False):
+    def __init__(self, ctx: commands.Context, kkd: bool = False):
         super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
@@ -63,7 +62,7 @@ class SoloGame(GameBase):
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
 
-    async def send_info_embed(self, msg: discord.Message | KkutbotContext, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message:
+    async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message:
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
             description=f"🔸 현재 점수: `{self.score}` 점",
@@ -74,7 +73,7 @@ class SoloGame(GameBase):
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
         if self.kkd:
             desc = desc.replace("10", "15")
-        desc = desc.format(**dict_emojis())
+        desc = fmt(desc)
         try:
             return await msg.reply(desc, embed=embed, delete_after=self.time_left, mention_author=True)
         except discord.HTTPException as e:
@@ -106,9 +105,9 @@ class SoloGame(GameBase):
         else:
             raise commands.BadArgument
 
-        embed = discord.Embed(title="{result} 게임 결과", description=f"**{result}**  |  {desc}", color=color)
+        embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"**{result}**  |  {desc}", color=color)
         embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
-        embed.add_field(name="🔸 보상", value=f"`{'+' if result == '승리' else ''}{points}` {{points}}")
+        embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if result == '승리' else ''}{points}` {{points}}"))
         embed.set_thumbnail(url=self.ctx.bot.get_emoji(config.emojis[emoji]).url)
         if result in ("패배", "포기"):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
@@ -138,7 +137,7 @@ class MultiGame(GameBase):
 
     __slots__ = ("players", "ctx", "msg", "turn", "word", "used_words", "begin_time", "final_score", "score", "hosting_time", "last_host")
 
-    def __init__(self, ctx: KkutbotContext, hosting_time: int):
+    def __init__(self, ctx: commands.Context, hosting_time: int):
         super().__init__(ctx)
         self.players = [ctx.author]
         self.msg = ctx.message
@@ -235,14 +234,14 @@ class MultiGame(GameBase):
                     user.game.guild_multi.win += 1
                 user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
                 await self.ctx.bot.db.save(user)
-        embed = discord.Embed(title="📔 게임 종료!", description="\n".join(desc), color=config.colors.general)
+        embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.general)
         embed.set_thumbnail(url=self.ctx.bot.get_emoji(config.emojis["gameover"]).url)
         await self.ctx.send(embed=embed)
         self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
 
     async def send_info_embed(self, desc: str = "⏰ 10초 안에 단어를 이어주세요!") -> discord.Message:
         du_word = get_transition(self.word)
-        desc = desc.format(**dict_emojis())
+        desc = fmt(desc)
         embed = discord.Embed(
             title=self.word,
             description=f"<t:{round(10 + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",

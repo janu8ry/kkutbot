@@ -9,6 +9,7 @@ from database.models import GameBase, User  # noqa
 
 __all__ = [
     "dict_emojis",
+    "fmt",
     "time_convert",
     "get_timestamp",
     "is_admin",
@@ -20,8 +21,28 @@ __all__ = [
 ]
 
 
+class FormattingDict(dict[str, str]):
+    def __missing__(self, key: str) -> str:
+        return "{" + key + "}"
+
+
 def dict_emojis() -> dict[str, str]:
     return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
+
+
+def fmt(text: str) -> str:
+    """
+    Replaces ``{emoji_name}`` placeholders in the text with actual emojis.
+    Parameters
+    ----------
+    text : str
+        Target string containing emoji placeholders
+    Returns
+    -------
+    str
+        String with placeholders replaced by emojis
+    """
+    return text.format_map(FormattingDict(dict_emojis()))
 
 
 def time_convert(timeinfo: int | float | timedelta) -> str:

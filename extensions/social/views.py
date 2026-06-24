@@ -2,18 +2,19 @@ import asyncio
 from typing import Coroutine
 
 import discord
+from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
 from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
-from core import KkutbotContext
+from tools import fmt
 from views import BaseView
 
 __all__ = ["RankMenu"]
 
 
 class RankDropdown(discord.ui.Select):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.guild = False
         self.guild_ids = [m.id for m in self.ctx.guild.members]
@@ -23,13 +24,15 @@ class RankDropdown(discord.ui.Select):
             "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
-        options = [discord.SelectOption(label="종합 랭킹", value="종합 랭킹", description="여러 분야의 랭킹을 한번에 확인합니다.", emoji="{ranking}")]
+        options = [
+            discord.SelectOption(label="종합 랭킹", value="종합 랭킹", description="여러 분야의 랭킹을 한번에 확인합니다.", emoji=fmt("{ranking}"))
+        ]
         for category in self.categories["general"] | self.categories["game"]:
             option = discord.SelectOption(
                 label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드'}의 랭킹을 확인합니다.",
-                emoji="{ranking}",
+                emoji=fmt("{ranking}"),
             )
             options.append(option)
         super().__init__(placeholder="분야를 선택해 주세요.", options=options, row=1)
@@ -64,7 +67,7 @@ class RankDropdown(discord.ui.Select):
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
-        embed = discord.Embed(title=f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5", color=config.colors.help)
+        embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.help)
         coros = []
         for path in self.categories["main"]:
             if path in self.categories["general"]:
@@ -100,12 +103,12 @@ class RankDropdown(discord.ui.Select):
         elif category in self.categories["general"]:
             rank = self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][category], -1).limit(15)
             embed = discord.Embed(
-                title=f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {self.values[0]}",
+                title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {self.values[0]}"),
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
                 color=config.colors.help,
             )
         else:
-            embed = discord.Embed(title=f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드", color=config.colors.help)
+            embed = discord.Embed(title=fmt(f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드"), color=config.colors.help)
             coros = []
             for path in ("win", "best", "winrate"):
                 full_path = f"game.{self.categories['game'][category]}.{path}"
@@ -130,7 +133,7 @@ class RankDropdown(discord.ui.Select):
 
 
 class RankMenu(BaseView):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.dropdown = RankDropdown(ctx)
         self.add_item(self.dropdown)
@@ -139,14 +142,14 @@ class RankMenu(BaseView):
         embed, _ = await self.dropdown.get_overall_rank()
         return embed
 
-    @discord.ui.button(label="전체 랭킹", style=discord.ButtonStyle.blurple, emoji="{global}", row=2, disabled=True)
+    @discord.ui.button(label="전체 랭킹", style=discord.ButtonStyle.blurple, emoji=fmt("{global}"), row=2, disabled=True)
     async def global_rank(self, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         self.children[1].disabled = False
         self.dropdown.guild = False
         await interaction.response.edit_message(embed=await self.dropdown.rank_embed(self.dropdown.now), view=self)
 
-    @discord.ui.button(label="서버 랭킹", style=discord.ButtonStyle.green, emoji="{server}", row=2, disabled=False)
+    @discord.ui.button(label="서버 랭킹", style=discord.ButtonStyle.green, emoji=fmt("{server}"), row=2, disabled=False)
     async def guild_rank(self, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         self.children[0].disabled = False

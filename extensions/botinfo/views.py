@@ -1,26 +1,27 @@
 import discord
+from discord.ext import commands
 
 from config import config
-from core import KkutbotContext
+from tools import fmt
 from views import BaseView
 
 __all__ = ["HelpMenu", "InviteMenu"]
 
 
 class HelpDropdown(discord.ui.Select):
-    def __init__(self, ctx: KkutbotContext):
+    def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         options = []
         for cmd in ctx.bot.commands:
             if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden:  # noqa
-                option = discord.SelectOption(label=cmd.name, value=cmd.name, description=cmd.short_doc, emoji=cmd.usage)
+                option = discord.SelectOption(label=cmd.name, value=cmd.name, description=cmd.short_doc, emoji=fmt(cmd.usage))
                 options.append(option)
         super().__init__(placeholder="도움말을 확인할 명령어를 선택해 주세요.", options=options, row=1)
 
     async def callback(self, interaction: discord.Interaction):
         cmd = self.ctx.bot.get_command(self.values[0])
         embed = discord.Embed(
-            title=f"{{help}} {self.values[0]} 명령어 도움말",
+            title=fmt(f"{{help}} {self.values[0]} 명령어 도움말"),
             description=f"🔸 {cmd.help.split('--')[0] or '도움말이 없습니다.'}",
             color=config.colors.help,
         )
@@ -35,7 +36,7 @@ class HelpDropdown(discord.ui.Select):
 
 
 class HelpMenu(BaseView):
-    def __init__(self, ctx: KkutbotContext, home_embed: discord.Embed):
+    def __init__(self, ctx: commands.Context, home_embed: discord.Embed):
         super().__init__(ctx=ctx, author_only=True)
         self.home_embed = home_embed
         self.add_item(discord.ui.Button(label="끝봇 초대하기", style=discord.ButtonStyle.grey, url=config.links.invite.bot))

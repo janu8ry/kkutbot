@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 
 from config import config
-from core import Kkutbot, KkutbotContext
-from tools.utils import get_nested_dict
+from core import Kkutbot
+from tools.utils import fmt, get_nested_dict
 
 
 class Quest(commands.Cog, name="퀘스트"):
@@ -14,7 +14,7 @@ class Quest(commands.Cog, name="퀘스트"):
 
     @commands.hybrid_command(name="퀘스트", usage="{quest}", aliases=("ㅋㅅㅌ", "ㅋ", "과제", "데일리", "미션"))
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def quest(self, ctx: KkutbotContext):
+    async def quest(self, ctx: commands.Context):
         """
         매일 퀘스트를 클리어하고 보상을 획득합니다.
 
@@ -36,7 +36,7 @@ class Quest(commands.Cog, name="퀘스트"):
             else:
                 desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"
                 title = f"🔹 {info['name']}"
-            embed.add_field(name=f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}", value=desc, inline=False)
+            embed.add_field(name=fmt(f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}"), value=desc, inline=False)
         embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["quest"]).url)
         embed.set_footer(text="모든 퀘스트를 완료하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)

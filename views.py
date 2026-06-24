@@ -1,15 +1,15 @@
 from typing import Any
 
 import discord
+from discord.ext import commands
 
 from config import config
-from core import KkutbotContext
 
 __all__ = ["BaseView", "BaseModal", "ServerInvite", "Paginator"]
 
 
 class BaseView(discord.ui.View):
-    def __init__(self, ctx: KkutbotContext, *args: Any, author_only: bool = False, **kwargs: Any) -> None:
+    def __init__(self, ctx: commands.Context, *args: Any, author_only: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.ctx = ctx
         self.author_only = author_only
@@ -59,7 +59,7 @@ class ServerInvite(discord.ui.View):
 class PageInput(BaseModal, title="페이지 이동하기"):
     target_page = discord.ui.TextInput(label="페이지 번호", placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
 
-    def __init__(self, ctx: KkutbotContext, view: "Paginator") -> None:
+    def __init__(self, ctx: commands.Context, view: "Paginator") -> None:
         super().__init__()
         self.ctx = ctx
         self.target = None
@@ -136,7 +136,7 @@ class ToLast(PaginatorButton):
 
 
 class Paginator(BaseView):
-    def __init__(self, ctx: KkutbotContext, pages: list[discord.Embed]):
+    def __init__(self, ctx: commands.Context, pages: list[discord.Embed]):
         super().__init__(ctx=ctx, author_only=True)
         self.pages = pages
         self.ctx = ctx

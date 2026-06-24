@@ -7,7 +7,8 @@ from discord import app_commands
 from discord.ext import commands
 
 from config import config
-from core import Kkutbot, KkutbotContext
+from core import Kkutbot
+from tools import fmt
 
 from .models import MultiGame, SoloGame
 from .utils import get_transition, get_word, is_hanbang
@@ -33,7 +34,7 @@ class Game(commands.Cog, name="게임"):
             app_commands.Choice(name="쿵쿵따", value=3),
         ]
     )
-    async def game(self, ctx: KkutbotContext, mode: app_commands.Choice[int] = None):
+    async def game(self, ctx: commands.Context, mode: app_commands.Choice[int] = None):
         """
         끝말잇기 게임을 플레이합니다.
 
@@ -71,13 +72,13 @@ class Game(commands.Cog, name="게임"):
         `/끝말잇기 <모드>`를 사용하여 원하는 게임 모드를 바로 플레이합니다.
         """
 
-        def check(x: discord.Message | KkutbotContext) -> bool:
+        def check(x: discord.Message | commands.Context) -> bool:
             return x.author == ctx.author and x.channel == ctx.channel
 
         user = await ctx.bot.db.get_user(ctx.author)
         if user.points <= 30:
             return await ctx.reply(
-                "{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"
+                fmt("{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
             )
         if mode is None:
             embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.general)
@@ -92,7 +93,7 @@ class Game(commands.Cog, name="게임"):
         else:
             mode = mode.value
             if not (1 <= mode <= 3):
-                return await ctx.reply("{denyed} 존재하지 않는 모드입니다.")
+                return await ctx.reply(fmt("{denyed} 존재하지 않는 모드입니다."))
 
         if mode in (1, 3):
             is_kkd = mode == 3
@@ -152,7 +153,7 @@ class Game(commands.Cog, name="게임"):
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
             if ctx.channel.id in self.bot.guild_multi_games:
-                return await ctx.reply("{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다.")
+                return await ctx.reply(fmt("{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."))
 
             self.bot.guild_multi_games.append(ctx.channel.id)
             game = MultiGame(ctx, hosting_time=round(time.time()))
@@ -238,7 +239,7 @@ class Game(commands.Cog, name="게임"):
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def game1(self, ctx: KkutbotContext):
+    async def game1(self, ctx: commands.Context):
         """끝말잇기 '솔로 랭킹전' 모드를 플레이합니다."""
         await self.game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
 
@@ -246,7 +247,7 @@ class Game(commands.Cog, name="게임"):
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def game2(self, ctx: KkutbotContext):
+    async def game2(self, ctx: commands.Context):
         """끝말잇기 '서버원들과 친선전' 모드를 플레이합니다."""
         await self.game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
 
@@ -254,6 +255,6 @@ class Game(commands.Cog, name="게임"):
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.user)
-    async def game3(self, ctx: KkutbotContext):
+    async def game3(self, ctx: commands.Context):
         """끝말잇기 '쿵쿵따' 모드를 플레이합니다."""
         await self.game(ctx, app_commands.Choice(name="쿵쿵따", value=3))

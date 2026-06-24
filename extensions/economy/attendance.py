@@ -5,7 +5,8 @@ import discord
 from discord.ext import commands
 
 from config import config
-from core import Kkutbot, KkutbotContext
+from core import Kkutbot
+from tools import fmt
 
 
 class Attendance(commands.Cog, name="출석"):
@@ -17,7 +18,7 @@ class Attendance(commands.Cog, name="출석"):
     @commands.hybrid_command(name="출석", usage="{attendance}", aliases=("ㅊ", "ㅊㅅ", "ㅊㅊ"))
     @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
-    async def attendance(self, ctx: KkutbotContext):
+    async def attendance(self, ctx: commands.Context):
         """
         출석체크를 하고 포인트를 획득합니다.
 
@@ -34,14 +35,14 @@ class Attendance(commands.Cog, name="출석"):
         bonus = False
 
         if user.attendance[str(week_today)] == today:
-            embed = discord.Embed(description="{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요.", color=config.colors.error)
+            embed = discord.Embed(description=fmt("{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."), color=config.colors.error)
         else:
             user.points += 100
             user.attendance["times"] += 1
             user.attendance[str(week_today)] = today
             public = await self.bot.db.get_public()
             public.attendance += 1
-            embed = discord.Embed(title="출석 완료!", description="+`100` {points} 를 받았습니다!", color=config.colors.help)
+            embed = discord.Embed(title="출석 완료!", description=fmt("+`100` {points} 를 받았습니다!"), color=config.colors.help)
             embed.add_field(name="", value="")
             weekly = [user.attendance[str(i)] == weekdays[i] for i in range(7)]
             if week_today == 6 and all(weekly):
@@ -51,8 +52,8 @@ class Attendance(commands.Cog, name="출석"):
                 user.points += bonus_point
                 user.medals += bonus_medal
                 embed.add_field(name="🔸 보너스 보상", value="일주일동안 모두 출석했습니다!", inline=False)
-                embed.add_field(name="", value=f"+`{bonus_point}`{{points}}", inline=False)
-                embed.add_field(name="", value=f"+`{bonus_medal}` {{medals}}", inline=True)
+                embed.add_field(name="", value=fmt(f"+`{bonus_point}`{{points}}"), inline=False)
+                embed.add_field(name="", value=fmt(f"+`{bonus_medal}` {{medals}}"), inline=True)
                 embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["bonus"]).url)
             else:
                 embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["attendance"]).url)

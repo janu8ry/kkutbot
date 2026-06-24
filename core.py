@@ -15,7 +15,6 @@ from topgg import DBLClient
 from config import config
 from database import Client
 from database.models import User
-from tools.overides import KkutbotContext
 
 logger = logging.getLogger("kkutbot")
 
@@ -32,7 +31,7 @@ class Kkutbot(commands.AutoShardedBot):
             intents=intents,
             activity=discord.Game("봇 로딩"),
             owner_id=610625541157945344,
-            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, replied_user=False),
             strip_after_prefix=True,
             member_cache_flags=discord.MemberCacheFlags.from_intents(intents),
             chunk_guilds_at_startup=False,
@@ -61,9 +60,6 @@ class Kkutbot(commands.AutoShardedBot):
 
     def run_bot(self) -> None:
         super().run(getattr(config.token, "test" if config.is_test else "main"))
-
-    async def get_context(self, origin: discord.Message | discord.Interaction, /, *, cls=KkutbotContext) -> KkutbotContext:
-        return await super().get_context(origin, cls=cls)
 
     async def is_owner(self, user: discord.User, /) -> bool:
         if user.id in config.admin:
