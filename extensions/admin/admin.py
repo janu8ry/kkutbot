@@ -45,19 +45,19 @@ class Admin(commands.Cog, name="관리자"):
                     del cmd_data[k]
             sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in sorted_data)):
-                await ctx.reply(content, mention_author=True)
+                await ctx.reply(content)
             public_data = deepcopy(public_data.dict())
             del public_data["commands"]
             del public_data["announcements"]
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
-                await ctx.reply(content, mention_author=True)
+                await ctx.reply(content)
             return
 
         user_data = await self.bot.db.get_user(user, safe=False)
         if not user_data:
             return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in user_data.dict().items())):
-            await ctx.reply(content, mention_author=True)
+            await ctx.reply(content)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
     async def guild_info(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):

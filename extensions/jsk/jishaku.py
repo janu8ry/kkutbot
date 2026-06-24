@@ -179,7 +179,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append("")  # blank line
         summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
 
-        await ctx.reply("\n".join(summary), mention_author=False)
+        await ctx.reply("\n".join(summary))
 
     @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
     async def jsk_python(self, ctx: ContextA, *, argument: codeblock_converter):
@@ -248,7 +248,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 paginator.add_line(f"{icon} `{extension}`", empty=True)
 
         for page in paginator.pages:
-            await ctx.reply(page, mention_author=False)
+            await ctx.reply(page)
 
     @Feature.Command(parent="jsk", name="shutdown", aliases=["logout", "종료", "로그아웃", "ㅈㄹ"])
     async def jsk_shutdown(self, ctx: ContextA):
@@ -258,6 +258,6 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         ellipse_character = "\N{BRAILLE PATTERN DOTS-356}" if Flags.USE_BRAILLE_J else "\N{HORIZONTAL ELLIPSIS}"
 
-        await ctx.reply(f"로그아웃합니다{ellipse_character}", mention_author=False)
+        await ctx.reply(f"로그아웃합니다{ellipse_character}")
         logger.info("봇이 정상적으로 종료되었습니다!")
         await ctx.bot.close()
