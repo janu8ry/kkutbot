@@ -38,9 +38,8 @@ class Client:
         motor_client = AsyncIOMotorClient(host=self.host, port=self.port, **db_options)
         motor_client.append_metadata = motor_client.delegate.append_metadata
         self.client = motor_client[self.db]
-        logger.info("DB 연결 완료!")
         await init_beanie(database=self.client, document_models=[User, Guild, Public])
-        logger.info("Beaine 설정 완료!")
+        logger.info("DB 연결 완료!")
 
     @staticmethod
     async def get_user(user: UserType, *, safe: bool = True) -> User | None:
