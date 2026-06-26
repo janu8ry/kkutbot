@@ -79,7 +79,7 @@ class PageInput(BaseModal, title="페이지 이동하기"):
 class PaginatorButton(discord.ui.Button["Paginator"]):
     @property
     def view(self) -> "Paginator":
-        return super().view  # type: ignore[return-value]
+        return super().view  # type: ignore
 
     async def update_buttons(self, interaction: discord.Interaction) -> None:
         self.view.children[0].disabled = bool(self.view.index == 0)
