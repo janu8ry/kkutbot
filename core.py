@@ -29,7 +29,7 @@ class Kkutbot(commands.AutoShardedBot):
             command_prefix=getattr(config.prefix, "test" if config.is_test else "main"),
             help_command=None,
             intents=intents,
-            activity=discord.Game("봇 로딩"),
+            activity=discord.Game("봇 로딩중..."),
             owner_id=610625541157945344,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, replied_user=False),
             strip_after_prefix=True,
@@ -77,7 +77,7 @@ class Kkutbot(commands.AutoShardedBot):
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
-        await self.change_presence(activity=discord.Game(f"{self.command_prefix}도움 | {len(self.guilds)} 서버에서 활동"))
+        await self.change_presence(activity=discord.Game(f"/도움 | {len(self.guilds)} 서버에서 활동중"))
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
