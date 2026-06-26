@@ -37,9 +37,9 @@ class Kkutbot(commands.AutoShardedBot):
             chunk_guilds_at_startup=False,
         )
         self.guild_multi_games: list[int] = []
-        self.koreanbots: Koreanbots | None = None
-        self.dbl: DBLClient | None = None
-        self.started_at: int | None = None
+        self.koreanbots: Koreanbots = None  # type: ignore
+        self.dbl: DBLClient = None  # type: ignore
+        self.started_at: int = None  # type: ignore
         self.db: Client = Client()
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
@@ -81,9 +81,9 @@ class Kkutbot(commands.AutoShardedBot):
 
     def add_aliases(self, name: str, aliases: list[str]) -> None:
         cmd = self.get_command(name)
-        cmd.aliases = list(cmd.aliases)
-        cmd.aliases.extend(aliases)
-        cmd.aliases = tuple(cmd.aliases)
+        if not isinstance(cmd, commands.Command):
+            raise TypeError
+        cmd.aliases = (*cmd.aliases, *aliases)
         if parent := cmd.parent:
             parent.remove_command(cmd.name)
             parent.add_command(cmd)
@@ -107,15 +107,24 @@ class Kkutbot(commands.AutoShardedBot):
         date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         fp = f"backup/{date}.gz"
         os.replace(f"backup/{files[0]}", fp)
-        await (self.get_channel(config.channels.backup_data)).send(file=discord.File(fp=fp))
+        ch = self.get_channel(config.channels.backup_data)
         logger.info("몽고DB 데이터 백업 완료!")
+        if isinstance(ch, discord.TextChannel):
+            await ch.send(file=discord.File(fp=fp))
+            logger.info("백업 채널에 데이터 업로드 완료!")
+        else:
+            logger.info("백업 채널에 데이터 업로드를 실패했습니다.")
         for filename in files[1:]:
             os.remove(f"backup/{filename}")
 
     async def backup_log(self) -> None:
         fp = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
-        await (self.get_channel(config.channels.backup_log)).send(file=discord.File(fp=fp))
-        logger.info("로그 백업 완료!")
+        ch = self.get_channel(config.channels.backup_log)
+        if isinstance(ch, discord.TextChannel):
+            await ch.send(file=discord.File(fp=fp))
+            logger.info("로그 백업 완료!")
+        else:
+            logger.info("로그 백업을 실패했습니다.")
 
     async def reset_quest(self) -> None:
         public = await self.db.get_public()
@@ -139,7 +148,7 @@ class Kkutbot(commands.AutoShardedBot):
                 await self.try_reload(package)
 
     async def update_koreanbots(self) -> None:
-        await self.koreanbots.update_bot_info(self.application_id, len(self.guilds), self.shard_count or 1)
+        await self.koreanbots.update_bot_info(self.application_id, len(self.guilds), self.shard_count or 1)  # type: ignore
 
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         try:
