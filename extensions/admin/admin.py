@@ -46,7 +46,7 @@ class Admin(commands.Cog, name="관리자"):
             sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
             for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in sorted_data)):
                 await ctx.reply(content)
-            public_data = deepcopy(public_data.dict())
+            public_data = deepcopy(public_data.model_dump())
             del public_data["commands"]
             del public_data["announcements"]
             for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
@@ -56,7 +56,7 @@ class Admin(commands.Cog, name="관리자"):
         user_data = await self.bot.db.get_user(user, safe=False)
         if not user_data:
             return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
-        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in user_data.dict().items())):
+        for content in split_string("\n".join(f"{k}: `{v}`" for k, v in user_data.model_dump().items())):
             await ctx.reply(content)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
@@ -65,7 +65,7 @@ class Admin(commands.Cog, name="관리자"):
         guild_data = await self.bot.db.get_guild(guild, safe=False)
         if not guild_data:
             return await ctx.reply(fmt("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
-        guild_data = guild_data.dict()
+        guild_data = guild_data.model_dump()
         guild_data["name"] = guild.name
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
             await ctx.reply(content)

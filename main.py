@@ -73,7 +73,7 @@ async def before_command(ctx: commands.Context) -> None:
         user.quest.status.completed = []
         cache = {}
         for data in public.quests.keys():
-            cache[data] = get_nested_dict(user.dict(), data.split("/"))
+            cache[data] = get_nested_dict(user.model_dump(), data.split("/"))
         user.quest.cache = cache
 
     await bot.db.save(user)
@@ -95,9 +95,9 @@ async def on_command_completion(ctx: commands.Context) -> None:
     user = await bot.db.get_user(ctx.author)
     desc = ""
     for data, info in public.quests.items():
-        current = get_nested_dict(user.dict(), data.split("/")) - user.quest.cache[data]
+        current = get_nested_dict(user.model_dump(), data.split("/")) - user.quest.cache[data]
         if current < 0:
-            user.quest.cache[data] = get_nested_dict(user.dict(), data.split("/"))
+            user.quest.cache[data] = get_nested_dict(user.model_dump(), data.split("/"))
         elif (current >= info["target"]) and (data not in user.quest.status.completed):
             setattr(user, info["reward"][1], getattr(user, info["reward"][1]) + info["reward"][0])
             user.quest.status.completed.append(data)

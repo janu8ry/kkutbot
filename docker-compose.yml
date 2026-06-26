@@ -13,7 +13,7 @@ services:
     environment:
       - TZ=Asia/Seoul
   mongo:
-    image: mongo:4.4.14-focal
+    image: mongo:7.0.37
     restart: always
     container_name: "kkutbot-mongo"
     ports:
