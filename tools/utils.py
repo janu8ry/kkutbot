@@ -5,7 +5,7 @@ from typing import Any
 from discord.ext import commands
 
 from config import config, get_nested_dict, get_nested_property
-from database.models import GameBase, User  # noqa
+from database.models import GameBase, User
 
 __all__ = [
     "dict_emojis",

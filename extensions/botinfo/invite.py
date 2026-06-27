@@ -31,5 +31,5 @@ class Invite(commands.Cog, name="초대"):
             f"끝봇을 서버에 초대할 경우, [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
             color=config.colors.blue,
         )
-        embed.set_thumbnail(url=self.bot.user.display_avatar.url)
+        embed.set_thumbnail(url=self.bot.user.display_avatar.url)  # type: ignore
         await ctx.reply(embed=embed, view=InviteMenu())

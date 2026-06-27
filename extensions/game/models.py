@@ -24,7 +24,7 @@ class GameBase:
         self.begin_time = time.time()
         self.timeout = 10
 
-    async def alert_tier_change(self, player: discord.User, tier: str, tier_past: str) -> discord.Message:
+    async def alert_tier_change(self, player: discord.User | discord.Member, tier: str, tier_past: str) -> discord.Message:
         tierlist = list(config.tierlist.keys())
         emojis = [data["emoji"] for data in config.tierlist.values()]
         if tierlist.index(tier) > tierlist.index(tier_past):
@@ -62,7 +62,7 @@ class SoloGame(GameBase):
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
 
-    async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message:
+    async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message | None:
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
             description=f"🔸 현재 점수: `{self.score}` 점",
@@ -149,7 +149,7 @@ class MultiGame(GameBase):
         self.last_host = ctx.author
 
     @property
-    def host(self) -> discord.User:
+    def host(self) -> discord.User | discord.Member:
         return self.players[0] if self.players else self.last_host
 
     @property
@@ -163,7 +163,7 @@ class MultiGame(GameBase):
     def hosting_embed(self) -> discord.Embed:
         embed = discord.Embed(
             title=f"📔 **{self.host}**님의 끝말잇기",
-            description=f"🔸 채널: {self.ctx.channel.mention}\n"
+            description=f"🔸 채널: {self.ctx.channel.mention}\n"  # type: ignore
             f"🔸 플레이어 모집 종료: <t:{self.hosting_time + 120}:R>\n\n"
             "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
             "**나가기** 버튼을 클릭하여 게임에서 나가기\n"
@@ -173,13 +173,13 @@ class MultiGame(GameBase):
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/5)", value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
         return embed
 
-    async def update_embed(self, embed: discord.Embed, view: discord.ui.View = None):
+    async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None):
         try:
             if self.msg.author.id == self.ctx.bot.user.id:
                 await self.msg.delete()
         except discord.NotFound:
             pass
-        self.msg = await self.msg.channel.send(embed=embed, view=view)
+        self.msg = await self.msg.channel.send(embed=embed, view=view)  # type: ignore
         return self.msg
 
     def game_embed(self) -> discord.Embed:

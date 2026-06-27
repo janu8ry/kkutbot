@@ -4,7 +4,7 @@ from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 from pymongo import TEXT  # noqa
 
-__all__ = ["User", "Guild", "Public"]
+__all__ = ["User", "Guild", "Public", "GameBase"]
 
 
 attendance = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "times": 0}

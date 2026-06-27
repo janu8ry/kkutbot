@@ -117,7 +117,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
             color=config.colors.green,
         )
-        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)  # noqa
+        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
         view = ConfirmModifyData(ctx=self.ctx)
         await interaction.response.send_message(embed=embed, view=view)
         await view.wait()

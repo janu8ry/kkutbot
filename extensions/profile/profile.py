@@ -41,7 +41,8 @@ class Profile(commands.Cog, name="사용자"):
                 title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.red
             )
             embed.set_thumbnail(url=self.bot.emoji("denied").url)
-            return await ctx.reply(embed=embed)
+            await ctx.reply(embed=embed)
+            return
 
         if (color := user.color.value) == 0:
             if not (color := (await self.bot.fetch_user(user.id)).accent_color):

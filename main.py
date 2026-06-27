@@ -137,11 +137,11 @@ async def on_command_completion(ctx: commands.Context) -> None:
 
 @bot.check
 async def check(ctx: commands.Context) -> bool:
-    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:  # noqa
+    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:  # type: ignore
         try:
             embed = discord.Embed(
                 title="오류",
-                description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"  # noqa
+                description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"  # type: ignore
                 f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
                 color=config.colors.red,
             )
@@ -157,7 +157,7 @@ async def check(ctx: commands.Context) -> bool:
 async def on_interaction(interaction: discord.Interaction) -> None:
     if interaction.type == discord.InteractionType.component:
         kst = timezone(timedelta(hours=9))
-        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))  # type: ignore
+        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
         if interaction_created < bot.started_at:
             types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
             await interaction.response.send_message(
@@ -216,8 +216,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         usage = "사용법 도움말이 없습니다."
-        if ctx.command.name != "jishaku":
-            for text in ctx.command.help.split("--"):  # noqa
+        if ctx.command.name != "jishaku" and ctx.command.help:
+            for text in ctx.command.help.split("--"):
                 if text.startswith("사용법"):
                     usage = text[3:]
         else:

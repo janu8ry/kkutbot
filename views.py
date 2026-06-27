@@ -38,8 +38,8 @@ class BaseView(discord.ui.View):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
-        if use_msg:
-            await self.message.edit(view=self)  # type: ignore
+        if use_msg and self.message:
+            await self.message.edit(view=self)
         else:
             await interaction.response.edit_message(view=self)
 
@@ -59,7 +59,7 @@ class ServerInvite(discord.ui.View):
 class PageInput(BaseModal, title="페이지 이동하기"):
     target_page = discord.ui.TextInput(label="페이지 번호", placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
 
-    def __init__(self, ctx: commands.Context, view: "Paginator") -> None:
+    def __init__(self, ctx: commands.Context, view: Paginator) -> None:
         super().__init__()
         self.ctx = ctx
         self.target = None
@@ -78,7 +78,7 @@ class PageInput(BaseModal, title="페이지 이동하기"):
 
 class PaginatorButton(discord.ui.Button["Paginator"]):
     @property
-    def view(self) -> "Paginator":
+    def view(self) -> Paginator:
         return super().view  # type: ignore
 
     async def update_buttons(self, interaction: discord.Interaction) -> None:
@@ -148,8 +148,8 @@ class Paginator(BaseView):
         self.add_item(ToNext())
         self.add_item(ToLast())
         if self.page_count == 1:
-            self.children[3].disabled = True  # type: ignore
-            self.children[4].disabled = True  # type: ignore
+            self.children[3].disabled = True
+            self.children[4].disabled = True
 
     async def run(self) -> None:
         await self.ctx.reply(embed=self.pages[0], view=self)

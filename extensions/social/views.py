@@ -1,5 +1,5 @@
 import asyncio
-from typing import Coroutine
+from typing import Coroutine, TypedDict
 
 import discord
 from discord.ext import commands
@@ -12,14 +12,18 @@ from views import BaseView
 
 __all__ = ["RankMenu"]
 
+class _Categories(TypedDict):
+    general: dict[str, str]
+    game: dict[str, str]
+    main: list[str]
 
 class RankDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.guild = False
-        self.guild_ids = [m.id for m in self.ctx.guild.members]
+        self.guild_ids = [m.id for m in self.ctx.guild.members]  # type: ignore
         self.now = "종합 랭킹"
-        self.categories = {
+        self.categories: _Categories = {
             "general": {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"},
             "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
@@ -61,10 +65,10 @@ class RankDropdown(discord.ui.Select):
             username = username[:12] + "..."
         return username
 
-    async def format_rank(self, rank: AsyncIOMotorCursor, query: str) -> list:
-        rank = await rank.to_list(None)
-        names = await asyncio.gather(*[self.get_user_name(i["_id"]) for i in rank])
-        return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
+    async def format_rank(self, cursor: AsyncIOMotorCursor, query: str) -> list[str]:
+        docs = await cursor.to_list(None)
+        names = list(await asyncio.gather(*[self.get_user_name(doc["_id"]) for doc in docs]))
+        return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(doc, query.split('.'))}`" for idx, doc in enumerate(docs)]
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
         embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.green)
@@ -143,14 +147,14 @@ class RankMenu(BaseView):
         return embed
 
     @discord.ui.button(label="전체 랭킹", style=discord.ButtonStyle.blurple, emoji=fmt("{global}"), row=2, disabled=True)
-    async def global_rank(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def global_rank(self: RankMenu, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         self.children[1].disabled = False
         self.dropdown.guild = False
         await interaction.response.edit_message(embed=await self.dropdown.rank_embed(self.dropdown.now), view=self)
 
     @discord.ui.button(label="서버 랭킹", style=discord.ButtonStyle.green, emoji=fmt("{server}"), row=2, disabled=False)
-    async def guild_rank(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def guild_rank(self: RankMenu, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         self.children[0].disabled = False
         self.dropdown.guild = True

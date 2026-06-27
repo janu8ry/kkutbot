@@ -27,14 +27,12 @@ class Game(commands.Cog, name="게임"):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     @app_commands.describe(mode="플레이 할 게임 모드를 선택합니다.")
     @app_commands.rename(mode="모드")
-    @app_commands.choices(
-        mode=[
+    @app_commands.choices(mode=[
             app_commands.Choice(name="솔로 랭킹전", value=1),
             app_commands.Choice(name="서버원들과 친선전", value=2),
             app_commands.Choice(name="쿵쿵따", value=3),
-        ]
-    )
-    async def game(self, ctx: commands.Context, mode: app_commands.Choice[int] = None):
+        ])
+    async def start_game(self, ctx: commands.Context, mode: app_commands.Choice[int] = None):  # type: ignore
         """
         끝말잇기 게임을 플레이합니다.
 
@@ -77,9 +75,8 @@ class Game(commands.Cog, name="게임"):
 
         user = await ctx.bot.db.get_user(ctx.author)
         if user.points <= 30:
-            return await ctx.reply(
-                fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
-            )
+            await ctx.reply(fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"))
+            return
         if mode is None:
             embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.blue)
             embed.add_field(name=":one:", value="- 솔로 랭킹전", inline=False)
@@ -93,7 +90,8 @@ class Game(commands.Cog, name="게임"):
         else:
             mode = mode.value
             if not (1 <= mode <= 3):
-                return await ctx.reply(fmt("{denied} 존재하지 않는 모드입니다."))
+                await ctx.reply(fmt("{denied} 존재하지 않는 모드입니다."))
+                return
 
         if mode in (1, 3):
             is_kkd = mode == 3
@@ -153,7 +151,8 @@ class Game(commands.Cog, name="게임"):
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
             if ctx.channel.id in self.bot.guild_multi_games:
-                return await ctx.reply(fmt("{denied} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."))
+                await ctx.reply(fmt("{denied} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."))
+                return
 
             self.bot.guild_multi_games.append(ctx.channel.id)
             game = MultiGame(ctx, hosting_time=round(time.time()))
@@ -168,13 +167,15 @@ class Game(commands.Cog, name="게임"):
             await game.update_embed(game.game_embed())
             game.begin_time = time.time()
             await game.send_info_embed()
+
+            def multi_check(x: discord.Message) -> bool:
+                return x.author in game.players and x.channel == ctx.channel and game.alive[game.turn % len(game.alive)] == x.author  # type: ignore
+
             while True:
                 try:
                     m = await self.bot.wait_for(
                         "message",
-                        check=lambda _x: (
-                            _x.author in game.players and _x.channel == ctx.channel and game.alive[game.turn % len(game.alive)] == _x.author
-                        ),
+                        check=multi_check,
                         timeout=game.time_left,
                     )
                     user_word = m.content
@@ -233,7 +234,8 @@ class Game(commands.Cog, name="게임"):
                         continue
 
         elif mode == 0:
-            return await ctx.send("취소되었습니다.")
+            await ctx.send("취소되었습니다.")
+            return
 
     @commands.command(name="끝말잇기1", usage="ㄲ끝말잇기1", aliases=("ㄲ1", "끝1", "ㄲㅁㅇㄱ1"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
@@ -241,7 +243,7 @@ class Game(commands.Cog, name="게임"):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     async def game1(self, ctx: commands.Context):
         """끝말잇기 '솔로 랭킹전' 모드를 플레이합니다."""
-        await self.game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
+        await self.start_game(ctx, app_commands.Choice(name="솔로 랭킹전", value=1))
 
     @commands.command(name="끝말잇기2", usage="ㄲ끝말잇기2", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
@@ -249,7 +251,7 @@ class Game(commands.Cog, name="게임"):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     async def game2(self, ctx: commands.Context):
         """끝말잇기 '서버원들과 친선전' 모드를 플레이합니다."""
-        await self.game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
+        await self.start_game(ctx, app_commands.Choice(name="서버원들과 친선전", value=2))
 
     @commands.command(name="끝말잇기3", usage="ㄲ끝말잇기3", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"), hidden=True)
     @commands.bot_has_permissions(add_reactions=True)
@@ -257,4 +259,4 @@ class Game(commands.Cog, name="게임"):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     async def game3(self, ctx: commands.Context):
         """끝말잇기 '쿵쿵따' 모드를 플레이합니다."""
-        await self.game(ctx, app_commands.Choice(name="쿵쿵따", value=3))
+        await self.start_game(ctx, app_commands.Choice(name="쿵쿵따", value=3))

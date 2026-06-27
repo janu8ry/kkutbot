@@ -13,7 +13,7 @@ class HelpDropdown(discord.ui.Select):
         self.ctx = ctx
         options = []
         for cmd in ctx.bot.commands:
-            if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden:  # noqa
+            if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden:
                 option = discord.SelectOption(label=cmd.name, value=cmd.name, description=cmd.short_doc, emoji=fmt(cmd.usage))
                 options.append(option)
         super().__init__(placeholder="도움말을 확인할 명령어를 선택해 주세요.", options=options, row=1)
@@ -31,7 +31,7 @@ class HelpDropdown(discord.ui.Select):
                 embed.add_field(name="🔹 " + section.split("\n")[0], value="\n".join(section.split("\n")[1:]), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.user.display_avatar.url)
         embed.set_footer(text="도움이 필요하다면 서포트 서버에 참가해보세요!")
-        self.view.children[0].disabled = False
+        self.view.children[0].disabled = False  # type: ignore
         await interaction.response.edit_message(embed=embed, view=self.view)
 
 
@@ -45,7 +45,7 @@ class HelpMenu(BaseView):
         self.add_item(HelpDropdown(ctx))
 
     @discord.ui.button(label="홈", style=discord.ButtonStyle.blurple, emoji="🏠", row=2, disabled=True)
-    async def go_home(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def go_home(self: HelpMenu, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         await interaction.response.edit_message(embed=self.home_embed, view=self)
 

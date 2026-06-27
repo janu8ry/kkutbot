@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -31,7 +32,7 @@ for file in os.listdir("static"):
             config_data[file[:-5]] = json.load(f)
 
 
-def get_nested_dict(data: dict[str, Any], path: list[str]) -> Any:
+def get_nested_dict(data: Mapping[str, Any], path: list[str]) -> Any:
     """
     Gets a value from a nested dictionary.
     Parameters
@@ -45,9 +46,10 @@ def get_nested_dict(data: dict[str, Any], path: list[str]) -> Any:
     Any
         Value from the targeted dictionary
     """
+    result: Any = data
     for i in path:
-        data = data.get(i, None)
-    return data
+        result = result.get(i, None)
+    return result
 
 
 def get_nested_property(data: Any, path: list[str]) -> Any:
