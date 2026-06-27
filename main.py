@@ -291,9 +291,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         if is_admin(ctx):
             await ctx.reply(embed=error_embed)
         else:
-            embed = discord.Embed(
-                title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.red
-            )
+            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.red)
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
         logger.error(
