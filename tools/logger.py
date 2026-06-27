@@ -17,9 +17,9 @@ from config import config
 
 __all__ = ["KkutbotLogger", "setup_logger"]
 
-COMMAND = logging.DEBUG + 3
-INVITE = logging.DEBUG + 4
-LEAVE = logging.DEBUG + 5
+COMMAND = logging.INFO + 3
+INVITE = logging.INFO + 4
+LEAVE = logging.INFO + 5
 
 logging.addLevelName(COMMAND, "COMMAND")
 logging.addLevelName(INVITE, "INVITE")
