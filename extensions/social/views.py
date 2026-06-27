@@ -12,10 +12,12 @@ from views import BaseView
 
 __all__ = ["RankMenu"]
 
+
 class _Categories(TypedDict):
     general: dict[str, str]
     game: dict[str, str]
     main: list[str]
+
 
 class RankDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):

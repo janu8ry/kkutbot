@@ -62,7 +62,9 @@ class SoloGame(GameBase):
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
 
-    async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!") -> discord.Message | None:
+    async def send_info_embed(
+        self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!"
+    ) -> discord.Message | None:
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
             description=f"🔸 현재 점수: `{self.score}` 점",

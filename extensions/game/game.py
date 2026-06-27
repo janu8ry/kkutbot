@@ -27,11 +27,13 @@ class Game(commands.Cog, name="게임"):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     @app_commands.describe(mode="플레이 할 게임 모드를 선택합니다.")
     @app_commands.rename(mode="모드")
-    @app_commands.choices(mode=[
+    @app_commands.choices(
+        mode=[
             app_commands.Choice(name="솔로 랭킹전", value=1),
             app_commands.Choice(name="서버원들과 친선전", value=2),
             app_commands.Choice(name="쿵쿵따", value=3),
-        ])
+        ]
+    )
     async def start_game(self, ctx: commands.Context, mode: app_commands.Choice[int] = None):  # type: ignore
         """
         끝말잇기 게임을 플레이합니다.
@@ -75,7 +77,9 @@ class Game(commands.Cog, name="게임"):
 
         user = await ctx.bot.db.get_user(ctx.author)
         if user.points <= 30:
-            await ctx.reply(fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"))
+            await ctx.reply(
+                fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
+            )
             return
         if mode is None:
             embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.blue)
