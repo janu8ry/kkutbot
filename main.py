@@ -14,11 +14,11 @@ from sentry_sdk import capture_exception
 
 import core
 from config import config, get_nested_dict
-from tools.logger import setup_logger
+from tools.logger import KkutbotLogger, setup_logger
 from tools.utils import fmt, is_admin
 from views import ServerInvite
 
-logger = logging.getLogger("kkutbot")
+logger: KkutbotLogger = logging.getLogger("kkutbot")  # type: ignore
 
 bot = core.Kkutbot()
 
@@ -275,10 +275,13 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
 
         error_id = str(uuid.uuid4())[:6]
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.red)
-        loc = f"{guild} (`{guild.id}`)" if (guild := ctx.guild) else "DM"
+        if guild := ctx.guild:
+            error_loc = f"- 서버: {guild} (`{guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)"
+        else:
+            error_loc = f"- 채널: DM (`{ctx.channel.id}`)"
         error_embed.add_field(
             name="에러 발생 위치",
-            value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- {loc}\n- 채널: {ctx.channel} (`{ctx.channel.id}`)",
+            value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n{error_loc}",
         )
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)

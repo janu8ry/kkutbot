@@ -15,11 +15,36 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from config import config
 
-__all__ = ["setup_logger"]
+__all__ = ["KkutbotLogger", "setup_logger"]
+
+COMMAND = logging.DEBUG + 3
+INVITE = logging.DEBUG + 4
+LEAVE = logging.DEBUG + 5
+
+logging.addLevelName(COMMAND, "COMMAND")
+logging.addLevelName(INVITE, "INVITE")
+logging.addLevelName(LEAVE, "LEAVE")
+
+
+class KkutbotLogger(logging.Logger):
+    def command(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        if self.isEnabledFor(COMMAND):
+            self._log(COMMAND, msg, args, **kwargs)
+
+    def invite(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        if self.isEnabledFor(INVITE):
+            self._log(INVITE, msg, args, **kwargs)
+
+    def leave(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        if self.isEnabledFor(LEAVE):
+            self._log(LEAVE, msg, args, **kwargs)
+
+
+logging.setLoggerClass(KkutbotLogger)
 
 
 def rotator(source: str, dest: str) -> None:
-    with open(source, "rb") as rf, gzip.open(f"logs/{dest[5:]}.gz", "wb") as wf:
+    with open(source, "rb") as rf, gzip.open(f"{dest}.gz", "wb") as wf:
         wf.write(rf.read())
     os.remove(source)
 
@@ -32,6 +57,7 @@ def setup_command_logger() -> None:
     if "logs" not in os.listdir():
         os.mkdir("logs")
     logger = logging.getLogger("kkutbot")
+    logger.__class__ = KkutbotLogger
     logger.setLevel(logging.DEBUG)
 
     console = Console(
@@ -41,23 +67,24 @@ def setup_command_logger() -> None:
                 "logging.level.invite": "gold1",
                 "logging.level.leave": "magenta",
             }
-        )
+        ),
+        width=10000,
+        force_terminal=True,
     )
-    stream_handler = RichHandler(rich_tracebacks=not config.is_test, console=console)
-
+    stream_handler = RichHandler(rich_tracebacks=config.is_test, console=console)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
-    stream_handler.setLevel(logging.DEBUG + 3)
+    stream_handler.setLevel(logging.DEBUG)
 
     file_handler = TimedRotatingFileHandler(
         filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8", atTime=datetime.time(23, 59, 59)
-    )  # type: ignore
+    )
     file_handler.setFormatter(
         logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
             datefmt="%H:%M:%S",
         )
     )
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
 
     file_handler.rotator = rotator
     file_handler.namer = namer
@@ -65,28 +92,7 @@ def setup_command_logger() -> None:
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
 
-    logging.addLevelName(logging.DEBUG + 5, "COMMAND")
-
-    def command(self: logging.Logger, msg: str, *args: Any, **kwargs: Any) -> None:
-        self.log(logging.DEBUG + 5, msg, *args, **kwargs)
-
-    logging.Logger.command = command  # type: ignore
-
-    logging.addLevelName(logging.DEBUG + 3, "INVITE")
-
-    def invite(self: logging.Logger, msg: str, *args: Any, **kwargs: Any) -> None:
-        self.log(logging.DEBUG + 3, msg, *args, **kwargs)
-
-    logging.Logger.invite = invite  # type: ignore
-
-    logging.addLevelName(logging.DEBUG + 4, "LEAVE")
-
-    def leave(self: logging.Logger, msg: str, *args: Any, **kwargs: Any) -> None:
-        self.log(logging.DEBUG + 4, msg, *args, **kwargs)
-
-    logging.Logger.leave = leave  # type: ignore
-
-    logger.info("명령어 로깅 설정 완료!")
+    logger.info("로깅 설정 완료!")
 
 
 def setup_error_logger() -> None:
@@ -100,7 +106,7 @@ def setup_error_logger() -> None:
         integrations=[AsyncioIntegration(), LoggingIntegration(event_level=None)],
     )
 
-    logger.info("에러 로깅 설정 완료!")
+    logger.info("Sentry 설정 완료!")
 
 
 def setup_logger() -> None:
