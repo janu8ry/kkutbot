@@ -38,7 +38,7 @@ class Profile(commands.Cog, name="사용자"):
             name = f"{user.display_name} ({user.name})"
         if not user_data.registered:
             embed = discord.Embed(
-                title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.error
+                title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.red
             )
             embed.set_thumbnail(url=self.bot.emoji("denied").url)
             return await ctx.reply(embed=embed)
@@ -64,7 +64,7 @@ class Profile(commands.Cog, name="사용자"):
         stats_embed = discord.Embed(
             title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"),
             description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : <t:{user_data.latest_usage}:D>",
-            color=config.colors.general,
+            color=config.colors.blue,
         )
 
         modes = {

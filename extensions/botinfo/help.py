@@ -32,7 +32,7 @@ class Help(commands.Cog, name="일반"):
             f"🔹 **업타임**: ~ <t:{self.bot.started_at}:R>부터\n\n"
             "개발에 도움을 주신 `seojin_park`님,\n프로필 사진을 만들어 주신 `! Tim23#1475` 님께 감사드립니다!\n"
             "Icon made from [flaticon](https://www.flaticon.com)",
-            color=config.colors.help,
+            color=config.colors.green,
         )
         embed.add_field(
             name="🔹 기타 링크",

@@ -43,7 +43,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
         self.ctx = ctx
 
     async def on_submit(self, interaction: discord.Interaction):
-        embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.help)
+        embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
         embed.add_field(name=f"🔹 {self.a_title.value} - `1초 전`", value=self.description.value)
         view = ConfirmSendAnnouncement(ctx=self.ctx)
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
@@ -115,7 +115,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
-            color=config.colors.help,
+            color=config.colors.green,
         )
         embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)  # noqa
         view = ConfirmModifyData(ctx=self.ctx)

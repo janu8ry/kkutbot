@@ -31,7 +31,7 @@ class GameBase:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 승급!"),
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> {emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
-                color=config.colors.help,
+                color=config.colors.green,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
         else:
@@ -39,7 +39,7 @@ class GameBase:
                 title=fmt("{tier} 티어 강등..."),
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
                 f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
-                color=config.colors.error,
+                color=config.colors.red,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("leveldown").url)
         return await self.ctx.send(player.mention, embed=embed, mention_author=True)
@@ -66,7 +66,7 @@ class SoloGame(GameBase):
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
             description=f"🔸 현재 점수: `{self.score}` 점",
-            color=config.colors.help,
+            color=config.colors.green,
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_transition(self.bot_word))})```", inline=False)
         embed.add_field(name="🔹 남은 시간", value=f"<t:{round(self.timeout + self.begin_time)}:R>", inline=False)
@@ -89,18 +89,18 @@ class SoloGame(GameBase):
             self.score += 10
             points = self.score * 5 if self.kkd else self.score * 3
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
-            color = config.colors.general
+            color = config.colors.blue
             emoji = "win"
             modes[mode].win += 1
         elif result == "패배":
             points = -30
             desc = f"대답시간이 {self.timeout}초를 초과했습니다..."
-            color = config.colors.error
+            color = config.colors.red
             emoji = "gameover"
         elif result == "포기":
             points = -30
             desc = "게임을 포기했습니다."
-            color = config.colors.error
+            color = config.colors.red
             emoji = "surrender"
         else:
             raise commands.BadArgument
@@ -168,7 +168,7 @@ class MultiGame(GameBase):
             "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
             "**나가기** 버튼을 클릭하여 게임에서 나가기\n"
             f"호스트 {self.host.mention} 님은 **게임 시작** 버튼을 클릭하여 게임을 시작할 수 있습니다.",
-            color=config.colors.general,
+            color=config.colors.blue,
         )
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/5)", value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
         return embed
@@ -186,7 +186,7 @@ class MultiGame(GameBase):
         embed = discord.Embed(
             title="📔 끝말잇기 멀티플레이",
             description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}",
-            color=config.colors.help,
+            color=config.colors.green,
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.word} ({' / '.join(get_transition(self.word))})```")
         embed.add_field(name="🔹 누적 점수", value=f"`{self.score}` 점", inline=False)
@@ -199,7 +199,7 @@ class MultiGame(GameBase):
         return embed
 
     async def player_out(self, gg=False):
-        embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config.colors.error)
+        embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config.colors.red)
         embed.set_thumbnail(url=self.ctx.bot.emoji("surrender" if gg else "dead").url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
@@ -234,7 +234,7 @@ class MultiGame(GameBase):
                     user.game.guild_multi.win += 1
                 user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
                 await self.ctx.bot.db.save(user)
-        embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.general)
+        embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.send(embed=embed)
         self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
@@ -245,6 +245,6 @@ class MultiGame(GameBase):
         embed = discord.Embed(
             title=self.word,
             description=f"<t:{round(10 + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",
-            color=config.colors.general,
+            color=config.colors.blue,
         )
         return await self.msg.channel.send(f"{desc[0]} {self.now_player.mention}님, {desc[2:]}", embed=embed, delete_after=self.time_left)

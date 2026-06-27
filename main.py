@@ -104,13 +104,13 @@ async def on_command_completion(ctx: commands.Context) -> None:
             user.quest.total += 1
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
-        embed = discord.Embed(title="퀘스트 클리어!", description=desc, color=config.colors.help)
+        embed = discord.Embed(title="퀘스트 클리어!", description=desc, color=config.colors.green)
         embed.set_thumbnail(url=bot.emoji("congrats").url)
         embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
         if len(user.quest.status.completed) == 3:
-            bonus_embed = discord.Embed(title="보너스 보상", description="오늘의 퀘스트를 모두 완료했습니다!", color=config.colors.help)
+            bonus_embed = discord.Embed(title="보너스 보상", description="오늘의 퀘스트를 모두 완료했습니다!", color=config.colors.green)
             bonus_point = random.randint(100, 200)
             bonus_medal = random.randint(1, 5)
             user.points += bonus_point
@@ -143,7 +143,7 @@ async def check(ctx: commands.Context) -> bool:
                 title="오류",
                 description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"  # noqa
                 f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
-                color=config.colors.error,
+                color=config.colors.red,
             )
             await ctx.author.send(embed=embed)
         except discord.Forbidden:
@@ -165,7 +165,7 @@ async def on_interaction(interaction: discord.Interaction) -> None:
                     description=fmt(
                         f"{{denied}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."  # type: ignore
                     ),
-                    color=config.colors.error,
+                    color=config.colors.red,
                 ),
                 ephemeral=True,
             )
@@ -206,12 +206,12 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             except TypeError:
                 pass
         embed = discord.Embed(
-            title="잠깐!", description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.", color=config.colors.error
+            title="잠깐!", description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.", color=config.colors.red
         )
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.BadUnionArgument):
-        embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.error)
+        embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.red)
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
@@ -222,7 +222,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
                     usage = text[3:]
         else:
             usage = ctx.command.help
-        embed = discord.Embed(title="잘못된 사용법입니다.", description=f"🔹 `{ctx.command}` **사용법**\n{usage}", color=config.colors.general)
+        embed = discord.Embed(title="잘못된 사용법입니다.", description=f"🔹 `{ctx.command}` **사용법**\n{usage}", color=config.colors.blue)
         embed.set_thumbnail(url=bot.emoji("denied").url)
         embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
@@ -274,7 +274,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
                 line_text = f"{line_text[: max_code_len - 6]}\n(...)"
 
         error_id = str(uuid.uuid4())[:6]
-        error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
+        error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.red)
         loc = f"{guild} (`{guild.id}`)" if (guild := ctx.guild) else "DM"
         error_embed.add_field(
             name="에러 발생 위치",
@@ -289,7 +289,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             await ctx.reply(embed=error_embed)
         else:
             embed = discord.Embed(
-                title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.error
+                title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.red
             )
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
@@ -314,7 +314,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
         "  아래 버튼을 눌러 끝봇 커뮤니티에 참가해 보세요!\n"
         "  `#업데이트-공지` 채널을 팔로우하면 끝봇의 업데이트 소식을 빠르게 받을 수 있습니다.\n\n"
         f"끝봇을 서버에 초대한 경우 [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
-        color=config.colors.general,
+        color=config.colors.blue,
     )
     try:
         await announce.send(embed=embed, view=ServerInvite())
@@ -341,7 +341,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
 
     if missing_perms:
         embed = discord.Embed(
-            title="권한이 부족합니다.", description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.", color=config.colors.error
+            title="권한이 부족합니다.", description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.", color=config.colors.red
         )
         embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`")
         try:

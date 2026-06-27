@@ -29,7 +29,7 @@ class Invite(commands.Cog, name="초대"):
             "끝봇을 당신의 서버에 초대하세요!\n\n"
             "끝봇의 커뮤니티 서버에 참가하면 끝봇의 다양한 소식들을 빠르게 확인할 수 있습니다!\n\n"
             f"끝봇을 서버에 초대할 경우, [약관]({config.links.privacy_policy})에 동의한 것으로 간주됩니다.",
-            color=config.colors.general,
+            color=config.colors.blue,
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.reply(embed=embed, view=InviteMenu())

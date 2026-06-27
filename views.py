@@ -20,7 +20,7 @@ class BaseView(discord.ui.View):
         if self.author_only and (interaction.user != self.ctx.author):
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.", color=config.colors.error
+                    description="이 명령어를 실행한 사람만 사용할 수 있어요.\n직접 명령어를 입력하여 사용해주세요.", color=config.colors.red
                 ),
                 ephemeral=True,
             )

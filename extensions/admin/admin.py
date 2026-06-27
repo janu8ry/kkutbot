@@ -97,7 +97,7 @@ class Admin(commands.Cog, name="관리자"):
         대상의 정보를 수정합니다.
         대상이 주어지지 않았다면 공용 데이터를 수정합니다.
         """
-        embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config.colors.help)
+        embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config.colors.green)
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 

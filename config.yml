@@ -21,9 +21,9 @@ token:
   dbl: ${TOKEN_DBL}
 
 colors:
-  general: 0x4374D9
-  error: 0xCC3D3D
-  help: 0x47C83E
+  blue: 0x4374D9
+  red: 0xCC3D3D
+  green: 0x47C83E
 
 # list of admin ids that can use admin commands.
 admin:

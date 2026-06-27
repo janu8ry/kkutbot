@@ -23,7 +23,7 @@ class HelpDropdown(discord.ui.Select):
         embed = discord.Embed(
             title=fmt(f"{{help}} {self.values[0]} 명령어 도움말"),
             description=f"🔸 {cmd.help.split('--')[0] or '도움말이 없습니다.'}",
-            color=config.colors.help,
+            color=config.colors.green,
         )
         if len(body := cmd.help.split("--")) > 1:
             embed.add_field(name="", value="", inline=False)

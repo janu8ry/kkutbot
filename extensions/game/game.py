@@ -81,7 +81,7 @@ class Game(commands.Cog, name="게임"):
                 fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
             )
         if mode is None:
-            embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.general)
+            embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.blue)
             embed.add_field(name=":one:", value="- 솔로 랭킹전", inline=False)
             embed.add_field(name=":two:", value="- 서버원들과 친선전", inline=False)
             embed.add_field(name=":three:", value="- 쿵쿵따", inline=False)

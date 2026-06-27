@@ -35,14 +35,14 @@ class Attendance(commands.Cog, name="출석"):
         bonus = False
 
         if user.attendance[str(week_today)] == today:
-            embed = discord.Embed(description=fmt("{denied} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."), color=config.colors.error)
+            embed = discord.Embed(description=fmt("{denied} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."), color=config.colors.red)
         else:
             user.points += 100
             user.attendance["times"] += 1
             user.attendance[str(week_today)] = today
             public = await self.bot.db.get_public()
             public.attendance += 1
-            embed = discord.Embed(title="출석 완료!", description=fmt("+`100` {points} 를 받았습니다!"), color=config.colors.help)
+            embed = discord.Embed(title="출석 완료!", description=fmt("+`100` {points} 를 받았습니다!"), color=config.colors.green)
             embed.add_field(name="", value="")
             weekly = [user.attendance[str(i)] == weekdays[i] for i in range(7)]
             if week_today == 6 and all(weekly):

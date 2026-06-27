@@ -36,7 +36,7 @@ class Reward(commands.Cog, name="포인트"):
             if (today := datetime.today().toordinal()) != user.latest_reward:
                 points = random.randint(50, 150)
                 user.points += points
-                embed = discord.Embed(title="포인트 수령 성공!", description=fmt(f"+{points} {{points}} 를 받았습니다!"), color=config.colors.help)
+                embed = discord.Embed(title="포인트 수령 성공!", description=fmt(f"+{points} {{points}} 를 받았습니다!"), color=config.colors.green)
                 embed.set_thumbnail(url=self.bot.emoji("bonus").url)
                 user.latest_reward = today
                 public = await self.bot.db.get_public()
@@ -46,12 +46,12 @@ class Reward(commands.Cog, name="포인트"):
                 await ctx.reply(embed=embed)
             else:
                 embed = discord.Embed(
-                    description=fmt("{denied} 이미 포인트를 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!"), color=config.colors.error
+                    description=fmt("{denied} 이미 포인트를 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!"), color=config.colors.red
                 )
                 await ctx.reply(embed=embed)
         else:
             embed = discord.Embed(
                 description=fmt("{denied} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n반영까지 1-2분 정도 소요될 수 있습니다."),
-                color=config.colors.error,
+                color=config.colors.red,
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())

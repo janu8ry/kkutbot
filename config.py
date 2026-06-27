@@ -92,9 +92,9 @@ class Token:
 
 @dataclass(frozen=True)
 class Color:
-    general: int = field(default_factory=lambda: _config("colors.general"))
-    error: int = field(default_factory=lambda: _config("colors.error"))
-    help: int = field(default_factory=lambda: _config("colors.help"))
+    blue: int = field(default_factory=lambda: _config("colors.blue"))
+    red: int = field(default_factory=lambda: _config("colors.red"))
+    green: int = field(default_factory=lambda: _config("colors.green"))
 
 
 @dataclass(frozen=True)

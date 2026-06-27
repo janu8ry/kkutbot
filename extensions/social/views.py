@@ -67,7 +67,7 @@ class RankDropdown(discord.ui.Select):
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(i, query.split('.'))}`" for idx, i in enumerate(rank)]
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
-        embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.help)
+        embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.green)
         coros = []
         for path in self.categories["main"]:
             if path in self.categories["general"]:
@@ -105,10 +105,10 @@ class RankDropdown(discord.ui.Select):
             embed = discord.Embed(
                 title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {self.values[0]}"),
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
-                color=config.colors.help,
+                color=config.colors.green,
             )
         else:
-            embed = discord.Embed(title=fmt(f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드"), color=config.colors.help)
+            embed = discord.Embed(title=fmt(f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드"), color=config.colors.green)
             coros = []
             for path in ("win", "best", "winrate"):
                 full_path = f"game.{self.categories['game'][category]}.{path}"
