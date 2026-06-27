@@ -32,7 +32,7 @@ def dict_emojis() -> dict[str, str]:
 
 def fmt(text: str) -> str:
     """
-    Replaces ``{emoji_name}`` placeholders in the text with actual emojis.
+    Replaces "{emoji_name}" placeholders in the text with actual emojis.
     Parameters
     ----------
     text : str
