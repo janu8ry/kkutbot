@@ -2,7 +2,7 @@ from typing import Annotated, Any
 
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
-from pymongo import TEXT
+from pymongo import TEXT  # noqa
 
 __all__ = ["User", "Guild", "Public"]
 
