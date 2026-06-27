@@ -50,19 +50,19 @@ async def before_command(ctx: commands.Context) -> None:
     user.command_used += 1
     user.latest_usage = round(time.time())
 
-    if ctx.guild:
-        guild = await bot.db.get_guild(ctx.guild)
-        guild.latest_usage = round(time.time())
-        guild.command_used += 1
-        await bot.db.save(guild)
+    if guild := ctx.guild:
+        guild_data = await bot.db.get_guild(guild)
+        guild_data.latest_usage = round(time.time())
+        guild_data.command_used += 1
+        await bot.db.save(guild_data)
 
-        if not ctx.guild.chunked:
-            await ctx.guild.chunk()
+        if not guild.chunked:
+            await guild.chunk()
 
     public = await bot.db.get_public()
     public.command_used += 1
     public.latest_usage = round(time.time())
-    cmd_name = ctx.command.qualified_name.replace("$", "_")
+    cmd_name = ctx.command.qualified_name.replace("$", "_")  # type: ignore
     if cmd_name in public.commands:
         public.commands[cmd_name] += 1
     else:
@@ -86,7 +86,7 @@ async def before_command(ctx: commands.Context) -> None:
     if isinstance(ctx.channel, discord.DMChannel):
         logger.command(f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
     else:
-        logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")
+        logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")   # type: ignore
 
 
 @bot.event
@@ -137,11 +137,11 @@ async def on_command_completion(ctx: commands.Context) -> None:
 
 @bot.check
 async def check(ctx: commands.Context) -> bool:
-    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:
+    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:  # noqa
         try:
             embed = discord.Embed(
                 title="오류",
-                description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"
+                description=f"{ctx.channel.mention}에서 끝봇에게 메시지 보내기 권한이 없어서 명령어를 사용할 수 없습니다.\n"  # noqa
                 f"끝봇에게 해당 권한을 지급한 후 다시 시도해주세요.",
                 color=config.colors.error,
             )
@@ -157,13 +157,13 @@ async def check(ctx: commands.Context) -> bool:
 async def on_interaction(interaction: discord.Interaction) -> None:
     if interaction.type == discord.InteractionType.component:
         kst = timezone(timedelta(hours=9))
-        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
+        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))  # type: ignore
         if interaction_created < bot.started_at:
             types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
             await interaction.response.send_message(
                 embed=discord.Embed(
                     description=fmt(
-                        f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."
+                        f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."  # type: ignore
                     ),
                     color=config.colors.error,
                 ),
@@ -172,7 +172,9 @@ async def on_interaction(interaction: discord.Interaction) -> None:
 
 
 @bot.event
-async def on_command_error(ctx: commands.Context, error: type[commands.CommandError | commands.HybridCommandError]) -> None:
+async def on_command_error(ctx: commands.Context, error: commands.CommandError | commands.HybridCommandError) -> None:
+    if not ctx.command:
+        return
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(
             fmt(
@@ -199,7 +201,8 @@ async def on_command_error(ctx: commands.Context, error: type[commands.CommandEr
     elif isinstance(error, commands.CommandOnCooldown):
         if ctx.author.id in config.admin and ctx.command.name != "override":
             try:
-                return await ctx.reinvoke()
+                await ctx.reinvoke()
+                return
             except TypeError:
                 pass
         embed = discord.Embed(
@@ -214,7 +217,7 @@ async def on_command_error(ctx: commands.Context, error: type[commands.CommandEr
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         usage = "사용법 도움말이 없습니다."
         if ctx.command.name != "jishaku":
-            for text in ctx.command.help.split("--"):
+            for text in ctx.command.help.split("--"):  # noqa
                 if text.startswith("사용법"):
                     usage = text[3:]
         else:
@@ -250,7 +253,7 @@ async def on_command_error(ctx: commands.Context, error: type[commands.CommandEr
         extension_frames = [f for f in project_frames if f"extensions{os.sep}" in f.filename]
         frame = (extension_frames or project_frames or all_frames)[-1]
         filename = frame.filename
-        line_no = frame.lineno
+        line_no = frame.lineno or 0
         end_line_no = getattr(frame, "end_lineno", None) or line_no
         if end_line_no > line_no:
             line_text = "\n".join(linecache.getline(filename, ln).rstrip() for ln in range(line_no, end_line_no + 1))
@@ -272,9 +275,10 @@ async def on_command_error(ctx: commands.Context, error: type[commands.CommandEr
 
         error_id = str(uuid.uuid4())[:6]
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.error)
+        loc = f"{guild} (`{guild.id}`)" if (guild := ctx.guild) else "DM"
         error_embed.add_field(
             name="에러 발생 위치",
-            value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- 서버: {ctx.guild} (`{ctx.guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)",
+            value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n- {loc}\n- 채널: {ctx.channel} (`{ctx.channel.id}`)",
         )
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
@@ -288,7 +292,7 @@ async def on_command_error(ctx: commands.Context, error: type[commands.CommandEr
                 title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.error
             )
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
-            await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)
+            await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
         logger.error(
             f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}\n"
             f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})"
@@ -317,8 +321,9 @@ async def on_guild_join(guild: discord.Guild) -> None:
     except discord.errors.Forbidden:
         pass
     try:
-        owner = await bot.fetch_user(guild.owner_id)
-        await owner.send(embed=embed, view=ServerInvite())
+        if owner_id := guild.owner_id:
+            owner = await bot.fetch_user(owner_id)
+            await owner.send(embed=embed, view=ServerInvite())
     except discord.errors.Forbidden:
         pass
 
@@ -341,8 +346,9 @@ async def on_guild_join(guild: discord.Guild) -> None:
         embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`")
         try:
             await announce.send(embed=embed)
-            owner = await bot.fetch_user(guild.owner_id)
-            await owner.send(embed=embed)
+            if owner_id := guild.owner_id:
+                owner = await bot.fetch_user(owner_id)
+                await owner.send(embed=embed)
         except discord.errors.Forbidden:
             pass
 

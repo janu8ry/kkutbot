@@ -12,7 +12,7 @@ __all__ = ["get_nested_dict", "get_nested_property", "config"]
 
 def _expand_env(value: Any) -> Any:
     if isinstance(value, str):
-        return re.sub(r"\$\{([^}]+)\}", lambda m: os.environ.get(m.group(1), m.group(0)), value)
+        return re.sub(r"\$\{([^}]+)}", lambda m: os.environ.get(str(m.group(1)), str(m.group(0))), value)
     if isinstance(value, dict):
         return {k: _expand_env(v) for k, v in value.items()}
     if isinstance(value, list):

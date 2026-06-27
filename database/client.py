@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any
+from typing import Any, Literal, overload
 
 import discord
 from beanie import init_beanie
@@ -27,7 +27,7 @@ class Client:
         self.db = dbconfig.db
         self.username = dbconfig.username
         self.password = dbconfig.password
-        self.client: AsyncIOMotorDatabase | None
+        self.client: AsyncIOMotorDatabase = None  # type: ignore
 
     async def setup_db(self) -> None:
         db_options = {}
@@ -38,9 +38,15 @@ class Client:
         motor_client = AsyncIOMotorClient(host=self.host, port=self.port, **db_options)
         motor_client.append_metadata = motor_client.delegate.append_metadata
         self.client = motor_client[self.db]
-        await init_beanie(database=self.client, document_models=[User, Guild, Public])
+        await init_beanie(database=self.client, document_models=[User, Guild, Public])  # type: ignore
         logger.info("DB 연결 완료!")
 
+    @overload
+    @staticmethod
+    async def get_user(user: UserType, *, safe: Literal[True] = ...) -> User: ...
+    @overload
+    @staticmethod
+    async def get_user(user: UserType, *, safe: Literal[False]) -> User | None: ...
     @staticmethod
     async def get_user(user: UserType, *, safe: bool = True) -> User | None:
         """
@@ -57,18 +63,24 @@ class Client:
             User model from database
         """
         if isinstance(user, int):
-            document: User = await User.get(user)
+            document = await User.get(user)
         else:
-            document: User = await User.get(user.id)
-        if document:
-            if document.name and document.name != user.name:
-                document.name = user.name
-                await document.save_changes()
-        elif safe:
-            document = User(id=user.id, name=user.name)
+            document = await User.get(user.id)
+            if document:
+                if document.name and document.name != user.name:
+                    document.name = user.name
+                    await document.save_changes()
+            elif safe:
+                document = User(id=user.id, name=user.name)
 
         return document
 
+    @overload
+    @staticmethod
+    async def get_guild(guild: discord.Guild | int, *, safe: Literal[True] = ...) -> Guild: ...
+    @overload
+    @staticmethod
+    async def get_guild(guild: discord.Guild | int, *, safe: Literal[False]) -> Guild | None: ...
     @staticmethod
     async def get_guild(guild: discord.Guild | int, *, safe: bool = True) -> Guild | None:
         """
@@ -85,11 +97,11 @@ class Client:
             Guild model from database
         """
         if isinstance(guild, int):
-            document: Guild = await Guild.get(guild)
+            document = await Guild.get(guild)
         else:
-            document: Guild = await Guild.get(guild.id)
+            document = await Guild.get(guild.id)
         if not document and safe:
-            document = Guild(id=guild.id, name=guild.name)
+            document = Guild(id=guild if isinstance(guild, int) else guild.id)
 
         return document
 
@@ -117,7 +129,7 @@ class Client:
 
     @staticmethod
     async def get_public() -> Public:
-        document: Public = await Public.get("public")
+        document = await Public.get("public")
         if not document:
             document = Public(id="public")
 
@@ -141,7 +153,7 @@ class Client:
             return document
 
     async def read_user(self, target: int, path: str | None = None) -> Any:
-        main_data: dict[Any, Any] = await self.client.user.find_one({"_id": getattr(target, "id", target)})
-        if path is None:
+        main_data: dict[str, Any] | None = await self.client.user.find_one({"_id": getattr(target, "id", target)})
+        if path is None or main_data is None:
             return main_data
         return get_nested_dict(main_data, path.split("."))

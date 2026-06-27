@@ -37,7 +37,7 @@ class Reward(commands.Cog, name="포인트"):
                 points = random.randint(50, 150)
                 user.points += points
                 embed = discord.Embed(title="포인트 수령 성공!", description=fmt(f"+{points} {{points}} 를 받았습니다!"), color=config.colors.help)
-                embed.set_thumbnail(url=self.bot.get_emoji(config.emojis["bonus"]).url)
+                embed.set_thumbnail(url=self.bot.emoji(config.emojis["bonus"]).url)
                 user.latest_reward = today
                 public = await self.bot.db.get_public()
                 public.reward += 1
