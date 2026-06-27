@@ -150,6 +150,15 @@ class Kkutbot(commands.AutoShardedBot):
     async def update_koreanbots(self) -> None:
         await self.koreanbots.update_bot_info(self.application_id, len(self.guilds), self.shard_count or 1)  # type: ignore
 
+    def emoji(self, name: str) -> discord.Emoji:
+        emoji_id = config.emojis.get(name)
+        if emoji_id is None:
+            raise KeyError
+        result = self.get_emoji(emoji_id)
+        if result is None:
+            raise ValueError
+        return result
+
     async def if_koreanbots_voted(self, user: discord.User) -> bool:
         try:
             response = await self.koreanbots.get_user_is_voted_bot(config.bot_id, user.id)

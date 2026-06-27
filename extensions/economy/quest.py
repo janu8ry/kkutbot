@@ -37,6 +37,6 @@ class Quest(commands.Cog, name="퀘스트"):
                 desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"
                 title = f"🔹 {info['name']}"
             embed.add_field(name=fmt(f"{title} `{info['reward'][0]}`{{{info['reward'][1]}}}"), value=desc, inline=False)
-        embed.set_thumbnail(url=self.bot.emoji(config.emojis["quest"]).url)
+        embed.set_thumbnail(url=self.bot.emoji("quest").url)
         embed.set_footer(text="모든 퀘스트를 완료하고 추가 보상을 받아가세요!")
         await ctx.reply(embed=embed)

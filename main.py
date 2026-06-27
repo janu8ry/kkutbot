@@ -105,7 +105,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
         embed = discord.Embed(title="퀘스트 클리어!", description=desc, color=config.colors.help)
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["congrats"]).url)
+        embed.set_thumbnail(url=bot.emoji("congrats").url)
         embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
 
@@ -116,7 +116,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
             user.points += bonus_point
             user.medals += bonus_medal
             bonus_embed.add_field(name="추가 보상", value=fmt(f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}"))
-            bonus_embed.set_thumbnail(url=bot.get_emoji(config.emojis["bonus"]).url)
+            bonus_embed.set_thumbnail(url=bot.emoji("bonus").url)
             await ctx.reply(embed=bonus_embed)
 
     alert_message = []
@@ -208,11 +208,11 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         embed = discord.Embed(
             title="잠깐!", description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.", color=config.colors.error
         )
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
+        embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.BadUnionArgument):
         embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.error)
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
+        embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         usage = "사용법 도움말이 없습니다."
@@ -223,7 +223,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         else:
             usage = ctx.command.help
         embed = discord.Embed(title="잘못된 사용법입니다.", description=f"🔹 `{ctx.command}` **사용법**\n{usage}", color=config.colors.general)
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
+        embed.set_thumbnail(url=bot.emoji("denied").url)
         embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):

@@ -54,9 +54,9 @@ class Attendance(commands.Cog, name="출석"):
                 embed.add_field(name="🔸 보너스 보상", value="일주일동안 모두 출석했습니다!", inline=False)
                 embed.add_field(name="", value=fmt(f"+`{bonus_point}`{{points}}"), inline=False)
                 embed.add_field(name="", value=fmt(f"+`{bonus_medal}` {{medals}}"), inline=True)
-                embed.set_thumbnail(url=self.bot.emoji(config.emojis["bonus"]).url)
+                embed.set_thumbnail(url=self.bot.emoji("bonus").url)
             else:
-                embed.set_thumbnail(url=self.bot.emoji(config.emojis["attendance"]).url)
+                embed.set_thumbnail(url=self.bot.emoji("attendance").url)
                 embed.set_footer(text="일주일 동안 매일 출석하고 추가 보상을 받아가세요!")
             await self.bot.db.save(user)
             await self.bot.db.save(public)

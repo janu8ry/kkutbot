@@ -33,7 +33,7 @@ class GameBase:
                 description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> {emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
                 color=config.colors.help,
             )
-            embed.set_thumbnail(url=self.ctx.bot.emoji(config.emojis["levelup"]).url)
+            embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
         else:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 강등..."),
@@ -41,7 +41,7 @@ class GameBase:
                 f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
                 color=config.colors.error,
             )
-            embed.set_thumbnail(url=self.ctx.bot.emoji(config.emojis["leveldown"]).url)
+            embed.set_thumbnail(url=self.ctx.bot.emoji("leveldown").url)
         return await self.ctx.send(player.mention, embed=embed, mention_author=True)
 
     @property
@@ -108,7 +108,7 @@ class SoloGame(GameBase):
         embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"**{result}**  |  {desc}", color=color)
         embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
         embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if result == '승리' else ''}{points}` {{points}}"))
-        embed.set_thumbnail(url=self.ctx.bot.emoji(config.emojis[emoji]).url)
+        embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
         if result in ("패배", "포기"):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
             if possibles:
@@ -200,7 +200,7 @@ class MultiGame(GameBase):
 
     async def player_out(self, gg=False):
         embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config.colors.error)
-        embed.set_thumbnail(url=self.ctx.bot.emoji(config.emojis["surrender" if gg else "dead"]).url)
+        embed.set_thumbnail(url=self.ctx.bot.emoji("surrender" if gg else "dead").url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
             random.shuffle(possibles)
@@ -235,7 +235,7 @@ class MultiGame(GameBase):
                 user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
                 await self.ctx.bot.db.save(user)
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.general)
-        embed.set_thumbnail(url=self.ctx.bot.emoji(config.emojis["gameover"]).url)
+        embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.send(embed=embed)
         self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
 
