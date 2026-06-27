@@ -86,7 +86,7 @@ async def before_command(ctx: commands.Context) -> None:
     if isinstance(ctx.channel, discord.DMChannel):
         logger.command(f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
     else:
-        logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")   # type: ignore
+        logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")  # type: ignore
 
 
 @bot.event
