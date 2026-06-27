@@ -69,11 +69,10 @@ class Kkutbot(commands.AutoShardedBot):
     async def try_reload(self, name: str) -> None:
         if name == "__pycache__":
             return
-        path = f"extensions.{name}"
         try:
-            await self.reload_extension(path)
+            await self.reload_extension(name)
         except commands.ExtensionNotLoaded:
-            await self.load_extension(path)
+            await self.load_extension(name)
         logger.info(f"카테고리 '{name}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
@@ -145,7 +144,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def reload_all(self) -> None:
         for package in os.listdir("extensions"):
             if os.path.isdir(f"extensions/{package}"):
-                await self.try_reload(package)
+                await self.try_reload(f"extensions.{package}")
 
     async def update_koreanbots(self) -> None:
         await self.koreanbots.update_bot_info(self.application_id, len(self.guilds), self.shard_count or 1)  # type: ignore
