@@ -46,12 +46,12 @@ class Reward(commands.Cog, name="포인트"):
                 await ctx.reply(embed=embed)
             else:
                 embed = discord.Embed(
-                    description=fmt("{denyed} 이미 포인트를 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!"), color=config.colors.error
+                    description=fmt("{denied} 이미 포인트를 받았습니다.\n내일 하트 추가 후 다시 수령 가능합니다!"), color=config.colors.error
                 )
                 await ctx.reply(embed=embed)
         else:
             embed = discord.Embed(
-                description=fmt("{denyed} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n반영까지 1-2분 정도 소요될 수 있습니다."),
+                description=fmt("{denied} 한국 디스코드 리스트에서 **하트 추가**를 누른 후 사용해 주세요!\n반영까지 1-2분 정도 소요될 수 있습니다."),
                 color=config.colors.error,
             )
             await ctx.reply(embed=embed, view=KoreanBotsVote())

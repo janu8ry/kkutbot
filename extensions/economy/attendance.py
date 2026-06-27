@@ -35,7 +35,7 @@ class Attendance(commands.Cog, name="출석"):
         bonus = False
 
         if user.attendance[str(week_today)] == today:
-            embed = discord.Embed(description=fmt("{denyed} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."), color=config.colors.error)
+            embed = discord.Embed(description=fmt("{denied} 이미 출석했습니다. 내일 0시 이후에 다시 시도해 주세요."), color=config.colors.error)
         else:
             user.points += 100
             user.attendance["times"] += 1

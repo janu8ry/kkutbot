@@ -34,7 +34,7 @@ class Announcement(commands.Cog, name="공지"):
                 embed.add_field(name=f"🔹 {msg['title']} - `{time_convert(time.time() - msg['time'])} 전`", value=msg["value"], inline=False)
                 pages.append(embed)
         else:
-            embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), description=fmt("{denyed} 공지사항이 없습니다."), color=config.colors.help)
+            embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), description=fmt("{denied} 공지사항이 없습니다."), color=config.colors.help)
             pages.append(embed)
         user.alerts.announcements = True
         await self.bot.db.save(user)

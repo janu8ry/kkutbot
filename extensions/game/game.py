@@ -78,7 +78,7 @@ class Game(commands.Cog, name="게임"):
         user = await ctx.bot.db.get_user(ctx.author)
         if user.points <= 30:
             return await ctx.reply(
-                fmt("{denyed} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
+                fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
             )
         if mode is None:
             embed = discord.Embed(title="📔 끝말잇기", description="🔸 끝말잇기 게임의 모드를 선택해 주세요.", color=config.colors.general)
@@ -93,7 +93,7 @@ class Game(commands.Cog, name="게임"):
         else:
             mode = mode.value
             if not (1 <= mode <= 3):
-                return await ctx.reply(fmt("{denyed} 존재하지 않는 모드입니다."))
+                return await ctx.reply(fmt("{denied} 존재하지 않는 모드입니다."))
 
         if mode in (1, 3):
             is_kkd = mode == 3
@@ -110,29 +110,29 @@ class Game(commands.Cog, name="게임"):
                     du = get_transition(game.bot_word)
                     if user_word in ("ㅈㅈ", "gg", "GG"):
                         if len(game.used_words) < 10:
-                            await game.send_info_embed(msg, "{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                            await game.send_info_embed(msg, "{denied} 5턴 이상 진행해야 포기할 수 있습니다.")
                             continue
                         else:
                             await game.game_end("포기")
                             return
                     elif user_word in game.used_words:
-                        await game.send_info_embed(msg, f"{{denyed}} **{user_word}** (은)는 이미 사용한 단어입니다.")
+                        await game.send_info_embed(msg, f"{{denied}} **{user_word}** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
-                        await game.send_info_embed(msg, f"{{denyed}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력해 주세요.")
+                        await game.send_info_embed(msg, f"{{denied}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력해 주세요.")
                         continue
                     elif len(user_word) != 3 and is_kkd:
-                        await game.send_info_embed(msg, "{denyed} 세글자 단어만 사용 가능합니다.")
+                        await game.send_info_embed(msg, "{denied} 세글자 단어만 사용 가능합니다.")
                         continue
                     elif user_word in get_word(game.bot_word):
                         if (game.score == 0) and is_hanbang(user_word, game.used_words, kkd=is_kkd):
-                            await game.send_info_embed(msg, "{denyed} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
+                            await game.send_info_embed(msg, "{denied} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
                             game.used_words.append(user_word)
                             game.score += 1
                     else:
-                        await game.send_info_embed(msg, f"{{denyed}} **{user_word}** (은)는 없는 단어입니다.")
+                        await game.send_info_embed(msg, f"{{denied}} **{user_word}** (은)는 없는 단어입니다.")
                         continue
                 final_list = [x for x in get_word(user_word) if x not in game.used_words and (len(x) == 3 if is_kkd else True)]
                 if not final_list:
@@ -153,7 +153,7 @@ class Game(commands.Cog, name="게임"):
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
             if ctx.channel.id in self.bot.guild_multi_games:
-                return await ctx.reply(fmt("{denyed} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."))
+                return await ctx.reply(fmt("{denied} 이 끝말잇기 모드는 하나의 채널에서 한개의 게임만 플레이 가능합니다."))
 
             self.bot.guild_multi_games.append(ctx.channel.id)
             game = MultiGame(ctx, hosting_time=round(time.time()))
@@ -191,7 +191,7 @@ class Game(commands.Cog, name="게임"):
                     du = get_transition(game.word)
                     if user_word in ("ㅈㅈ", "gg", "GG"):
                         if game.turn < 5:
-                            await game.send_info_embed("{denyed} 5턴 이상 진행해야 포기할 수 있습니다.")
+                            await game.send_info_embed("{denied} 5턴 이상 진행해야 포기할 수 있습니다.")
                             continue
                         else:
                             await game.player_out(gg=True)
@@ -202,14 +202,14 @@ class Game(commands.Cog, name="게임"):
                                 await game.update_embed(game.game_embed())
                                 await game.send_info_embed()
                     elif user_word in game.used_words:
-                        await game.send_info_embed(f"{{denyed}} **{user_word}** (은)는 이미 사용한 단어입니다.")
+                        await game.send_info_embed(f"{{denied}} **{user_word}** (은)는 이미 사용한 단어입니다.")
                         continue
                     elif user_word[0] not in du:
-                        await game.send_info_embed(f"{{denyed}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력 해 주세요.")
+                        await game.send_info_embed(f"{{denied}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력 해 주세요.")
                         continue
                     elif user_word in get_word(game.word):
                         if ((game.turn // len(game.alive)) == 0) and is_hanbang(user_word, game.used_words):
-                            await game.send_info_embed("{denyed} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
+                            await game.send_info_embed("{denied} 첫번째 회차에서는 한방단어를 사용할 수 없습니다.")
                             continue
                         elif user_word[0] in du:
                             game.used_words.append(user_word)
@@ -229,7 +229,7 @@ class Game(commands.Cog, name="게임"):
                             else:
                                 await game.send_info_embed()
                     else:
-                        await game.send_info_embed(f"{{denyed}} **{user_word}** (은)는 없는 단어입니다.")
+                        await game.send_info_embed(f"{{denied}} **{user_word}** (은)는 없는 단어입니다.")
                         continue
 
         elif mode == 0:

@@ -40,7 +40,7 @@ class Profile(commands.Cog, name="사용자"):
             embed = discord.Embed(
                 title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.error
             )
-            embed.set_thumbnail(url=self.bot.emoji(config.emojis["denyed"]).url)
+            embed.set_thumbnail(url=self.bot.emoji(config.emojis["denied"]).url)
             return await ctx.reply(embed=embed)
 
         if (color := user.color.value) == 0:

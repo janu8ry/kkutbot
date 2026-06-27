@@ -163,7 +163,7 @@ async def on_interaction(interaction: discord.Interaction) -> None:
             await interaction.response.send_message(
                 embed=discord.Embed(
                     description=fmt(
-                        f"{{denyed}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."  # type: ignore
+                        f"{{denied}} 이 {types[interaction.data['component_type'] - 1]} 너무 오래되어 사용할 수 없어요.\n명령어를 새로 입력해주세요."  # type: ignore
                     ),
                     color=config.colors.error,
                 ),
@@ -178,26 +178,26 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(
             fmt(
-                f"{{denyed}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다."
+                f"{{denied}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다."
             )
         )
     elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(
             fmt(
-                f"{{denyed}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
+                f"{{denied}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
             )
         )
     elif isinstance(error, commands.errors.NotOwner):
         return
     elif isinstance(error, commands.NoPrivateMessage):
-        await ctx.reply(fmt("{denyed} DM으로는 실행할 수 없는 기능입니다."))
+        await ctx.reply(fmt("{denied} DM으로는 실행할 수 없는 기능입니다."))
     elif isinstance(error, commands.errors.PrivateMessageOnly):
-        await ctx.reply(fmt("{denyed} DM으로만 실행할 수 있는 기능입니다."))
+        await ctx.reply(fmt("{denied} DM으로만 실행할 수 있는 기능입니다."))
     elif isinstance(error, commands.CheckFailure):
         if ctx.command.name.startswith("$"):
             return
     elif isinstance(error, commands.errors.DisabledCommand):
-        await ctx.reply(fmt("{denyed} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!"))
+        await ctx.reply(fmt("{denied} 일시적으로 사용할 수 없는 명령어 입니다. 잠시만 기다려 주세요!"))
     elif isinstance(error, commands.CommandOnCooldown):
         if ctx.author.id in config.admin and ctx.command.name != "override":
             try:
@@ -208,11 +208,11 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         embed = discord.Embed(
             title="잠깐!", description=f"<t:{round(time.time() + error.retry_after)}:R>에 다시 시도해 주세요.", color=config.colors.error
         )
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.BadUnionArgument):
         embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.error)
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
         usage = "사용법 도움말이 없습니다."
@@ -223,7 +223,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         else:
             usage = ctx.command.help
         embed = discord.Embed(title="잘못된 사용법입니다.", description=f"🔹 `{ctx.command}` **사용법**\n{usage}", color=config.colors.general)
-        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denyed"]).url)
+        embed.set_thumbnail(url=bot.get_emoji(config.emojis["denied"]).url)
         embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):
@@ -233,13 +233,13 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             except TypeError:
                 pass
         if error.per == commands.BucketType.guild:
-            await ctx.reply(fmt(f"{{denyed}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
+            await ctx.reply(fmt(f"{{denied}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
         elif error.per == commands.BucketType.channel:
-            await ctx.reply(fmt(f"{{denyed}} 해당 채널에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
+            await ctx.reply(fmt(f"{{denied}} 해당 채널에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
         elif error.per == commands.BucketType.user:
-            await ctx.reply(fmt(f"{{denyed}} 이미 `{ctx.command}` 명령어가 진행중입니다."))
+            await ctx.reply(fmt(f"{{denied}} 이미 `{ctx.command}` 명령어가 진행중입니다."))
         else:
-            await ctx.reply(fmt(f"{{denyed}} 이 명령어는 이미 {error.number}개 실행되어 있어 더 이상 실행할 수 없습니다."))
+            await ctx.reply(fmt(f"{{denied}} 이 명령어는 이미 {error.number}개 실행되어 있어 더 이상 실행할 수 없습니다."))
     elif isinstance(error, commands.CommandNotFound):
         return
     else:

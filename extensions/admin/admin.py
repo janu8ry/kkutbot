@@ -64,7 +64,7 @@ class Admin(commands.Cog, name="관리자"):
         """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
         guild_data = await self.bot.db.get_guild(guild, safe=False)
         if not guild_data:
-            return await ctx.reply(fmt("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
+            return await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
         guild_data = guild_data.model_dump()
         guild_data["name"] = guild.name
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
@@ -108,7 +108,7 @@ class Admin(commands.Cog, name="관리자"):
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
         else:
-            await ctx.reply(fmt("{denyed} 해당 유저는 끝봇의 유저가 아닙니다."))
+            await ctx.reply(fmt("{denied} 해당 유저는 끝봇의 유저가 아닙니다."))
 
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
     async def delete_guilddata(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
@@ -117,7 +117,7 @@ class Admin(commands.Cog, name="관리자"):
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
         else:
-            await ctx.reply(fmt("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
+            await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기"))
     async def leave_guild(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
@@ -127,7 +127,7 @@ class Admin(commands.Cog, name="관리자"):
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
         else:
-            await ctx.reply(fmt("{denyed} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
+            await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
     @commands.command(name="$공지", usage="ㄲ$공지")
     async def announce_users(self, ctx: commands.Context):
