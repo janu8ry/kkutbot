@@ -71,7 +71,7 @@ def setup_command_logger() -> None:
         width=10000,
         force_terminal=True,
     )
-    stream_handler = RichHandler(rich_tracebacks=config.is_test, console=console)
+    stream_handler = RichHandler(console=console)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG)
 

@@ -296,7 +296,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
         logger.error(
             f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}\n"
-            f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})"
+            f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})",
+            exc_info=error,
         )
         capture_exception(error)
 
