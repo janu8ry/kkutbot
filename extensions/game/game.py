@@ -163,9 +163,9 @@ class Game(commands.Cog, name="게임"):
             view = HostGuildGame(ctx, game=game)
             view.message = await ctx.reply(embed=game.hosting_embed(), view=view)
             game.msg = view.message
-            is_timeout = await view.wait()
-            if view.value == "stop" or is_timeout:
-                self.bot.guild_multi_games.append(ctx.channel.id)
+            await view.wait()
+            if view.value != "start":
+                self.bot.guild_multi_games.remove(ctx.channel.id)
                 return
 
             await game.update_embed(game.game_embed())

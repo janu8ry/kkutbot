@@ -10,6 +10,9 @@ with open("static/wordlist.json", "r", encoding="utf-8") as f:
 with open("static/transition.json", "r", encoding="utf-8") as f:
     transition: dict[str, list[str]] = json.load(f)
 
+all_words: list[str] = [w for words in wordlist.values() for w in words]
+kkd_words: list[str] = [w for w in all_words if len(w) == 3]
+
 
 def get_transition(word: str) -> list[str]:
     if word[-1] in transition:
@@ -19,25 +22,20 @@ def get_transition(word: str) -> list[str]:
 
 
 def get_word(word: str) -> list[str]:
-    du = get_transition(word[-1])
+    du = get_transition(word)
     return_list = []
     for x in du:
         if x in wordlist:
-            return_list += wordlist[x[-1]]
+            return_list += wordlist[x]
     return return_list
 
 
 def choose_first_word(kkd: bool = False) -> str:
+    candidates = kkd_words if kkd else all_words
     while True:
-        random_list = random.choice(list(wordlist.values()))
-        bot_word = random.choice(random_list)
+        bot_word = random.choice(candidates)
         if len(get_word(bot_word)) >= 3:
-            if kkd:
-                if len(bot_word) == 3:
-                    break
-            else:
-                break
-    return bot_word
+            return bot_word
 
 
 def is_hanbang(word: str, used_words: list[str], kkd: bool = False) -> bool:

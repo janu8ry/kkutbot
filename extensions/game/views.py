@@ -90,10 +90,8 @@ class HostGuildGame(BaseView):
         await self.ctx.send(fmt(f"{{minus}} **{interaction.user}**님이 나갔습니다."))
         if len(self.game.players) == 0:
             await self.ctx.send(f"❌ 플레이어 수가 부족하여 **{self.game.host}** 님의 게임을 종료합니다.")
-            self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
             self.value = "stop"
             await self.disable_buttons(interaction)
-            self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
             self.stop()
             return
         await interaction.response.defer()
@@ -124,7 +122,6 @@ class HostGuildGame(BaseView):
             pass
         if len(self.game.players) < 2:
             await self.ctx.send(f"❌ 플레이어 수가 부족하여 **{self.game.host}**님의 게임을 종료합니다.")
-            self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
             self.value = "stop"
             self.stop()
             return

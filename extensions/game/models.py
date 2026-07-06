@@ -62,9 +62,9 @@ class SoloGame(GameBase):
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
 
-    async def send_info_embed(
-        self, msg: discord.Message | commands.Context, desc: str = "⏰ **10초** 안에 단어를 이어주세요!"
-    ) -> discord.Message | None:
+    async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str | None = None) -> discord.Message | None:
+        if desc is None:
+            desc = f"⏰ **{self.timeout}초** 안에 단어를 이어주세요!"
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
             description=f"🔸 현재 점수: `{self.score}` 점",
@@ -73,8 +73,6 @@ class SoloGame(GameBase):
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_transition(self.bot_word))})```", inline=False)
         embed.add_field(name="🔹 남은 시간", value=f"<t:{round(self.timeout + self.begin_time)}:R>", inline=False)
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
-        if self.kkd:
-            desc = desc.replace("10", "15")
         desc = fmt(desc)
         try:
             return await msg.reply(desc, embed=embed, delete_after=self.time_left, mention_author=True)
@@ -220,22 +218,21 @@ class MultiGame(GameBase):
         await self.msg.delete()
         desc = []
         self.final_score[self.now_player] = self.score
-        self.final_score["zero"] = 0
         rank = sorted(self.final_score.items(), key=lambda item: item[1], reverse=True)
+        rewards = [score for _, score in rank[1:]] + [0]
         emojis = ["{gold}", "{silver}", "{bronze}"]
-        for n, kv in enumerate(rank):
-            if n < len(rank) - 1:
-                user = await self.ctx.bot.db.get_user(kv[0])
-                desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {kv[0].mention} : +`{int(rank[n + 1][1]) * 2}` {{points}}")
-                user.points += int(rank[n + 1][1]) * 2
-                user.game.guild_multi.times += 1
-                user.latest_usage = time.time()
-                if int(rank[n + 1][1]) > user.game.guild_multi.best:
-                    user.game.guild_multi.best = self.score
-                if (n + 1) <= round((len(rank) - 1) / 2):
-                    user.game.guild_multi.win += 1
-                user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
-                await self.ctx.bot.db.save(user)
+        for n, (player, _) in enumerate(rank):
+            user = await self.ctx.bot.db.get_user(player)
+            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : +`{rewards[n] * 2}` {{points}}")
+            user.points += rewards[n] * 2
+            user.game.guild_multi.times += 1
+            user.latest_usage = round(time.time())
+            if rewards[n] > user.game.guild_multi.best:
+                user.game.guild_multi.best = self.score
+            if (n + 1) <= round(len(rank) / 2):
+                user.game.guild_multi.win += 1
+            user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
+            await self.ctx.bot.db.save(user)
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.send(embed=embed)
@@ -249,4 +246,5 @@ class MultiGame(GameBase):
             description=f"<t:{round(10 + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",
             color=config.colors.blue,
         )
-        return await self.msg.channel.send(f"{desc[0]} {self.now_player.mention}님, {desc[2:]}", embed=embed, delete_after=self.time_left)
+        head, _, tail = desc.partition(" ")
+        return await self.msg.channel.send(f"{head} {self.now_player.mention}님, {tail}", embed=embed, delete_after=self.time_left)
