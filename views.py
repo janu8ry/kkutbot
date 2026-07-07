@@ -31,8 +31,11 @@ class BaseView(discord.ui.View):
         for item in self.children:
             if not getattr(item, "url", None):
                 item.disabled = True
-        if self.message:
-            await self.message.edit(view=self)
+        try:
+            if self.message:
+                await self.message.edit(view=self)
+        except discord.NotFound:
+            pass
 
     async def disable_buttons(self, interaction: discord.Interaction, use_msg: bool = False) -> None:
         for item in self.children:
