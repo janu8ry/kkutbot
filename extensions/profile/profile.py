@@ -68,18 +68,9 @@ class Profile(commands.Cog, name="사용자"):
             color=config.colors.blue,
         )
 
-        modes = {
-            "rank_solo": user_data.game.rank_solo,
-            "rank_online": user_data.game.rank_online,
-            "kkd": user_data.game.kkd,
-            "long": user_data.game.long,
-            "guild_multi": user_data.game.guild_multi,
-            "online_multi": user_data.game.online_multi,
-        }
         for k, v in config.modelist.items():
-            stats_embed.add_field(
-                name=f"🔸 {k}", value=f"`{modes[v].win}` / `{modes[v].times}`회 승리 (`{modes[v].winrate}%`)\n최고 점수 : `{modes[v].best}`"
-            )
+            mode = getattr(user_data.game, v)
+            stats_embed.add_field(name=f"🔸 {k}", value=f"`{mode.win}` / `{mode.times}`회 승리 (`{mode.winrate}%`)\n최고 점수 : `{mode.best}`")
         stats_embed.add_field(
             name="🔸 기타",
             value=f"출석 횟수 : `{user_data.attendance['times']}`\n"

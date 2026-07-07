@@ -117,7 +117,7 @@ class RankDropdown(discord.ui.Select):
         elif category in self.categories["general"]:
             rank = self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][category], -1).limit(15)
             embed = discord.Embed(
-                title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {self.values[0]}"),
+                title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {category}"),
                 description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
                 color=config.colors.green,
             )

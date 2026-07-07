@@ -105,11 +105,11 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         try:
             data = self.data_value.value.strip()
             final_data = ast.literal_eval(data)
-        except SyntaxError:
+        except SyntaxError, ValueError:
             try:
                 data = '"' + self.data_value.value.strip() + '"'
                 final_data = ast.literal_eval(data)
-            except SyntaxError:
+            except SyntaxError, ValueError:
                 await interaction.response.send_message("올바른 값이 아닙니다.")
                 return self.stop()
         embed = discord.Embed(

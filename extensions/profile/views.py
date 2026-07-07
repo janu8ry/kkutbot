@@ -20,15 +20,15 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         self.view = view
 
     async def on_submit(self: InfoInput, interaction: discord.Interaction):
-        self.bio_text.value.replace("`", "")
+        bio = self.bio_text.value.replace("`", "")
         user = await self.ctx.bot.db.get_user(interaction.user)
-        user.bio = self.bio_text.value
+        user.bio = bio
         await self.ctx.bot.db.save(user)
         for btn in self.view.children:
             btn.disabled = True
         if self.view.message:
             await self.view.message.edit(view=self.view)
-        await interaction.response.send_message(fmt(f"{{done}} 소개말을 '{e_mk(e_mt(self.bio_text.value))}'(으)로 변경했습니다!"), ephemeral=True)
+        await interaction.response.send_message(fmt(f"{{done}} 소개말을 '{e_mk(e_mt(bio))}'(으)로 변경했습니다!"), ephemeral=True)
         self.view.stop()
 
 
@@ -49,7 +49,6 @@ class ProfileMenu(BaseView):
     async def stats(self: ProfileMenu, interaction: discord.Interaction, button: discord.ui.Button):
         button.disabled = True
         self.children[0].disabled = False
-        button.disabled = True
         await interaction.response.edit_message(embed=self.stats_embed, view=self)
 
 
