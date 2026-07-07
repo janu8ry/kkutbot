@@ -46,6 +46,8 @@ async def on_shard_ready(shard_id: int) -> None:
 
 @bot.before_invoke
 async def before_command(ctx: commands.Context) -> None:
+    if ctx.author.bot:
+        return
     user = await bot.db.get_user(ctx.author)
     user.command_used += 1
     user.latest_usage = round(time.time())

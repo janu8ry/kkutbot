@@ -30,6 +30,14 @@ class RankDropdown(discord.ui.Select):
             "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
             "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
+        category_emojis: dict[str, str] = {
+            "포인트": fmt("{points}"),
+            "메달": fmt("{medals}"),
+            "출석": fmt("{attendance}"),
+            "명령어": "⌨️",
+            "솔로": "1️⃣",
+            "쿵쿵따": "3️⃣",
+        }
         options = [
             discord.SelectOption(label="종합 랭킹", value="종합 랭킹", description="여러 분야의 랭킹을 한번에 확인합니다.", emoji=fmt("{ranking}"))
         ]
@@ -38,7 +46,7 @@ class RankDropdown(discord.ui.Select):
                 label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
                 value=category,
                 description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드'}의 랭킹을 확인합니다.",
-                emoji=fmt("{ranking}"),
+                emoji=category_emojis.get(category, fmt("{ranking}")),
             )
             options.append(option)
         super().__init__(placeholder="분야를 선택해 주세요.", options=options, row=1)

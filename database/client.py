@@ -65,6 +65,8 @@ class Client:
         if isinstance(user, int):
             document = await User.get(user)
         else:
+            if getattr(user, "bot", False):
+                return None
             document = await User.get(user.id)
             if document:
                 if document.name and document.name != user.name:
