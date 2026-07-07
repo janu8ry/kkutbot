@@ -1,32 +1,21 @@
 import itertools
 import logging
 import os.path
-import re
 import sys
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Callable, Iterable
+from importlib.metadata import distribution, packages_distributions
+from typing import Any, Iterable
 
 import discord
-import jishaku.repl.repl_builtins
 import psutil
 from discord.ext import commands
 from humanize import naturalsize
-from jishaku.codeblocks import Codeblock, codeblock_converter
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
-from jishaku.exception_handling import ReplResponseReactor
 from jishaku.features.baseclass import Feature
-from jishaku.features.root_command import natural_size
 from jishaku.flags import Flags
-from jishaku.functools import AsyncSender
 from jishaku.modules import ExtensionConverter, package_version
-from jishaku.repl import AsyncCodeExecutor
 from jishaku.types import ContextA
-
-try:
-    from importlib.metadata import distribution, packages_distributions
-except ImportError:
-    from importlib_metadata import distribution, packages_distributions  # noqa
 
 from config import config
 from database.models import Guild, Public, User
@@ -38,43 +27,25 @@ Flags.NO_UNDERSCORE = True
 Flags.FORCE_PAGINATOR = True
 
 
-def get_var_dict_from_ctx(ctx: ContextA, prefix: str = "_"):
-    """
-    Returns the dict to be used in REPL for a given Context.
-    """
-
-    raw_var_dict = {
-        "author": ctx.author,
-        "bot": ctx.bot,
-        "channel": ctx.channel,
-        "ctx": ctx,
-        "find": discord.utils.find,
-        "get": discord.utils.get,
-        "e_mk": discord.utils.escape_markdown,
-        "e_mt": discord.utils.escape_mentions,
-        "guild": ctx.guild,
-        "http_get_bytes": jishaku.repl.repl_builtins.http_get_bytes,
-        "http_get_json": jishaku.repl.repl_builtins.http_get_json,
-        "http_post_bytes": jishaku.repl.repl_builtins.http_post_bytes,
-        "http_post_json": jishaku.repl.repl_builtins.http_post_json,
-        "message": ctx.message,
-        "msg": ctx.message,
-        "db": ctx.bot.db,  # noqa
-        "User": User,
-        "Guild": Guild,
-        "General": Public,
-        "config": config,
-        "logger": logger,
-        "get_timestamp": get_timestamp,
-    }
-
-    return {f"{prefix}{k}": v for k, v in raw_var_dict.items()}
-
-
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
     """jishaku의 커스텀 확장 명령어들입니다."""
 
-    filepath_regex = re.compile(r"(?:\.\/+)?(.+?)(?:#L?(\d+)(?:\-L?(\d+))?)?$")  # noqa
+    def jsk_python_get_convertables(self, ctx: ContextA) -> tuple[dict[str, Any], dict[str, str]]:
+        arg_dict, convertables = super().jsk_python_get_convertables(ctx)
+        extra_vars = {
+            "e_mk": discord.utils.escape_markdown,
+            "e_mt": discord.utils.escape_mentions,
+            "db": ctx.bot.db,
+            "User": User,
+            "Guild": Guild,
+            "General": Public,
+            "config": config,
+            "logger": logger,
+            "get_timestamp": get_timestamp,
+        }
+        for key, value in extra_vars.items():
+            arg_dict[f"{Flags.SCOPE_PREFIX}{key}"] = value
+        return arg_dict, convertables
 
     @Feature.Command(name="jishaku", aliases=["ㅈ", "jsk"], invoke_without_command=True, ignore_extra=False)
     async def jsk(self, ctx: ContextA, days: int = 7):
@@ -96,7 +67,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         summary = [
             f"Jishaku `{package_version('jishaku')}`",
-            f"{dist_version}",
+            dist_version,
             f"`Python {sys.version}` on `{sys.platform}`".replace("\n", ""),
             f"봇은 <t:{self.load_time.timestamp():.0f}:R>에 로딩되었고, 카테고리는 <t:{self.start_time.timestamp():.0f}:R>에 로딩되었습니다.",
             "",
@@ -109,9 +80,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 try:
                     mem = proc.memory_full_info()
                     summary.append(
-                        f"`{natural_size(mem.rss)}`의 물리적 메모리와 "
-                        f"`{natural_size(mem.vms)}`의 가상 메모리, "
-                        f"`{natural_size(mem.uss)}`의 고유 메모리를 사용하고 있습니다."
+                        f"`{naturalsize(mem.rss)}`의 물리적 메모리와 "
+                        f"`{naturalsize(mem.vms)}`의 가상 메모리, "
+                        f"`{naturalsize(mem.uss)}`의 고유 메모리를 사용하고 있습니다."
                     )
                 except psutil.AccessDenied:
                     pass
@@ -144,10 +115,8 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         else:
             message_cache = "메시지 캐시가 비활성화 되어있습니다."
 
-        remarks = {True: "enabled", False: "disabled", None: "unknown"}
-
         *group, last = (
-            f"{intent.replace('_', ' ')} 인텐트: `{'활성화' if remarks.get(getattr(self.bot.intents, intent, None)) == 'enabled' else '비활성화'}`"
+            f"{intent.replace('_', ' ')} 인텐트: `{'활성화' if getattr(self.bot.intents, intent, False) else '비활성화'}`"
             for intent in ("presences", "members", "message_content")
         )
 
@@ -160,11 +129,11 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             size += float((await self.bot.db.client.command("collstats", collection))["size"])
 
         t1 = time.time()
-        await self.bot.db.client.general.find_one({"_id": "test"})
+        await self.bot.db.client.public.find_one({"_id": "public"})
         t1 = time.time() - t1
 
         t2 = time.time()
-        await self.bot.db.client.general.update_one({"_id": "test"}, {"$set": {"lastest": time.time()}}, upsert=True)
+        await self.bot.db.client.public.update_one({"_id": "public"}, {"$set": {"latest_usage": round(time.time())}})
         t2 = time.time() - t2
         database_summary = (
             f"데이터베이스의 용량은 `{naturalsize(size)}`이며,\n"
@@ -180,38 +149,6 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
 
         await ctx.reply("\n".join(summary))
-
-    @Feature.Command(parent="jsk", name="py", aliases=["python", "ㅍ"])
-    async def jsk_python(self, ctx: ContextA, *, argument: codeblock_converter):
-        """
-        Direct evaluation of Python code.
-        """
-
-        if TYPE_CHECKING:
-            argument: Codeblock = argument
-
-        arg_dict = get_var_dict_from_ctx(ctx, Flags.SCOPE_PREFIX)
-        arg_dict["_"] = self.last_result
-
-        scope = self.scope
-
-        try:
-            async with ReplResponseReactor(ctx.message):
-                with self.submit(ctx):
-                    executor = AsyncCodeExecutor(argument.content, scope, arg_dict=arg_dict)
-                    async for send, result in AsyncSender(executor):  # type: ignore
-                        send: Callable[..., None]
-                        result: Any
-
-                        if result is None:
-                            continue
-
-                        self.last_result = result  # noqa
-
-                        send(await self.jsk_python_result_handling(ctx, result))
-
-        finally:
-            scope.clear_intersection(arg_dict)
 
     @Feature.Command(parent="jsk", name="load", aliases=["reload", "ㄹ"])
     async def jsk_load(self, ctx: ContextA, *extensions: ExtensionConverter):

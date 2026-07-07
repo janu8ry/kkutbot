@@ -27,7 +27,12 @@ bot = core.Kkutbot()
 async def on_ready() -> None:
     await bot.reload_all()
 
-    to_replace = {"jishaku sh": ["쉘", "ㅅ", "실행"], "jishaku cat": ["캣", "ㅋ", "파일", "ㅍㅇ"], "jishaku sync": ["ㅅㅋ", "동기화", "ㄷ"]}
+    to_replace = {
+        "jishaku sh": ["쉘", "ㅅ", "실행"],
+        "jishaku cat": ["캣", "ㅋ", "파일", "ㅍㅇ"],
+        "jishaku sync": ["ㅅㅋ", "동기화", "ㄷ"],
+        "jishaku py": ["ㅍ"],
+    }
     for name, aliases in to_replace.items():
         bot.add_aliases(name, aliases)
 
