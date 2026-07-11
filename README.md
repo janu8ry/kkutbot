@@ -18,7 +18,7 @@
 - 개발자: [janu8ry](https://github.com/janu8ry), 관리자: [서진](https://github.com/seojin200403)
 - 개발 언어: python 3.14.6 ([discord.py 2.7.1](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 3.0.0
-- 데이터베이스: mongoDB 4.4   
+- 데이터베이스: mongoDB 7.0   
 - 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님, 끝봇의 프로필 사진을 만들어주신 [Tim232](https://github.com/Tim232)님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
@@ -44,7 +44,7 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 ## 요구사항
 - python 3.14.6
 - git
-- mongoDB 4.4
+- mongoDB 7.0
 - [uv](https://docs.astral.sh/uv/)
 - [pyenv](https://github.com/pyenv/pyenv)
 - [docker](https://www.docker.com/)
