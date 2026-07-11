@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Any, Literal, overload
+from typing import Any
 
 import discord
 from beanie import init_beanie
@@ -16,7 +16,7 @@ __all__ = ["Client"]
 logger = logging.getLogger("kkutbot")
 
 dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
-type UserType = discord.User | discord.Member | discord.ClientUser | int
+type UserType = discord.User | discord.Member
 type DocumentType = User | Guild | Public
 
 
@@ -41,69 +41,47 @@ class Client:
         await init_beanie(database=self.client, document_models=[User, Guild, Public])  # type: ignore
         logger.info("DB 연결 완료!")
 
-    @overload
     @staticmethod
-    async def get_user(user: UserType, *, safe: Literal[True] = ...) -> User: ...
-    @overload
-    @staticmethod
-    async def get_user(user: UserType, *, safe: Literal[False]) -> User | None: ...
-    @staticmethod
-    async def get_user(user: UserType, *, safe: bool = True) -> User | None:
+    async def get_user(user: UserType) -> User:
         """
         Gets a user model from the database.
+        Returns an unregistered temporary model if the user is not in the database.
         Parameters
         ----------
         user : UserType
             Target User object to get data from
-        safe : bool
-            Returns the model with id and name if safe=True
         Returns
         -------
-        User | None
+        User
             User model from database
         """
-        if isinstance(user, int):
-            document = await User.get(user)
+        document = await User.get(user.id)
+        if document:
+            if document.name and document.name != user.name:
+                document.name = user.name
+                await document.save_changes()
         else:
-            if getattr(user, "bot", False):
-                return None
-            document = await User.get(user.id)
-            if document:
-                if document.name and document.name != user.name:
-                    document.name = user.name
-                    await document.save_changes()
-            elif safe:
-                document = User(id=user.id, name=user.name)
+            document = User(id=user.id, name=user.name)
 
         return document
 
-    @overload
     @staticmethod
-    async def get_guild(guild: discord.Guild | int, *, safe: Literal[True] = ...) -> Guild: ...
-    @overload
-    @staticmethod
-    async def get_guild(guild: discord.Guild | int, *, safe: Literal[False]) -> Guild | None: ...
-    @staticmethod
-    async def get_guild(guild: discord.Guild | int, *, safe: bool = True) -> Guild | None:
+    async def get_guild(guild: discord.Guild) -> Guild:
         """
         Gets a guild model from the database.
+        Returns an uninvited temporary model if the guild is not in the database.
         Parameters
         ----------
-        guild : discord.Guild | int
+        guild : discord.Guild
             Target Guild object to get data from
-        safe : bool
-            Returns the model with id and name if safe=True
         Returns
         -------
-        Guild | None
+        Guild
             Guild model from database
         """
-        if isinstance(guild, int):
-            document = await Guild.get(guild)
-        else:
-            document = await Guild.get(guild.id)
-        if not document and safe:
-            document = Guild(id=guild if isinstance(guild, int) else guild.id)
+        document = await Guild.get(guild.id)
+        if not document:
+            document = Guild(id=guild.id)
 
         return document
 

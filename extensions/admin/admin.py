@@ -21,7 +21,7 @@ class Admin(commands.Cog, name="관리자"):
         return is_admin(ctx)
 
     @commands.command(name="$로그", usage="ㄲ$로그 <날짜>")
-    async def get_log(self, ctx: commands.Context, date: str = None):
+    async def get_log(self, ctx: commands.Context, date: str = commands.parameter(default=None)):
         """해당 날짜의 로그 파일을 확인합니다."""
         if date is None:
             path = "logs/latest.log"
@@ -30,7 +30,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply(file=discord.File(path))
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
-    async def user_info(self, ctx: commands.Context, *, user: discord.User | None):
+    async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             public_data = await self.bot.db.get_public()
@@ -51,17 +51,17 @@ class Admin(commands.Cog, name="관리자"):
                 await ctx.reply(content)
             return
 
-        user_data = await self.bot.db.get_user(user, safe=False)
-        if not user_data:
-            return await ctx.reply(f"`{getattr(user, 'name', None)}`님은 끝봇의 유저가 아닙니다.")
+        user_data = await self.bot.db.get_user(user)
+        if not user_data.registered:
+            return await ctx.reply(f"`{user.name}`님은 끝봇의 유저가 아닙니다.")
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in user_data.model_dump().items())):
             await ctx.reply(content)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
     async def guild_info(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
-        guild_data = await self.bot.db.get_guild(guild, safe=False)
-        if not guild_data:
+        guild_data = await self.bot.db.get_guild(guild)
+        if not guild_data.invited:
             return await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
         guild_data = guild_data.model_dump()
         guild_data["name"] = guild.name
@@ -71,6 +71,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
     async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User = commands.Author):
         """관리자 권한으로 포인트를 지급합니다."""
+        if user.bot:
+            return await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
         user_data = await self.bot.db.get_user(user)
         user_data.points += amount
         await self.bot.db.save(user_data)
@@ -79,6 +81,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
     async def give_medal(self, ctx: commands.Context, amount: int = 10, *, user: discord.User = commands.Author):
         """관리자 권한으로 메달을 지급합니다."""
+        if user.bot:
+            return await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
         user_data = await self.bot.db.get_user(user)
         user_data.medals += amount
         await self.bot.db.save(user_data)
@@ -102,7 +106,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
     async def delete_userdata(self, ctx: commands.Context, *, user: discord.User = commands.Author):
         """유저의 데이터를 초기화합니다."""
-        if data := await self.bot.db.get_user(user, safe=False):
+        data = await self.bot.db.get_user(user)
+        if data.registered:
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
         else:
@@ -111,7 +116,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
     async def delete_guilddata(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """서버의 데이터를 초기화합니다."""
-        if data := await self.bot.db.get_guild(guild, safe=False):
+        data = await self.bot.db.get_guild(guild)
+        if data.invited:
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
         else:
@@ -120,7 +126,8 @@ class Admin(commands.Cog, name="관리자"):
     @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기"))
     async def leave_guild(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """서버를 나갑니다."""
-        if data := await self.bot.db.get_guild(guild, safe=False):
+        data = await self.bot.db.get_guild(guild)
+        if data.invited:
             await guild.leave()
             await data.delete()
             await ctx.reply(fmt("{done} 완료!"))
