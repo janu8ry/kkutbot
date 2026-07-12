@@ -127,7 +127,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
 
 
 class ModifyData(BaseView):
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | str):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Member | discord.Guild | str):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target

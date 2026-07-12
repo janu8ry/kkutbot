@@ -1,6 +1,6 @@
 import discord
 from discord.ext.commands import Context, errors
-from discord.ext.commands.converter import Converter, GuildConverter, UserConverter
+from discord.ext.commands.converter import Converter, GuildConverter, MemberConverter, UserConverter
 
 __all__ = ["UserGuildConverter"]
 
@@ -15,6 +15,10 @@ class UserGuildConverter(Converter[discord.Member | discord.User | discord.Guild
             return "public"
         try:
             return await UserConverter().convert(ctx, argument)
+        except errors.BadArgument:
+            pass
+        try:
+            return await MemberConverter().convert(ctx, argument)
         except errors.BadArgument:
             pass
         try:
