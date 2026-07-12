@@ -40,7 +40,7 @@ class Admin(commands.Cog, name="관리자"):
                 elif len(parts) == 2:
                     parts = [now.year, *parts]
                 normalized = datetime(*parts).strftime("%Y-%m-%d")
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 await ctx.reply("날짜 형식이 올바르지 않습니다. (예: `2026-07-05`, `07/05`, `5`)")
                 return
             path = f"logs/{normalized}.log.gz"
