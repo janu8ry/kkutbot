@@ -69,7 +69,7 @@ def setup_command_logger() -> None:
             }
         ),
         width=200,
-        force_terminal=True
+        force_terminal=True,
     )
     stream_handler = RichHandler(console=console, show_path=False)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
