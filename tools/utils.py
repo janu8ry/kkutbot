@@ -5,19 +5,23 @@ from typing import Any
 from discord.ext import commands
 
 from config import config, get_nested_dict, get_nested_property
-from database.models import GameBase, User
+from database.models import GameBase, RankGameBase
 
 __all__ = [
-    "dict_emojis",
     "fmt",
     "time_convert",
     "get_timestamp",
     "is_admin",
     "split_string",
     "get_winrate",
-    "get_tier",
+    "format_number",
+    "get_rank_display",
+    "get_rank_progress",
+    "TIER_EMOJIS",
+    "PLACEMENT_GAMES",
     "get_nested_dict",
     "get_nested_property",
+    "ROMAN_DIVISIONS",
 ]
 
 
@@ -116,6 +120,32 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     return tuple(r)
 
 
+def format_number(n: int | float) -> str:
+    """
+    Format numbers with 5+ digits using k/m/b/t units.
+    Parameters
+    ----------
+    n : int | float
+        Number to format
+    Returns
+    -------
+    str
+        Formatted number string
+    """
+    if abs(n) < 10000:
+        return str(n)
+    units = ((1_000_000_000_000, "t"), (1_000_000_000, "b"), (1_000_000, "m"), (1_000, "k"))
+    for div, suffix in units:
+        if abs(n) >= div:
+            v = n / div
+            decimals = min(2, max(0, 4 - len(str(int(abs(v))))))
+            factor = 10**decimals
+            v = int(v * factor) / factor
+            text = f"{v:.{decimals}f}".rstrip("0").rstrip(".")
+            return f"{text}{suffix}"
+    return str(n)
+
+
 def get_winrate(data: GameBase) -> Any:
     game_times = data.times
     game_win_times: int = data.win
@@ -125,19 +155,27 @@ def get_winrate(data: GameBase) -> Any:
         return round(game_win_times / game_times * 100, 2)
 
 
-def get_tier(data: User, mode: str, emoji: bool = True) -> str:
-    if mode not in ("rank_solo", "rank_online"):
-        raise TypeError
-    tier = "언랭크 :sob:" if emoji else "언랭크"
-    modes = {"rank_solo": data.game.rank_solo, "rank_online": data.game.rank_online}
-    for k, v in config.tierlist.items():
-        if (
-            data.points >= v["points"]
-            and get_winrate(modes[mode]) >= v["winrate"]
-            and modes[mode].times >= v["times"]
-            and modes[mode].best >= v["best"]
-        ):
-            tier = f"{k} {v['emoji']}"
-        else:
-            break
-    return tier if emoji else tier.split(" ")[0]
+ROMAN_DIVISIONS = {1: "I", 2: "II", 3: "III"}
+TIER_EMOJIS = {
+    "언랭크": "{unrank}",
+    "브론즈": "{bronze}",
+    "실버": "{silver}",
+    "골드": "{gold}",
+    "플래티넘": "{platinum}",
+    "다이아몬드": "{diamond}",
+    "마스터": "{m_master}",
+}
+UNRANKED = next(iter(TIER_EMOJIS))
+PLACEMENT_GAMES = 5
+
+
+def get_rank_display(rank: RankGameBase, emoji: bool = True) -> str:
+    tier = rank.tier if rank.tier in TIER_EMOJIS else UNRANKED
+    name = tier if (tier == UNRANKED or rank.division == 0) else f"{tier} {ROMAN_DIVISIONS[rank.division]}"
+    return f"{name} {TIER_EMOJIS[tier]}" if emoji else name
+
+
+def get_rank_progress(rank: RankGameBase) -> str:
+    if rank.tier not in TIER_EMOJIS or rank.tier == UNRANKED:
+        return get_rank_display(rank)
+    return f"{get_rank_display(rank)} | `{rank.lp}` LP"

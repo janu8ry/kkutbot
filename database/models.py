@@ -2,9 +2,9 @@ from typing import Annotated, Any
 
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
-from pymongo import TEXT  # noqa
+from pymongo import TEXT, IndexModel  # noqa
 
-__all__ = ["User", "Guild", "Public", "GameBase"]
+__all__ = ["User", "Guild", "Public", "GameBase", "RankGameBase"]
 
 
 attendance = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "times": 0}
@@ -26,10 +26,13 @@ class GameBase(BaseModel):
     win: int = 0
     best: int = 0
     winrate: float = 0.0
+    streak: int = 0
 
 
 class RankGameBase(GameBase):
     tier: str = "언랭크"
+    division: int = 0
+    lp: int = 0
 
 
 class SoloRankGame(RankGameBase):
@@ -91,6 +94,19 @@ class User(Document):
         use_state_management = True
         state_management_replace_objects = True
         validate_on_save = True
+        indexes = [
+            IndexModel([("name", 1)]),
+            IndexModel([("points", -1)]),
+            IndexModel([("medals", -1)]),
+            IndexModel([("attendance.times", -1)]),
+            IndexModel([("command_used", -1)]),
+            IndexModel([("game.rank_solo.win", -1)]),
+            IndexModel([("game.rank_solo.best", -1)]),
+            IndexModel([("game.rank_solo.tier", 1)]),
+            IndexModel([("game.kkd.win", -1)]),
+            IndexModel([("game.kkd.best", -1)]),
+            IndexModel([("game.kkd.winrate", -1)]),
+        ]
 
 
 class Guild(Document):

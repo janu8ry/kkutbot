@@ -36,7 +36,7 @@ class Kkutbot(commands.AutoShardedBot):
             member_cache_flags=discord.MemberCacheFlags.from_intents(intents),
             chunk_guilds_at_startup=False,
         )
-        self.guild_multi_games: list[int] = []
+        self.playing_games: set[int] = set()
         self.koreanbots: Koreanbots = None  # type: ignore
         self.dbl: DBLClient = None  # type: ignore
         self.started_at: int = None  # type: ignore

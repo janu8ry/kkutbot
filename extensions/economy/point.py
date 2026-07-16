@@ -22,7 +22,7 @@ class Reward(commands.Cog, name="포인트"):
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def reward(self, ctx: commands.Context):
         """
-        한국 디스코드 리스트에서 하트 추가를 누르고 포인트를 받습니다.
+        한국 디스코드 리스트에서 하트 추가 후 포인트를 받습니다.
 
         포인트는 하루에 한번씩만 수령 가능합니다.
          - 한국 디스코드 리스트: https://koreanbots.dev/bots/703956235900420226/vote

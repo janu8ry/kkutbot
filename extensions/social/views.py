@@ -8,6 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
 from tools import fmt
+from tools.utils import ROMAN_DIVISIONS, TIER_EMOJIS, format_number  # noqa
 from views import BaseView
 
 __all__ = ["RankMenu"]
@@ -35,7 +36,7 @@ class RankDropdown(discord.ui.Select):
             "메달": fmt("{medals}"),
             "출석": fmt("{attendance}"),
             "명령어": "⌨️",
-            "솔로": "1️⃣",
+            "솔로": "📔",
             "쿵쿵따": "3️⃣",
         }
         options = [
@@ -54,7 +55,7 @@ class RankDropdown(discord.ui.Select):
     @property
     def query(self) -> dict:
         if self.guild:
-            return {"_id": {"$ne": self.ctx.bot.owner_id, "$in": self.guild_ids}}
+            return {"_id": {"$in": self.guild_ids}}
         return {"_id": {"$ne": self.ctx.bot.owner_id}}
 
     def game_query(self, path: str) -> dict:
@@ -62,23 +63,46 @@ class RankDropdown(discord.ui.Select):
         query[f"game.{self.categories['game'][path]}.times"] = {"$gte": 30}
         return query
 
-    async def get_user_name(self, user_id: int) -> str:
-        user = self.ctx.bot.get_user(user_id)
-        if hasattr(user, "name"):
-            username: str = user.name
-        else:
-            if await self.ctx.bot.db.read_user(user_id, "name"):
-                username = await self.ctx.bot.db.read_user(user_id, "name")
-            else:
-                username = (await self.ctx.bot.fetch_user(user_id)).name
+    async def get_user_name(self, doc: dict) -> str:
+        user = self.ctx.bot.get_user(doc["_id"])
+        username: str = getattr(user, "name", None) or doc.get("name") or (await self.ctx.bot.fetch_user(doc["_id"])).name
         if len(username) >= 15:
             username = username[:12] + "..."
         return username
 
     async def format_rank(self, cursor: AsyncIOMotorCursor, query: str) -> list[str]:
         docs = await cursor.to_list(None)
-        names = list(await asyncio.gather(*[self.get_user_name(doc["_id"]) for doc in docs]))
-        return [f"**{idx + 1}**. {e_mk(names[idx])} : `{get_nested_dict(doc, query.split('.'))}`" for idx, doc in enumerate(docs)]
+        names = list(await asyncio.gather(*[self.get_user_name(doc) for doc in docs]))  # type: ignore
+        return [f"**{idx + 1}**. {e_mk(names[idx])} : `{format_number(get_nested_dict(doc, query.split('.')))}`" for idx, doc in enumerate(docs)]
+
+    async def format_ladder_rank(self, limit: int) -> list[str]:
+        tiers = list(TIER_EMOJIS)
+        match = self.query.copy()
+        match["game.rank_solo.tier"] = {"$in": tiers[1:]}
+        pipeline = [
+            {"$match": match},
+            {
+                "$addFields": {
+                    "_ladder": {
+                        "$add": [
+                            {"$multiply": [{"$indexOfArray": [tiers, "$game.rank_solo.tier"]}, 10000]},
+                            {"$multiply": [{"$subtract": [3, "$game.rank_solo.division"]}, 1000]},
+                            "$game.rank_solo.lp",
+                        ]
+                    }
+                }
+            },
+            {"$sort": {"_ladder": -1}},
+            {"$limit": limit},
+        ]
+        docs = await self.ctx.bot.db.client.user.aggregate(pipeline).to_list(None)
+        names = list(await asyncio.gather(*[self.get_user_name(doc) for doc in docs]))
+        lines = []
+        for idx, doc in enumerate(docs):
+            rs = doc["game"]["rank_solo"]
+            division = f" {ROMAN_DIVISIONS[rs['division']]}" if rs["division"] else ""
+            lines.append(f"**{idx + 1}**. {e_mk(names[idx])} : {fmt(TIER_EMOJIS.get(rs['tier'], ''))}{division} `{format_number(rs['lp'])}`LP")
+        return lines
 
     async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
         embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.green)
@@ -92,21 +116,36 @@ class RankDropdown(discord.ui.Select):
                     ),
                 )
             else:
-                for gpath in ("win", "best", "winrate"):
-                    full_path = f"game.{self.categories['game'][path]}.{gpath}"
+                mode = self.categories["game"][path]
+                coros.append(
+                    self.format_rank(
+                        self.ctx.bot.db.client.user.find(self.game_query(path)).sort(f"game.{mode}.win", -1).limit(5), f"game.{mode}.win"
+                    )
+                )
+                coros.append(
+                    self.format_rank(
+                        self.ctx.bot.db.client.user.find(self.game_query(path)).sort(f"game.{mode}.best", -1).limit(5), f"game.{mode}.best"
+                    )
+                )
+                if mode == "rank_solo":
+                    coros.append(self.format_ladder_rank(5))
+                else:
                     coros.append(
-                        self.format_rank(self.ctx.bot.db.client.user.find(self.game_query(path)).sort(full_path, -1).limit(5), full_path),
+                        self.format_rank(
+                            self.ctx.bot.db.client.user.find(self.game_query(path)).sort(f"game.{mode}.winrate", -1).limit(5), f"game.{mode}.winrate"
+                        )
                     )
         overall_rank = await asyncio.gather(*coros)
-        gpath = ["승리수", "최고점수", "승률"]
+        labels_solo = ["승리수", "최고점수", "래더"]
+        labels_kkd = ["승리수", "최고점수", "승률"]
         for i, rank in enumerate(overall_rank):
             if i <= 2:
-                embed.add_field(name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank))
+                embed.add_field(name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank) or "정보 없음")
             elif 3 <= i <= 5:
-                embed.add_field(name=f"🔹 솔로 모드 - {gpath[i % 3]}", value="\n".join(rank))
+                embed.add_field(name=f"🔹 솔로 모드 - {labels_solo[i - 3]}", value="\n".join(rank) or "정보 없음")
             else:
                 embed.add_field(
-                    name=f"🔹 쿵쿵따 모드 - {gpath[i % 3]}", value="\n".join(rank)
+                    name=f"🔹 쿵쿵따 모드 - {labels_kkd[i - 6]}", value="\n".join(rank) or "정보 없음"
                 )  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
 
         return embed, coros
@@ -123,16 +162,25 @@ class RankDropdown(discord.ui.Select):
             )
         else:
             embed = discord.Embed(title=fmt(f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드"), color=config.colors.green)
-            coros = []
-            for path in ("win", "best", "winrate"):
-                full_path = f"game.{self.categories['game'][category]}.{path}"
-                coros.append(
-                    self.format_rank(self.ctx.bot.db.client.user.find(self.game_query(category)).sort(full_path, -1).limit(15), full_path),
-                )
+            mode = self.categories["game"][category]
+            is_solo = mode == "rank_solo"
+            coros = [
+                self.format_rank(
+                    self.ctx.bot.db.client.user.find(self.game_query(category)).sort(f"game.{mode}.win", -1).limit(15), f"game.{mode}.win"
+                ),
+                self.format_rank(
+                    self.ctx.bot.db.client.user.find(self.game_query(category)).sort(f"game.{mode}.best", -1).limit(15), f"game.{mode}.best"
+                ),
+                self.format_ladder_rank(15)
+                if is_solo
+                else self.format_rank(
+                    self.ctx.bot.db.client.user.find(self.game_query(category)).sort(f"game.{mode}.winrate", -1).limit(15), f"game.{mode}.winrate"
+                ),
+            ]
             rank = await asyncio.gather(*coros)
-            embed.add_field(name="🔹 승리수", value="\n".join(rank[0]))
-            embed.add_field(name="🔹 최고점수", value="\n".join(rank[1]))
-            embed.add_field(name="🔹 승률", value="\n".join(rank[2]))
+            embed.add_field(name="🔹 승리수", value="\n".join(rank[0]) or "정보 없음")
+            embed.add_field(name="🔹 최고점수", value="\n".join(rank[1]) or "정보 없음")
+            embed.add_field(name="🔹 래더" if is_solo else "🔹 승률", value="\n".join(rank[2]) or "정보 없음")
 
         return embed
 

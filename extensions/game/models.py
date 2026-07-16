@@ -7,8 +7,9 @@ import discord
 from discord.ext import commands
 
 from config import config
-from tools.utils import fmt, get_tier, get_winrate
+from tools.utils import PLACEMENT_GAMES, ROMAN_DIVISIONS, TIER_EMOJIS, fmt, get_rank_progress, get_winrate
 
+from .ladder import choose_bot_word, get_bot_surrender_threshold, get_lose_lp, get_win_lp, update_ladder
 from .utils import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
 __all__ = ["SoloGame", "MultiGame"]
@@ -23,8 +24,6 @@ async def _try_delete(msg: discord.Message | None) -> None:
 
 
 class GameBase:
-    """Base Game Model for many modes."""
-
     __slots__ = ("ctx", "score", "begin_time", "timeout")
 
     def __init__(self, ctx: commands.Context):
@@ -33,21 +32,18 @@ class GameBase:
         self.begin_time = time.time()
         self.timeout = 10
 
-    async def alert_tier_change(self, player: discord.User | discord.Member, tier: str, tier_past: str) -> discord.Message:
-        tierlist = list(config.tierlist.keys())
-        emojis = [data["emoji"] for data in config.tierlist.values()]
-        if tierlist.index(tier) > tierlist.index(tier_past):
+    async def alert_rank_change(self, player: discord.User | discord.Member, before: str, after: str, promoted: bool) -> discord.Message:
+        if promoted:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 승급!"),
-                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> {emojis[tierlist.index(tier)]} **{tier}** 티어로 승급했습니다!",
+                description=fmt(f"**{before}** -> **{after}** 티어로 승급했습니다!"),
                 color=config.colors.green,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
         else:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 강등..."),
-                description=f"{emojis[tierlist.index(tier_past)]} **{tier_past}** -> "
-                f"{emojis[tierlist.index(tier)]} **{tier}** 티어로 강등되었습니다...",
+                description=fmt(f"**{before}** -> **{after}** 티어로 강등되었습니다..."),
                 color=config.colors.red,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("leveldown").url)
@@ -61,12 +57,14 @@ class GameBase:
 class SoloGame(GameBase):
     """Game Model for single play mode"""
 
-    __slots__ = ("player", "kkd", "bot_word", "used_words")
+    __slots__ = ("player", "kkd", "tier", "placement", "bot_word", "used_words")
 
-    def __init__(self, ctx: commands.Context, kkd: bool = False):
+    def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크", placement: bool = False):
         super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
+        self.tier = tier
+        self.placement = placement
         self.bot_word = choose_first_word(kkd)
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
@@ -86,7 +84,7 @@ class SoloGame(GameBase):
             user_word = msg.content
             result = check_word(
                 user_word,
-                self.bot_word,
+                self.bot_word,  # type: ignore
                 self.used_words,
                 first_round=self.score == 0,
                 can_surrender=len(self.used_words) >= 10,
@@ -97,22 +95,32 @@ class SoloGame(GameBase):
                 return
             if result != WordCheck.OK:
                 await _try_delete(info_msg)
-                info_msg = await self.send_info_embed(msg, word_error_message(result, user_word, self.bot_word))
+                info_msg = await self.send_info_embed(msg, word_error_message(result, user_word, self.bot_word))  # type: ignore
                 continue
 
             await _try_delete(info_msg)
             self.used_words.append(user_word)
             self.score += 1
             final_list = [x for x in get_word(user_word) if x not in self.used_words and (len(x) == 3 if self.kkd else True)]
-            if not final_list:
-                await self.game_end("승리")
-                return
-            self.bot_word = random.choice(final_list)
+            if self.kkd:
+                if not final_list:
+                    await self.game_end("승리")
+                    return
+                self.bot_word = random.choice(final_list)
+            else:
+                if len(final_list) <= get_bot_surrender_threshold(self.tier):
+                    await self.game_end("승리")
+                    return
+                bot_word = choose_bot_word(final_list, self.used_words, self.tier)
+                if bot_word is None:
+                    await self.game_end("승리")
+                    return
+                self.bot_word = bot_word
             self.used_words.append(self.bot_word)
             self.begin_time = time.time()
             self.score += 1
             if is_hanbang(self.bot_word, self.used_words, kkd=self.kkd):
-                await self.game_end("패배")
+                await self.game_end("패배", hanbang=True)
                 return
             info_msg = await self.send_info_embed(msg)
 
@@ -120,7 +128,7 @@ class SoloGame(GameBase):
         if desc is None:
             desc = f"⏰ **{self.timeout}초** 안에 단어를 이어주세요!"
         embed = discord.Embed(
-            title=f"📔 끝말잇기 {'쿵쿵따' if self.kkd else '랭킹전 싱글플레이'}",
+            title=f"📔 끝말잇기 {'쿵쿵따 모드' if self.kkd else '솔로 랭크 게임'}",
             description=f"🔸 현재 점수: `{self.score}` 점",
             color=config.colors.green,
         )
@@ -135,10 +143,11 @@ class SoloGame(GameBase):
                 return await self.ctx.send(f"{msg.author.mention}님, {desc}", embed=embed, delete_after=self.time_left)
             return None
 
-    async def game_end(self, result: Literal["승리", "패배", "포기"]):
+    async def game_end(self, result: Literal["승리", "패배", "포기"], hanbang: bool = False):
         mode = "kkd" if self.kkd else "rank_solo"
         user = await self.ctx.bot.db.get_user(self.player)
         modes = {"rank_solo": user.game.rank_solo, "kkd": user.game.kkd}
+        base_score = self.score
 
         if result == "승리":
             self.score += 10
@@ -147,22 +156,58 @@ class SoloGame(GameBase):
             color = config.colors.blue
             emoji = "win"
             modes[mode].win += 1
+            modes[mode].streak += 1
         elif result == "패배":
             points = -30
-            desc = f"대답시간이 {self.timeout}초를 초과했습니다..."
+            desc = "한방단어에 당했습니다..." if hanbang else f"대답시간이 {self.timeout}초를 초과했습니다..."
             color = config.colors.red
             emoji = "gameover"
+            modes[mode].streak = 0
         elif result == "포기":
             points = -30
             desc = "게임을 포기했습니다."
             color = config.colors.red
             emoji = "surrender"
+            modes[mode].streak = 0
         else:
             raise commands.BadArgument
 
-        embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"**{result}**  |  {desc}", color=color)
-        embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
+        user.points += points
+        modes[mode].times += 1
+        if self.score > modes[mode].best:
+            modes[mode].best = self.score
+        rank_changed = None
+        result_field: tuple[str, str] | None = None
+        if mode == "rank_solo":
+            solo = user.game.rank_solo
+            won = result == "승리"
+            placement = solo.tier == "언랭크"
+            remaining_before, mask_before = solo.division or PLACEMENT_GAMES, solo.lp
+            lp_before, pos_before = solo.lp, (solo.tier, solo.division)
+            rank_changed = update_ladder(solo, won, base_score)
+            if placement:
+                played = (PLACEMENT_GAMES - remaining_before) + 1
+                mask = mask_before | (int(won) << (played - 1))
+                marks = ["✅" if (mask >> i) & 1 else "❌" for i in range(played)]
+                marks += ["🔳"] * (PLACEMENT_GAMES - played)
+                result_field = ("🔸 배치고사", " ".join(marks))
+            else:
+                if (solo.tier, solo.division) == pos_before:
+                    delta = solo.lp - lp_before
+                else:
+                    delta = get_win_lp(base_score) if won else -get_lose_lp()
+                result_field = ("🔸 점수", f"`{delta:+d}` LP")
+        modes[mode].winrate = get_winrate(modes[mode])
+
+        head = f"**{modes[mode].streak}연승** 🔥" if result == "승리" and modes[mode].streak >= 2 else f"**{result}**"
+        embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"{head}  |  {desc}", color=color)
+        if result_field is not None:
+            embed.add_field(name=result_field[0], value=result_field[1])
+        else:
+            embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
         embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if result == '승리' else ''}{points}` {{points}}"))
+        if mode == "rank_solo":
+            embed.add_field(name=fmt("🔸 티어"), value=fmt(get_rank_progress(user.game.rank_solo)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
         if result in ("패배", "포기"):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
@@ -173,18 +218,10 @@ class SoloGame(GameBase):
                 )
             else:
                 embed.add_field(name="🔹 가능했던 단어", value=f"`{self.bot_word}`은(는) 한방단어였습니다...", inline=False)
-        await self.ctx.reply(embed=embed, mention_author=True)
-        user.points += points
-        modes[mode].times += 1
-        if self.score > modes[mode].best:
-            modes[mode].best = self.score
-        if mode == "rank_solo":
-            tier = get_tier(user, "rank_solo", emoji=False)
-            if (tier_past := user.game.rank_solo.tier) != tier:
-                user.game.rank_solo.tier = tier
-                await self.alert_tier_change(self.player, tier, tier_past)
-        modes[mode].winrate = get_winrate(modes[mode])
         await self.ctx.bot.db.save(user)
+        await self.ctx.reply(embed=embed, mention_author=True)
+        if rank_changed:
+            await self.alert_rank_change(self.player, *rank_changed)
 
 
 class MultiGame(GameBase):
@@ -267,7 +304,6 @@ class MultiGame(GameBase):
                 info_msg = await self.send_info_embed()
 
     async def handle_elimination(self, gg: bool = False, prev_info_msg: discord.Message | None = None) -> tuple[bool, discord.Message | None]:
-        """플레이어를 탈락 처리하고, 게임이 종료되었는지 여부를 반환합니다."""
         await _try_delete(prev_info_msg)
         await self.player_out(gg=gg)
         if len(self.players) - len(self.final_score) == 1:
@@ -277,9 +313,9 @@ class MultiGame(GameBase):
         new_info = await self.send_info_embed()
         return False, new_info
 
-    def hosting_embed(self) -> discord.Embed:
+    async def hosting_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title=f"📔 **{self.host}**님의 끝말잇기",
+            title=f"📔 **{self.host.display_name}**님의 끝말잇기 다인전",
             description=f"🔸 채널: {self.ctx.channel.mention}\n"  # type: ignore
             f"🔸 플레이어 모집 종료: <t:{self.hosting_time + self.hosting_timeout}:R>\n\n"
             "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
@@ -287,7 +323,16 @@ class MultiGame(GameBase):
             f"호스트 {self.host.mention} 님은 **게임 시작** 버튼을 클릭하여 게임을 시작할 수 있습니다.",
             color=config.colors.blue,
         )
-        embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/{self.max_players})", value="`" + "`\n`".join([str(_x) for _x in self.players]) + "`")
+        users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player in self.players])
+        lines = []
+        for player, user in zip(self.players, users):
+            rank = user.game.rank_solo
+            if rank.tier == "언랭크":
+                lines.append(player.mention)
+            else:
+                division = f"`{ROMAN_DIVISIONS[rank.division]}`" if rank.division else ""
+                lines.append(f"{player.mention} ({fmt(TIER_EMOJIS[rank.tier])}{division})")
+        embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/{self.max_players})", value="\n".join(lines))
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None):
@@ -307,16 +352,14 @@ class MultiGame(GameBase):
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.word} ({' / '.join(get_transition(self.word))})```")
         embed.add_field(name="🔹 누적 점수", value=f"`{self.score}` 점", inline=False)
-        embed.add_field(
-            name="🔹 플레이어", value=f"`{'`, `'.join([_x.display_name for _x in self.players if _x not in self.final_score])}`", inline=False
-        )
+        embed.add_field(name="🔹 플레이어", value=f"{', '.join([_x.mention for _x in self.players if _x not in self.final_score])}", inline=False)
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
         if self.final_score:
-            embed.add_field(name="🔻 탈락자", value=f"`{'`, `'.join([_x.display_name for _x in self.final_score])}`", inline=False)
+            embed.add_field(name="🔻 탈락자", value=f"{', '.join([_x.mention for _x in self.final_score])}", inline=False)
         return embed
 
     async def player_out(self, gg=False):
-        embed = discord.Embed(title=f"🔻 {self.now_player}님 {'포기' if gg else '탈락'}!", color=config.colors.red)
+        embed = discord.Embed(title=f"🔻 {self.now_player.display_name}님 {'포기' if gg else '탈락'}!", color=config.colors.red)
         embed.set_thumbnail(url=self.ctx.bot.emoji("surrender" if gg else "dead").url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
@@ -338,22 +381,24 @@ class MultiGame(GameBase):
         rank = sorted(self.final_score.items(), key=lambda item: item[1], reverse=True)
         rewards = [score for _, score in rank[1:]] + [0]
         emojis = ["{gold}", "{silver}", "{bronze}"]
-        for n, (player, _) in enumerate(rank):
-            user = await self.ctx.bot.db.get_user(player)
+        users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
+        for n, ((player, score), user) in enumerate(zip(rank, users)):
             desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : +`{rewards[n] * 2}` {{points}}")
             user.points += rewards[n] * 2
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
-            if rewards[n] > user.game.guild_multi.best:
-                user.game.guild_multi.best = self.score
+            if score > user.game.guild_multi.best:
+                user.game.guild_multi.best = score
             if (n + 1) <= round(len(rank) / 2):
                 user.game.guild_multi.win += 1
+                user.game.guild_multi.streak += 1
+            else:
+                user.game.guild_multi.streak = 0
             user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
-            await self.ctx.bot.db.save(user)
+        await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.send(embed=embed)
-        self.ctx.bot.guild_multi_games.remove(self.ctx.channel.id)
 
     async def send_info_embed(self, desc: str | None = None) -> discord.Message:
         if desc is None:

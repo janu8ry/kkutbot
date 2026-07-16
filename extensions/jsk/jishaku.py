@@ -8,7 +8,7 @@ from importlib.metadata import distribution, packages_distributions
 from typing import Any, Iterable
 
 import discord
-import psutil
+import psutil  # noqa
 from discord.ext import commands
 from humanize import naturalsize
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
@@ -35,7 +35,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         extra_vars = {
             "e_mk": discord.utils.escape_markdown,
             "e_mt": discord.utils.escape_mentions,
-            "db": ctx.bot.db,
+            "db": ctx.bot.db,  # type: ignore
             "User": User,
             "Guild": Guild,
             "General": Public,
@@ -57,7 +57,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         # Try to locate what vends the `discord` package
         distributions: list[str] = [
-            dist for dist in packages_distributions()["discord"] if any(file.parts == ("discord", "__init__.py") for file in distribution(dist).files)
+            dist
+            for dist in packages_distributions()["discord"]
+            if any(file.parts == ("discord", "__init__.py") for file in distribution(dist).files)  # type: ignore
         ]
 
         if distributions:
@@ -96,20 +98,19 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
                 except psutil.AccessDenied:
                     pass
 
-                summary.append("")  # blank line
+                summary.append("")
         except psutil.AccessDenied:
             summary.append("psutil이 설치되어 있지만, 권한이 부족하여 기능을 사용할 수 없습니다.")
-            summary.append("")  # blank line
+            summary.append("")
 
         cache_summary = (
             f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.count_users()}`명의 유저,\n"
-            f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, "
-            f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"
+            f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, "  # type: ignore
+            f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"  # type: ignore
         )
 
         summary.append(f"샤드 수는 `{self.bot.shard_count}`개이며, {cache_summary}와 활동하고 있습니다.")
 
-        # pylint: disable=protected-access
         if self.bot._connection.max_messages:  # noqa
             message_cache = f"메시지 캐시가 `{self.bot._connection.max_messages}`(으)로 제한되어있습니다."  # noqa
         else:
@@ -122,7 +123,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         summary.append(message_cache)
         summary.append(f"{', '.join(group)}, {last}.")
-        summary.append("")  # blank line
+        summary.append("")
 
         size = 0
         for collection in ("user", "guild", "public"):
@@ -141,11 +142,10 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         )
 
         summary.append(database_summary)
-        summary.append("")  # blank line
+        summary.append("")
 
-        # Show websocket latency in milliseconds
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
-        summary.append("")  # blank line
+        summary.append("")
         summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
 
         await ctx.reply("\n".join(summary))
@@ -177,7 +177,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             try:
                 await discord.utils.maybe_coroutine(method, extension)
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
 
                 paginator.add_line(f"{icon}\N{WARNING SIGN} `{extension}`\n```py\n{traceback_data}\n```", empty=True)

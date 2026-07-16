@@ -7,9 +7,9 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
+from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
-from .converter import UserGuildConverter
 from .views import ModifyData, SendAnnouncement
 
 
@@ -50,7 +50,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply(file=discord.File(path))
 
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
-    async def user_info(self, ctx: commands.Context, *, user: discord.User | discord.Member = commands.parameter(default=None)):
+    async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             public_data = await self.bot.db.get_public()
@@ -90,7 +90,7 @@ class Admin(commands.Cog, name="관리자"):
             await ctx.reply(content)
 
     @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
-    async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User | discord.Member = commands.Author):
+    async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User = commands.Author):
         """관리자 권한으로 포인트를 지급합니다."""
         if user.bot:
             await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
@@ -101,7 +101,7 @@ class Admin(commands.Cog, name="관리자"):
         await ctx.reply(fmt("{done} 완료!"))
 
     @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
-    async def give_medal(self, ctx: commands.Context, amount: int = 10, *, user: discord.User | discord.Member = commands.Author):
+    async def give_medal(self, ctx: commands.Context, amount: int = 10, *, user: discord.User = commands.Author):
         """관리자 권한으로 메달을 지급합니다."""
         if user.bot:
             await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
@@ -127,7 +127,7 @@ class Admin(commands.Cog, name="관리자"):
         view.message = await ctx.reply(embed=embed, view=view)
 
     @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
-    async def delete_user_data(self, ctx: commands.Context, *, user: discord.User | discord.Member = commands.Author):
+    async def delete_user_data(self, ctx: commands.Context, *, user: discord.User = commands.Author):
         """유저의 데이터를 초기화합니다."""
         data = await self.bot.db.get_user(user)
         if data.registered:

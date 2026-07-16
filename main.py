@@ -78,10 +78,8 @@ async def before_command(ctx: commands.Context) -> None:
     if user.quest.status.date != (today := datetime.today().toordinal()):
         user.quest.status.date = today
         user.quest.status.completed = []
-        cache = {}
-        for data in public.quests.keys():
-            cache[data] = get_nested_dict(user.model_dump(), data.split("/"))
-        user.quest.cache = cache
+        dump = user.model_dump()
+        user.quest.cache = {data: get_nested_dict(dump, data.split("/")) for data in public.quests}
 
     await bot.db.save(user)
     await bot.db.save(public)
@@ -102,16 +100,17 @@ async def on_command_completion(ctx: commands.Context) -> None:
     user = await bot.db.get_user(ctx.author)
     desc = ""
     for data, info in public.quests.items():
-        current = get_nested_dict(user.model_dump(), data.split("/")) - user.quest.cache[data]
+        value = get_nested_dict(user.model_dump(), data.split("/"))
+        current = value - user.quest.cache[data]
         if current < 0:
-            user.quest.cache[data] = get_nested_dict(user.model_dump(), data.split("/"))
+            user.quest.cache[data] = value
         elif (current >= info["target"]) and (data not in user.quest.status.completed):
             setattr(user, info["reward"][1], getattr(user, info["reward"][1]) + info["reward"][0])
             user.quest.status.completed.append(data)
             user.quest.total += 1
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
     if desc:
-        embed = discord.Embed(title="퀘스트 클리어!", description=desc, color=config.colors.green)
+        embed = discord.Embed(title="퀘스트 클리어!", description=fmt(desc), color=config.colors.green)
         embed.set_thumbnail(url=bot.emoji("congrats").url)
         embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
         await ctx.reply(embed=embed)
@@ -234,11 +233,6 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.MaxConcurrencyReached):
-        if ctx.author.id in config.admin:
-            try:
-                await ctx.reinvoke()
-            except TypeError:
-                pass
         if error.per == commands.BucketType.guild:
             await ctx.reply(fmt(f"{{denied}} 해당 서버에서 이미 `{ctx.command}` 명령어가 진행중입니다."))
         elif error.per == commands.BucketType.channel:
