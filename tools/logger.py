@@ -68,10 +68,10 @@ def setup_command_logger() -> None:
                 "logging.level.leave": "magenta",
             }
         ),
-        width=10000,
-        force_terminal=True,
+        width=200,
+        force_terminal=True
     )
-    stream_handler = RichHandler(console=console)
+    stream_handler = RichHandler(console=console, show_path=False)
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG)
 
