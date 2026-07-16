@@ -17,16 +17,16 @@ dependencies = [
     "beanie==2.1.0",
     "pyyaml==6.0.3",
     "rich==15.0.0",
-    "sentry-sdk==2.63.0",
+    "sentry-sdk==2.65.0",
     "python-dotenv==1.2.2",
-    "apscheduler>=3.11.2",
-    "humanize==4.15.0",
+    "apscheduler>=3.11.3",
+    "humanize==4.16.0",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=2.1.0",
-    "ruff>=0.15.18",
+    "mypy>=2.3.0",
+    "ruff>=0.15.21",
 ]
 
 [tool.uv]
