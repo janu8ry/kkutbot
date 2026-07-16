@@ -27,22 +27,24 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     command: mongod --quiet
-  mongo-express:
-    image: mongo-express
+  dbgate:
+    image: dbgate/dbgate:latest
     restart: always
-    container_name: "kkutbot-mongo-express"
+    container_name: "kkutbot-dbgate"
     ports:
-      - "8081:8081"
+      - "8081:3000"
+    volumes:
+      - dbgate-data:/root/.dbgate
     env_file:
       - .env
     environment:
       - TZ=Asia/Seoul
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_MONGODB_AUTH_USERNAME=${MONGO_USERNAME}
-      - ME_CONFIG_MONGODB_AUTH_PASSWORD=${MONGO_PASSWORD}
-      - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
-      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+      - CONNECTIONS=kkutbot
+      - LABEL_kkutbot=kkutbot
+      - URL_kkutbot=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/?authSource=admin
+      - ENGINE_kkutbot=mongo@dbgate-plugin-mongo
+      - LOGIN=${DBGATE_LOGIN}
+      - PASSWORD=${DBGATE_PASSWORD}
     depends_on:
       - mongo
   mongob:
@@ -58,3 +60,6 @@ services:
       - TZ=Asia/Seoul
     depends_on:
       - mongo
+
+volumes:
+  dbgate-data:

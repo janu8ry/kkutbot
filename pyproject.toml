@@ -60,7 +60,3 @@ exclude = ".venv"
 [[tool.mypy.overrides]]
 module = ["discord.*", "motor.*", "apscheduler.*", "yaml.*", "rich.*", "koreanbots.*", "topgg.*", "psutil.*"]
 ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["tools.views"]
-ignore_errors = true

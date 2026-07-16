@@ -5,7 +5,7 @@ from discord.utils import escape_markdown as e_mk
 
 from config import config
 from core import Kkutbot
-from tools.utils import fmt, get_tier, is_admin
+from tools.utils import fmt, get_rank_progress, is_admin
 
 from .views import ProfileMenu, SelfProfileMenu
 
@@ -20,7 +20,7 @@ class Profile(commands.Cog, name="사용자"):
     @app_commands.rename(user="유저")
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
-    async def profile(self, ctx: commands.Context, *, user: discord.User | discord.Member = commands.Author):
+    async def profile(self, ctx: commands.Context, *, user: discord.User = commands.Author):
         """
         유저의 프로필과 자세한 통계를 확인합니다.
 
@@ -50,17 +50,14 @@ class Profile(commands.Cog, name="사용자"):
 
         profile_embed = discord.Embed(
             title=fmt(f"{{profile}} {e_mk(name)} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}"),
-            description=fmt(
-                f"```yaml\n{user_data.bio}```\n"
-                f"{{tier}} 랭킹전 티어 - **{get_tier(user_data, 'rank_solo')}** | **{get_tier(user_data, 'rank_online')}**\n​"
-            ),
+            description=fmt(f"```yaml\n{user_data.bio}```\n{{tier}} 랭킹전 티어 - **{get_rank_progress(user_data.game.rank_solo)}**\n​"),
             color=color,
         )
         profile_embed.add_field(name=fmt("{points} **포인트**"), value=f"{user_data.points}")
-        profile_embed.add_field(name=fmt("{starter} **승률**"), value=f"{user_data.game.rank_solo.winrate}% | {user_data.game.rank_online.winrate}%")
+        profile_embed.add_field(name=fmt("{starter} **승률**"), value=f"{user_data.game.rank_solo.winrate}%")
         profile_embed.add_field(name=fmt("{medals} **메달**"), value=f"{user_data.medals}")
         profile_embed.set_thumbnail(url=user.display_avatar.url)
-        profile_embed.set_footer(text=f"더 자세한 정보는 아래 '통계 확인하기' 버튼을 통해 확인할 수 있어요!{' ' * 65}​")
+        profile_embed.set_footer(text=f"더 자세한 정보는 아래 '통계 확인하기' 버튼을 통해 확인할 수 있어요!{' ' * 50}​")
 
         stats_embed = discord.Embed(
             title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"),

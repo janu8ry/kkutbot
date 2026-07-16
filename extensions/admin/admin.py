@@ -7,9 +7,9 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
+from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
-from .converter import UserGuildConverter
 from .views import ModifyData, SendAnnouncement
 
 
@@ -116,7 +116,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: commands.Context,
         *,
-        target: discord.User | discord.Guild | str = commands.parameter(converter=UserGuildConverter, default="public"),
+        target: discord.User | discord.Member | discord.Guild | str = commands.parameter(converter=UserGuildConverter, default="public"),
     ):
         """
         대상의 정보를 수정합니다.

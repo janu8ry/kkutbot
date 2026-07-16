@@ -20,14 +20,14 @@ class ConfirmSendAnnouncement(BaseView):
         self.value = None
 
     @discord.ui.button(label="전송하기", style=discord.ButtonStyle.green)
-    async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def confirm_send(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
         await interaction.channel.send("공지 전송 완료!")
         await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def cancel(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
         await interaction.channel.send("공지 전송이 취소되었습니다.")
         await self.disable_buttons(interaction)
@@ -127,7 +127,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
 
 
 class ModifyData(BaseView):
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | str):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Member | discord.Guild | str):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target

@@ -36,7 +36,6 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 # 다음 업데이트 TODO
 - [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
 - [ ] 연승 시스템
-- [ ] 티어별 난이도 조정
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
@@ -59,7 +58,7 @@ vi config.yml # config.yml 수정
 python3 main.py
 ```
 
-### ### docker 사용 (배포)
+### docker 사용 (배포)
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot

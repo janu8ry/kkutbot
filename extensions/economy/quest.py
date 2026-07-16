@@ -31,7 +31,7 @@ class Quest(commands.Cog, name="퀘스트"):
         for data, info in public.quests.items():
             current = get_nested_dict(user.model_dump(), data.split("/")) - user.quest.cache[data]
             if data in user.quest.status.completed:
-                desc = "이 퀘스트를 완료했습니다!"
+                desc = "퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"
             else:
                 desc = f"진행 상황: {round(current, 3)} / {info['target']} (`{round(current / info['target'] * 100, 1)}`%)"

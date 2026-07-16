@@ -7,15 +7,16 @@ from views import BaseView
 
 __all__ = ["HelpMenu", "InviteMenu"]
 
+COG_ORDER = ("일반", "게임", "사용자", "랭킹", "출석", "포인트", "퀘스트", "공지", "초대")
+
 
 class HelpDropdown(discord.ui.Select):
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
-        options = []
-        for cmd in ctx.bot.commands:
-            if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden:
-                option = discord.SelectOption(label=cmd.name, value=cmd.name, description=cmd.short_doc, emoji=fmt(cmd.usage))
-                options.append(option)
+        order = {name: i for i, name in enumerate(COG_ORDER)}
+        visible = [cmd for cmd in ctx.bot.commands if cmd.cog.qualified_name not in ["지샤쿠", "관리자"] and not cmd.hidden]
+        visible.sort(key=lambda c: (order.get(c.cog.qualified_name, len(COG_ORDER)), c.name))
+        options = [discord.SelectOption(label=cmd.name, value=cmd.name, description=cmd.short_doc, emoji=fmt(cmd.usage)) for cmd in visible]
         super().__init__(placeholder="도움말을 확인할 명령어를 선택해 주세요.", options=options, row=1)
 
     async def callback(self, interaction: discord.Interaction):

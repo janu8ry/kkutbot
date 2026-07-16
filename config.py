@@ -162,7 +162,7 @@ class Links:
 
 @dataclass(frozen=True)
 class Config:
-    is_test: bool = field(default_factory=lambda: _config("testmode"))
+    is_test: bool = field(default_factory=lambda: str(_config("testmode")).strip().lower() != "false")
     version: str = field(default_factory=lambda: _config("version"))
     bot_id: int = field(default_factory=lambda: _config("bot_id"))
     prefix: Prefix = Prefix()
@@ -177,7 +177,6 @@ class Config:
     emojis: dict[str, int] = field(default_factory=lambda: _config("emojis"))
     modelist: dict[str, str] = field(default_factory=lambda: _config("modelist"))
     perms: dict[str, str] = field(default_factory=lambda: _config("perms"))
-    tierlist: dict[str, dict[str, Any]] = field(default_factory=lambda: _config("tierlist"))
 
 
 config: Config = Config()
