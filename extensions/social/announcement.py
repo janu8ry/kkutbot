@@ -1,11 +1,9 @@
-import time
-
 import discord
 from discord.ext import commands
 
 from config import config
 from core import Kkutbot
-from tools.utils import fmt, time_convert
+from tools.utils import fmt
 from views import Paginator
 
 
@@ -31,7 +29,7 @@ class Announcement(commands.Cog, name="공지"):
         if msgs:
             for msg in msgs:
                 embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
-                embed.add_field(name=f"🔹 {msg['title']} - `{time_convert(time.time() - msg['time'])} 전`", value=msg["value"], inline=False)
+                embed.add_field(name=f"🔹 {msg['title']} - <t:{int(msg['time'])}:R>", value=msg["value"], inline=False)
                 pages.append(embed)
         else:
             embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), description=fmt("{denied} 공지사항이 없습니다."), color=config.colors.green)

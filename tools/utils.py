@@ -9,7 +9,6 @@ from database.models import GameBase, RankGameBase
 
 __all__ = [
     "fmt",
-    "time_convert",
     "get_timestamp",
     "is_admin",
     "split_string",
@@ -47,31 +46,6 @@ def fmt(text: str) -> str:
         String with placeholders replaced by emojis
     """
     return text.format_map(FormattingDict(dict_emojis()))
-
-
-def time_convert(timeinfo: int | float | timedelta) -> str:
-    """
-    Converts time to the largest unit.
-    Parameters
-    ----------
-    timeinfo : int | float | timedelta
-        Time value to convert
-    Returns
-    -------
-    str
-        Converted time string
-    """
-    if isinstance(timeinfo, (int, float)):
-        timeinfo = timedelta(seconds=timeinfo)
-    if timeinfo.days > 365:
-        return f"{timeinfo.days // 365}년"
-    elif timeinfo.days > 0:
-        return f"{timeinfo.days}일"
-    elif timeinfo.seconds >= 3600:
-        return f"{timeinfo.seconds // 3600}시간"
-    elif timeinfo.seconds >= 60:
-        return f"{timeinfo.seconds // 60}분"
-    return f"{timeinfo.seconds}초"
 
 
 def get_timestamp(date: str) -> int:

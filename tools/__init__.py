@@ -10,7 +10,6 @@ from .utils import (
     get_winrate,
     is_admin,
     split_string,
-    time_convert,
 )
 
 __all__ = [
@@ -18,7 +17,6 @@ __all__ = [
     "UserGuildConverter",
     "setup_logger",
     "fmt",
-    "time_convert",
     "get_timestamp",
     "is_admin",
     "split_string",
