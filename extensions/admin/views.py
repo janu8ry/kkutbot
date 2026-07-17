@@ -44,7 +44,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
-        embed.add_field(name=f"🔹 {self.a_title.value} - `1초 전`", value=self.description.value)
+        embed.add_field(name=f"🔹 {self.a_title.value} - <t:{int(time.time()) - 1}:R>", value=self.description.value)
         view = ConfirmSendAnnouncement(ctx=self.ctx)
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
