@@ -16,7 +16,9 @@ class SearchUser(commands.UserConverter):
             return member._user  # noqa
         except commands.MemberNotFound:
             pass
-        doc = await ctx.bot.db.client.user.find_one({"name": argument}, {"_id": 1})
+        doc = await ctx.bot.db.client.user.find_one({"name": argument}, {"_id": 1}) or await ctx.bot.db.client.user.find_one(
+            {"global_name": argument}, {"_id": 1}
+        )
         if doc:
             try:
                 return await ctx.bot.fetch_user(doc["_id"])

@@ -1,8 +1,8 @@
-from typing import Annotated, Any
+from typing import Any
 
-from beanie import Document, Indexed
+from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import TEXT, IndexModel  # noqa
+from pymongo import IndexModel  # noqa
 
 __all__ = ["User", "Guild", "Public", "GameBase", "RankGameBase"]
 
@@ -76,7 +76,8 @@ class Alerts(BaseModel):
 
 class User(Document):
     id: int
-    name: Annotated[str | None, Indexed(index_type=TEXT)] = None
+    name: str
+    global_name: str
     registered: int | None = None
     bio: str = "소개말이 없습니다."
     points: int = 1000
@@ -96,6 +97,7 @@ class User(Document):
         validate_on_save = True
         indexes = [
             IndexModel([("name", 1)]),
+            IndexModel([("global_name", 1)]),
             IndexModel([("points", -1)]),
             IndexModel([("medals", -1)]),
             IndexModel([("attendance.times", -1)]),

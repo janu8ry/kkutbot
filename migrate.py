@@ -130,10 +130,34 @@ async def _migrate_tiers() -> None:
     print(f"user: {fixed}개 문서의 솔로 티어를 신규 체계로 배치")
 
 
+async def _migrate_global_name() -> None:
+    result = await db.user.update_many(
+        {"global_name": {"$exists": False}},
+        [{"$set": {"global_name": "$name"}}],
+    )
+    print(f"user: {result.modified_count}개 문서에 global_name(=name) 추가")
+
+
+async def _drop_name_text_index() -> None:
+    existing = await db.user.index_information()
+    for name in [idx for idx, info in existing.items() if any(field == "_fts" for field, _ in info.get("key", []))]:
+        await db.user.drop_index(name)
+        print(f"user: 미사용 텍스트 인덱스 '{name}' 삭제")
+
+
+async def _drop_general_collection() -> None:
+    if "general" in await db.list_collection_names():
+        await db.drop_collection("general")
+        print("레거시 'general' 컬렉션 삭제")
+
+
 async def main() -> None:
     await _migrate_floats()
     await _migrate_tiers()
     await _migrate_command_stats()
+    await _migrate_global_name()
+    await _drop_name_text_index()
+    await _drop_general_collection()
 
 
 if __name__ == "__main__":

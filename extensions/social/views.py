@@ -64,19 +64,21 @@ class RankDropdown(discord.ui.Select):
         return query
 
     async def get_user_name(self, doc: dict) -> str:
-        stored: str | None = doc.get("name")
         cached = self.ctx.bot.get_user(doc["_id"])
-        if cached is not None:
-            username = cached.name
-        elif stored:
-            username = stored
+        if cached is None:
+            display = doc["global_name"]
         else:
-            username = (await self.ctx.bot.fetch_user(doc["_id"])).name
-        if username != stored:
-            await self.ctx.bot.db.client.user.update_one({"_id": doc["_id"]}, {"$set": {"name": username}})
-        if len(username) >= 15:
-            username = username[:12] + "..."
-        return username
+            display = cached.global_name or cached.name
+            updates = {}
+            if cached.name != doc["name"]:
+                updates["name"] = cached.name
+            if display != doc["global_name"]:
+                updates["global_name"] = display
+            if updates:
+                await self.ctx.bot.db.client.user.update_one({"_id": doc["_id"]}, {"$set": updates})
+        if len(display) >= 15:
+            display = display[:12] + "..."
+        return display
 
     async def format_rank(self, cursor: AsyncIOMotorCursor, query: str) -> list[str]:
         docs = await cursor.to_list(None)

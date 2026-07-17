@@ -56,12 +56,14 @@ class Client:
             User model from database
         """
         document = await User.get(user.id)
+        global_name = user.global_name or user.name
         if document:
-            if document.name != user.name:
+            if document.name != user.name or document.global_name != global_name:
                 document.name = user.name
+                document.global_name = global_name
                 await document.save_changes()
         else:
-            document = User(id=user.id, name=user.name)
+            document = User(id=user.id, name=user.name, global_name=global_name)
 
         return document
 
