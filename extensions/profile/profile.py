@@ -62,7 +62,7 @@ class Profile(commands.Cog, name="사용자"):
         stats_embed = discord.Embed(
             title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"),
             description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : <t:{user_data.latest_usage}:D>",
-            color=color
+            color=color,
         )
 
         for k, v in config.modelist.items():
