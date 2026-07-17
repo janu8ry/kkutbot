@@ -32,8 +32,17 @@ class GameBase:
         self.begin_time = time.time()
         self.timeout = 10
 
-    async def alert_rank_change(self, player: discord.User | discord.Member, before: str, after: str, promoted: bool) -> discord.Message:
-        if promoted:
+    async def alert_rank_change(
+        self, player: discord.User | discord.Member, before: str, after: str, promoted: bool, placement: bool = False
+    ) -> discord.Message:
+        if placement:
+            embed = discord.Embed(
+                title=fmt("{tier} 배치 완료!"),
+                description=fmt(f"**{after}** 티어에 배치되었습니다!"),
+                color=config.colors.green,
+            )
+            embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
+        elif promoted:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 승급!"),
                 description=fmt(f"**{before}** -> **{after}** 티어로 승급했습니다!"),
@@ -178,6 +187,7 @@ class SoloGame(GameBase):
             modes[mode].best = self.score
         rank_changed = None
         result_field: tuple[str, str] | None = None
+        placement = False
         if mode == "rank_solo":
             solo = user.game.rank_solo
             won = result == "승리"
@@ -206,7 +216,7 @@ class SoloGame(GameBase):
         else:
             embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
         embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if result == '승리' else ''}{points}` {{points}}"))
-        if mode == "rank_solo":
+        if mode == "rank_solo" and user.game.rank_solo.tier != "언랭크":
             embed.add_field(name=fmt("🔸 티어"), value=fmt(get_rank_progress(user.game.rank_solo)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
         if result in ("패배", "포기"):
@@ -221,7 +231,7 @@ class SoloGame(GameBase):
         await self.ctx.bot.db.save(user)
         await self.ctx.reply(embed=embed, mention_author=True)
         if rank_changed:
-            await self.alert_rank_change(self.player, *rank_changed)
+            await self.alert_rank_change(self.player, *rank_changed, placement=placement)
 
 
 class MultiGame(GameBase):
