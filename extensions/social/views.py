@@ -64,8 +64,16 @@ class RankDropdown(discord.ui.Select):
         return query
 
     async def get_user_name(self, doc: dict) -> str:
-        user = self.ctx.bot.get_user(doc["_id"])
-        username: str = getattr(user, "name", None) or doc.get("name") or (await self.ctx.bot.fetch_user(doc["_id"])).name
+        stored: str | None = doc.get("name")
+        cached = self.ctx.bot.get_user(doc["_id"])
+        if cached is not None:
+            username = cached.name
+        elif stored:
+            username = stored
+        else:
+            username = (await self.ctx.bot.fetch_user(doc["_id"])).name
+        if username != stored:
+            await self.ctx.bot.db.client.user.update_one({"_id": doc["_id"]}, {"$set": {"name": username}})
         if len(username) >= 15:
             username = username[:12] + "..."
         return username
