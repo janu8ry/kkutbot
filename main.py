@@ -30,8 +30,10 @@ async def on_ready() -> None:
     to_replace = {
         "jishaku sh": ["쉘", "ㅅ", "실행"],
         "jishaku cat": ["캣", "ㅋ", "파일", "ㅍㅇ"],
-        "jishaku sync": ["ㅅㅋ", "동기화", "ㄷ"],
-        "jishaku py": ["ㅍ"],
+        "jishaku sync": ["싱크", "ㅅㅋ", "동기화", "ㄷ"],
+        "jishaku py": ["파이썬", "ㅍ"],
+        "jishaku rtt": ["핑", "ㅍㅍ", "지연"],
+        "jishaku exec": ["ㅇ"]
     }
     for name, aliases in to_replace.items():
         bot.add_aliases(name, aliases)
