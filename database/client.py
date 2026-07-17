@@ -57,7 +57,7 @@ class Client:
         """
         document = await User.get(user.id)
         if document:
-            if document.name and document.name != user.name:
+            if document.name != user.name:
                 document.name = user.name
                 await document.save_changes()
         else:

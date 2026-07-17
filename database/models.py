@@ -76,7 +76,7 @@ class Alerts(BaseModel):
 
 class User(Document):
     id: int
-    name: Annotated[str, Indexed(index_type=TEXT)]
+    name: Annotated[str | None, Indexed(index_type=TEXT)] = None
     registered: int | None = None
     bio: str = "소개말이 없습니다."
     points: int = 1000
