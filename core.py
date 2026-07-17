@@ -158,7 +158,7 @@ class Kkutbot(commands.AutoShardedBot):
             raise ValueError
         return result
 
-    async def if_koreanbots_voted(self, user: discord.User | discord.Member) -> bool:
+    async def if_koreanbots_voted(self, user: discord.User) -> bool:
         try:
             response = await self.koreanbots.get_user_is_voted_bot(config.bot_id, user.id)
             return response.data.voted
