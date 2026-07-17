@@ -39,7 +39,7 @@ async def on_ready() -> None:
         bot.add_aliases(name, aliases)
 
     guilds = len(bot.guilds)
-    users = await bot.db.client.user.count_documents({})
+    users = await bot.db.count_users()
 
     logger.info(f"'{getattr(bot.user, 'name', '_')}'으로 로그인되었습니다! (서버수: {guilds}, 유저수: {users})")
 
