@@ -32,10 +32,7 @@ class Profile(commands.Cog, name="사용자"):
         `/프로필 @가나다` - 유저 '가나다'의 프로필과 통계를 확인합니다.
         """
         user_data = await ctx.bot.db.get_user(user)
-        if int(user.discriminator):
-            name = str(user.name)
-        else:
-            name = f"{user.display_name} ({user.name})"
+        name = f"{user.display_name} ({user.name})"
         if not user_data.registered:
             embed = discord.Embed(
                 title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.red
