@@ -22,14 +22,14 @@ class ConfirmSendAnnouncement(BaseView):
     @discord.ui.button(label="전송하기", style=discord.ButtonStyle.green)
     async def confirm_send(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
-        await interaction.channel.send("공지 전송 완료!")
+        await interaction.channel.send("공지 전송 완료!")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
     async def cancel(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
-        await interaction.channel.send("공지 전송이 취소되었습니다.")
+        await interaction.channel.send("공지 전송이 취소되었습니다.")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
@@ -53,7 +53,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
             data = {"title": self.a_title.value, "value": self.description.value, "time": round(time.time())}
             public.announcements.append(data)
             await self.ctx.bot.db.save(public)
-            await User.find().update(Set({User.alerts.announcements: False}))
+            await User.find().update(Set({User.alerts.announcements: False}))  # noqa
 
 
 class SendAnnouncement(BaseView):
@@ -63,10 +63,10 @@ class SendAnnouncement(BaseView):
         self.ctx = ctx
 
     @discord.ui.button(label="내용 작성하기", style=discord.ButtonStyle.blurple)
-    async def msg_input(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def msg_input(self: SendAnnouncement, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(AnnouncementInput(ctx=self.ctx))
         button.disabled = True
-        await self.message.edit(view=self)
+        await self.message.edit(view=self)  # type: ignore
         self.value = True
         self.stop()
 
@@ -77,16 +77,16 @@ class ConfirmModifyData(BaseView):
         self.value = None
 
     @discord.ui.button(label="수정하기", style=discord.ButtonStyle.green)
-    async def confirm_send(self, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def confirm_send(self: ConfirmModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
-        await interaction.channel.send("데이터 수정 완료!")
+        await interaction.channel.send("데이터 수정 완료!")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def cancel(self: ConfirmModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
-        await interaction.channel.send("데이터 수정이 취소되었습니다.")
+        await interaction.channel.send("데이터 수정이 취소되었습니다.")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
@@ -111,7 +111,8 @@ class DataInput(BaseModal, title="데이터 수정하기"):
                 final_data = ast.literal_eval(data)
             except SyntaxError, ValueError:
                 await interaction.response.send_message("올바른 값이 아닙니다.")
-                return self.stop()
+                self.stop()
+                return
         embed = discord.Embed(
             title="데이터 수정 확인",
             description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
@@ -124,6 +125,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
         if view.value:
             await self.collection.update_one({"_id": getattr(self.target, "id", "public")}, {"$set": {self.data_path.value: final_data}})
         self.stop()
+        return
 
 
 class ModifyData(BaseView):
@@ -134,7 +136,7 @@ class ModifyData(BaseView):
         self.ctx = ctx
 
     @discord.ui.button(label="수정하기", style=discord.ButtonStyle.blurple)
-    async def modify_user(self, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def modify_user(self: ModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
         if isinstance(self.target, (discord.User, discord.Member)) and (await self.ctx.bot.db.get_user(self.target)).registered:
             collection = self.ctx.bot.db.client.user
         elif isinstance(self.target, discord.Guild) and (await self.ctx.bot.db.get_guild(self.target)).invited:
@@ -143,7 +145,9 @@ class ModifyData(BaseView):
             collection = self.ctx.bot.db.client.public
         else:
             await interaction.response.send_message("올바른 타깃이 아닙니다.")
-            return self.stop()
+            self.stop()
+            return
         await interaction.response.send_modal(DataInput(ctx=self.ctx, target=self.target, collection=collection))
         self.value = True
         self.stop()
+        return
