@@ -54,15 +54,8 @@ class Admin(commands.Cog, name="관리자"):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
             public_data = await self.bot.db.get_public()
-            cmd_data = dict(public_data.commands)
-            if "jishaku" not in cmd_data:
-                cmd_data["jishaku"] = 0
-            for k, v in cmd_data.copy().items():
-                if k.startswith("jishaku "):
-                    cmd_data["jishaku"] += v
-                    del cmd_data[k]
-            sorted_data = sorted(cmd_data.items(), key=lambda item: item[1], reverse=True)
-            for content in split_string("\n".join(f"{k.replace('_', '$')}: `{v}`회" for k, v in sorted_data)):
+            sorted_data = sorted(public_data.commands.items(), key=lambda item: item[1], reverse=True)
+            for content in split_string("\n".join(f"{k}: `{v}`회" for k, v in sorted_data)):
                 await ctx.reply(content)
             public_data = public_data.model_dump()
             del public_data["commands"]

@@ -62,6 +62,35 @@ NEW_TIER_MAP: dict[str, tuple[str, int]] = {
 }
 
 
+COMMAND_MERGE: dict[str, str] = {
+    "끝말잇기1": "끝말잇기",
+    "끝말잇기2": "다인전",
+    "끝말잇기3": "쿵쿵따",
+    "통계": "프로필",
+    "정보": "프로필",
+    "소개말": "프로필",
+    "지원금": "포인트",
+    "메일": "공지",
+    "커뮤니티": "도움",
+}
+COMMAND_DROP: set[str] = {"핑", "슬롯", "뱝", "재생"}
+
+
+async def _migrate_command_stats() -> None:
+    public = await db.public.find_one({"_id": "public"})
+    if not public:
+        print("public 문서가 없어 명령어 통계 마이그레이션을 건너뜁니다")
+        return
+    new: dict[str, int] = {}
+    for name, count in (public.get("commands") or {}).items():
+        if name.startswith("jishaku") or name.startswith("_") or name in COMMAND_DROP:
+            continue  # 지샤쿠 / 관리자($→_) / 사라진 명령어 삭제
+        target = COMMAND_MERGE.get(name, name)
+        new[target] = new.get(target, 0) + count
+    await db.public.update_one({"_id": "public"}, {"$set": {"commands": new}})
+    print(f"public: 명령어 통계를 {len(new)}개로 정리")
+
+
 def _winrate(win: int, times: int) -> float:
     return 0 if (times == 0 or win == 0) else round(win / times * 100, 2)
 
@@ -104,6 +133,7 @@ async def _migrate_tiers() -> None:
 async def main() -> None:
     await _migrate_floats()
     await _migrate_tiers()
+    await _migrate_command_stats()
 
 
 if __name__ == "__main__":

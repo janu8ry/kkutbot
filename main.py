@@ -69,11 +69,10 @@ async def before_command(ctx: commands.Context) -> None:
     public = await bot.db.get_public()
     public.command_used += 1
     public.latest_usage = round(time.time())
-    cmd_name = ctx.command.qualified_name.replace("$", "_")  # type: ignore
-    if cmd_name in public.commands:
-        public.commands[cmd_name] += 1
-    else:
-        public.commands[cmd_name] = 1
+    cog_name = ctx.command.cog.qualified_name if ctx.command.cog else ""  # type: ignore
+    if cog_name not in ("지샤쿠", "관리자"):
+        cmd_name = ctx.command.qualified_name  # type: ignore
+        public.commands[cmd_name] = public.commands.get(cmd_name, 0) + 1
 
     if user.quest.status.date != (today := datetime.today().toordinal()):
         user.quest.status.date = today
