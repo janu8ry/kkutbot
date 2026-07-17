@@ -38,7 +38,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             "db": ctx.bot.db,  # type: ignore
             "User": User,
             "Guild": Guild,
-            "General": Public,
+            "Public": Public,
             "config": config,
             "logger": logger,
             "get_timestamp": get_timestamp,
