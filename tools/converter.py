@@ -20,6 +20,8 @@ class SearchUser(commands.UserConverter):
             {"global_name": argument}, {"_id": 1}
         )
         if doc:
+            if user := ctx.bot.get_user(doc["_id"]):
+                return user
             try:
                 return await ctx.bot.fetch_user(doc["_id"])
             except discord.NotFound:
