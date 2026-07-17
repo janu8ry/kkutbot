@@ -26,17 +26,16 @@ TIER_DEMOTION_LP = 50
 
 PLACEMENT_MAP: dict[int, tuple[str, int]] = {
     0: ("브론즈", 3),
-    1: ("브론즈", 3),
-    2: ("브론즈", 2),
-    3: ("브론즈", 1),
-    4: ("실버", 2),
-    5: ("실버", 1),
+    1: ("브론즈", 2),
+    2: ("브론즈", 1),
+    3: ("실버", 3),
+    4: ("실버", 1),
+    5: ("골드", 1),
 }
-PLACEMENT_DIFFICULTY = ("브론즈", "브론즈", "실버", "실버", "골드")
+PLACEMENT_DIFFICULTY = ("브론즈", "브론즈", "실버", "골드", "플래티넘")
 DIFFICULTY: dict[str, dict[str, Any]] = {
-    "언랭크": {"surrender": 5, "band": (0.0, 0.5), "hanbang": False},
-    "브론즈": {"surrender": 5, "band": (0.0, 0.5), "hanbang": False},
-    "실버": {"surrender": 4, "band": (0.1, 0.7), "hanbang": False},
+    "브론즈": {"surrender": 4, "band": (0.0, 0.5), "hanbang": False},
+    "실버": {"surrender": 3, "band": (0.1, 0.7), "hanbang": False},
     "골드": {"surrender": 2, "band": (0.2, 0.9), "hanbang": False},
     "플래티넘": {"surrender": 1, "band": (0.4, 0.9), "hanbang": True},
     "다이아몬드": {"surrender": 0, "band": (0.6, 1.0), "hanbang": True},
@@ -110,11 +109,11 @@ def get_difficulty_tier(rank: RankGameBase) -> str:
 
 
 def get_bot_surrender_threshold(tier: str) -> int:
-    return DIFFICULTY.get(tier, DIFFICULTY[UNRANKED])["surrender"]
+    return DIFFICULTY[tier]["surrender"]
 
 
 def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> str | None:
-    conf = DIFFICULTY.get(tier, DIFFICULTY[UNRANKED])
+    conf = DIFFICULTY[tier]
     sample = random.sample(candidates, min(DIFFICULTY_SAMPLE_SIZE, len(candidates)))
     used = set(used_words)
     graded = sorted(((w, sum(1 for x in get_word(w) if x not in used and x != w)) for w in sample), key=lambda t: -t[1])
