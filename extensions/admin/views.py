@@ -1,5 +1,6 @@
 import ast
 import time
+from typing import Literal
 
 import discord
 from beanie.operators import Set
@@ -95,7 +96,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
     data_path = discord.ui.TextInput(label="수정할 데이터 경로", required=True)
     data_value = discord.ui.TextInput(label="수정할 값", style=discord.TextStyle.long, required=True)
 
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | str, collection: AsyncIOMotorCollection):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | Literal["public"], collection: AsyncIOMotorCollection):
         super().__init__()
         self.ctx = ctx
         self.target = target
@@ -129,7 +130,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
 
 
 class ModifyData(BaseView):
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Member | discord.Guild | str):
+    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | Literal["public"]):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target
@@ -137,7 +138,7 @@ class ModifyData(BaseView):
 
     @discord.ui.button(label="수정하기", style=discord.ButtonStyle.blurple)
     async def modify_user(self: ModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
-        if isinstance(self.target, (discord.User, discord.Member)) and (await self.ctx.bot.db.get_user(self.target)).registered:
+        if isinstance(self.target, discord.User) and (await self.ctx.bot.db.get_user(self.target)).registered:
             collection = self.ctx.bot.db.client.user
         elif isinstance(self.target, discord.Guild) and (await self.ctx.bot.db.get_guild(self.target)).invited:
             collection = self.ctx.bot.db.client.guild

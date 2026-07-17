@@ -116,7 +116,7 @@ class Admin(commands.Cog, name="관리자"):
         self,
         ctx: commands.Context,
         *,
-        target: discord.User | discord.Member | discord.Guild | str = commands.parameter(converter=UserGuildConverter, default="public"),
+        target: discord.User | discord.Guild = commands.parameter(converter=UserGuildConverter, default="public"),
     ):
         """
         대상의 정보를 수정합니다.
