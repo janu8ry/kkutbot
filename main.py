@@ -164,7 +164,7 @@ async def check(ctx: commands.Context) -> bool:
 async def on_interaction(interaction: discord.Interaction) -> None:
     if interaction.type == discord.InteractionType.component:
         kst = timezone(timedelta(hours=9))
-        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))
+        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))  # type: ignore
         if interaction_created < bot.started_at:
             types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
             await interaction.response.send_message(
@@ -326,7 +326,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
         pass
     try:
         if owner_id := guild.owner_id:
-            owner = await bot.fetch_user(owner_id)
+            owner = bot.get_user(owner_id) or await bot.fetch_user(owner_id)
             await owner.send(embed=embed, view=ServerInvite())
     except discord.errors.Forbidden:
         pass
@@ -351,7 +351,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
         try:
             await announce.send(embed=embed)
             if owner_id := guild.owner_id:
-                owner = await bot.fetch_user(owner_id)
+                owner = bot.get_user(owner_id) or await bot.fetch_user(owner_id)
                 await owner.send(embed=embed)
         except discord.errors.Forbidden:
             pass
