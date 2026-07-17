@@ -28,15 +28,15 @@ class RankDropdown(discord.ui.Select):
         self.now = "종합 랭킹"
         self.categories: _Categories = {
             "general": {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"},
-            "game": {"솔로": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
-            "main": ["포인트", "메달", "출석", "솔로", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
+            "game": {"솔로 랭크": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
+            "main": ["포인트", "메달", "출석", "솔로 랭크", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
         }
         category_emojis: dict[str, str] = {
             "포인트": fmt("{points}"),
             "메달": fmt("{medals}"),
             "출석": fmt("{attendance}"),
             "명령어": "⌨️",
-            "솔로": "📔",
+            "솔로 랭크": "📔",
             "쿵쿵따": "3️⃣",
         }
         options = [
@@ -150,7 +150,7 @@ class RankDropdown(discord.ui.Select):
             if i <= 2:
                 embed.add_field(name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank) or "정보 없음")
             elif 3 <= i <= 5:
-                embed.add_field(name=f"🔹 솔로 모드 - {labels_solo[i - 3]}", value="\n".join(rank) or "정보 없음")
+                embed.add_field(name=f"🔹 솔로 랭크 - {labels_solo[i - 3]}", value="\n".join(rank) or "정보 없음")
             else:
                 embed.add_field(
                     name=f"🔹 쿵쿵따 모드 - {labels_kkd[i - 6]}", value="\n".join(rank) or "정보 없음"
