@@ -1,0 +1,78 @@
+// 실시간 로그: logs/latest.log 를 tail 하여 Loki 로 전송
+local.file_match "live" {
+  path_targets = [{"__path__" = "/logs/*.log", "job" = "kkutbot"}]
+}
+
+loki.source.file "live" {
+  targets    = local.file_match.live.targets
+  forward_to = [loki.process.live.receiver]
+}
+
+loki.process "live" {
+  stage.multiline {
+    firstline     = "^\\[\\d{2}:\\d{2}:\\d{2}\\]"
+    max_wait_time = "3s"
+  }
+  stage.regex {
+    expression = "^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[(?P<level>[A-Z]+)\\]"
+  }
+  stage.labels {
+    values = { level = "" }
+  }
+  stage.replace {
+    expression = "^(\\[\\d{2}:\\d{2}:\\d{2}\\] )"
+    replace    = ""
+  }
+  forward_to = [loki.write.default.receiver]
+}
+
+// 과거 이력: logs/*.log.gz 를 해제하여 파일명의 날짜 + 라인의 시각으로 타임스탬프 복원
+local.file_match "archive" {
+  path_targets = [{"__path__" = "/logs/*.log.gz", "job" = "kkutbot"}]
+}
+
+loki.source.file "archive" {
+  targets    = local.file_match.archive.targets
+  forward_to = [loki.process.archive.receiver]
+  decompression {
+    enabled = true
+    format  = "gz"
+  }
+}
+
+loki.process "archive" {
+  stage.multiline {
+    firstline     = "^\\[\\d{2}:\\d{2}:\\d{2}\\]"
+    max_wait_time = "3s"
+  }
+  stage.regex {
+    source     = "filename"
+    expression = "(?P<fdate>\\d{4}-\\d{2}-\\d{2})"
+  }
+  stage.regex {
+    expression = "^\\[(?P<ftime>\\d{2}:\\d{2}:\\d{2})\\] \\[(?P<level>[A-Z]+)\\]"
+  }
+  stage.template {
+    source   = "full_ts"
+    template = "{{ .fdate }} {{ .ftime }}"
+  }
+  stage.timestamp {
+    source   = "full_ts"
+    format   = "2006-01-02 15:04:05"
+    location = "Asia/Seoul"
+  }
+  stage.labels {
+    values = { level = "" }
+  }
+  stage.replace {
+    expression = "^(\\[\\d{2}:\\d{2}:\\d{2}\\] )"
+    replace    = ""
+  }
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
