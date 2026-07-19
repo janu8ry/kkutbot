@@ -114,7 +114,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
         embed = discord.Embed(title="퀘스트 클리어!", description=fmt(desc), color=config.colors.green)
         embed.set_thumbnail(url=bot.emoji("congrats").url)
         embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
-        await ctx.reply(embed=embed)
+        await ctx.channel.send(embed=embed)
 
         if len(user.quest.status.completed) == 3:
             bonus_embed = discord.Embed(title="보너스 보상", description="오늘의 퀘스트를 모두 완료했습니다!", color=config.colors.green)
@@ -124,7 +124,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
             user.medals += bonus_medal
             bonus_embed.add_field(name="추가 보상", value=fmt(f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}"))
             bonus_embed.set_thumbnail(url=bot.emoji("bonus").url)
-            await ctx.reply(embed=bonus_embed)
+            await ctx.channel.send(embed=bonus_embed)
 
     alert_message = []
     alerts = {
@@ -137,7 +137,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
             alert_message.append(msg)
             setattr(user.alerts, path, True)
     if alert_message:
-        await ctx.reply("\n\n".join(alert_message), mention_author=True)
+        await ctx.channel.send(f"{ctx.author.mention}\n\n" + "\n\n".join(alert_message))
 
     await bot.db.save(user)
 
@@ -228,7 +228,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
                 if text.startswith("사용법"):
                     usage = text[3:]
         else:
-            usage = ctx.command.help
+            usage = ctx.command.help or usage
         embed = discord.Embed(title="잘못된 사용법입니다.", description=f"🔹 `{ctx.command}` **사용법**\n{usage}", color=config.colors.blue)
         embed.set_thumbnail(url=bot.emoji("denied").url)
         embed.set_footer(text="명령어 '/도움'을 사용하여 자세한 설명을 확인할 수 있습니다.")
@@ -309,7 +309,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
     guild_data = await bot.db.get_guild(guild)
     await bot.db.save(guild_data)
     logger.invite(f"'{guild.name}'에 초대됨. (총 {len(bot.guilds)}서버)")
-    announce = [ch for ch in guild.text_channels if dict(ch.permissions_for(guild.me))["send_messages"]][0]
+    announce = next((ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages), None)
     embed = discord.Embed(
         description="**끝봇**을 서버에 초대해 주셔서 감사합니다!\n"
         "끝봇은 끝말잇기가 주 기능인 **디스코드 인증**된 한국 디스코드 봇입니다.\n"
@@ -321,7 +321,8 @@ async def on_guild_join(guild: discord.Guild) -> None:
         color=config.colors.blue,
     )
     try:
-        await announce.send(embed=embed, view=ServerInvite())
+        if announce:
+            await announce.send(embed=embed, view=ServerInvite())
     except discord.errors.Forbidden:
         pass
     try:
@@ -349,7 +350,8 @@ async def on_guild_join(guild: discord.Guild) -> None:
         )
         embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`")
         try:
-            await announce.send(embed=embed)
+            if announce:
+                await announce.send(embed=embed)
             if owner_id := guild.owner_id:
                 owner = bot.get_user(owner_id) or await bot.fetch_user(owner_id)
                 await owner.send(embed=embed)
