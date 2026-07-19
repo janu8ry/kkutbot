@@ -359,7 +359,7 @@ class MultiGame(GameBase):
 
     def game_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title="📔 끝말잇기 멀티플레이",
+            title="📔 끝말잇기 다인전",
             description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}",
             color=config.colors.green,
         )
