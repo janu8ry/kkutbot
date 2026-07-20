@@ -1,0 +1,70 @@
+// 봇 로그 수집: latest.log 실시간 tail + *.log.gz 아카이브(백필/갭 복구용)
+local.file_match "live" {
+  path_targets = [{"__path__" = "/logs/*.log", "job" = "kkutbot"}]
+}
+
+loki.source.file "live" {
+  targets    = local.file_match.live.targets
+  forward_to = [loki.process.kkutbot.receiver]
+}
+
+local.file_match "archive" {
+  path_targets = [{"__path__" = "/logs/*.log.gz", "job" = "kkutbot"}]
+}
+
+loki.source.file "archive" {
+  targets    = local.file_match.archive.targets
+  forward_to = [loki.process.kkutbot.receiver]
+  decompression {
+    enabled = true
+    format  = "gz"
+  }
+}
+
+// 신형([YYYY-MM-DD HH:MM:SS])과 구형([HH:MM:SS], 날짜는 파일명) 라인 모두 파싱.
+// 스트림을 날짜(date 라벨) 단위로 묶어, latest.log(live)와 회전된 .gz(archive)가
+// 같은 스트림을 공유함 → 동일 타임스탬프+내용은 Loki가 중복 제거하고,
+// 날짜가 다른 파일끼리는 스트림이 달라 백필 시 순서 충돌이 없음.
+loki.process "kkutbot" {
+  stage.multiline {
+    firstline     = "^\\[(?:\\d{4}-\\d{2}-\\d{2} )?\\d{2}:\\d{2}:\\d{2}\\]"
+    max_wait_time = "3s"
+  }
+  stage.regex {
+    source     = "filename"
+    expression = "(?P<fdate>\\d{4}-\\d{2}-\\d{2})"
+  }
+  stage.regex {
+    expression = "^\\[(?:(?P<ldate>\\d{4}-\\d{2}-\\d{2}) )?(?P<ltime>\\d{2}:\\d{2}:\\d{2})\\] \\[(?P<level>[A-Z]+)\\]"
+  }
+  stage.template {
+    source   = "date"
+    template = "{{ if .ldate }}{{ .ldate }}{{ else }}{{ .fdate }}{{ end }}"
+  }
+  stage.template {
+    source   = "full_ts"
+    template = "{{ .date }} {{ .ltime }}"
+  }
+  stage.timestamp {
+    source   = "full_ts"
+    format   = "2006-01-02 15:04:05"
+    location = "Asia/Seoul"
+  }
+  stage.labels {
+    values = { level = "", date = "" }
+  }
+  stage.label_drop {
+    values = ["filename"]
+  }
+  stage.replace {
+    expression = "^(\\[(?:\\d{4}-\\d{2}-\\d{2} )?\\d{2}:\\d{2}:\\d{2}\\] )"
+    replace    = ""
+  }
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

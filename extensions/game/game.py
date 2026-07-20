@@ -122,9 +122,9 @@ class Game(commands.Cog, name="게임"):
                     return
                 if view.value != "start":
                     if len(multi_game.players) < 2:
-                        await ctx.send(f"❌ 플레이어 수가 부족하여 **{multi_game.host.display_name}**님의 게임을 종료합니다.")
+                        await ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{multi_game.host.display_name}**님의 게임을 종료합니다.")
                         return
-                    await ctx.send(f"✅ 대기 시간이 초과되어 **{multi_game.host.display_name}**님의 게임을 시작합니다.")
+                    await ctx.channel.send(f"✅ 대기 시간이 초과되어 **{multi_game.host.display_name}**님의 게임을 시작합니다.")
                 await multi_game.run()
             finally:
                 for player in multi_game.players:

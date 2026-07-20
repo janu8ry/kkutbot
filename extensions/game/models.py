@@ -56,7 +56,7 @@ class GameBase:
                 color=config.colors.red,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("leveldown").url)
-        return await self.ctx.send(player.mention, embed=embed, mention_author=True)
+        return await self.ctx.channel.send(player.mention, embed=embed)
 
     @property
     def time_left(self) -> float:
@@ -149,7 +149,7 @@ class SoloGame(GameBase):
             return await msg.reply(desc, embed=embed, delete_after=self.time_left, mention_author=True)
         except discord.HTTPException as e:
             if e.code == 50035:
-                return await self.ctx.send(f"{msg.author.mention}님, {desc}", embed=embed, delete_after=self.time_left)
+                return await self.ctx.channel.send(f"{msg.author.mention}님, {desc}", embed=embed, delete_after=self.time_left)
             return None
 
     async def game_end(self, result: Literal["승리", "패배", "포기"], hanbang: bool = False):
@@ -229,7 +229,10 @@ class SoloGame(GameBase):
             else:
                 embed.add_field(name="🔹 가능했던 단어", value=f"`{self.bot_word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.bot.db.save(user)
-        await self.ctx.reply(embed=embed, mention_author=True)
+        if self.ctx.interaction:
+            await self.ctx.channel.send(self.player.mention, embed=embed)
+        else:
+            await self.ctx.reply(embed=embed, mention_author=True)
         if rank_changed:
             await self.alert_rank_change(self.player, *rank_changed, placement=placement)
 
@@ -356,7 +359,7 @@ class MultiGame(GameBase):
 
     def game_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title="📔 끝말잇기 멀티플레이",
+            title="📔 끝말잇기 다인전",
             description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}",
             color=config.colors.green,
         )
@@ -377,7 +380,7 @@ class MultiGame(GameBase):
             embed.add_field(name="🔹 가능했던 단어", value=f"`{'`, `'.join(possibles[:3])}` {'등...' if len(possibles) > 1 else ''}", inline=False)
         else:
             embed.add_field(name="🔹 가능했던 단어", value=f"`{self.word}`은(는) 한방단어였습니다...", inline=False)
-        await self.ctx.send(embed=embed)
+        await self.ctx.channel.send(embed=embed)
         self.final_score[self.now_player] = self.score
         self.score += 2
         self.begin_time = time.time()
@@ -408,7 +411,7 @@ class MultiGame(GameBase):
         await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
-        await self.ctx.send(embed=embed)
+        await self.ctx.channel.send(embed=embed)
 
     async def send_info_embed(self, desc: str | None = None) -> discord.Message:
         if desc is None:

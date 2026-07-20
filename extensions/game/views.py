@@ -33,9 +33,9 @@ class HostGuildGame(BaseView):
             return
         self.game.players.append(interaction.user)
         self.ctx.bot.playing_games.add(interaction.user.id)
-        await self.ctx.send(fmt(f"{{plus}} **{interaction.user.display_name}** 님이 참가했습니다."))
+        await self.ctx.channel.send(fmt(f"{{plus}} **{interaction.user.display_name}** 님이 참가했습니다."))
         if len(self.game.players) >= self.game.max_players:
-            await self.ctx.send(f"✅ 최대 인원에 도달하여 **{self.game.host.display_name}** 님의 게임을 시작합니다.")
+            await self.ctx.channel.send(f"✅ 최대 인원에 도달하여 **{self.game.host.display_name}** 님의 게임을 시작합니다.")
             self.value = "start"
             await self.disable_buttons(interaction)
             self.stop()
@@ -53,9 +53,9 @@ class HostGuildGame(BaseView):
         self.game.players.remove(interaction.user)
         self.ctx.bot.playing_games.discard(interaction.user.id)
         self.game.last_host = self.game.host
-        await self.ctx.send(fmt(f"{{minus}} **{interaction.user.display_name}**님이 나갔습니다."))
+        await self.ctx.channel.send(fmt(f"{{minus}} **{interaction.user.display_name}**님이 나갔습니다."))
         if len(self.game.players) == 0:
-            await self.ctx.send(f"❌ 플레이어 수가 부족하여 **{self.game.host.display_name}** 님의 게임을 종료합니다.")
+            await self.ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{self.game.host.display_name}** 님의 게임을 종료합니다.")
             self.value = "stop"
             await self.disable_buttons(interaction)
             self.stop()
@@ -73,7 +73,7 @@ class HostGuildGame(BaseView):
         if len(self.game.players) < 2:
             await interaction.response.send_message(fmt("{denied} 플레이어 수가 부족하여 게임을 시작할 수 없습니다."), ephemeral=True)
             return
-        await self.ctx.send(f"✅ **{self.game.host.display_name}**님의 게임을 시작합니다.")
+        await self.ctx.channel.send(f"✅ **{self.game.host.display_name}**님의 게임을 시작합니다.")
         self.value = "start"
         await self.disable_buttons(interaction)
         self.stop()

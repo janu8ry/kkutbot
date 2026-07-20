@@ -81,7 +81,7 @@ def setup_command_logger() -> None:
     file_handler.setFormatter(
         logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
-            datefmt="%H:%M:%S",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
     )
     file_handler.setLevel(logging.INFO)
