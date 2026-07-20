@@ -155,4 +155,4 @@ class Paginator(BaseView):
             self.children[4].disabled = True
 
     async def run(self) -> None:
-        await self.ctx.reply(embed=self.pages[0], view=self)
+        self.message = await self.ctx.reply(embed=self.pages[0], view=self)

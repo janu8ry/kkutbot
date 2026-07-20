@@ -5,7 +5,7 @@ import random
 import time
 import traceback
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -163,8 +163,7 @@ async def check(ctx: commands.Context) -> bool:
 @bot.event
 async def on_interaction(interaction: discord.Interaction) -> None:
     if interaction.type == discord.InteractionType.component:
-        kst = timezone(timedelta(hours=9))
-        interaction_created = round(time.mktime(interaction.message.created_at.astimezone(kst).timetuple()))  # type: ignore
+        interaction_created = round(interaction.message.created_at.timestamp())  # type: ignore
         if interaction_created < bot.started_at:
             types = ["그룹은", "버튼은", "리스트는", "텍스트박스는"]
             await interaction.response.send_message(
