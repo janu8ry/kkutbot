@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
 from typing import Any
+from unicodedata import east_asian_width
 
 from discord.ext import commands
 
@@ -14,6 +15,7 @@ __all__ = [
     "split_string",
     "get_winrate",
     "format_number",
+    "truncate_by_width",
     "get_rank_display",
     "get_rank_progress",
     "TIER_EMOJIS",
@@ -118,6 +120,33 @@ def format_number(n: int | float) -> str:
             text = f"{v:.{decimals}f}".rstrip("0").rstrip(".")
             return f"{text}{suffix}"
     return str(n)
+
+
+def truncate_by_width(text: str, limit: int = 15) -> str:
+    """
+    Truncates a string based on its display width, counting wide characters as two.
+    Parameters
+    ----------
+    text : str
+        Target string to truncate
+    limit : int
+        Maximum display width of the result
+    Returns
+    -------
+    str
+        Truncated string, suffixed with "..." if shortened
+    """
+    widths = [2 if east_asian_width(char) in "WF" else 1 for char in text]
+    if sum(widths) <= limit:
+        return text
+    result = ""
+    width = 0
+    for char, char_width in zip(text, widths):
+        if width + char_width > limit - 3:
+            break
+        result += char
+        width += char_width
+    return result + "..."
 
 
 def get_winrate(data: GameBase) -> Any:

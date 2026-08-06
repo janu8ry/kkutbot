@@ -8,7 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
 from tools import fmt
-from tools.utils import ROMAN_DIVISIONS, TIER_EMOJIS, format_number  # noqa
+from tools.utils import ROMAN_DIVISIONS, TIER_EMOJIS, format_number, truncate_by_width  # noqa
 from views import BaseView
 
 __all__ = ["RankMenu"]
@@ -76,9 +76,7 @@ class RankDropdown(discord.ui.Select):
                 updates["global_name"] = display
             if updates:
                 await self.ctx.bot.db.client.user.update_one({"_id": doc["_id"]}, {"$set": updates})
-        if len(display) >= 15:
-            display = display[:12] + "..."
-        return display
+        return truncate_by_width(display)
 
     async def format_rank(self, cursor: AsyncIOMotorCursor, query: str) -> list[str]:
         docs = await cursor.to_list(None)
