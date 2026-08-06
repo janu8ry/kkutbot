@@ -175,7 +175,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             )
 
             try:
-                await discord.utils.maybe_coroutine(method, extension) # type: ignore
+                await discord.utils.maybe_coroutine(method, extension)  # type: ignore
                 logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
             except Exception as exc:
                 traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
