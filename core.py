@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -47,8 +48,8 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config.is_test:
-            self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
-            self.scheduler.add_job(self.backup_data, "cron", hour=5, minute=5, second=0)
+            self.scheduler.add_job(self.backup_log, "cron", hour=12, minute=0, second=0)
+            self.scheduler.add_job(self.backup_data, "cron", hour=12, minute=0, second=0)
             self.scheduler.add_job(self.update_koreanbots, "interval", minutes=30)
 
     async def setup_hook(self) -> None:
@@ -98,23 +99,32 @@ class Kkutbot(commands.AutoShardedBot):
         await self.db.save(public)
 
     async def backup_data(self) -> None:
-        files = []
-        for filename in os.listdir("backup"):
-            if filename[:10].isdecimal():
-                files.append(filename)
-        files.sort(key=lambda f: int(f[:10]), reverse=True)
-        date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        fp = f"backup/{date}.gz"
-        os.replace(f"backup/{files[0]}", fp)
-        ch = self.get_channel(config.channels.backup_data)
+        os.makedirs("backup", exist_ok=True)
+        fp = f"backup/{datetime.now().strftime('%Y-%m-%d')}.gz"
+        db = config.mongo.main
+        process = await asyncio.create_subprocess_exec(
+            "mongodump",
+            f"--host={db.host}:{db.port}",
+            f"--db={db.db}",
+            f"--username={db.username}",
+            f"--password={db.password}",
+            "--authenticationDatabase=admin",
+            "--gzip",
+            f"--archive={fp}",
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, stderr = await process.communicate()
+        if process.returncode != 0:
+            logger.error(f"몽고DB 데이터 백업을 실패했습니다: {stderr.decode(errors='replace').strip()}")
+            return
         logger.info("몽고DB 데이터 백업 완료!")
+        ch = self.get_channel(config.channels.backup_data)
         if isinstance(ch, discord.TextChannel):
             await ch.send(file=discord.File(fp=fp))
             logger.info("백업 채널에 데이터 업로드 완료!")
         else:
             logger.info("백업 채널에 데이터 업로드를 실패했습니다.")
-        for filename in files[1:]:
-            os.remove(f"backup/{filename}")
 
     async def backup_log(self) -> None:
         fp = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"

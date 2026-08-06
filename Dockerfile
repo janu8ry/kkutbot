@@ -15,6 +15,11 @@ FROM python:3.14.6-slim-bookworm
 
 WORKDIR /kkutbot
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=mongo:7.0.37 /usr/bin/mongodump /usr/bin/mongodump
 COPY --from=builder /kkutbot/.venv /kkutbot/.venv
 COPY . .
 

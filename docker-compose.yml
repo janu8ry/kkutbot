@@ -12,6 +12,8 @@ services:
       - .env
     environment:
       - TZ=Asia/Seoul
+    depends_on:
+      - mongo
   mongo:
     image: mongo:7.0.37
     restart: always
@@ -45,19 +47,6 @@ services:
       - ENGINE_kkutbot=mongo@dbgate-plugin-mongo
       - LOGIN=${DBGATE_LOGIN}
       - PASSWORD=${DBGATE_PASSWORD}
-    depends_on:
-      - mongo
-  mongob:
-    image: janu8ry/mongob:arm64
-    restart: always
-    container_name: "kkutbot-mongob"
-    volumes:
-      - ./config.yml:/mongob/config.yml
-      - ./backup:/backup
-    env_file:
-      - .env
-    environment:
-      - TZ=Asia/Seoul
     depends_on:
       - mongo
   loki:

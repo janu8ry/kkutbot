@@ -45,9 +45,6 @@ mongo:
     db: kkutbot
     username: ${MONGO_USERNAME}
     password: ${MONGO_PASSWORD}
-  scheduler:
-    hour: "5"
-    minute: "0"
 
 # mongodb & log backup channel id
 channels:

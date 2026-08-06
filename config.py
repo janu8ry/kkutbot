@@ -118,16 +118,9 @@ class TestDBData:
 
 
 @dataclass(frozen=True)
-class Scheduler:
-    hour: str = field(default_factory=lambda: _config("mongo.scheduler.hour"))
-    minute: str = field(default_factory=lambda: _config("mongo.scheduler.minute"))
-
-
-@dataclass(frozen=True)
 class Mongo:
     main: MainDBData = MainDBData()
     test: TestDBData = TestDBData()
-    scheduler: Scheduler = Scheduler()
 
 
 @dataclass(frozen=True)

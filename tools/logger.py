@@ -1,8 +1,6 @@
-import datetime
 import gzip
 import logging
 import os
-import time
 from logging.handlers import TimedRotatingFileHandler
 from typing import Any
 
@@ -49,8 +47,8 @@ def rotator(source: str, dest: str) -> None:
     os.remove(source)
 
 
-def namer(_: Any) -> str:
-    return os.path.join("logs", time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400)) + ".log")
+def namer(default_name: str) -> str:
+    return os.path.join("logs", default_name.rsplit(".", 1)[-1] + ".log")
 
 
 def setup_command_logger() -> None:
@@ -75,9 +73,7 @@ def setup_command_logger() -> None:
     stream_handler.setFormatter(logging.Formatter(fmt="%(name)s :\t%(message)s"))
     stream_handler.setLevel(logging.DEBUG)
 
-    file_handler = TimedRotatingFileHandler(
-        filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8", atTime=datetime.time(23, 59, 59)
-    )
+    file_handler = TimedRotatingFileHandler(filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8")
     file_handler.setFormatter(
         logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
