@@ -28,7 +28,7 @@ class Admin(commands.Cog, name="관리자"):
     async def get_log(self, ctx: commands.Context, date: str = commands.parameter(default=None)):
         """해당 날짜의 로그 파일을 확인합니다."""
         if date is None:
-            path = "logs/latest.log"
+            path = "logs/latest.log"  # noqa
         else:
             now = datetime.now()
             try:
@@ -53,7 +53,7 @@ class Admin(commands.Cog, name="관리자"):
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
-            public_data = await self.bot.db.get_public()
+            public_data = await self.bot.db.get_public()  # noqa
             sorted_data = sorted(public_data.commands.items(), key=lambda item: item[1], reverse=True)
             for content in split_string("\n".join(f"{k}: `{v}`회" for k, v in sorted_data)):
                 await ctx.reply(content)

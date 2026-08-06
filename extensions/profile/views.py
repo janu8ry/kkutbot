@@ -19,13 +19,13 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
         self.ctx = ctx
         self.view = view
 
-    async def on_submit(self: InfoInput, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord.Interaction):
         bio = self.bio_text.value.replace("`", "")
         user = await self.ctx.bot.db.get_user(interaction.user)
         user.bio = bio
         await self.ctx.bot.db.save(user)
         for btn in self.view.children:
-            btn.disabled = True
+            btn.disabled = True  # type: ignore
         if self.view.message:
             await self.view.message.edit(view=self.view)
         await interaction.response.send_message(fmt(f"{{done}} 소개말을 '{e_mk(e_mt(bio))}'(으)로 변경했습니다!"), ephemeral=True)

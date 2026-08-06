@@ -30,7 +30,7 @@ class BaseView(discord.ui.View):
     async def on_timeout(self) -> None:
         for item in self.children:
             if not getattr(item, "url", None):
-                item.disabled = True
+                item.disabled = True  # type: ignore
         try:
             if self.message:
                 await self.message.edit(view=self)

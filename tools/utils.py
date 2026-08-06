@@ -117,7 +117,7 @@ def format_number(n: int | float) -> str:
             decimals = min(2, max(0, 4 - len(str(int(abs(v))))))
             factor = 10**decimals
             v = int(v * factor) / factor
-            text = f"{v:.{decimals}f}".rstrip("0").rstrip(".")
+            text = format(v, f".{decimals}f").rstrip("0").rstrip(".")
             return f"{text}{suffix}"
     return str(n)
 
