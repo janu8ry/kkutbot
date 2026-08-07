@@ -166,10 +166,7 @@ class Config:
     channels: Channels = Channels()
     sentry: Sentry = Sentry()
     links: Links = Links()
-    default_data: dict[str, dict[str, Any]] = field(default_factory=lambda: _config("default_data"))
     emojis: dict[str, int] = field(default_factory=lambda: _config("emojis"))
-    modelist: dict[str, str] = field(default_factory=lambda: _config("modelist"))
-    perms: dict[str, str] = field(default_factory=lambda: _config("perms"))
 
 
 config: Config = Config()

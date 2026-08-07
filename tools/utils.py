@@ -18,6 +18,7 @@ __all__ = [
     "truncate_by_width",
     "get_rank_display",
     "get_rank_progress",
+    "get_perm_name",
     "TIER_EMOJIS",
     "PLACEMENT_GAMES",
     "get_nested_dict",
@@ -182,3 +183,29 @@ def get_rank_progress(rank: RankGameBase) -> str:
     if rank.tier not in TIER_EMOJIS or rank.tier == UNRANKED:
         return get_rank_display(rank)
     return f"{get_rank_display(rank)} | `{rank.lp}` LP"
+
+
+PERM_NAMES = {
+    "send_messages": "메시지 보내기",
+    "embed_links": "링크 첨부",
+    "attach_files": "파일 첨부",
+    "read_messages": "채팅 채널 읽기",
+    "add_reactions": "반응 추가하기",
+    "external_emojis": "외부 이모티콘 사용하기",
+    "use_application_commands": "애플리케이션 명령어 사용",
+}
+
+
+def get_perm_name(perm: str) -> str:
+    """
+    Translates a discord permission flag into Korean.
+    Parameters
+    ----------
+    perm : str
+        Permission flag name to translate
+    Returns
+    -------
+    str
+        Korean name, or the flag name itself when no translation exists
+    """
+    return PERM_NAMES.get(perm, perm)

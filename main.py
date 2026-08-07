@@ -15,7 +15,7 @@ from sentry_sdk import capture_exception
 import core
 from config import config, get_nested_dict
 from tools.logger import KkutbotLogger, setup_logger
-from tools.utils import fmt, is_admin
+from tools.utils import fmt, get_perm_name, is_admin
 from views import ServerInvite
 
 logger: KkutbotLogger = logging.getLogger("kkutbot")  # type: ignore
@@ -184,13 +184,13 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(
             fmt(
-                f"{{denied}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한이 필요합니다."
+                f"{{denied}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(get_perm_name(i) for i in error.missing_permissions)}` 권한이 필요합니다."
             )
         )
     elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(
             fmt(
-                f"{{denied}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(config.perms[i] for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
+                f"{{denied}} `{ctx.command}` 명령어를 사용하시려면 `{', '.join(get_perm_name(i) for i in error.missing_permissions)}` 권한을 보유하고 있어야 합니다."
             )
         )
     elif isinstance(error, commands.errors.NotOwner):
@@ -347,7 +347,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
         embed = discord.Embed(
             title="권한이 부족합니다.", description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.", color=config.colors.red
         )
-        embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([config.perms[p] for p in missing_perms])}`")
+        embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([get_perm_name(p) for p in missing_perms])}`")
         try:
             if announce:
                 await announce.send(embed=embed)

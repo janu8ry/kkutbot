@@ -13,6 +13,15 @@ from tools.utils import fmt, get_rank_progress, is_admin
 
 from .views import ProfileMenu, SelfProfileMenu
 
+GAME_MODES = {
+    "rank_solo": "솔로 랭킹전",
+    "rank_online": "온라인 랭킹전",
+    "long": "긴 단어 잇기",
+    "kkd": "쿵쿵따",
+    "guild_multi": "서버 다인전",
+    "online_multi": "온라인 다인전",
+}
+
 
 class Profile(commands.Cog, name="사용자"):
     __slots__ = ("bot",)
@@ -67,9 +76,9 @@ class Profile(commands.Cog, name="사용자"):
             color=color,
         )
 
-        for k, v in config.modelist.items():
-            mode = getattr(user_data.game, v)
-            stats_embed.add_field(name=f"🔸 {k}", value=f"`{mode.win}` / `{mode.times}`회 승리 (`{mode.winrate}%`)\n최고 점수 : `{mode.best}`")
+        for field, label in GAME_MODES.items():
+            mode = getattr(user_data.game, field)
+            stats_embed.add_field(name=f"🔸 {label}", value=f"`{mode.win}` / `{mode.times}`회 승리 (`{mode.winrate}%`)\n최고 점수 : `{mode.best}`")
         stats_embed.add_field(
             name="🔸 기타",
             value=f"출석 횟수 : `{user_data.attendance['times']}`\n"
