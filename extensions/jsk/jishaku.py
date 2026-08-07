@@ -27,6 +27,13 @@ Flags.NO_UNDERSCORE = True
 Flags.FORCE_PAGINATOR = True
 
 
+def folder_size(path: str) -> tuple[int, int]:
+    if not os.path.isdir(path):
+        return 0, 0
+    sizes = [entry.stat().st_size for entry in os.scandir(path) if entry.is_file()]
+    return sum(sizes), len(sizes)
+
+
 class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
     """jishaku의 커스텀 확장 명령어들입니다."""
 
@@ -142,6 +149,14 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         )
 
         summary.append(database_summary)
+        summary.append("")
+
+        log_size, log_count = folder_size("logs")
+        backup_size, backup_count = folder_size("backup")
+        summary.append(
+            f"로그 폴더의 용량은 `{naturalsize(log_size)}` (`{log_count}`개 파일), \n"
+            f"백업 폴더의 용량은 `{naturalsize(backup_size)}` (`{backup_count}`개 파일) 입니다."
+        )
         summary.append("")
 
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
