@@ -81,10 +81,11 @@ async def _migrate_command_stats() -> None:
     if not public:
         print("public 문서가 없어 명령어 통계 마이그레이션을 건너뜁니다")
         return
+    commands: dict[str, int] = public.get("commands") or {}
     new: dict[str, int] = {}
-    for name, count in (public.get("commands") or {}).items():
+    for name, count in commands.items():
         if name.startswith("jishaku") or name.startswith("_") or name in COMMAND_DROP:
-            continue  # 지샤쿠 / 관리자($→_) / 사라진 명령어 삭제
+            continue
         target = COMMAND_MERGE.get(name, name)
         new[target] = new.get(target, 0) + count
     await db.public.update_one({"_id": "public"}, {"$set": {"commands": new}})

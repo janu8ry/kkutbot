@@ -101,9 +101,9 @@ class Profile(commands.Cog, name="사용자"):
         users = self.bot.db.client.user
         projection = {"name": 1, "global_name": 1}
         docs = []
-        if interaction.guild:
+        if guild := interaction.guild:
             try:
-                members = await interaction.guild.query_members(query=current, limit=25)
+                members = await guild.query_members(query=current, limit=25)
                 docs = await users.find({"_id": {"$in": [member.id for member in members]}}, projection).to_list(25)
             except TimeoutError, discord.ClientException:
                 pass
@@ -127,4 +127,4 @@ class Profile(commands.Cog, name="사용자"):
             choices.setdefault(label, str(doc["_id"]))
             if len(choices) == 25:
                 break
-        return [app_commands.Choice(name=label, value=value) for label, value in choices.items()]
+        return [app_commands.Choice[str](name=label, value=value) for label, value in choices.items()]
