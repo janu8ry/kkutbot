@@ -7,8 +7,9 @@ from discord.utils import escape_markdown as e_mk
 from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
+from extensions.game.ladder import ROMAN_DIVISIONS, TIER_EMOJIS
 from tools import fmt
-from tools.utils import ROMAN_DIVISIONS, TIER_EMOJIS, format_number, truncate_by_width  # noqa
+from tools.utils import format_number, truncate_by_width  # noqa
 from views import BaseView
 
 __all__ = ["RankMenu"]

@@ -8,8 +8,9 @@ from discord.utils import escape_markdown as e_mk
 
 from config import config
 from core import Kkutbot
+from extensions.game.ladder import get_rank_progress
 from tools.converter import SearchUser
-from tools.utils import fmt, get_rank_progress, is_admin
+from tools.utils import fmt, is_admin
 
 from .views import ProfileMenu, SelfProfileMenu
 

@@ -1,29 +1,21 @@
 import time
 from datetime import datetime
-from typing import Any
 from unicodedata import east_asian_width
 
 from discord.ext import commands
 
 from config import config, get_nested_dict, get_nested_property
-from database.models import GameBase, RankGameBase
 
 __all__ = [
     "fmt",
     "get_timestamp",
     "is_admin",
     "split_string",
-    "get_winrate",
     "format_number",
     "truncate_by_width",
-    "get_rank_display",
-    "get_rank_progress",
     "get_perm_name",
-    "TIER_EMOJIS",
-    "PLACEMENT_GAMES",
     "get_nested_dict",
     "get_nested_property",
-    "ROMAN_DIVISIONS",
 ]
 
 
@@ -148,41 +140,6 @@ def truncate_by_width(text: str, limit: int = 15) -> str:
         result += char
         width += char_width
     return result + "..."
-
-
-def get_winrate(data: GameBase) -> Any:
-    game_times = data.times
-    game_win_times: int = data.win
-    if 0 in (game_times, game_win_times):
-        return 0
-    else:
-        return round(game_win_times / game_times * 100, 2)
-
-
-ROMAN_DIVISIONS = {1: "I", 2: "II", 3: "III"}
-TIER_EMOJIS = {
-    "언랭크": "{unrank}",
-    "브론즈": "{bronze}",
-    "실버": "{silver}",
-    "골드": "{gold}",
-    "플래티넘": "{platinum}",
-    "다이아몬드": "{diamond}",
-    "마스터": "{m_master}",
-}
-UNRANKED = next(iter(TIER_EMOJIS))
-PLACEMENT_GAMES = 5
-
-
-def get_rank_display(rank: RankGameBase, emoji: bool = True) -> str:
-    tier = rank.tier if rank.tier in TIER_EMOJIS else UNRANKED
-    name = tier if (tier == UNRANKED or rank.division == 0) else f"{tier} {ROMAN_DIVISIONS[rank.division]}"
-    return f"{name} {TIER_EMOJIS[tier]}" if emoji else name
-
-
-def get_rank_progress(rank: RankGameBase) -> str:
-    if rank.tier not in TIER_EMOJIS or rank.tier == UNRANKED:
-        return get_rank_display(rank)
-    return f"{get_rank_display(rank)} | `{rank.lp}` LP"
 
 
 PERM_NAMES = {

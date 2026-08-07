@@ -2,9 +2,8 @@ import random
 from typing import Any
 
 from database.models import RankGameBase
-from tools.utils import PLACEMENT_GAMES, TIER_EMOJIS, get_rank_display
 
-from .utils import get_word
+from .words import get_word
 
 __all__ = [
     "get_win_lp",
@@ -13,12 +12,28 @@ __all__ = [
     "get_difficulty_tier",
     "get_bot_surrender_threshold",
     "choose_bot_word",
+    "get_rank_display",
+    "get_rank_progress",
+    "TIER_EMOJIS",
+    "ROMAN_DIVISIONS",
+    "PLACEMENT_GAMES",
 ]
 
+ROMAN_DIVISIONS = {1: "I", 2: "II", 3: "III"}
+TIER_EMOJIS = {
+    "언랭크": "{unrank}",
+    "브론즈": "{bronze}",
+    "실버": "{silver}",
+    "골드": "{gold}",
+    "플래티넘": "{platinum}",
+    "다이아몬드": "{diamond}",
+    "마스터": "{m_master}",
+}
 TIERS = list(TIER_EMOJIS)
 UNRANKED = TIERS[0]
 LOWEST_TIER = TIERS[1]
 HIGHEST_TIER = TIERS[-1]
+PLACEMENT_GAMES = 5
 LP_PER_DIVISION = 100
 DIVISIONS = 3
 DIVISION_DEMOTION_LP = 85
@@ -42,6 +57,18 @@ DIFFICULTY: dict[str, dict[str, Any]] = {
     "마스터": {"surrender": 0, "band": (0.75, 1.0), "hanbang": True},
 }
 DIFFICULTY_SAMPLE_SIZE = 50
+
+
+def get_rank_display(rank: RankGameBase, emoji: bool = True) -> str:
+    tier = rank.tier if rank.tier in TIER_EMOJIS else UNRANKED
+    name = tier if (tier == UNRANKED or rank.division == 0) else f"{tier} {ROMAN_DIVISIONS[rank.division]}"
+    return f"{name} {TIER_EMOJIS[tier]}" if emoji else name
+
+
+def get_rank_progress(rank: RankGameBase) -> str:
+    if rank.tier not in TIER_EMOJIS or rank.tier == UNRANKED:
+        return get_rank_display(rank)
+    return f"{get_rank_display(rank)} | `{rank.lp}` LP"
 
 
 def get_win_lp(score: int) -> int:

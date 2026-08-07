@@ -1,18 +1,38 @@
 import asyncio
 import random
 import time
-from typing import Literal
+from typing import Any, Literal
 
 import discord
 from discord.ext import commands
 
 from config import config
-from tools.utils import PLACEMENT_GAMES, ROMAN_DIVISIONS, TIER_EMOJIS, fmt, get_rank_progress, get_winrate
+from database.models import GameBase
+from tools.utils import fmt
 
-from .ladder import choose_bot_word, get_bot_surrender_threshold, get_lose_lp, get_win_lp, update_ladder
-from .utils import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
+from .ladder import (
+    PLACEMENT_GAMES,
+    ROMAN_DIVISIONS,
+    TIER_EMOJIS,
+    choose_bot_word,
+    get_bot_surrender_threshold,
+    get_lose_lp,
+    get_rank_progress,
+    get_win_lp,
+    update_ladder,
+)
+from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
 __all__ = ["SoloGame", "MultiGame"]
+
+
+def get_winrate(data: GameBase) -> Any:
+    game_times = data.times
+    game_win_times: int = data.win
+    if 0 in (game_times, game_win_times):
+        return 0
+    else:
+        return round(game_win_times / game_times * 100, 2)
 
 
 async def _try_delete(msg: discord.Message | None) -> None:
@@ -23,7 +43,7 @@ async def _try_delete(msg: discord.Message | None) -> None:
             pass
 
 
-class GameBase:
+class GameSession:
     __slots__ = ("ctx", "score", "begin_time", "timeout")
 
     def __init__(self, ctx: commands.Context):
@@ -63,7 +83,7 @@ class GameBase:
         return self.timeout - (time.time() - self.begin_time)
 
 
-class SoloGame(GameBase):
+class SoloGame(GameSession):
     """Game Model for single play mode"""
 
     __slots__ = ("player", "kkd", "tier", "placement", "bot_word", "used_words")
@@ -237,7 +257,7 @@ class SoloGame(GameBase):
             await self.alert_rank_change(self.player, *rank_changed, placement=placement)
 
 
-class MultiGame(GameBase):
+class MultiGame(GameSession):
     """Game Model for multiple play mode"""
 
     __slots__ = ("players", "msg", "turn", "word", "used_words", "final_score", "hosting_time", "last_host")
