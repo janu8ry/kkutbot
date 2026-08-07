@@ -5,6 +5,7 @@
 .understand-anything
 CLAUDE.md
 .claude/
+analysis/
 
 # virtualenv
 venv/
