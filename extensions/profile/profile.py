@@ -1,3 +1,6 @@
+import re
+from typing import Annotated
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -5,6 +8,7 @@ from discord.utils import escape_markdown as e_mk
 
 from config import config
 from core import Kkutbot
+from tools.converter import SearchUser
 from tools.utils import fmt, get_rank_progress, is_admin
 
 from .views import ProfileMenu, SelfProfileMenu
@@ -18,9 +22,10 @@ class Profile(commands.Cog, name="사용자"):
 
     @commands.hybrid_command(name="프로필", usage="{profile}", aliases=("ㅍ", "ㅍㄹㅍ"))
     @app_commands.rename(user="유저")
+    @app_commands.describe(user="유저의 이름을 입력해 검색합니다.")
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
     @commands.bot_has_permissions(external_emojis=True)
-    async def profile(self, ctx: commands.Context, *, user: discord.User = commands.Author):
+    async def profile(self, ctx: commands.Context, *, user: Annotated[discord.User, SearchUser] = commands.Author):
         """
         유저의 프로필과 자세한 통계를 확인합니다.
 
@@ -78,3 +83,38 @@ class Profile(commands.Cog, name="사용자"):
         else:
             view = ProfileMenu(ctx, profile_embed=profile_embed, stats_embed=stats_embed)
         view.message = await ctx.reply(embed=profile_embed, view=view)
+
+    @profile.autocomplete("user")
+    async def profile_autocomplete(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        if not current:
+            return []
+        users = self.bot.db.client.user
+        projection = {"name": 1, "global_name": 1}
+        docs = []
+        if interaction.guild:
+            try:
+                members = await interaction.guild.query_members(query=current, limit=25)
+                docs = await users.find({"_id": {"$in": [member.id for member in members]}}, projection).to_list(25)
+            except TimeoutError, discord.ClientException:
+                pass
+        if len(docs) < 25:
+            prefix = f"^{re.escape(current)}"
+            docs += (
+                await users.find(
+                    {
+                        "_id": {"$nin": [doc["_id"] for doc in docs]},
+                        "$or": [{"name": {"$regex": prefix.lower()}}, {"global_name": {"$regex": prefix, "$options": "i"}}],
+                    },
+                    projection,
+                )
+                .sort("latest_usage", -1)
+                .limit(100)
+                .to_list(100)
+            )
+        choices: dict[str, str] = {}
+        for doc in docs:
+            label = doc["global_name"] if doc["name"] == doc["global_name"] else f"{doc['global_name']} ({doc['name']})"
+            choices.setdefault(label, str(doc["_id"]))
+            if len(choices) == 25:
+                break
+        return [app_commands.Choice(name=label, value=value) for label, value in choices.items()]
