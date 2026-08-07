@@ -28,7 +28,6 @@ class Attendance(commands.Cog, name="출석"):
         `/출석`을 사용하여 출석체크를 합니다.
         """
         user = await self.bot.db.get_user(ctx.author)
-        user.alerts.attendance = True
         today = datetime.today().toordinal()
         week_today = datetime.today().weekday()
         weekdays = [divmod(today - 1, 7)[0] * 7 + i + 1 for i in range(7)]
@@ -40,6 +39,7 @@ class Attendance(commands.Cog, name="출석"):
             user.points += 100
             user.attendance["times"] += 1
             user.attendance[str(week_today)] = today
+            user.alerts.attendance = True
             public = await self.bot.db.get_public()
             public.attendance += 1
             embed = discord.Embed(title="출석 완료!", description=fmt("+`100` {points} 를 받았습니다!"), color=config.colors.green)

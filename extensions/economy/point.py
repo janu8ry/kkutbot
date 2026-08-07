@@ -31,7 +31,6 @@ class Reward(commands.Cog, name="포인트"):
         한국 디스코드 리스트에서 하트를 누른 후 `/포인트` 를 사용하여 포인트를 받습니다.
         """
         user = await self.bot.db.get_user(ctx.author)
-        user.alerts.reward = True
         if await self.bot.if_koreanbots_voted(ctx.author):
             if (today := datetime.today().toordinal()) != user.latest_reward:
                 points = random.randint(50, 150)
@@ -39,6 +38,7 @@ class Reward(commands.Cog, name="포인트"):
                 embed = discord.Embed(title="포인트 수령 성공!", description=fmt(f"+{points} {{points}} 를 받았습니다!"), color=config.colors.green)
                 embed.set_thumbnail(url=self.bot.emoji("bonus").url)
                 user.latest_reward = today
+                user.alerts.reward = True
                 public = await self.bot.db.get_public()
                 public.reward += 1
                 await self.bot.db.save(user)
