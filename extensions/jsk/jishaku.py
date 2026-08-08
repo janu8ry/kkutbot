@@ -18,7 +18,7 @@ from jishaku.modules import ExtensionConverter, package_version
 from jishaku.types import ContextA
 
 from config import config
-from database.models import Guild, Public, User
+from database.models import Announcement, Guild, Public, User
 from tools.utils import get_timestamp
 
 from .views import AdminTools
@@ -48,6 +48,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             "User": User,
             "Guild": Guild,
             "Public": Public,
+            "Announcement": Announcement,
             "config": config,
             "logger": logger,
             "get_timestamp": get_timestamp,
@@ -134,9 +135,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"{', '.join(group)}, {last}.")
         summary.append("")
 
-        size = 0
-        for collection in ("user", "guild", "public"):
-            size += float((await self.bot.db.client.command("collstats", collection))["size"])
+        size = float((await self.bot.db.client.command("dbstats"))["dataSize"])
 
         t1 = time.time()
         await self.bot.db.client.public.find_one({"_id": "public"})

@@ -1,6 +1,7 @@
 import os
 import re
 from datetime import datetime
+from typing import Any
 
 import discord
 from discord.ext import commands
@@ -11,6 +12,12 @@ from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
 from .views import ModifyData, SendAnnouncement
+
+
+def format_field(key: str, value: Any) -> str:
+    if isinstance(value, dict) and any(isinstance(v, dict) for v in value.values()):
+        return "\n".join([f"{key}:", *(f"- {k}: `{v}`" for k, v in value.items())])
+    return f"{key}: `{value}`"
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -72,14 +79,14 @@ class Admin(commands.Cog, name="관리자"):
                 await ctx.reply(content)
             public_data = public_data.model_dump()
             del public_data["commands"]
-            for content in split_string("\n".join(f"{k}: `{v}`" for k, v in public_data.items())):
+            for content in split_string("\n".join(format_field(k, v) for k, v in public_data.items())):
                 await ctx.reply(content)
         else:
             user_data = await self.bot.db.get_user(user)
             if not user_data.registered:
                 await ctx.reply(f"`{user.name}`님은 끝봇의 유저가 아닙니다.")
                 return
-            for content in split_string("\n".join(f"{k}: `{v}`" for k, v in user_data.model_dump().items())):
+            for content in split_string("\n".join(format_field(k, v) for k, v in user_data.model_dump().items())):
                 await ctx.reply(content)
 
     @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
