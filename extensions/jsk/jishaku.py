@@ -181,20 +181,16 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
 
         # 'jsk reload' on its own just reloads jishaku
         if ctx.invoked_with == "reload" and not extensions:
-            extensions = [["extensions.jsk"]]
+            extensions = [["jsk"]]
         elif ctx.invoked_with == "ㄹ" and not extensions:
-            extensions = [[f"extensions.{extension}" for extension in os.listdir("extensions") if os.path.isdir(f"extensions/{extension}")]]
+            extensions = [[f"{extension}" for extension in os.listdir("extensions") if os.path.isdir(f"extensions/{extension}") and not extension.startswith("__")]]
 
         for extension in itertools.chain(*extensions):
-            method, icon = (
-                (self.bot.try_reload, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
-                if extension in self.bot.extensions
-                else (self.bot.load_extension, "\N{INBOX TRAY}")
-            )
+            extension = f"extensions.{extension}"
+            icon = "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}"
 
             try:
-                await discord.utils.maybe_coroutine(method, extension)  # type: ignore
-                logger.info(f"카테고리 '{extension}'을(를) 불러왔습니다!")
+                await discord.utils.maybe_coroutine(self.bot.try_reload, extension)  # type: ignore
             except Exception as exc:
                 traceback_data = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
 
