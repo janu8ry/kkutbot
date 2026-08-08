@@ -34,7 +34,7 @@ class BaseView(discord.ui.View):
         try:
             if self.message:
                 await self.message.edit(view=self)
-        except discord.NotFound:
+        except discord.HTTPException:
             pass
 
     async def disable_buttons(self, interaction: discord.Interaction, use_msg: bool = False) -> None:

@@ -56,9 +56,13 @@ class Profile(commands.Cog, name="사용자"):
             await ctx.reply(embed=embed)
             return
 
-        if (color := user.color.value) == 0:
-            if not (color := (await self.bot.fetch_user(user.id)).accent_color):
-                color = discord.Color(0xFFFFFF)
+        member = None
+        if guild := ctx.guild:
+            member = guild.get_member(user.id)
+        color = (member or user).color.value
+        if color == 0:
+            accent = (await self.bot.fetch_user(user.id)).accent_color
+            color = accent.value if accent else 0xFFFFFF
 
         profile_embed = discord.Embed(
             title=fmt(f"{{profile}} {e_mk(name)} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}"),

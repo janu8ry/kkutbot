@@ -39,7 +39,7 @@ async def _try_delete(msg: discord.Message | None) -> None:
     if msg:
         try:
             await msg.delete()
-        except discord.NotFound:
+        except discord.HTTPException:
             pass
 
 
@@ -369,11 +369,8 @@ class MultiGame(GameSession):
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None):
-        try:
-            if self.msg.author.id == self.ctx.bot.user.id:
-                await self.msg.delete()
-        except discord.NotFound:
-            pass
+        if self.msg.author.id == self.ctx.bot.user.id:
+            await _try_delete(self.msg)
         self.msg = await self.msg.channel.send(embed=embed, view=view)  # type: ignore
         return self.msg
 
@@ -408,7 +405,7 @@ class MultiGame(GameSession):
         self.used_words.append(self.word)
 
     async def game_end(self):
-        await self.msg.delete()
+        await _try_delete(self.msg)
         desc = []
         self.final_score[self.now_player] = self.score
         rank = sorted(self.final_score.items(), key=lambda item: item[1], reverse=True)

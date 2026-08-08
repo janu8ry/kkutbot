@@ -1,3 +1,4 @@
+import asyncio
 import linecache
 import logging
 import os
@@ -5,6 +6,7 @@ import random
 import time
 import traceback
 import uuid
+from contextlib import suppress
 from datetime import datetime
 
 import discord
@@ -66,7 +68,8 @@ async def before_command(ctx: commands.Context) -> None:
         await bot.db.save(guild_data)
 
         if not guild.chunked:
-            await guild.chunk()
+            with suppress(asyncio.TimeoutError):
+                await asyncio.wait_for(guild.chunk(), timeout=15)
 
     public = await bot.db.get_public()
     public.command_used += 1
@@ -76,7 +79,8 @@ async def before_command(ctx: commands.Context) -> None:
         cmd_name = ctx.command.qualified_name  # type: ignore
         public.commands[cmd_name] = public.commands.get(cmd_name, 0) + 1
 
-    if user.quest.status.date != (today := datetime.today().toordinal()):
+    today = datetime.today().toordinal()
+    if user.quest.status.date != today or user.quest.cache.keys() != public.quests.keys():
         user.quest.status.date = today
         user.quest.status.completed = []
         dump = user.model_dump()

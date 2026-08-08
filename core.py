@@ -7,10 +7,12 @@ import time
 from datetime import datetime, timedelta
 
 import discord
+from apscheduler.events import EVENT_JOB_ERROR, JobExecutionEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from beanie.operators import Set
 from discord.ext import commands
 from koreanbots.client import Koreanbots
+from sentry_sdk import capture_exception
 from topgg import DBLClient
 
 from config import config
@@ -44,6 +46,7 @@ class Kkutbot(commands.AutoShardedBot):
         self.db: Client = Client()
 
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
+        self.scheduler.add_listener(self.on_job_error, EVENT_JOB_ERROR)
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
@@ -51,6 +54,11 @@ class Kkutbot(commands.AutoShardedBot):
             self.scheduler.add_job(self.backup_log, "cron", hour=12, minute=0, second=0)
             self.scheduler.add_job(self.backup_data, "cron", hour=12, minute=0, second=0)
             self.scheduler.add_job(self.update_koreanbots, "interval", minutes=30)
+
+    @staticmethod
+    def on_job_error(event: JobExecutionEvent) -> None:
+        logger.error(f"스케줄러 작업 '{event.job_id}' 실행에 실패했습니다.", exc_info=event.exception)
+        capture_exception(event.exception)
 
     async def setup_hook(self) -> None:
         self.started_at = round(time.time())
@@ -128,6 +136,9 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def backup_log(self) -> None:
         fp = f"logs/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.log.gz"
+        if not os.path.isfile(fp):
+            logger.info("백업할 로그가 없어 로그 백업을 건너뜁니다.")
+            return
         ch = self.get_channel(config.channels.backup_log)
         if isinstance(ch, discord.TextChannel):
             await ch.send(file=discord.File(fp=fp))
