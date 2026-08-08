@@ -25,7 +25,7 @@ intents = discord.Intents(message_content=True, members=True, guilds=True, emoji
 
 
 class Kkutbot(commands.AutoShardedBot):
-    __slots__ = ("koreanbots", "koreanbots_api", "dbl", "db", "scheduler", "started_at")
+    __slots__ = ("koreanbots", "dbl", "db", "scheduler", "started_at")
 
     def __init__(self) -> None:
         super().__init__(
