@@ -21,6 +21,8 @@ from config import config
 from database.models import Guild, Public, User
 from tools.utils import get_timestamp
 
+from .views import AdminTools
+
 logger = logging.getLogger("kkutbot")
 
 Flags.NO_UNDERSCORE = True
@@ -162,8 +164,9 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
         summary.append("")
         summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
+        summary.append("_ _")
 
-        await ctx.reply("\n".join(summary))
+        await ctx.reply("\n".join(summary), view=AdminTools())
 
     @Feature.Command(parent="jsk", name="load", aliases=["reload", "ㄹ"])
     async def jsk_load(self, ctx: ContextA, *extensions: ExtensionConverter):

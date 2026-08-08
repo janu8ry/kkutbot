@@ -12,6 +12,9 @@ load_dotenv()
 
 IS_TEST = os.environ.get("TESTMODE", "true").strip().lower() != "false"
 
+def base_url(secure: bool = False) -> str:
+    return f"http{"s" if secure else ""}://{"localhost" if IS_TEST else os.environ.get("HOST_URL") or "localhost"}"
+
 with open("static/emojis.json", "r", encoding="utf-8") as f:
     EMOJIS: dict[str, int] = json.load(f)
 
@@ -101,6 +104,9 @@ class Links:
     dbl: str = "https://top.gg/bot/703956235900420226"
     github: str = "https://github.com/janu8ry/kkutbot"
     website: str = "https://kkutbot.github.io"
+    portainer: str = f"{base_url(secure=True)}:9443"
+    dbgate: str = f"{base_url()}:8081"
+    logs: str = f"{base_url()}:8082"
 
 
 @dataclass(frozen=True)
