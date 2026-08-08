@@ -12,8 +12,10 @@ load_dotenv()
 
 IS_TEST = os.environ.get("TESTMODE", "true").strip().lower() != "false"
 
+
 def base_url(secure: bool = False) -> str:
-    return f"http{"s" if secure else ""}://{"localhost" if IS_TEST else os.environ.get("HOST_URL") or "localhost"}"
+    return f"http{'s' if secure else ''}://{'localhost' if IS_TEST else os.environ.get('HOST_URL') or 'localhost'}"
+
 
 with open("static/emojis.json", "r", encoding="utf-8") as f:
     EMOJIS: dict[str, int] = json.load(f)
