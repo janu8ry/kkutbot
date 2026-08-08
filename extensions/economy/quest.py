@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
-from config import config
+from config import config, get_nested_dict
 from core import Kkutbot
-from tools.utils import fmt, get_nested_dict
+from tools.utils import fmt
 
 
 class Quest(commands.Cog, name="퀘스트"):

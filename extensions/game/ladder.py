@@ -12,7 +12,6 @@ __all__ = [
     "get_difficulty_tier",
     "get_bot_surrender_threshold",
     "choose_bot_word",
-    "get_rank_display",
     "get_rank_progress",
     "TIER_EMOJIS",
     "ROMAN_DIVISIONS",

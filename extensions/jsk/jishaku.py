@@ -19,7 +19,6 @@ from jishaku.types import ContextA
 
 from config import config
 from database.models import Announcement, Guild, Public, User
-from tools.utils import get_timestamp
 
 from .views import AdminTools
 
@@ -51,7 +50,6 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             "Announcement": Announcement,
             "config": config,
             "logger": logger,
-            "get_timestamp": get_timestamp,
         }
         for key, value in extra_vars.items():
             arg_dict[f"{Flags.SCOPE_PREFIX}{key}"] = value

@@ -1,20 +1,16 @@
-import time
-from datetime import datetime
 from unicodedata import east_asian_width
 
 from discord.ext import commands
 
-from config import config, get_nested_dict
+from config import config
 
 __all__ = [
     "fmt",
-    "get_timestamp",
     "is_admin",
     "split_string",
     "format_number",
     "truncate_by_width",
     "get_perm_name",
-    "get_nested_dict",
 ]
 
 
@@ -40,21 +36,6 @@ def fmt(text: str) -> str:
         String with placeholders replaced by emojis
     """
     return text.format_map(FormattingDict(dict_emojis()))
-
-
-def get_timestamp(date: str) -> int:
-    """
-    Converts a date string to a Unix timestamp.
-    Parameters
-    ----------
-    date : str
-        Date string to convert
-    Returns
-    -------
-    int
-        Converted Unix timestamp
-    """
-    return int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple()))
 
 
 def is_admin(ctx: commands.Context) -> bool:
