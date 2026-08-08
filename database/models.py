@@ -68,6 +68,11 @@ class Game(BaseModel):
     online_multi: OnlineMultiGame = Field(default_factory=OnlineMultiGame)
 
 
+class Reward(BaseModel):
+    latest: int | None = None
+    streak: int = 0
+
+
 class Alerts(BaseModel):
     attendance: bool = False
     reward: bool = False
@@ -82,8 +87,7 @@ class User(Document):
     bio: str = "소개말이 없습니다."
     points: int = 1000
     medals: int = 0
-    latest_reward: int | None = None
-    reward_streak: int = 0
+    reward: Reward = Field(default_factory=Reward)
     attendance: dict[str, int] = Field(default_factory=attendance.copy)
     quest: Quest = Field(default_factory=Quest)
     game: Game = Field(default_factory=Game)

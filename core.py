@@ -110,25 +110,32 @@ class Kkutbot(commands.AutoShardedBot):
     async def reset_reward_alert(self) -> None:  # noqa
         await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
 
-    async def backup_data(self) -> None:
-        os.makedirs("backup", exist_ok=True)
-        fp = f"backup/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.gz"
+    @staticmethod
+    async def dump_data(fp: str) -> str | None:
+        os.makedirs(os.path.dirname(fp), exist_ok=True)
         db = config.mongo
-        process = await asyncio.create_subprocess_exec(
-            "mongodump",
-            f"--host={db.host}:{db.port}",
-            f"--db={db.db}",
-            f"--username={db.username}",
-            f"--password={db.password}",
-            "--authenticationDatabase=admin",
-            "--gzip",
-            f"--archive={fp}",
-            stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.PIPE,
-        )
+        try:
+            process = await asyncio.create_subprocess_exec(
+                "mongodump",
+                f"--host={db.host}:{db.port}",
+                f"--db={db.db}",
+                f"--username={db.username}",
+                f"--password={db.password}",
+                "--authenticationDatabase=admin",
+                "--gzip",
+                f"--archive={fp}",
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            return "mongodump 실행 파일을 찾을 수 없습니다."
         _, stderr = await process.communicate()
-        if process.returncode != 0:
-            logger.error(f"몽고DB 데이터 백업을 실패했습니다: {stderr.decode(errors='replace').strip()}")
+        return stderr.decode(errors="replace").strip() if process.returncode != 0 else None
+
+    async def backup_data(self) -> None:
+        fp = f"backup/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.gz"
+        if error := await self.dump_data(fp):
+            logger.error(f"몽고DB 데이터 백업을 실패했습니다: {error}")
             return
         logger.info("몽고DB 데이터 백업 완료!")
         ch = self.get_channel(config.channels.backup_data)

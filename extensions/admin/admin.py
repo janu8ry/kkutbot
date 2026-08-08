@@ -49,6 +49,19 @@ class Admin(commands.Cog, name="관리자"):
             return
         await ctx.reply(file=discord.File(path))
 
+    @commands.command(name="$백업", usage="ㄲ$백업")
+    async def backup_now(self, ctx: commands.Context):
+        """현재 데이터베이스를 백업하여 파일로 전송합니다."""
+        fp = f"backup/{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.gz"
+        async with ctx.typing():
+            if error := await self.bot.dump_data(fp):
+                await ctx.reply(fmt(f"{{denied}} 데이터베이스 백업에 실패했습니다.\n```\n{error}```"))
+                return
+            try:
+                await ctx.reply(file=discord.File(fp))
+            finally:
+                os.remove(fp)
+
     @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""

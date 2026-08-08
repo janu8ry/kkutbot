@@ -45,7 +45,7 @@ class Reward(commands.Cog, name="포인트"):
             return
 
         now = round(time.time())
-        latest = user.latest_reward or 0
+        latest = user.reward.latest or 0
         elapsed = now - latest
         if elapsed < REWARD_COOLDOWN:
             embed = discord.Embed(
@@ -56,21 +56,21 @@ class Reward(commands.Cog, name="포인트"):
             return
 
         points = random.randint(150, 300)
-        user.reward_streak = user.reward_streak + 1 if elapsed <= STREAK_KEEP else 1
+        user.reward.streak = user.reward.streak + 1 if elapsed <= STREAK_KEEP else 1
         user.points += points
         embed = discord.Embed(
             title="포인트 수령 성공!",
-            description=fmt(f"+`{points}` {{points}} 를 받았습니다!\n🔹 연속 수령 `{user.reward_streak}`회"),
+            description=fmt(f"+`{points}` {{points}} 를 받았습니다!\n🔹 연속 수령 `{user.reward.streak}`회"),
             color=config.colors.green,
         )
-        if user.reward_streak % STREAK_BONUS_CYCLE == 0:
+        if user.reward.streak % STREAK_BONUS_CYCLE == 0:
             bonus = random.randint(300, 600)
             user.points += bonus
-            embed.add_field(name="🔸 연속 수령 보너스", value=fmt(f"`{user.reward_streak}`회 연속 수령!\n+`{bonus}` {{points}}"), inline=False)
+            embed.add_field(name="🔸 연속 수령 보너스", value=fmt(f"`{user.reward.streak}`회 연속 수령!\n+`{bonus}` {{points}}"), inline=False)
         embed.set_footer(text=f"{REWARD_COOLDOWN // 3600}시간 후에 다시 수령할 수 있어요!")
         embed.set_thumbnail(url=self.bot.emoji("bonus").url)
 
-        user.latest_reward = now
+        user.reward.latest = now
         user.alerts.reward = True
         public = await self.bot.db.get_public()
         public.reward += 1

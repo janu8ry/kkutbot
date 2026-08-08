@@ -136,20 +136,32 @@ async def _migrate_tiers() -> None:
     print(f"user: {fixed}개 문서의 솔로 티어를 신규 체계로 배치")
 
 
-async def _migrate_reward_timestamp() -> None:
-    result = await db.user.update_many(
-        {"$or": [{"latest_reward": 0}, {"latest_reward": {"$exists": False}}]},
-        {"$set": {"latest_reward": None}},
-    )
-    print(f"user: 미수령을 뜻하던 latest_reward를 {result.modified_count}개 문서에서 null로 통일")
+async def _migrate_reward() -> None:
     fixed = 0
     async for doc in db.user.find({"latest_reward": {"$gt": 0, "$lte": MAX_ORDINAL}}, {"latest_reward": 1}):
         midnight = round(datetime.fromordinal(doc["latest_reward"]).timestamp())
         await db.user.update_one({"_id": doc["_id"]}, {"$set": {"latest_reward": midnight}})
         fixed += 1
     print(f"user: {fixed}개 문서의 latest_reward를 날짜 서수에서 타임스탬프로 변환")
-    result = await db.user.update_many({"reward_streak": {"$exists": False}}, {"$set": {"reward_streak": 0}})
-    print(f"user: {result.modified_count}개 문서에 reward_streak 추가")
+    result = await db.user.update_many(
+        {"reward": {"$exists": False}},
+        [
+            {
+                "$set": {
+                    "reward": {
+                        "latest": {"$cond": [{"$gt": ["$latest_reward", 0]}, "$latest_reward", None]},
+                        "streak": {"$ifNull": ["$reward_streak", 0]},
+                    }
+                }
+            }
+        ],
+    )
+    print(f"user: {result.modified_count}개 문서의 수령 정보를 reward 하위 문서로 이동")
+    result = await db.user.update_many(
+        {"$or": [{"latest_reward": {"$exists": True}}, {"reward_streak": {"$exists": True}}]},
+        {"$unset": {"latest_reward": "", "reward_streak": ""}},
+    )
+    print(f"user: {result.modified_count}개 문서에서 구 latest_reward/reward_streak 필드 제거")
 
 
 async def _migrate_global_name() -> None:
@@ -199,7 +211,7 @@ async def main() -> None:
     await _migrate_floats()
     await _migrate_tiers()
     await _migrate_command_stats()
-    await _migrate_reward_timestamp()
+    await _migrate_reward()
     await _migrate_global_name()
     await _backfill_game_fields()
     await _drop_legacy_alert()
