@@ -36,7 +36,7 @@ class Help(commands.Cog, name="일반"):
         )
         embed.add_field(
             name="🔹 기타 링크",
-            value=f"[웹사이트]({config.links.website}) | [Koreanbots]({config.links.koreanbots}) | [Github]({config.links.github}) | [개인정보처리방침]({config.links.privacy_policy})",
+            value=f"[웹사이트]({config.links.website}) | [Koreanbots]({config.links.koreanbots}) | [GitHub]({config.links.github}) | [개인정보처리방침]({config.links.privacy_policy})",
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)  # type: ignore
         embed.set_footer(text="아래 메뉴를 클릭해서 명령어 도움말을 확인해 보세요!")
