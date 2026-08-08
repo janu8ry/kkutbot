@@ -3,9 +3,9 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
-from config import MainDBData, TestDBData, config  # noqa
+from config import Mongo, config  # noqa
 
-dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
+dbconfig: Mongo = config.mongo
 db_options: dict[str, Any] = {}
 
 if all([username := dbconfig.username, password := dbconfig.password]):

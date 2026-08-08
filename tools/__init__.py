@@ -3,7 +3,6 @@ from .logger import setup_logger
 from .utils import (
     fmt,
     get_nested_dict,
-    get_nested_property,
     get_timestamp,
     is_admin,
     split_string,
@@ -18,5 +17,4 @@ __all__ = [
     "is_admin",
     "split_string",
     "get_nested_dict",
-    "get_nested_property",
 ]

@@ -109,7 +109,7 @@ class Kkutbot(commands.AutoShardedBot):
     async def backup_data(self) -> None:
         os.makedirs("backup", exist_ok=True)
         fp = f"backup/{datetime.now().strftime('%Y-%m-%d')}.gz"
-        db = config.mongo.main
+        db = config.mongo
         process = await asyncio.create_subprocess_exec(
             "mongodump",
             f"--host={db.host}:{db.port}",

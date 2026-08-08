@@ -4,7 +4,7 @@ from unicodedata import east_asian_width
 
 from discord.ext import commands
 
-from config import config, get_nested_dict, get_nested_property
+from config import config, get_nested_dict
 
 __all__ = [
     "fmt",
@@ -15,7 +15,6 @@ __all__ = [
     "truncate_by_width",
     "get_perm_name",
     "get_nested_dict",
-    "get_nested_property",
 ]
 
 

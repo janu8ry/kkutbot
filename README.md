@@ -54,7 +54,9 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
 uv sync
-vi config.yml # config.yml 수정
+cp .env.example .env
+vi .env # 토큰, DB 계정 등 수정
+docker compose up -d mongo dbgate
 python3 main.py
 ```
 
@@ -62,19 +64,19 @@ python3 main.py
 ```shell
 git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
-vi config.yml # config.yml 수정
-vi .env # mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
+cp .env.example .env
+vi .env # 토큰, mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
 docker build -t kkutbot:latest .
 docker compose up -d
 ```
 
 ## 로그 저장
-매일 0시에 로그가 `logs/yyyy-mm-dd.log.gz` 형태로 압축되어 백업되고,   
-0시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.
+매일 자정에 로그가 `logs/yyyy-mm-dd.log.gz` 형태로 압축되어 백업되고,   
+정오에 `config.py`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
-## DB 백업 (도커 전용)
-매일 5시에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.   
-또한 5시 5분에 `config.yml`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
+## DB 백업
+매일 정오에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.   
+또한 같은 시각에 `config.py`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 
 ### 데이터 복구하기
 ```shell

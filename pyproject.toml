@@ -15,7 +15,6 @@ dependencies = [
     "topggpy==1.4.0",
     "motor==3.7.1",
     "beanie==2.1.0",
-    "pyyaml==6.0.3",
     "rich==15.0.0",
     "sentry-sdk==2.66.0",
     "python-dotenv==1.2.2",
@@ -58,5 +57,5 @@ disable_error_code = "misc"
 exclude = ".venv"
 
 [[tool.mypy.overrides]]
-module = ["discord.*", "motor.*", "apscheduler.*", "yaml.*", "rich.*", "koreanbots.*", "topgg.*", "psutil.*"]
+module = ["discord.*", "motor.*", "apscheduler.*", "rich.*", "koreanbots.*", "topgg.*", "psutil.*"]
 ignore_missing_imports = true

@@ -6,7 +6,7 @@ import discord
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from config import MainDBData, TestDBData, config, get_nested_dict  # noqa
+from config import Mongo, config, get_nested_dict  # noqa
 
 from .models import Guild, Public, User
 
@@ -15,7 +15,7 @@ __all__ = ["Client"]
 
 logger = logging.getLogger("kkutbot")
 
-dbconfig: MainDBData | TestDBData = getattr(config.mongo, "test" if config.is_test else "main")
+dbconfig: Mongo = config.mongo
 type UserType = discord.User | discord.Member
 type DocumentType = User | Guild | Public
 

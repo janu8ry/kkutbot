@@ -1,35 +1,19 @@
 import json
 import os
-import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-import yaml
 from dotenv import load_dotenv
 
-__all__ = ["get_nested_dict", "get_nested_property", "config"]
-
-
-def _expand_env(value: Any) -> Any:
-    if isinstance(value, str):
-        return re.sub(r"\$\{([^}]+)}", lambda m: os.environ.get(str(m.group(1)), str(m.group(0))), value)
-    if isinstance(value, dict):
-        return {k: _expand_env(v) for k, v in value.items()}
-    if isinstance(value, list):
-        return [_expand_env(item) for item in value]
-    return value
-
+__all__ = ["get_nested_dict", "Mongo", "config"]
 
 load_dotenv()
 
-with open("config.yml", encoding="utf-8") as f:
-    config_data = _expand_env(yaml.safe_load(f))
+IS_TEST = os.environ.get("TESTMODE", "true").strip().lower() != "false"
 
-for file in os.listdir("static"):
-    if file not in ("wordlist.json", "transition.json", "quests.json"):
-        with open(f"static/{file}", "r", encoding="utf-8") as f:
-            config_data[file[:-5]] = json.load(f)
+with open("static/emojis.json", "r", encoding="utf-8") as f:
+    EMOJIS: dict[str, int] = json.load(f)
 
 
 def get_nested_dict(data: Mapping[str, Any], path: list[str]) -> Any:
@@ -52,121 +36,87 @@ def get_nested_dict(data: Mapping[str, Any], path: list[str]) -> Any:
     return result
 
 
-def get_nested_property(data: Any, path: list[str]) -> Any:
-    """
-    Gets a property from a nested dataclass.
-    Parameters
-    ----------
-    data : Any
-        Target dataclass to get the value from
-    path : list[str]
-        List of properties to retrieve the value
-    Returns
-    -------
-    Any
-        Value from the targeted dataclass
-    """
-    for i in path:
-        data = getattr(data, i)
-    return data
-
-
-def _config(query: str) -> Any:
-    if not query:
-        return config_data
-    else:
-        return get_nested_dict(config_data, query.split("."))
+def _env(key: str, default: str = "") -> str:
+    return os.environ.get(key) or default
 
 
 @dataclass(frozen=True)
 class Prefix:
-    main: str = field(default_factory=lambda: _config("prefix.main"))
-    test: str = field(default_factory=lambda: _config("prefix.test"))
+    main: str = "ㄲ"
+    test: str = "ㅌㄲ"
 
 
 @dataclass(frozen=True)
 class Token:
-    main: str = field(default_factory=lambda: _config("token.main"))
-    test: str = field(default_factory=lambda: _config("token.test"))
-    koreanbots: str = field(default_factory=lambda: _config("token.koreanbots"))
-    dbl: str = field(default_factory=lambda: _config("token.dbl"))
+    main: str = field(default_factory=lambda: _env("BOT_TOKEN_MAIN"))
+    test: str = field(default_factory=lambda: _env("BOT_TOKEN_TEST"))
+    koreanbots: str = field(default_factory=lambda: _env("TOKEN_KOREANBOTS"))
+    dbl: str = field(default_factory=lambda: _env("TOKEN_DBL"))
 
 
 @dataclass(frozen=True)
 class Color:
-    blue: int = field(default_factory=lambda: _config("colors.blue"))
-    red: int = field(default_factory=lambda: _config("colors.red"))
-    green: int = field(default_factory=lambda: _config("colors.green"))
-
-
-@dataclass(frozen=True)
-class MainDBData:
-    host: str = field(default_factory=lambda: _config("mongo.main.host"))
-    port: int = field(default_factory=lambda: _config("mongo.main.port"))
-    db: str = field(default_factory=lambda: _config("mongo.main.db"))
-    username: str = field(default_factory=lambda: _config("mongo.main.username"))
-    password: str = field(default_factory=lambda: _config("mongo.main.password"))
-
-
-@dataclass(frozen=True)
-class TestDBData:
-    host: str = field(default_factory=lambda: _config("mongo.test.host"))
-    port: int = field(default_factory=lambda: _config("mongo.test.port"))
-    db: str = field(default_factory=lambda: _config("mongo.test.db"))
-    username: str = field(default_factory=lambda: _config("mongo.test.username"))
-    password: str = field(default_factory=lambda: _config("mongo.test.password"))
+    blue: int = 0x4374D9
+    red: int = 0xCC3D3D
+    green: int = 0x47C83E
 
 
 @dataclass(frozen=True)
 class Mongo:
-    main: MainDBData = MainDBData()
-    test: TestDBData = TestDBData()
+    host: str = field(default_factory=lambda: _env("MONGO_HOST", "localhost" if IS_TEST else "mongo"))
+    port: int = field(default_factory=lambda: int(_env("MONGO_PORT", "27017")))
+    db: str = field(default_factory=lambda: _env("MONGO_DB", "kkutbot"))
+    username: str = field(default_factory=lambda: _env("MONGO_USERNAME"))
+    password: str = field(default_factory=lambda: _env("MONGO_PASSWORD"))
 
 
 @dataclass(frozen=True)
 class Channels:
-    backup_data: int = field(default_factory=lambda: _config("channels.backup_data"))
-    backup_log: int = field(default_factory=lambda: _config("channels.backup_log"))
-    error_log: int = field(default_factory=lambda: _config("channels.error_log"))
-
-
-@dataclass(frozen=True)
-class InviteLink:
-    bot: str = field(default_factory=lambda: _config("links.invite.bot"))
-    server: str = field(default_factory=lambda: _config("links.invite.server"))
+    backup_data: int = 838371534690844672
+    backup_log: int = 987017719545229463
+    error_log: int = 1016347873253793832
 
 
 @dataclass(frozen=True)
 class Sentry:
-    dsn: str = field(default_factory=lambda: _config("sentry.dsn"))
-    url: str = field(default_factory=lambda: _config("sentry.url"))
+    dsn: str = field(default_factory=lambda: _env("SENTRY_DSN"))
+    url: str = field(default_factory=lambda: _env("SENTRY_URL"))
+
+
+@dataclass(frozen=True)
+class InviteLink:
+    bot: str = (
+        "https://discord.com/oauth2/authorize?client_id=703956235900420226&scope=bot+applications.commands"
+        "&permissions=387136&response_type=code&redirect_uri=https%3A%2F%2Fdiscord.gg%2Fz8tRzwf"
+    )
+    server: str = "https://discord.gg/z8tRzwf"
 
 
 @dataclass(frozen=True)
 class Links:
     invite: InviteLink = InviteLink()
-    privacy_policy: str = field(default_factory=lambda: _config("links.privacy-policy"))
-    terms_of_service: str = field(default_factory=lambda: _config("links.terms-of-service"))
-    koreanbots: str = field(default_factory=lambda: _config("links.koreanbots"))
-    dbl: str = field(default_factory=lambda: _config("links.dbl"))
-    github: str = field(default_factory=lambda: _config("links.github"))
-    website: str = field(default_factory=lambda: _config("links.website"))
+    privacy_policy: str = "https://github.com/janu8ry/kkutbot/blob/main/privacy.md"
+    terms_of_service: str = "https://github.com/janu8ry/kkutbot/blob/main/privacy.md"
+    koreanbots: str = "https://koreanbots.dev/bots/703956235900420226"
+    dbl: str = "https://top.gg/bot/703956235900420226"
+    github: str = "https://github.com/janu8ry/kkutbot"
+    website: str = "https://kkutbot.github.io"
 
 
 @dataclass(frozen=True)
 class Config:
-    is_test: bool = field(default_factory=lambda: str(_config("testmode")).strip().lower() != "false")
-    version: str = field(default_factory=lambda: _config("version"))
-    bot_id: int = field(default_factory=lambda: _config("bot_id"))
+    is_test: bool = IS_TEST
+    version: str = "3.0"
+    bot_id: int = 703956235900420226
+    admin: tuple[int, ...] = (610625541157945344, 394116972176080916)
     prefix: Prefix = Prefix()
     token: Token = Token()
     colors: Color = Color()
-    admin: list[int] = field(default_factory=lambda: _config("admin"))
     mongo: Mongo = Mongo()
     channels: Channels = Channels()
     sentry: Sentry = Sentry()
     links: Links = Links()
-    emojis: dict[str, int] = field(default_factory=lambda: _config("emojis"))
+    emojis: dict[str, int] = field(default_factory=lambda: EMOJIS)
 
 
 config: Config = Config()
