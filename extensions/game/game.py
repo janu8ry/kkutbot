@@ -88,7 +88,7 @@ class Game(commands.Cog, name="게임"):
             game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo), placement=user.game.rank_solo.tier == "언랭크")
             await game.run()
 
-    @commands.hybrid_command(name="다인전", usage="{server}", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2"))
+    @commands.hybrid_command(name="다인전", usage="{server}", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2", "ㄷㅇㅈ", "멀티", "ㅁ"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.channel)
@@ -130,7 +130,7 @@ class Game(commands.Cog, name="게임"):
                 for player in multi_game.players:
                     self.bot.playing_games.discard(player.id)
 
-    @commands.hybrid_command(name="쿵쿵따", usage="3️⃣", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3"))
+    @commands.hybrid_command(name="쿵쿵따", usage="3️⃣", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3", "쿵"))
     @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     async def play_kkd(self, ctx: commands.Context):
