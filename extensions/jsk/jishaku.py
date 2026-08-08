@@ -183,7 +183,13 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         if ctx.invoked_with == "reload" and not extensions:
             extensions = [["jsk"]]
         elif ctx.invoked_with == "ㄹ" and not extensions:
-            extensions = [[f"{extension}" for extension in os.listdir("extensions") if os.path.isdir(f"extensions/{extension}") and not extension.startswith("__")]]
+            extensions = [
+                [
+                    f"{extension}"
+                    for extension in os.listdir("extensions")
+                    if os.path.isdir(f"extensions/{extension}") and not extension.startswith("__")
+                ]
+            ]
 
         for extension in itertools.chain(*extensions):
             extension = f"extensions.{extension}"
