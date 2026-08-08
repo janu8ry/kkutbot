@@ -372,4 +372,6 @@ async def on_guild_remove(guild: discord.Guild) -> None:
 if __name__ == "__main__":
     rich_install()
     setup_logger()
+    logger.info(f"끝봇 v{config.version} 로그인 하는 중...")
+    logger.info(f"{'테스트' if config.is_test else '프로덕션'} 모드로 가동합니다.")
     bot.run_bot()
