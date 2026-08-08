@@ -214,11 +214,11 @@ class SoloGame(GameSession):
             solo = user.game.rank_solo
             won = result == "승리"
             placement = solo.tier == "언랭크"
-            remaining_before, mask_before = solo.division or PLACEMENT_GAMES, solo.lp
+            mask_before = solo.lp
             lp_before, pos_before = solo.lp, (solo.tier, solo.division)
             rank_changed = update_ladder(solo, won, base_score)
             if placement:
-                played = (PLACEMENT_GAMES - remaining_before) + 1
+                played = min(solo.times, PLACEMENT_GAMES)
                 mask = mask_before | (int(won) << (played - 1))
                 marks = ["✅" if (mask >> i) & 1 else "❌" for i in range(played)]
                 marks += ["🔳"] * (PLACEMENT_GAMES - played)

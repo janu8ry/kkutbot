@@ -79,6 +79,8 @@ COMMAND_DROP: set[str] = {"핑", "슬롯", "뱝", "재생"}
 MAX_ORDINAL = datetime.max.toordinal()
 GAME_MODES = ("rank_solo", "rank_online", "long", "kkd", "guild_multi", "online_multi")
 RANK_MODES = ("rank_solo", "rank_online")
+UNRANKED_SOLO = {"times": 0, "win": 0, "best": 0, "winrate": 0.0, "streak": 0, "tier": "언랭크", "division": 0, "lp": 0}
+LEGACY_COLLECTIONS = ("general", "unused")
 
 
 async def _migrate_command_stats() -> None:
@@ -124,16 +126,18 @@ async def _migrate_floats() -> None:
 
 
 async def _migrate_tiers() -> None:
-    fixed = 0
+    placed = reset = 0
     async for doc in db.user.find({}, {"game.rank_solo.win": 1, "game.rank_solo.times": 1}):
         rs = doc.get("game", {}).get("rank_solo", {})
         tier, division = _place_solo(rs.get("win", 0), rs.get("times", 0))
-        await db.user.update_one(
-            {"_id": doc["_id"]},
-            {"$set": {"game.rank_solo.tier": tier, "game.rank_solo.division": division, "game.rank_solo.lp": 0}},
-        )
-        fixed += 1
-    print(f"user: {fixed}개 문서의 솔로 티어를 신규 체계로 배치")
+        if tier == "언랭크":
+            update = {"game.rank_solo": UNRANKED_SOLO}
+            reset += 1
+        else:
+            update = {"game.rank_solo.tier": tier, "game.rank_solo.division": division, "game.rank_solo.lp": 0}
+            placed += 1
+        await db.user.update_one({"_id": doc["_id"]}, {"$set": update})
+    print(f"user: {placed}개 문서의 솔로 티어를 신규 체계로 배치, {reset}개 문서의 솔로 전적을 초기화")
 
 
 async def _migrate_reward() -> None:
@@ -189,6 +193,18 @@ async def _drop_legacy_alert() -> None:
     print(f"user: 레거시 alert 필드를 {result.modified_count}개 문서에서 제거")
 
 
+async def _migrate_announcements() -> None:
+    if await db.announcement.estimated_document_count():
+        print("announcement 컬렉션이 이미 존재하여 공지 이동을 건너뜁니다")
+        return
+    public = await db.public.find_one({"_id": "public"}, {"announcements": 1})
+    items = (public or {}).get("announcements") or []
+    if items:
+        await db.announcement.insert_many([{"_id": item["time"], "title": item["title"], "value": item["value"]} for item in items])
+    await db.public.update_one({"_id": "public"}, {"$unset": {"announcements": ""}})
+    print(f"announcement: 공지 {len(items)}개를 별도 컬렉션으로 이동")
+
+
 async def _drop_test_public() -> None:
     result = await db.public.delete_one({"_id": "test"})
     print(f"public: 레거시 'test' 문서 {result.deleted_count}개 삭제")
@@ -201,10 +217,12 @@ async def _drop_name_text_index() -> None:
         print(f"user: 미사용 텍스트 인덱스 '{name}' 삭제")
 
 
-async def _drop_general_collection() -> None:
-    if "general" in await db.list_collection_names():
-        await db.drop_collection("general")
-        print("레거시 'general' 컬렉션 삭제")
+async def _drop_legacy_collections() -> None:
+    existing = await db.list_collection_names()
+    for name in LEGACY_COLLECTIONS:
+        if name in existing:
+            await db.drop_collection(name)
+            print(f"레거시 '{name}' 컬렉션 삭제")
 
 
 async def main() -> None:
@@ -215,9 +233,10 @@ async def main() -> None:
     await _migrate_global_name()
     await _backfill_game_fields()
     await _drop_legacy_alert()
+    await _migrate_announcements()
     await _drop_test_public()
     await _drop_name_text_index()
-    await _drop_general_collection()
+    await _drop_legacy_collections()
 
 
 if __name__ == "__main__":

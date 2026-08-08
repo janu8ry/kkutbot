@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
+from database.models import Announcement as AnnouncementDoc
 from tools.utils import fmt
 from views import Paginator
 
@@ -23,13 +24,12 @@ class Announcement(commands.Cog, name="공지"):
         `/공지`를 사용하여 공지사항을 확인합니다.
         """
         user = await self.bot.db.get_user(ctx.author)
-        public = await self.bot.db.get_public()
-        msgs = sorted(public.announcements, key=lambda item: item["time"], reverse=True)
+        msgs = await AnnouncementDoc.find_all().sort("-_id").to_list()
         pages = []
         if msgs:
             for msg in msgs:
                 embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
-                embed.add_field(name=f"🔹 {msg['title']} - <t:{msg['time']}:R>", value=msg["value"], inline=False)
+                embed.add_field(name=f"🔹 {msg.title} - <t:{msg.id}:R>", value=msg.value, inline=False)
                 pages.append(embed)
         else:
             embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), description=fmt("{denied} 공지사항이 없습니다."), color=config.colors.green)

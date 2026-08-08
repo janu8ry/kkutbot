@@ -84,12 +84,9 @@ def update_ladder(rank: RankGameBase, won: bool, score: int) -> tuple[str, str, 
     before_display = get_rank_display(rank)
 
     if rank.tier == UNRANKED:
-        remaining = rank.division or PLACEMENT_GAMES
         if won:
-            rank.lp |= 1 << (PLACEMENT_GAMES - remaining)
-        remaining -= 1
-        if remaining > 0:
-            rank.division = remaining
+            rank.lp |= 1 << (rank.times - 1)
+        if rank.times < PLACEMENT_GAMES:
             return None
         rank.tier, rank.division = PLACEMENT_MAP[rank.lp.bit_count()]
         rank.lp = 0
@@ -130,8 +127,7 @@ def update_ladder(rank: RankGameBase, won: bool, score: int) -> tuple[str, str, 
 
 def get_difficulty_tier(rank: RankGameBase) -> str:
     if rank.tier == UNRANKED:
-        played = PLACEMENT_GAMES - (rank.division or PLACEMENT_GAMES)
-        return PLACEMENT_DIFFICULTY[min(played, PLACEMENT_GAMES - 1)]
+        return PLACEMENT_DIFFICULTY[min(rank.times, PLACEMENT_GAMES - 1)]
     return rank.tier
 
 

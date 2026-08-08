@@ -4,7 +4,7 @@ from beanie import Document
 from pydantic import BaseModel, Field
 from pymongo import IndexModel  # noqa
 
-__all__ = ["User", "Guild", "Public", "GameBase", "RankGameBase"]
+__all__ = ["User", "Guild", "Public", "Announcement", "GameBase", "RankGameBase"]
 
 
 attendance = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "times": 0}
@@ -107,6 +107,7 @@ class User(Document):
             IndexModel([("medals", -1)]),
             IndexModel([("attendance.times", -1)]),
             IndexModel([("command_used", -1)]),
+            IndexModel([("latest_usage", -1)]),
             IndexModel([("game.rank_solo.win", -1)]),
             IndexModel([("game.rank_solo.best", -1)]),
             IndexModel([("game.rank_solo.tier", 1)]),
@@ -137,10 +138,21 @@ class Public(Document):
     latest_usage: int | None = None
     commands: dict[str, int] = Field(default_factory=dict)
     quests: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    announcements: list[dict[str, Any]] = Field(default_factory=list)
 
     class Settings:
         name = "public"
+        use_state_management = True
+        state_management_replace_objects = True
+        validate_on_save = True
+
+
+class Announcement(Document):
+    id: int
+    title: str
+    value: str
+
+    class Settings:
+        name = "announcement"
         use_state_management = True
         state_management_replace_objects = True
         validate_on_save = True

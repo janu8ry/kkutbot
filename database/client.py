@@ -8,7 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from config import Mongo, config, get_nested_dict  # noqa
 
-from .models import Guild, Public, User
+from .models import Announcement, Guild, Public, User
 
 __all__ = ["Client"]
 
@@ -42,7 +42,7 @@ class Client:
         motor_client = AsyncIOMotorClient(host=self.host, port=self.port, **db_options)
         motor_client.append_metadata = motor_client.delegate.append_metadata
         self.client = motor_client[self.db]
-        await init_beanie(database=self.client, document_models=[User, Guild, Public])  # type: ignore
+        await init_beanie(database=self.client, document_models=[User, Guild, Public, Announcement])  # type: ignore
         logger.info("DB 연결 완료!")
 
     @staticmethod
@@ -131,7 +131,7 @@ class Client:
             document.invited = round(time.time())
             await document.insert()
             return document
-        elif isinstance(document, Public) and not document.announcements and document.command_used <= 1:
+        elif isinstance(document, Public) and document.command_used <= 1:
             await document.insert()
             return document
         else:

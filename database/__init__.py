@@ -1,4 +1,4 @@
 from .client import Client
-from .models import Guild, Public, User
+from .models import Announcement, Guild, Public, User
 
-__all__ = ["Client", "Guild", "Public", "User"]
+__all__ = ["Client", "Announcement", "Guild", "Public", "User"]

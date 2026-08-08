@@ -8,7 +8,7 @@ from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import config
-from database.models import User
+from database.models import Announcement, User
 from tools import fmt
 from views import BaseModal, BaseView
 
@@ -50,10 +50,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
-            public = await self.ctx.bot.db.get_public()
-            data = {"title": self.a_title.value, "value": self.description.value, "time": round(time.time())}
-            public.announcements.append(data)
-            await self.ctx.bot.db.save(public)
+            await Announcement(id=round(time.time()), title=self.a_title.value, value=self.description.value).insert()
             await User.find().update(Set({User.alerts.announcements: False}))  # noqa
 
 
