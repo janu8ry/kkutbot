@@ -19,7 +19,7 @@
 - 개발 언어: python 3.14.6 ([discord.py 2.7.1](https://discordpy.readthedocs.io/en/latest/index.html))
 - 버전: 3.0.0
 - 데이터베이스: mongoDB 7.0   
-- 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님, 끝봇의 프로필 사진을 만들어주신 [Tim232](https://github.com/Tim232)님께 감사드립니다!
+- 크레딧: 끝봇 개발에 도움을 주신 [서진](https://github.com/seojin200403)님께 감사드립니다!
 - 저작권: Icons made from [www.flaticon.com](https://www.flaticon.com)
 
 
@@ -72,10 +72,10 @@ docker compose up -d
 
 ## 로그 저장
 매일 자정에 로그가 `logs/yyyy-mm-dd.log.gz` 형태로 압축되어 백업되고,   
-정오에 `config.py`에 지정한 백업용 디스코드 채널에도 공유됩니다.
+0시 5분에 `config.py`에 지정한 백업용 디스코드 채널에도 공유됩니다.
 
 ## DB 백업
-매일 정오에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.   
+매일 자정에 `kkutbot` 데이터베이스가 `backup/yyyy-mm-dd.gz` 형태로 압축되어 보관됩니다.   
 또한 같은 시각에 `config.py`에 지정한 백업용 디스코드 채널에도 공유됩니다.   
 
 ### 데이터 복구하기

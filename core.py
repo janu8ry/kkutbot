@@ -51,8 +51,8 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
         if not config.is_test:
-            self.scheduler.add_job(self.backup_log, "cron", hour=12, minute=0, second=0)
-            self.scheduler.add_job(self.backup_data, "cron", hour=12, minute=0, second=0)
+            self.scheduler.add_job(self.backup_data, "cron", hour=0, minute=0, second=0)
+            self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
             self.scheduler.add_job(self.update_koreanbots, "interval", minutes=30)
 
     @staticmethod
@@ -108,7 +108,7 @@ class Kkutbot(commands.AutoShardedBot):
 
     async def backup_data(self) -> None:
         os.makedirs("backup", exist_ok=True)
-        fp = f"backup/{datetime.now().strftime('%Y-%m-%d')}.gz"
+        fp = f"backup/{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}.gz"
         db = config.mongo
         process = await asyncio.create_subprocess_exec(
             "mongodump",
