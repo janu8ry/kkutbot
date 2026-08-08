@@ -82,7 +82,7 @@ class Kkutbot(commands.AutoShardedBot):
             await self.reload_extension(name)
         except commands.ExtensionNotLoaded:
             await self.load_extension(name)
-        logger.info(f"카테고리 '{name.split(".")[1]}'을(를) 불러왔습니다!")
+        logger.info(f"카테고리 '{name.split('.')[1]}'을(를) 불러왔습니다!")
 
     async def update_presence(self) -> None:
         await self.change_presence(activity=discord.Game(f"/도움 | {len(self.guilds)} 서버에서 활동중"))
