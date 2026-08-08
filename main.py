@@ -133,7 +133,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
     alert_message = []
     alerts = {
         "attendance": "오늘의 출석체크를 완료하지 않았습니다.\n`/출석` 명령어를 사용하여 오늘의 출석체크를 완료하세요!",
-        "reward": "일일 포인트를 받지 않았습니다.\n`/포인트` 명령어를 사용하여 일일 포인트를 받아가세요!",
+        "reward": "받을 수 있는 포인트가 있습니다.\n`/포인트` 명령어를 사용하여 포인트를 받아가세요!",
         "announcements": "읽지 않은 공지가 있습니다.\n`/공지` 명령어를 사용하여 읽지 않은 공지를 확인해 보세요!",
     }
     for path, msg in alerts.items():

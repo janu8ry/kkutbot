@@ -9,7 +9,7 @@ from database.models import User
 from tools import fmt
 
 from .ladder import get_difficulty_tier
-from .models import MultiGame, SoloGame
+from .models import ENTRY_FEE, MultiGame, SoloGame
 from .views import HostGuildGame
 
 
@@ -22,9 +22,12 @@ class Game(commands.Cog, name="게임"):
     @staticmethod
     async def get_playable_user(ctx: commands.Context) -> User | None:
         user = await ctx.bot.db.get_user(ctx.author)
-        if user.points <= 30:
+        if user.points < ENTRY_FEE:
             await ctx.reply(
-                fmt("{denied} 포인트가 30점 미만이라 플레이할 수 없습니다.\n`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!")
+                fmt(
+                    f"{{denied}} 참가비 `{ENTRY_FEE}`{{points}}가 부족하여 플레이할 수 없습니다.\n"
+                    "`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"
+                )
             )
             return None
         return user

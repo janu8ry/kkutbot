@@ -23,7 +23,9 @@ from .ladder import (
 )
 from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
-__all__ = ["SoloGame", "MultiGame"]
+__all__ = ["SoloGame", "MultiGame", "ENTRY_FEE"]
+
+ENTRY_FEE = 40
 
 
 def get_winrate(data: GameBase) -> Any:
@@ -180,20 +182,20 @@ class SoloGame(GameSession):
 
         if result == "승리":
             self.score += 10
-            points = self.score * 5 if self.kkd else self.score * 3
+            points = (self.score * 5 if self.kkd else self.score * 3) - ENTRY_FEE
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config.colors.blue
             emoji = "win"
             modes[mode].win += 1
             modes[mode].streak += 1
         elif result == "패배":
-            points = -30
+            points = -ENTRY_FEE
             desc = "한방단어에 당했습니다..." if hanbang else f"대답시간이 {self.timeout}초를 초과했습니다..."
             color = config.colors.red
             emoji = "gameover"
             modes[mode].streak = 0
         elif result == "포기":
-            points = -30
+            points = -ENTRY_FEE
             desc = "게임을 포기했습니다."
             color = config.colors.red
             emoji = "surrender"

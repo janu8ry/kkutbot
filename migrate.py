@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
@@ -75,6 +76,10 @@ COMMAND_MERGE: dict[str, str] = {
 }
 COMMAND_DROP: set[str] = {"핑", "슬롯", "뱝", "재생"}
 
+MAX_ORDINAL = datetime.max.toordinal()
+GAME_MODES = ("rank_solo", "rank_online", "long", "kkd", "guild_multi", "online_multi")
+RANK_MODES = ("rank_solo", "rank_online")
+
 
 async def _migrate_command_stats() -> None:
     public = await db.public.find_one({"_id": "public"})
@@ -131,12 +136,50 @@ async def _migrate_tiers() -> None:
     print(f"user: {fixed}개 문서의 솔로 티어를 신규 체계로 배치")
 
 
+async def _migrate_reward_timestamp() -> None:
+    result = await db.user.update_many(
+        {"$or": [{"latest_reward": 0}, {"latest_reward": {"$exists": False}}]},
+        {"$set": {"latest_reward": None}},
+    )
+    print(f"user: 미수령을 뜻하던 latest_reward를 {result.modified_count}개 문서에서 null로 통일")
+    fixed = 0
+    async for doc in db.user.find({"latest_reward": {"$gt": 0, "$lte": MAX_ORDINAL}}, {"latest_reward": 1}):
+        midnight = round(datetime.fromordinal(doc["latest_reward"]).timestamp())
+        await db.user.update_one({"_id": doc["_id"]}, {"$set": {"latest_reward": midnight}})
+        fixed += 1
+    print(f"user: {fixed}개 문서의 latest_reward를 날짜 서수에서 타임스탬프로 변환")
+    result = await db.user.update_many({"reward_streak": {"$exists": False}}, {"$set": {"reward_streak": 0}})
+    print(f"user: {result.modified_count}개 문서에 reward_streak 추가")
+
+
 async def _migrate_global_name() -> None:
     result = await db.user.update_many(
         {"global_name": {"$exists": False}},
         [{"$set": {"global_name": "$name"}}],
     )
     print(f"user: {result.modified_count}개 문서에 global_name(=name) 추가")
+
+
+async def _backfill_game_fields() -> None:
+    defaults = {f"game.{mode}.streak": 0 for mode in GAME_MODES}
+    for mode in RANK_MODES:
+        defaults[f"game.{mode}.division"] = 0
+        defaults[f"game.{mode}.lp"] = 0
+    filled = 0
+    for path, value in defaults.items():
+        result = await db.user.update_many({path: {"$exists": False}}, {"$set": {path: value}})
+        filled += result.modified_count
+    print(f"user: 신규 게임 필드 {len(defaults)}종을 {filled}개 문서에 추가")
+
+
+async def _drop_legacy_alert() -> None:
+    result = await db.user.update_many({"alert": {"$exists": True}}, {"$unset": {"alert": ""}})
+    print(f"user: 레거시 alert 필드를 {result.modified_count}개 문서에서 제거")
+
+
+async def _drop_test_public() -> None:
+    result = await db.public.delete_one({"_id": "test"})
+    print(f"public: 레거시 'test' 문서 {result.deleted_count}개 삭제")
 
 
 async def _drop_name_text_index() -> None:
@@ -156,7 +199,11 @@ async def main() -> None:
     await _migrate_floats()
     await _migrate_tiers()
     await _migrate_command_stats()
+    await _migrate_reward_timestamp()
     await _migrate_global_name()
+    await _backfill_game_fields()
+    await _drop_legacy_alert()
+    await _drop_test_public()
     await _drop_name_text_index()
     await _drop_general_collection()
 

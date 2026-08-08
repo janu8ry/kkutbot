@@ -83,6 +83,7 @@ class User(Document):
     points: int = 1000
     medals: int = 0
     latest_reward: int | None = None
+    reward_streak: int = 0
     attendance: dict[str, int] = Field(default_factory=attendance.copy)
     quest: Quest = Field(default_factory=Quest)
     game: Game = Field(default_factory=Game)
