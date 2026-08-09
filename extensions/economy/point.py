@@ -6,13 +6,20 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
+from database.models import User
 from tools import fmt
 
 from .views import KoreanBotsVote
 
+__all__ = ["Reward", "is_reward_claimable"]
+
 REWARD_COOLDOWN = 43200
 STREAK_KEEP = 129600
 STREAK_BONUS_CYCLE = 7
+
+
+def is_reward_claimable(user: User) -> bool:
+    return user.reward.latest is None or round(time.time()) - user.reward.latest >= REWARD_COOLDOWN
 
 
 class Reward(commands.Cog, name="포인트"):
@@ -71,7 +78,7 @@ class Reward(commands.Cog, name="포인트"):
         embed.set_thumbnail(url=self.bot.emoji("bonus").url)
 
         user.reward.latest = now
-        user.alerts.reward = True
+        user.alerts.reward = False
         public = await self.bot.db.get_public()
         public.reward += 1
         await self.bot.db.save(user)

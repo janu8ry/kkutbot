@@ -50,7 +50,6 @@ class Kkutbot(commands.AutoShardedBot):
         self.scheduler.add_job(self.update_presence, "interval", minutes=5)
         self.scheduler.add_job(self.reset_alerts, "cron", hour=0, minute=0, second=0)
         self.scheduler.add_job(self.reset_quest, "cron", hour=0, minute=0, second=0)
-        self.scheduler.add_job(self.reset_reward_alert, "cron", hour=12, minute=0, second=0)
         if not config.is_test:
             self.scheduler.add_job(self.backup_data, "cron", hour=0, minute=0, second=0)
             self.scheduler.add_job(self.backup_log, "cron", hour=0, minute=5, second=0)
@@ -104,11 +103,7 @@ class Kkutbot(commands.AutoShardedBot):
         public = await self.db.get_public()
         public.attendance = 0
         await User.find(User.alerts.attendance == True).update(Set({User.alerts.attendance: False}))  # noqa
-        await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
         await self.db.save(public)
-
-    async def reset_reward_alert(self) -> None:  # noqa
-        await User.find(User.alerts.reward == True).update(Set({User.alerts.reward: False}))  # noqa
 
     @staticmethod
     async def dump_data(fp: str) -> str | None:

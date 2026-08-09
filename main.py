@@ -16,6 +16,7 @@ from sentry_sdk import capture_exception
 
 import core
 from config import config, get_nested_dict
+from extensions.economy.point import is_reward_claimable
 from tools.logger import KkutbotLogger, setup_logger
 from tools.utils import fmt, get_perm_name, is_admin
 from views import ServerInvite
@@ -133,13 +134,15 @@ async def on_command_completion(ctx: commands.Context) -> None:
     alert_message = []
     alerts = {
         "attendance": "오늘의 출석체크를 완료하지 않았습니다.\n`/출석` 명령어를 사용하여 오늘의 출석체크를 완료하세요!",
-        "reward": "받을 수 있는 포인트가 있습니다.\n`/포인트` 명령어를 사용하여 포인트를 받아가세요!",
         "announcements": "읽지 않은 공지가 있습니다.\n`/공지` 명령어를 사용하여 읽지 않은 공지를 확인해 보세요!",
     }
     for path, msg in alerts.items():
         if not getattr(user.alerts, path):
             alert_message.append(msg)
             setattr(user.alerts, path, True)
+    if not user.alerts.reward and is_reward_claimable(user):
+        alert_message.append("받을 수 있는 포인트가 있습니다.\n`/포인트` 명령어를 사용하여 포인트를 받아가세요!")
+        user.alerts.reward = True
     if alert_message:
         await ctx.channel.send(f"{ctx.author.mention}\n\n" + "\n\n".join(alert_message))
 

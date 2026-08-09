@@ -188,6 +188,11 @@ async def _backfill_game_fields() -> None:
     print(f"user: 신규 게임 필드 {len(defaults)}종을 {filled}개 문서에 추가")
 
 
+async def _reset_reward_alert() -> None:
+    result = await db.user.update_many({"alerts.reward": True}, {"$set": {"alerts.reward": False}})
+    print(f"user: {result.modified_count}개 문서의 포인트 알림 플래그를 초기화")
+
+
 async def _migrate_winrate() -> None:
     fixed = 0
     for mode in GAME_MODES:
@@ -260,6 +265,7 @@ async def main() -> None:
     await _migrate_global_name()
     await _backfill_game_fields()
     await _migrate_winrate()
+    await _reset_reward_alert()
     await _migrate_guild_invited()
     await _backfill_user_latest_usage()
     await _drop_legacy_alert()
