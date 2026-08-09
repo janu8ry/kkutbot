@@ -115,11 +115,12 @@ async def on_command_completion(ctx: commands.Context) -> None:
             user.quest.status.completed.append(data)
             user.quest.total += 1
             desc += f"{info['name']} `+{info['reward'][0]}`{{{info['reward'][1]}}}\n"
+    embeds = []
     if desc:
         embed = discord.Embed(title="퀘스트 클리어!", description=fmt(desc), color=config.colors.green)
         embed.set_thumbnail(url=bot.emoji("congrats").url)
         embed.set_footer(text="'/퀘스트'를 사용하여 남은 퀘스트를 확인해 보세요!")
-        await ctx.channel.send(embed=embed)
+        embeds.append(embed)
 
         if len(user.quest.status.completed) == 3:
             bonus_embed = discord.Embed(title="보너스 보상", description="오늘의 퀘스트를 모두 완료했습니다!", color=config.colors.green)
@@ -129,7 +130,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
             user.medals += bonus_medal
             bonus_embed.add_field(name="추가 보상", value=fmt(f"+`{bonus_point}` {{points}}\n+`{bonus_medal}` {{medals}}"))
             bonus_embed.set_thumbnail(url=bot.emoji("bonus").url)
-            await ctx.channel.send(embed=bonus_embed)
+            embeds.append(bonus_embed)
 
     alert_message = []
     alerts = {
@@ -143,10 +144,13 @@ async def on_command_completion(ctx: commands.Context) -> None:
     if not user.alerts.reward and is_reward_claimable(user):
         alert_message.append("받을 수 있는 포인트가 있습니다.\n`/포인트` 명령어를 사용하여 포인트를 받아가세요!")
         user.alerts.reward = True
-    if alert_message:
-        await ctx.channel.send(f"{ctx.author.mention}\n\n" + "\n\n".join(alert_message))
 
     await bot.db.save(user)
+
+    for embed in embeds:
+        await ctx.channel.send(embed=embed)
+    if alert_message:
+        await ctx.channel.send(f"{ctx.author.mention}\n\n" + "\n\n".join(alert_message))
 
 
 @bot.check
