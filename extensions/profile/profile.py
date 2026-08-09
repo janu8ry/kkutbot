@@ -64,8 +64,9 @@ class Profile(commands.Cog, name="사용자"):
             accent = (await self.bot.fetch_user(user.id)).accent_color
             color = accent.value if accent else 0xFFFFFF
 
+        user_id = f" ({user.id})" if is_admin(ctx) else ""
         profile_embed = discord.Embed(
-            title=fmt(f"{{profile}} {e_mk(name)} {'(' + str(user.id) + ')' if is_admin(ctx) else ''}"),
+            title=fmt(f"{{profile}} {e_mk(name)}{user_id}"),
             description=fmt(f"```yaml\n{user_data.bio}```\n{{tier}} 랭킹전 티어 - **{get_rank_progress(user_data.game.rank_solo)}**\n​"),
             color=color,
         )
@@ -75,9 +76,10 @@ class Profile(commands.Cog, name="사용자"):
         profile_embed.set_thumbnail(url=user.display_avatar.url)
         profile_embed.set_footer(text=f"더 자세한 정보는 아래 '통계 확인하기' 버튼을 통해 확인할 수 있어요!{' ' * 50}​")
 
+        latest_usage = f"<t:{user_data.latest_usage}:D>" if user_data.latest_usage else "`기록 없음`"
         stats_embed = discord.Embed(
             title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"),
-            description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : <t:{user_data.latest_usage}:D>",
+            description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : {latest_usage}",
             color=color,
         )
 

@@ -188,6 +188,24 @@ async def _backfill_game_fields() -> None:
     print(f"user: 신규 게임 필드 {len(defaults)}종을 {filled}개 문서에 추가")
 
 
+async def _migrate_guild_invited() -> None:
+    result = await db.guild.update_many(
+        {"invited": None, "latest_usage": {"$ne": None}},
+        [{"$set": {"invited": "$latest_usage"}}],
+    )
+    print(f"guild: {result.modified_count}개 문서의 invited를 latest_usage 값으로 채움")
+    result = await db.guild.delete_many({"invited": None, "latest_usage": None})
+    print(f"guild: 사용 기록이 없는 빈 문서 {result.deleted_count}개 삭제")
+
+
+async def _backfill_user_latest_usage() -> None:
+    result = await db.user.update_many(
+        {"registered": {"$ne": None}, "latest_usage": None},
+        [{"$set": {"latest_usage": "$registered"}}],
+    )
+    print(f"user: {result.modified_count}개 문서의 latest_usage를 registered 값으로 채움")
+
+
 async def _drop_legacy_alert() -> None:
     result = await db.user.update_many({"alert": {"$exists": True}}, {"$unset": {"alert": ""}})
     print(f"user: 레거시 alert 필드를 {result.modified_count}개 문서에서 제거")
@@ -232,6 +250,8 @@ async def main() -> None:
     await _migrate_reward()
     await _migrate_global_name()
     await _backfill_game_fields()
+    await _migrate_guild_invited()
+    await _backfill_user_latest_usage()
     await _drop_legacy_alert()
     await _migrate_announcements()
     await _drop_test_public()
