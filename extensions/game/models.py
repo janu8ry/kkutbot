@@ -180,20 +180,20 @@ class SoloGame(GameSession):
 
         if result == "승리":
             self.score += 10
-            points = (self.score * 5 if self.kkd else self.score * 3) - ENTRY_FEE
+            reward = self.score * 5 if self.kkd else self.score * 3
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config.colors.blue
             emoji = "win"
             modes[mode].win += 1
             modes[mode].streak += 1
         elif result == "패배":
-            points = -ENTRY_FEE
+            reward = 0
             desc = "한방단어에 당했습니다..." if hanbang else f"대답시간이 {self.timeout}초를 초과했습니다..."
             color = config.colors.red
             emoji = "gameover"
             modes[mode].streak = 0
         elif result == "포기":
-            points = -ENTRY_FEE
+            reward = 0
             desc = "게임을 포기했습니다."
             color = config.colors.red
             emoji = "surrender"
@@ -201,7 +201,7 @@ class SoloGame(GameSession):
         else:
             raise commands.BadArgument
 
-        user.points += points
+        user.points += reward - ENTRY_FEE
         modes[mode].times += 1
         if self.score > modes[mode].best:
             modes[mode].best = self.score
@@ -235,7 +235,7 @@ class SoloGame(GameSession):
             embed.add_field(name=result_field[0], value=result_field[1])
         else:
             embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
-        embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if result == '승리' else ''}{points}` {{points}}"))
+        embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if reward else ''}{reward}` {{points}}"))
         if mode == "rank_solo" and user.game.rank_solo.tier != "언랭크":
             embed.add_field(name=fmt("🔸 티어"), value=fmt(get_rank_progress(user.game.rank_solo)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
@@ -411,9 +411,9 @@ class MultiGame(GameSession):
         emojis = ["{gold}", "{silver}", "{bronze}"]
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
         for n, ((player, score), user) in enumerate(zip(rank, users)):
-            points = rewards[n] * 2 - MULTI_ENTRY_FEE
-            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{points:+}` {{points}}")
-            user.points += points
+            reward = rewards[n] * 2
+            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{'+' if reward else ''}{reward}` {{points}}")
+            user.points += reward - MULTI_ENTRY_FEE
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
             if score > user.game.guild_multi.best:
