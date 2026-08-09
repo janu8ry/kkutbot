@@ -108,7 +108,7 @@ class Links:
     website: str = "https://kkutbot.github.io"
     portainer: str = f"{base_url(secure=True)}:9443"
     dbgate: str = f"{base_url()}:8081"
-    logs: str = f"{base_url()}:8082"
+    logs: str = f"{base_url()}:8082/explore"
 
 
 @dataclass(frozen=True)
