@@ -47,7 +47,6 @@ class Game(commands.Cog, name="게임"):
             self.bot.playing_games.discard(ctx.author.id)
 
     @commands.hybrid_command(name="끝말잇기", usage="📔", aliases=("ㄲ", "끝", "ㄲㅁㅇㄱ", "ㄲ1", "끝1", "ㄲㅁㅇㄱ1"))
-    @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     async def play_solo(self, ctx: commands.Context):
         """
@@ -93,7 +92,6 @@ class Game(commands.Cog, name="게임"):
             await game.run()
 
     @commands.hybrid_command(name="다인전", usage="{server}", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2", "ㄷㅇㅈ", "멀티", "ㅁ"))
-    @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     @commands.max_concurrency(1, per=commands.BucketType.channel)
     async def play_multi(self, ctx: commands.Context):
@@ -139,7 +137,6 @@ class Game(commands.Cog, name="게임"):
                     self.bot.playing_games.discard(player.id)
 
     @commands.hybrid_command(name="쿵쿵따", usage="3️⃣", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3", "쿵"))
-    @commands.bot_has_permissions(add_reactions=True)
     @commands.bot_has_permissions(external_emojis=True)
     async def play_kkd(self, ctx: commands.Context):
         """
