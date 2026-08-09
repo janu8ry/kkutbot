@@ -292,15 +292,13 @@ class MultiGame(GameSession):
         def check(x: discord.Message) -> bool:
             return x.author in self.players and x.channel == self.ctx.channel and x.author == self.now_player
 
-        await self.update_embed(self.game_embed())
         self.begin_time = time.time()
-        info_msg: discord.Message | None = await self.send_info_embed()
+        await self.update_board()
         while True:
             try:
                 m = await self.ctx.bot.wait_for("message", check=check, timeout=self.time_left)
             except asyncio.TimeoutError:
-                finished, info_msg = await self.handle_elimination(prev_info_msg=info_msg)
-                if finished:
+                if await self.handle_elimination():
                     return
                 continue
 
@@ -313,38 +311,31 @@ class MultiGame(GameSession):
                 can_surrender=self.turn >= 5,
             )
             if result == WordCheck.SURRENDER:
-                finished, info_msg = await self.handle_elimination(gg=True, prev_info_msg=info_msg)
-                if finished:
+                if await self.handle_elimination(gg=True):
                     return
                 continue
             if result != WordCheck.OK:
-                await _try_delete(info_msg)
-                info_msg = await self.send_info_embed(word_error_message(result, user_word, self.word))
+                await self.update_board(word_error_message(result, user_word, self.word))
                 continue
 
-            await _try_delete(info_msg)
             self.used_words.append(user_word)
             self.word = user_word
             self.turn += 1
             self.score += 1
-            await self.update_embed(self.game_embed())
             self.begin_time = time.time()
             if is_hanbang(self.word, self.used_words):
-                finished, info_msg = await self.handle_elimination(prev_info_msg=None)
-                if finished:
+                if await self.handle_elimination():
                     return
             else:
-                info_msg = await self.send_info_embed()
+                await self.update_board()
 
-    async def handle_elimination(self, gg: bool = False, prev_info_msg: discord.Message | None = None) -> tuple[bool, discord.Message | None]:
-        await _try_delete(prev_info_msg)
+    async def handle_elimination(self, gg: bool = False) -> bool:
         await self.player_out(gg=gg)
         if len(self.players) - len(self.final_score) == 1:
             await self.game_end()
-            return True, None
-        await self.update_embed(self.game_embed())
-        new_info = await self.send_info_embed()
-        return False, new_info
+            return True
+        await self.update_board()
+        return False
 
     async def hosting_embed(self) -> discord.Embed:
         embed = discord.Embed(
@@ -368,16 +359,23 @@ class MultiGame(GameSession):
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/{self.max_players})", value="\n".join(lines))
         return embed
 
-    async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None):
+    async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None, content: str | None = None):
         if self.msg.author.id == self.ctx.bot.user.id:
             await _try_delete(self.msg)
-        self.msg = await self.msg.channel.send(embed=embed, view=view)  # type: ignore
+        self.msg = await self.ctx.channel.send(content, embed=embed, view=view)  # type: ignore
         return self.msg
+
+    async def update_board(self, desc: str | None = None) -> None:
+        if desc is None:
+            desc = f"⏰ {self.timeout}초 안에 단어를 이어주세요!"
+        head, _, tail = fmt(desc).partition(" ")
+        await self.update_embed(self.game_embed(), content=f"{head} {self.now_player.mention}님, {tail}")
 
     def game_embed(self) -> discord.Embed:
         embed = discord.Embed(
             title="📔 끝말잇기 다인전",
-            description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}",
+            description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}\n"
+            f"🔸 <t:{round(self.timeout + self.begin_time)}:R> 마감",
             color=config.colors.green,
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.word} ({' / '.join(get_transition(self.word))})```")
@@ -430,16 +428,3 @@ class MultiGame(GameSession):
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.channel.send(embed=embed)
-
-    async def send_info_embed(self, desc: str | None = None) -> discord.Message:
-        if desc is None:
-            desc = f"⏰ {self.timeout}초 안에 단어를 이어주세요!"
-        du_word = get_transition(self.word)
-        desc = fmt(desc)
-        embed = discord.Embed(
-            title=self.word,
-            description=f"<t:{round(self.timeout + self.begin_time)}:R>까지 **{'** 또는 **'.join(du_word)}** (으)로 시작하는 단어를 이어주세요.",
-            color=config.colors.blue,
-        )
-        head, _, tail = desc.partition(" ")
-        return await self.msg.channel.send(f"{head} {self.now_player.mention}님, {tail}", embed=embed, delete_after=self.time_left)
