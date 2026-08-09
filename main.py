@@ -105,9 +105,9 @@ async def on_command_completion(ctx: commands.Context) -> None:
     user = await bot.db.get_user(ctx.author)
     desc = ""
     for data, info in public.quests.items():
-        value = get_nested_dict(user.model_dump(), data.split("/"))
-        current = value - user.quest.cache[data]
-        if current < 0:
+        value: int = get_nested_dict(user.model_dump(), data.split("/"))
+        current = value - user.quest.cache.get(data, value)
+        if current <= 0:
             user.quest.cache[data] = value
         elif (current >= info["target"]) and (data not in user.quest.status.completed):
             setattr(user, info["reward"][1], getattr(user, info["reward"][1]) + info["reward"][0])
@@ -267,7 +267,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         if "kkutbot" in filename:
             filename = filename.split("kkutbot/")[1]
 
-        line_range = f"{line_no}~{end_line_no}" if end_line_no > line_no else str(line_no)
+        line_range = f"{line_no}~{end_line_no}" if end_line_no > line_no else line_no
         field_prefix = f"- 파일: {filename} (`line {line_range}`)\n```py\n"
         max_code_len = 1024 - len(field_prefix) - 3
         if len(line_text) > max_code_len:

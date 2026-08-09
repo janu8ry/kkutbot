@@ -29,7 +29,8 @@ class Quest(commands.Cog, name="퀘스트"):
         user = await self.bot.db.get_user(ctx.author)
         public = await self.bot.db.get_public()
         for data, info in public.quests.items():
-            current = get_nested_dict(user.model_dump(), data.split("/")) - user.quest.cache[data]
+            value: int = get_nested_dict(user.model_dump(), data.split("/"))
+            current = value - user.quest.cache.get(data, value)
             if data in user.quest.status.completed:
                 desc = "퀘스트를 완료했습니다!"
                 title = f"🔸 ~~{info['name']}~~"
