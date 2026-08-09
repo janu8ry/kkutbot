@@ -9,7 +9,7 @@ from database.models import User
 from tools import fmt
 
 from .ladder import get_difficulty_tier
-from .models import ENTRY_FEE, MultiGame, SoloGame
+from .models import ENTRY_FEE, MULTI_ENTRY_FEE, MultiGame, SoloGame
 from .views import HostGuildGame
 
 
@@ -20,12 +20,12 @@ class Game(commands.Cog, name="게임"):
         self.bot = bot
 
     @staticmethod
-    async def get_playable_user(ctx: commands.Context) -> User | None:
+    async def get_playable_user(ctx: commands.Context, fee: int = ENTRY_FEE) -> User | None:
         user = await ctx.bot.db.get_user(ctx.author)
-        if user.points < ENTRY_FEE:
+        if user.points < fee:
             await ctx.reply(
                 fmt(
-                    f"{{denied}} 참가비 `{ENTRY_FEE}`{{points}}가 부족하여 플레이할 수 없습니다.\n"
+                    f"{{denied}} 참가비 `{fee}`{{points}}가 부족하여 플레이할 수 없습니다.\n"
                     "`/출석`, `/포인트`, `/퀘스트` 명령어를 사용해서 포인트를 획득해 보세요!"
                 )
             )
@@ -53,7 +53,7 @@ class Game(commands.Cog, name="게임"):
         """
         끝말잇기 솔로 랭크 게임을 플레이합니다.
 
-        게임을 플레이하려면 최소 30포인트가 필요합니다.
+        게임을 플레이하려면 최소 40포인트가 필요합니다.
 
         --기본 규칙
         상대방이 제시한 단어의 마지막 글자로 시작하는 단어를 제시합니다.
@@ -73,8 +73,9 @@ class Game(commands.Cog, name="게임"):
         마스터 티어는 디비전 없이 LP가 누적되며, 이 LP로 순위가 매겨집니다.
 
         --포인트 획득 방식
+        게임마다 참가비 40포인트가 차감되며,
         승리시에는 상대방과 플레이어가 주고받은 단어의 개수에 비례해
-        포인트를 획득하고, 패배 또는 포기시에는 30포인트가 차감됩니다.
+        포인트를 획득합니다.
 
         --기타
         단어 목록: 표준국어대사전 기반, 단어수 약 31만개
@@ -100,8 +101,12 @@ class Game(commands.Cog, name="게임"):
         서버 멤버들과 끝말잇기 다인전 게임을 플레이합니다.
 
         기본 게임 규칙은 랭크 게임과 동일하지만,
-        티어제와 LP 변동이 없는 친선전 모드입니다. 승패 부담 없이 즐겨보세요!
+        티어제와 LP 변동이 없는 친선전 모드입니다.
         최소 2인부터 최대 5인까지 플레이 가능합니다.
+
+        --포인트 획득 방식
+        참가자 모두에게 참가비 20포인트가 차감되며,
+        순위가 높을수록 더 많은 포인트를 획득합니다.
 
         --사용법
         `/다인전`을 사용하여 다인전 게임을 플레이합니다.
@@ -110,7 +115,7 @@ class Game(commands.Cog, name="게임"):
         if not await self.acquire_game(ctx):
             return
         async with self.game_session(ctx):
-            if await self.get_playable_user(ctx) is None:
+            if await self.get_playable_user(ctx, MULTI_ENTRY_FEE) is None:
                 return
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage

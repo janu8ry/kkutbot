@@ -23,9 +23,10 @@ from .ladder import (
 )
 from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
-__all__ = ["SoloGame", "MultiGame", "ENTRY_FEE"]
+__all__ = ["SoloGame", "MultiGame", "ENTRY_FEE", "MULTI_ENTRY_FEE"]
 
 ENTRY_FEE = 40
+MULTI_ENTRY_FEE = 20
 
 
 def get_winrate(data: GameBase) -> Any:
@@ -415,8 +416,9 @@ class MultiGame(GameSession):
         emojis = ["{gold}", "{silver}", "{bronze}"]
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
         for n, ((player, score), user) in enumerate(zip(rank, users)):
-            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : +`{rewards[n] * 2}` {{points}}")
-            user.points += rewards[n] * 2
+            points = rewards[n] * 2 - MULTI_ENTRY_FEE
+            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{points:+}` {{points}}")
+            user.points += points
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
             if score > user.game.guild_multi.best:

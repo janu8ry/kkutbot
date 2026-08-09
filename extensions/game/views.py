@@ -6,6 +6,8 @@ from discord.ext import commands
 from tools import fmt
 from views import BaseView
 
+from .models import MULTI_ENTRY_FEE
+
 if TYPE_CHECKING:
     from .models import MultiGame
 
@@ -30,6 +32,11 @@ class HostGuildGame(BaseView):
             return
         if interaction.user.id in self.ctx.bot.playing_games:
             await interaction.response.send_message(fmt("{denied} 이미 진행 중인 끝말잇기 게임이 있습니다."), ephemeral=True)
+            return
+        if (await self.ctx.bot.db.get_user(interaction.user)).points < MULTI_ENTRY_FEE:
+            await interaction.response.send_message(
+                fmt(f"{{denied}} 참가비 `{MULTI_ENTRY_FEE}`{{points}}가 부족하여 참가할 수 없습니다."), ephemeral=True
+            )
             return
         self.game.players.append(interaction.user)
         self.ctx.bot.playing_games.add(interaction.user.id)
