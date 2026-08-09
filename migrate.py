@@ -188,6 +188,15 @@ async def _backfill_game_fields() -> None:
     print(f"user: 신규 게임 필드 {len(defaults)}종을 {filled}개 문서에 추가")
 
 
+async def _migrate_winrate() -> None:
+    fixed = 0
+    for mode in GAME_MODES:
+        path = f"game.{mode}.winrate"
+        result = await db.user.update_many({path: {"$not": {"$type": "double"}}}, [{"$set": {path: {"$toDouble": f"${path}"}}}])
+        fixed += result.modified_count
+    print(f"user: winrate 필드 {fixed}개를 double로 변환")
+
+
 async def _migrate_guild_invited() -> None:
     result = await db.guild.update_many(
         {"invited": None, "latest_usage": {"$ne": None}},
@@ -250,6 +259,7 @@ async def main() -> None:
     await _migrate_reward()
     await _migrate_global_name()
     await _backfill_game_fields()
+    await _migrate_winrate()
     await _migrate_guild_invited()
     await _backfill_user_latest_usage()
     await _drop_legacy_alert()

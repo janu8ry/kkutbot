@@ -1,7 +1,7 @@
 import asyncio
 import random
 import time
-from typing import Any, Literal
+from typing import Literal
 
 import discord
 from discord.ext import commands
@@ -29,13 +29,10 @@ ENTRY_FEE = 40
 MULTI_ENTRY_FEE = 20
 
 
-def get_winrate(data: GameBase) -> Any:
-    game_times = data.times
-    game_win_times: int = data.win
-    if 0 in (game_times, game_win_times):
-        return 0
-    else:
-        return round(game_win_times / game_times * 100, 2)
+def get_winrate(data: GameBase) -> float:
+    if not data.times or not data.win:
+        return 0.0
+    return round(data.win / data.times * 100, 2)
 
 
 async def _try_delete(msg: discord.Message | None) -> None:
@@ -428,7 +425,7 @@ class MultiGame(GameSession):
                 user.game.guild_multi.streak += 1
             else:
                 user.game.guild_multi.streak = 0
-            user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)  # type: ignore
+            user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)
         await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
         embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
