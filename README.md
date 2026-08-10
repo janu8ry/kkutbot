@@ -35,7 +35,8 @@ Issue 등록 또는 서포트 서버의 `#버그제보` 채널
 
 # 다음 업데이트 TODO
 - [ ] 게임 모드 추가 (커스텀, 앞말잇기, 1:1 랭킹전)
-- [ ] 연승 시스템
+- [ ] 메달 소비처 추가
+- [ ] 끝말잇기 다시하기 버튼 추가
 
 # 봇 실행하기
 끝봇의 코드를 직접 실행해보고 싶으시면, [AGPL-3.0 라이선스](LICENSE)를 꼭 지켜주세요.
@@ -66,8 +67,7 @@ git clone https://github.com/janu8ry/kkutbot.git
 cd kkutbot
 cp .env.example .env
 vi .env # 토큰, mongoDB 사용자 이름/암호, 데이터 저장 경로 수정
-docker build -t kkutbot:latest .
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## 로그 저장
