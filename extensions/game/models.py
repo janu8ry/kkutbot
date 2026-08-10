@@ -21,7 +21,7 @@ from .ladder import (
     get_win_lp,
     update_ladder,
 )
-from .views import PlayAgain
+from .views import MultiGameResult, PlayAgain
 from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
 __all__ = ["SoloGame", "MultiGame"]
@@ -269,7 +269,7 @@ class SoloGame(GameSession):
 class MultiGame(GameSession):
     """Game Model for multiple play mode"""
 
-    __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at")
+    __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at", "next_action")
 
     ENTRY_FEE = 20
     max_players = 5
@@ -287,6 +287,7 @@ class MultiGame(GameSession):
         self.hosting_time = hosting_time
         self.last_host = ctx.author
         self.started_at = time.time()
+        self.next_action: str | None = None
 
     @property
     def host(self) -> discord.User | discord.Member:
@@ -452,4 +453,7 @@ class MultiGame(GameSession):
         embed.add_field(name="🔸 플레이 시간", value=f"`{duration}`", inline=False)
         embed.add_field(name="🔸 순위", value=fmt("\n".join(desc)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
-        await self.ctx.channel.send(embed=embed)
+        view = MultiGameResult(ctx=self.ctx, game=self)
+        embed.set_footer(text=f"{view.timeout:.0f}초 안에 선택하지 않으면 로비가 종료됩니다.")
+        view.message = await self.ctx.channel.send(embed=embed, view=view)
+        await view.wait()

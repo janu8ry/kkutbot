@@ -1,3 +1,4 @@
+import asyncio
 import time
 from contextlib import asynccontextmanager
 
@@ -31,6 +32,19 @@ class Game(commands.Cog, name="게임"):
             )
             return None
         return user
+
+    async def drop_broke_players(self, ctx: commands.Context, players: list[discord.User | discord.Member]) -> list[discord.User | discord.Member]:
+        users = await asyncio.gather(*[ctx.bot.db.get_user(player) for player in players])
+        broke = [player for player, user in zip(players, users) if user.points < MultiGame.ENTRY_FEE]
+        for player in broke:
+            self.bot.playing_games.discard(player.id)
+        if broke:
+            await ctx.channel.send(
+                fmt(
+                    f"{{denied}} {', '.join(player.mention for player in broke)} 님은 참가비 `{MultiGame.ENTRY_FEE}`{{points}}가 부족하여 제외됩니다."
+                )
+            )
+        return [player for player in players if player not in broke]
 
     async def acquire_game(self, ctx: commands.Context) -> bool:
         if ctx.author.id in self.bot.playing_games:
@@ -118,22 +132,35 @@ class Game(commands.Cog, name="게임"):
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
 
-            multi_game = MultiGame(ctx, hosting_time=round(time.time()))
-            view = HostGuildGame(ctx, game=multi_game)
-            view.message = await ctx.reply(embed=await multi_game.hosting_embed(), view=view)
-            multi_game.msg = view.message
+            players: list[discord.User | discord.Member] = [ctx.author]
+            open_lobby = True
             try:
-                await view.wait()
-                if view.value == "stop":
-                    return
-                if view.value != "start":
-                    if len(multi_game.players) < 2:
-                        await ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{multi_game.host.display_name}**님의 게임을 종료합니다.")
+                while True:
+                    multi_game = MultiGame(ctx, hosting_time=round(time.time()))
+                    multi_game.players = players
+                    if open_lobby:
+                        view = HostGuildGame(ctx, game=multi_game)
+                        view.message = await ctx.reply(embed=await multi_game.hosting_embed(), view=view)
+                        multi_game.msg = view.message
+                        await view.wait()
+                        if view.value == "stop":
+                            return
+                        if view.value != "start":
+                            if len(multi_game.players) < 2:
+                                await ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{multi_game.host.display_name}**님의 게임을 종료합니다.")
+                                return
+                            await ctx.channel.send(f"✅ 대기 시간이 초과되어 **{multi_game.host.display_name}**님의 게임을 시작합니다.")
+                    await multi_game.run()
+                    if multi_game.next_action is None:
                         return
-                    await ctx.channel.send(f"✅ 대기 시간이 초과되어 **{multi_game.host.display_name}**님의 게임을 시작합니다.")
-                await multi_game.run()
+                    players = multi_game.players
+                    open_lobby = multi_game.next_action == "lobby"
+                    if not open_lobby:
+                        players = await self.drop_broke_players(ctx, players)
+                        open_lobby = len(players) < 2
+                    await ctx.command.call_before_hooks(ctx)  # type: ignore
             finally:
-                for player in multi_game.players:
+                for player in players:
                     self.bot.playing_games.discard(player.id)
 
     @commands.hybrid_command(name="쿵쿵따", usage="3️⃣", aliases=("ㄲ3", "끝3", "ㄲㅁㅇㄱ3", "쿵"))

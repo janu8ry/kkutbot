@@ -10,7 +10,36 @@ if TYPE_CHECKING:
     from .models import MultiGame
 
 
-__all__ = ["HostGuildGame", "PlayAgain"]
+__all__ = ["HostGuildGame", "PlayAgain", "MultiGameResult"]
+
+
+class MultiGameResult(BaseView):
+    def __init__(self, ctx: commands.Context, game: MultiGame):
+        super().__init__(ctx=ctx)
+        self.game = game
+        self.timeout = 15
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user != self.game.host:
+            await interaction.response.send_message(fmt("{denied} 호스트만 사용할 수 있습니다."), ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="한 판 더", style=discord.ButtonStyle.green, emoji="▶️")
+    async def play_again(self: MultiGameResult, interaction: discord.Interaction, _button: discord.ui.Button):
+        if self.is_finished():
+            return
+        self.game.next_action = "again"
+        await self.disable_buttons(interaction)
+        self.stop()
+
+    @discord.ui.button(label="로비로 돌아가기", style=discord.ButtonStyle.blurple, emoji="🔙")
+    async def back_to_lobby(self: MultiGameResult, interaction: discord.Interaction, _button: discord.ui.Button):
+        if self.is_finished():
+            return
+        self.game.next_action = "lobby"
+        await self.disable_buttons(interaction)
+        self.stop()
 
 
 class PlayAgain(BaseView):
