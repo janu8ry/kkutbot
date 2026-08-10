@@ -5,6 +5,7 @@
 .understand-anything
 CLAUDE.md
 .claude/
+.claudeignore
 analysis/
 
 # virtualenv
@@ -19,6 +20,7 @@ venv/
 __pycache__/
 *.py[cod]
 *$py.class
+.ruff_cache/
 
 # C extensions
 *.so
@@ -28,8 +30,14 @@ __pycache__/
 .dmypy.json
 dmypy.json
 
-# example files
+# config files
+.env
 .env.example
+
+# deployment
+Dockerfile
+docker-compose.yml
+obs/
 
 # git & ci
 .github/
@@ -37,6 +45,7 @@ dmypy.json
 README.md
 LICENSE
 .gitignore
+.dockerignore
 .git/
 privacy.md
 

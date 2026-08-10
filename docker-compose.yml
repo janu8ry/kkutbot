@@ -13,13 +13,14 @@ services:
     environment:
       - TZ=Asia/Seoul
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
   mongo:
     image: mongo:7.0.37
     restart: always
     container_name: "kkutbot-mongo"
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - ${DBPATH}:/data/db
     env_file:
@@ -29,6 +30,12 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     command: mongod --quiet
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
   dbgate:
     image: dbgate/dbgate:latest
     restart: always
@@ -48,7 +55,8 @@ services:
       - LOGIN=${DBGATE_LOGIN}
       - PASSWORD=${DBGATE_PASSWORD}
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
   loki:
     image: grafana/loki:3.3.2
     restart: always
