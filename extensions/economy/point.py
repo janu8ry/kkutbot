@@ -62,7 +62,7 @@ class Reward(commands.Cog, name="포인트"):
             await ctx.reply(embed=embed)
             return
 
-        points = random.randint(150, 300)
+        points = random.randint(200, 300)
         user.reward.streak = user.reward.streak + 1 if elapsed <= STREAK_KEEP else 1
         user.points += points
         embed = discord.Embed(
@@ -71,7 +71,7 @@ class Reward(commands.Cog, name="포인트"):
             color=config.colors.green,
         )
         if user.reward.streak % STREAK_BONUS_CYCLE == 0:
-            bonus = random.randint(300, 600)
+            bonus = random.randint(400, 600)
             user.points += bonus
             embed.add_field(name="🔸 연속 수령 보너스", value=fmt(f"`{user.reward.streak}`회 연속 수령!\n+`{bonus}` {{points}}"), inline=False)
         embed.set_footer(text=f"{REWARD_COOLDOWN // 3600}시간 후에 다시 수령할 수 있어요!")
