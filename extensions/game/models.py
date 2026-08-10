@@ -260,7 +260,7 @@ class SoloGame(GameSession):
 class MultiGame(GameSession):
     """Game Model for multiple play mode"""
 
-    __slots__ = ("players", "msg", "turn", "word", "used_words", "final_score", "hosting_time", "last_host")
+    __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at")
 
     max_players = 5
     hosting_timeout = 120
@@ -270,11 +270,13 @@ class MultiGame(GameSession):
         self.players: list[discord.User | discord.Member] = [ctx.author]
         self.msg = ctx.message
         self.turn = 0
+        self.round = 1
         self.word = choose_first_word()
         self.used_words = [self.word]
         self.final_score: dict[discord.User | discord.Member, int] = {}
         self.hosting_time = hosting_time
         self.last_host = ctx.author
+        self.started_at = time.time()
 
     @property
     def host(self) -> discord.User | discord.Member:
@@ -292,7 +294,7 @@ class MultiGame(GameSession):
         def check(x: discord.Message) -> bool:
             return x.author in self.players and x.channel == self.ctx.channel and x.author == self.now_player
 
-        self.begin_time = time.time()
+        self.started_at = self.begin_time = time.time()
         await self.update_board()
         while True:
             try:
@@ -321,6 +323,7 @@ class MultiGame(GameSession):
             self.used_words.append(user_word)
             self.word = user_word
             self.turn += 1
+            self.round = (self.turn // len(self.alive)) + 1
             self.score += 1
             self.begin_time = time.time()
             if is_hanbang(self.word, self.used_words):
@@ -374,8 +377,7 @@ class MultiGame(GameSession):
     def game_embed(self) -> discord.Embed:
         embed = discord.Embed(
             title="📔 끝말잇기 다인전",
-            description=f"🔸 라운드 **{(self.turn // len(self.alive)) + 1}**  |  차례: {self.now_player.mention}\n"
-            f"🔸 <t:{round(self.timeout + self.begin_time)}:R> 마감",
+            description=f"🔸 라운드 **{self.round}**  |  차례: {self.now_player.mention}\n🔸 <t:{round(self.timeout + self.begin_time)}:R> 마감",
             color=config.colors.green,
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.word} ({' / '.join(get_transition(self.word))})```")
@@ -412,19 +414,32 @@ class MultiGame(GameSession):
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
         for n, ((player, score), user) in enumerate(zip(rank, users)):
             reward = rewards[n] * 2
-            desc.append(f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{'+' if reward else ''}{reward}` {{points}}")
             user.points += reward - MULTI_ENTRY_FEE
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
-            if score > user.game.guild_multi.best:
+            record = score > user.game.guild_multi.best
+            if record:
                 user.game.guild_multi.best = score
-            if (n + 1) <= round(len(rank) / 2):
+            if (n + 1) <= len(rank) // 2:
                 user.game.guild_multi.win += 1
                 user.game.guild_multi.streak += 1
             else:
                 user.game.guild_multi.streak = 0
             user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)
+            streak = user.game.guild_multi.streak
+            tail = f"**{streak}연승** 🔥" if streak >= 2 else ("**신기록!** 🎉" if record else "")
+            desc.append(
+                f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{score}`점  |  `{'+' if reward else ''}{reward}` {{points}}{" " * 3 + tail}"
+            )
         await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
-        embed = discord.Embed(title="📔 게임 종료!", description=fmt("\n".join(desc)), color=config.colors.blue)
+        elapsed = round(time.time() - self.started_at)
+        duration = f"{elapsed // 60}분 {elapsed % 60}초" if elapsed >= 60 else f"{elapsed}초"
+        embed = discord.Embed(
+            title=fmt("{result} 게임 결과"),
+            description=f"**게임 종료**  |  `{self.round}`라운드",
+            color=config.colors.blue,
+        )
+        embed.add_field(name="🔸 플레이 시간", value=f"`{duration}`", inline=False)
+        embed.add_field(name="🔸 순위", value=fmt("\n".join(desc)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         await self.ctx.channel.send(embed=embed)
