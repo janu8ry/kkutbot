@@ -101,7 +101,7 @@ class SoloGame(GameSession):
 
     async def run(self) -> None:
         def check(x: discord.Message) -> bool:
-            return x.author == self.player and x.channel == self.ctx.channel
+            return x.author == self.player and x.channel == self.ctx.channel and bool(x.content.strip())
 
         info_msg = await self.send_info_embed(self.ctx)
         while True:
@@ -111,7 +111,7 @@ class SoloGame(GameSession):
                 await self.game_end("패배")
                 return
 
-            user_word = msg.content
+            user_word = msg.content.strip()
             result = check_word(
                 user_word,
                 self.bot_word,  # type: ignore
@@ -293,7 +293,7 @@ class MultiGame(GameSession):
 
     async def run(self) -> None:
         def check(x: discord.Message) -> bool:
-            return x.author in self.players and x.channel == self.ctx.channel and x.author == self.now_player
+            return x.author in self.players and x.channel == self.ctx.channel and x.author == self.now_player and bool(x.content.strip())
 
         self.started_at = self.begin_time = time.time()
         await self.update_board()
@@ -305,7 +305,7 @@ class MultiGame(GameSession):
                     return
                 continue
 
-            user_word = m.content
+            user_word = m.content.strip()
             result = check_word(
                 user_word,
                 self.word,
