@@ -3,6 +3,7 @@ import linecache
 import logging
 import os
 import random
+import sys
 import time
 import traceback
 import uuid
@@ -227,7 +228,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         )
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
-    elif isinstance(error, commands.BadUnionArgument):
+    elif isinstance(error, commands.UserNotFound):
         embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.red)
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
@@ -312,6 +313,13 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             exc_info=error,
         )
         capture_exception(error)
+
+
+@bot.event
+async def on_error(event_method: str, *_args, **_kwargs) -> None:
+    error = sys.exc_info()[1]
+    logger.error(f"'{event_method}' 이벤트 처리에 실패했습니다.", exc_info=error)
+    capture_exception(error)
 
 
 @bot.event

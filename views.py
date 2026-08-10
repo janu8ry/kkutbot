@@ -1,11 +1,15 @@
+import logging
 from typing import Any
 
 import discord
 from discord.ext import commands
+from sentry_sdk import capture_exception
 
 from config import config
 
 __all__ = ["BaseView", "BaseModal", "ServerInvite", "Paginator"]
+
+logger = logging.getLogger("kkutbot")
 
 
 class BaseView(discord.ui.View):
@@ -37,6 +41,10 @@ class BaseView(discord.ui.View):
         except discord.HTTPException:
             pass
 
+    async def on_error(self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item, /) -> None:
+        logger.error(f"'{type(self).__name__}'의 '{type(item).__name__}' 처리에 실패했습니다.", exc_info=error)
+        capture_exception(error)
+
     async def disable_buttons(self, interaction: discord.Interaction, use_msg: bool = False) -> None:
         for item in self.children:
             if isinstance(item, discord.ui.Button):
@@ -51,6 +59,10 @@ class BaseModal(discord.ui.Modal):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.timeout = 120
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception, /) -> None:
+        logger.error(f"'{type(self).__name__}' 모달 처리에 실패했습니다.", exc_info=error)
+        capture_exception(error)
 
 
 class ServerInvite(discord.ui.View):
