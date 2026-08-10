@@ -27,6 +27,7 @@ __all__ = ["SoloGame", "MultiGame", "ENTRY_FEE", "MULTI_ENTRY_FEE"]
 
 ENTRY_FEE = 40
 MULTI_ENTRY_FEE = 20
+WIN_BONUS = 10
 
 
 def get_winrate(data: GameBase) -> float:
@@ -176,11 +177,9 @@ class SoloGame(GameSession):
         mode = "kkd" if self.kkd else "rank_solo"
         user = await self.ctx.bot.db.get_user(self.player)
         modes = {"rank_solo": user.game.rank_solo, "kkd": user.game.kkd}
-        base_score = self.score
 
         if result == "승리":
-            self.score += 10
-            reward = self.score * 5 if self.kkd else self.score * 3
+            reward = (self.score + WIN_BONUS) * (5 if self.kkd else 3)
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config.colors.blue
             emoji = "win"
@@ -203,10 +202,12 @@ class SoloGame(GameSession):
 
         user.points += reward - ENTRY_FEE
         modes[mode].times += 1
-        if self.score > modes[mode].best:
+        record = self.score > modes[mode].best
+        if record:
             modes[mode].best = self.score
         rank_changed = None
-        result_field: tuple[str, str] | None = None
+        placement_field: str | None = None
+        lp_delta: int | None = None
         placement = False
         if mode == "rank_solo":
             solo = user.game.rank_solo
@@ -214,30 +215,30 @@ class SoloGame(GameSession):
             placement = solo.tier == "언랭크"
             mask_before = solo.lp
             lp_before, pos_before = solo.lp, (solo.tier, solo.division)
-            rank_changed = update_ladder(solo, won, base_score)
+            rank_changed = update_ladder(solo, won, self.score)
             if placement:
                 played = min(solo.times, PLACEMENT_GAMES)
                 mask = mask_before | (int(won) << (played - 1))
                 marks = ["✅" if (mask >> i) & 1 else "❌" for i in range(played)]
                 marks += ["🔳"] * (PLACEMENT_GAMES - played)
-                result_field = ("🔸 배치고사", " ".join(marks))
+                placement_field = " ".join(marks)
+            elif (solo.tier, solo.division) == pos_before:
+                lp_delta = solo.lp - lp_before
             else:
-                if (solo.tier, solo.division) == pos_before:
-                    delta = solo.lp - lp_before
-                else:
-                    delta = get_win_lp(base_score) if won else -get_lose_lp()
-                result_field = ("🔸 점수", f"`{delta:+d}` LP")
+                lp_delta = get_win_lp(self.score) if won else -get_lose_lp()
         modes[mode].winrate = get_winrate(modes[mode])
 
         head = f"**{modes[mode].streak}연승** 🔥" if result == "승리" and modes[mode].streak >= 2 else f"**{result}**"
         embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"{head}  |  {desc}", color=color)
-        if result_field is not None:
-            embed.add_field(name=result_field[0], value=result_field[1])
-        else:
-            embed.add_field(name="🔸 점수", value=f"`{self.score}` 점")
+        embed.add_field(name="🔸 점수", value=f"`{self.score}` 점{' **(신기록! 🎉)**' if record else ''}")
         embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if reward else ''}{reward}` {{points}}"))
+        if placement_field is not None:
+            embed.add_field(name="🔸 배치고사", value=placement_field, inline=False)
         if mode == "rank_solo" and user.game.rank_solo.tier != "언랭크":
-            embed.add_field(name=fmt("🔸 티어"), value=fmt(get_rank_progress(user.game.rank_solo)), inline=False)
+            tier_value = fmt(get_rank_progress(user.game.rank_solo))
+            if lp_delta is not None:
+                tier_value += f" **({lp_delta:+d})**"
+            embed.add_field(name=fmt("🔸 티어"), value=tier_value, inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
         if result in ("패배", "포기"):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
@@ -429,7 +430,7 @@ class MultiGame(GameSession):
             streak = user.game.guild_multi.streak
             tail = f"**{streak}연승** 🔥" if streak >= 2 else ("**신기록!** 🎉" if record else "")
             desc.append(
-                f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{score}`점  |  `{'+' if reward else ''}{reward}` {{points}}{" " * 3 + tail}"
+                f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{score}`점  |  `{'+' if reward else ''}{reward}` {{points}}{' ' * 3 + tail}"
             )
         await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
         elapsed = round(time.time() - self.started_at)
