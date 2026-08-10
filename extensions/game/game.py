@@ -9,7 +9,7 @@ from database.models import User
 from tools import fmt
 
 from .ladder import get_difficulty_tier
-from .models import ENTRY_FEE, MULTI_ENTRY_FEE, MultiGame, SoloGame
+from .models import MultiGame, SoloGame
 from .views import HostGuildGame
 
 
@@ -20,7 +20,7 @@ class Game(commands.Cog, name="게임"):
         self.bot = bot
 
     @staticmethod
-    async def get_playable_user(ctx: commands.Context, fee: int = ENTRY_FEE) -> User | None:
+    async def get_playable_user(ctx: commands.Context, fee: int) -> User | None:
         user = await ctx.bot.db.get_user(ctx.author)
         if user.points < fee:
             await ctx.reply(
@@ -86,7 +86,7 @@ class Game(commands.Cog, name="게임"):
         if not await self.acquire_game(ctx):
             return
         async with self.game_session(ctx):
-            if (user := await self.get_playable_user(ctx)) is None:
+            if (user := await self.get_playable_user(ctx, SoloGame.ENTRY_FEE)) is None:
                 return
             game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo), placement=user.game.rank_solo.tier == "언랭크")
             await game.run()
@@ -113,7 +113,7 @@ class Game(commands.Cog, name="게임"):
         if not await self.acquire_game(ctx):
             return
         async with self.game_session(ctx):
-            if await self.get_playable_user(ctx, MULTI_ENTRY_FEE) is None:
+            if await self.get_playable_user(ctx, MultiGame.ENTRY_FEE) is None:
                 return
             if isinstance(ctx.channel, discord.DMChannel):
                 raise commands.errors.NoPrivateMessage
@@ -154,7 +154,7 @@ class Game(commands.Cog, name="게임"):
         if not await self.acquire_game(ctx):
             return
         async with self.game_session(ctx):
-            if await self.get_playable_user(ctx) is None:
+            if await self.get_playable_user(ctx, SoloGame.ENTRY_FEE) is None:
                 return
             game = SoloGame(ctx, kkd=True)
             await game.run()

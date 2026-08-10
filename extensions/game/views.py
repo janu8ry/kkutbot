@@ -6,13 +6,25 @@ from discord.ext import commands
 from tools import fmt
 from views import BaseView
 
-from .models import MULTI_ENTRY_FEE
-
 if TYPE_CHECKING:
     from .models import MultiGame
 
 
-__all__ = ["HostGuildGame"]
+__all__ = ["HostGuildGame", "PlayAgain"]
+
+
+class PlayAgain(BaseView):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(ctx=ctx, author_only=True)
+        self.timeout = 10
+
+    @discord.ui.button(label="한 판 더", style=discord.ButtonStyle.green, emoji="▶️")
+    async def play_again(self: PlayAgain, interaction: discord.Interaction, _button: discord.ui.Button):
+        if self.is_finished():
+            return
+        await self.disable_buttons(interaction)
+        self.stop()
+        await self.ctx.bot.invoke(self.ctx)
 
 
 class HostGuildGame(BaseView):
@@ -33,9 +45,9 @@ class HostGuildGame(BaseView):
         if interaction.user.id in self.ctx.bot.playing_games:
             await interaction.response.send_message(fmt("{denied} 이미 진행 중인 끝말잇기 게임이 있습니다."), ephemeral=True)
             return
-        if (await self.ctx.bot.db.get_user(interaction.user)).points < MULTI_ENTRY_FEE:
+        if (await self.ctx.bot.db.get_user(interaction.user)).points < self.game.ENTRY_FEE:
             await interaction.response.send_message(
-                fmt(f"{{denied}} 참가비 `{MULTI_ENTRY_FEE}`{{points}}가 부족하여 참가할 수 없습니다."), ephemeral=True
+                fmt(f"{{denied}} 참가비 `{self.game.ENTRY_FEE}`{{points}}가 부족하여 참가할 수 없습니다."), ephemeral=True
             )
             return
         self.game.players.append(interaction.user)

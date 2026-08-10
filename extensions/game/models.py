@@ -21,13 +21,10 @@ from .ladder import (
     get_win_lp,
     update_ladder,
 )
+from .views import PlayAgain
 from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
-__all__ = ["SoloGame", "MultiGame", "ENTRY_FEE", "MULTI_ENTRY_FEE"]
-
-ENTRY_FEE = 40
-MULTI_ENTRY_FEE = 20
-WIN_BONUS = 10
+__all__ = ["SoloGame", "MultiGame"]
 
 
 def get_winrate(data: GameBase) -> float:
@@ -47,6 +44,8 @@ async def _try_delete(msg: discord.Message | None) -> None:
 class GameSession:
     __slots__ = ("ctx", "score", "begin_time", "timeout")
 
+    ENTRY_FEE = 40
+
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
         self.score = 0
@@ -59,14 +58,14 @@ class GameSession:
         if placement:
             embed = discord.Embed(
                 title=fmt("{tier} 배치 완료!"),
-                description=fmt(f"**{after}** 티어에 배치되었습니다!"),
+                description=fmt(f"**{after}** 티어에 배치되었습니다."),
                 color=config.colors.green,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
         elif promoted:
             embed = discord.Embed(
                 title=fmt("{tier} 티어 승급!"),
-                description=fmt(f"**{before}** -> **{after}** 티어로 승급했습니다!"),
+                description=fmt(f"**{before}** -> **{after}** 티어로 승급했습니다."),
                 color=config.colors.green,
             )
             embed.set_thumbnail(url=self.ctx.bot.emoji("levelup").url)
@@ -88,6 +87,8 @@ class SoloGame(GameSession):
     """Game Model for single play mode"""
 
     __slots__ = ("player", "kkd", "tier", "placement", "bot_word", "used_words")
+
+    WIN_BONUS = 10
 
     def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크", placement: bool = False):
         super().__init__(ctx)
@@ -179,7 +180,7 @@ class SoloGame(GameSession):
         modes = {"rank_solo": user.game.rank_solo, "kkd": user.game.kkd}
 
         if result == "승리":
-            reward = (self.score + WIN_BONUS) * (5 if self.kkd else 3)
+            reward = (self.score + self.WIN_BONUS) * (5 if self.kkd else 3)
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config.colors.blue
             emoji = "win"
@@ -200,7 +201,7 @@ class SoloGame(GameSession):
         else:
             raise commands.BadArgument
 
-        user.points += reward - ENTRY_FEE
+        user.points += reward - self.ENTRY_FEE
         modes[mode].times += 1
         record = self.score > modes[mode].best
         if record:
@@ -250,12 +251,19 @@ class SoloGame(GameSession):
             else:
                 embed.add_field(name="🔹 가능했던 단어", value=f"`{self.bot_word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.bot.db.save(user)
-        if self.ctx.interaction:
-            await self.ctx.channel.send(self.player.mention, embed=embed)
-        else:
-            await self.ctx.reply(embed=embed, mention_author=True)
         if rank_changed:
             await self.alert_rank_change(self.player, *rank_changed, placement=placement)
+        view = PlayAgain(ctx=self.ctx)
+        view.message = await self.send_result(embed, view)
+
+    async def send_result(self, embed: discord.Embed, view: discord.ui.View) -> discord.Message:
+        if not self.ctx.interaction:
+            try:
+                return await self.ctx.reply(embed=embed, view=view, mention_author=True)
+            except discord.HTTPException as e:
+                if e.code != 50035:
+                    raise
+        return await self.ctx.channel.send(self.player.mention, embed=embed, view=view)
 
 
 class MultiGame(GameSession):
@@ -263,6 +271,7 @@ class MultiGame(GameSession):
 
     __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at")
 
+    ENTRY_FEE = 20
     max_players = 5
     hosting_timeout = 120
 
@@ -415,7 +424,7 @@ class MultiGame(GameSession):
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
         for n, ((player, score), user) in enumerate(zip(rank, users)):
             reward = rewards[n] * 2
-            user.points += reward - MULTI_ENTRY_FEE
+            user.points += reward - self.ENTRY_FEE
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
             record = score > user.game.guild_multi.best
