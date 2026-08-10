@@ -447,10 +447,9 @@ class MultiGame(GameSession):
         duration = f"{elapsed // 60}분 {elapsed % 60}초" if elapsed >= 60 else f"{elapsed}초"
         embed = discord.Embed(
             title=fmt("{result} 게임 결과"),
-            description=f"**게임 종료**  |  `{self.round}`라운드",
+            description=f"`{self.round}`라운드  |  소요 시간 `{duration}`",
             color=config.colors.blue,
         )
-        embed.add_field(name="🔸 플레이 시간", value=f"`{duration}`", inline=False)
         embed.add_field(name="🔸 순위", value=fmt("\n".join(desc)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         view = MultiGameResult(ctx=self.ctx, game=self)
