@@ -63,6 +63,10 @@ class HostGuildGame(BaseView):
         self.game = game
         self.timeout = game.hosting_timeout
         self.value: str | None = None
+        self.refresh_join_button()
+
+    def refresh_join_button(self) -> None:
+        self.join_game.disabled = len(self.game.players) >= self.game.max_players
 
     @discord.ui.button(label="참가하기", style=discord.ButtonStyle.blurple, emoji=fmt("{join}"))
     async def join_game(self: HostGuildGame, interaction: discord.Interaction, _button: discord.ui.Button):
@@ -98,9 +102,10 @@ class HostGuildGame(BaseView):
         if interaction.user not in self.game.players:
             await interaction.response.send_message(fmt("{denied} 게임에 참가하지 않았습니다."), ephemeral=True)
             return
+        self.game.last_host = self.game.host
         self.game.players.remove(interaction.user)
         self.ctx.bot.playing_games.discard(interaction.user.id)
-        self.game.last_host = self.game.host
+        self.refresh_join_button()
         await self.ctx.channel.send(fmt(f"{{minus}} **{interaction.user.display_name}**님이 나갔습니다."))
         if len(self.game.players) == 0:
             await self.ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{self.game.host.display_name}** 님의 게임을 종료합니다.")

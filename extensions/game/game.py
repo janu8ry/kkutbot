@@ -151,11 +151,8 @@ class Game(commands.Cog, name="게임"):
                     await multi_game.run()
                     if multi_game.next_action is None:
                         return
-                    players = multi_game.players
-                    open_lobby = multi_game.next_action == "lobby"
-                    if not open_lobby:
-                        players = await self.drop_broke_players(ctx, players)
-                        open_lobby = len(players) < 2
+                    players = await self.drop_broke_players(ctx, multi_game.players)
+                    open_lobby = multi_game.next_action == "lobby" or len(players) < 2
                     await ctx.command.call_before_hooks(ctx)  # type: ignore
             finally:
                 for player in players:

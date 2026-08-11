@@ -441,9 +441,9 @@ class MultiGame(GameSession):
                 user.game.guild_multi.streak = 0
             user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)
             streak = user.game.guild_multi.streak
-            tail = f"**{streak}연승** 🔥" if streak >= 2 else ("**신기록!** 🎉" if record else "")
+            tail = f" **({streak}연승 🔥)**" if streak >= 2 else (" **(신기록! 🎉)**" if record else "")
             desc.append(
-                f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{score}`점  |  `{'+' if reward else ''}{reward}` {{points}}{' ' * 3 + tail}"
+                f"**{n + 1 if n >= 3 else emojis[n]}** - {player.mention} : `{score}`점  |  `{'+' if reward else ''}{reward}` {{points}}{tail}"
             )
         await asyncio.gather(*[self.ctx.bot.db.save(user) for user in users])
         elapsed = round(time.time() - self.started_at)
