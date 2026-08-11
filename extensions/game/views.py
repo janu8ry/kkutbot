@@ -102,9 +102,9 @@ class HostGuildGame(BaseView):
         if interaction.user not in self.game.players:
             await interaction.response.send_message(fmt("{denied} 게임에 참가하지 않았습니다."), ephemeral=True)
             return
-        self.game.last_host = self.game.host
         self.game.players.remove(interaction.user)
         self.ctx.bot.playing_games.discard(interaction.user.id)
+        self.game.last_host = self.game.host
         self.refresh_join_button()
         await self.ctx.channel.send(fmt(f"{{minus}} **{interaction.user.display_name}**님이 나갔습니다."))
         if len(self.game.players) == 0:
