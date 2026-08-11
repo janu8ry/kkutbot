@@ -62,7 +62,7 @@ def split_string(w: str, unit: int = 2000, t: str = "\n") -> tuple[str, ...]:
     r: list[str] = []
     for idx, i in enumerate(n):
         x.append(i)
-        if idx + 1 == len(n) or sum([len(j) for j in x + [n[idx + 1]]]) + len(x) > unit:
+        if idx + 1 == len(n) or sum(len(j) for j in x + [n[idx + 1]]) + len(x) > unit:
             r.append("\n".join(x))
             x = []
     return tuple(r)
