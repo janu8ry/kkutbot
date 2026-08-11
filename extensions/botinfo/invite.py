@@ -9,8 +9,6 @@ from .views import InviteMenu
 
 
 class Invite(commands.Cog, name="초대"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

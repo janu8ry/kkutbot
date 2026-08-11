@@ -10,8 +10,6 @@ from .views import HelpMenu
 
 
 class Help(commands.Cog, name="일반"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

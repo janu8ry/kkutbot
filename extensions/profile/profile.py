@@ -25,8 +25,6 @@ GAME_MODES = {
 
 
 class Profile(commands.Cog, name="사용자"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

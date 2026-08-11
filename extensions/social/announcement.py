@@ -9,8 +9,6 @@ from views import Paginator
 
 
 class Announcement(commands.Cog, name="공지"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

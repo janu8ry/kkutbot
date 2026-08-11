@@ -23,8 +23,6 @@ def is_reward_claimable(user: User) -> bool:
 
 
 class Reward(commands.Cog, name="포인트"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

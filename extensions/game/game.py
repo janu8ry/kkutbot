@@ -15,8 +15,6 @@ from .views import HostGuildGame
 
 
 class Game(commands.Cog, name="게임"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

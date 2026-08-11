@@ -6,8 +6,6 @@ from .views import RankMenu
 
 
 class Ranking(commands.Cog, name="랭킹"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

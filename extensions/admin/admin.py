@@ -23,8 +23,6 @@ def format_field(key: str, value: Any) -> str:
 class Admin(commands.Cog, name="관리자"):
     """관리자 전용 명령어들입니다."""
 
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

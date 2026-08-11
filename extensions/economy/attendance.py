@@ -10,8 +10,6 @@ from tools import fmt
 
 
 class Attendance(commands.Cog, name="출석"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 

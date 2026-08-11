@@ -25,8 +25,6 @@ intents = discord.Intents(message_content=True, members=True, guilds=True, emoji
 
 
 class Kkutbot(commands.AutoShardedBot):
-    __slots__ = ("koreanbots", "dbl", "db", "scheduler", "started_at")
-
     def __init__(self) -> None:
         super().__init__(
             command_prefix=getattr(config.prefix, "test" if config.is_test else "main"),

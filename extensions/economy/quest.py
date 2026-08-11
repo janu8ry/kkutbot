@@ -7,8 +7,6 @@ from tools.utils import fmt
 
 
 class Quest(commands.Cog, name="퀘스트"):
-    __slots__ = ("bot",)
-
     def __init__(self, bot: Kkutbot):
         self.bot = bot
 
