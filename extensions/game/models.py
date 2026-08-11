@@ -272,7 +272,9 @@ class MultiGame(GameSession):
     __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at", "next_action")
 
     ENTRY_FEE = 20
-    max_players = 5
+    REWARD_RATE = 8
+    MAX_RETURN = 1.5
+    max_players = 7
     hosting_timeout = 120
 
     def __init__(self, ctx: commands.Context, hosting_time: int):
@@ -420,11 +422,12 @@ class MultiGame(GameSession):
         desc = []
         self.final_score[self.now_player] = self.score
         rank = sorted(self.final_score.items(), key=lambda item: item[1], reverse=True)
-        rewards = [score for _, score in rank[1:]] + [0]
+        pool = min(round(self.score * self.REWARD_RATE), round(self.ENTRY_FEE * len(rank) * self.MAX_RETURN))
+        weight_sum = len(rank) * (len(rank) + 1) // 2
         emojis = ["{gold}", "{silver}", "{bronze}"]
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player, _ in rank])
         for n, ((player, score), user) in enumerate(zip(rank, users)):
-            reward = rewards[n] * 2
+            reward = round(pool * (len(rank) - n) / weight_sum)
             user.points += reward - self.ENTRY_FEE
             user.game.guild_multi.times += 1
             user.latest_usage = round(time.time())
@@ -453,6 +456,6 @@ class MultiGame(GameSession):
         embed.add_field(name="🔸 순위", value=fmt("\n".join(desc)), inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji("gameover").url)
         view = MultiGameResult(ctx=self.ctx, game=self)
-        embed.set_footer(text=f"{view.timeout:.0f}초 안에 선택하지 않으면 로비가 종료됩니다.")
+        embed.set_footer(text=f"{round(view.timeout or 0)}초 안에 선택하지 않으면 로비가 종료됩니다.")
         view.message = await self.ctx.channel.send(embed=embed, view=view)
         await view.wait()
