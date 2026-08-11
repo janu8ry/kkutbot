@@ -19,8 +19,7 @@ class FormattingDict(dict[str, str]):
         return "{" + key + "}"
 
 
-def dict_emojis() -> dict[str, str]:
-    return {k: f"<:{k}:{v}>" for k, v in config.emojis.items()}
+EMOJIS = FormattingDict({name: f"<:{name}:{emoji_id}>" for name, emoji_id in config.emojis.items()})
 
 
 def fmt(text: str) -> str:
@@ -35,7 +34,7 @@ def fmt(text: str) -> str:
     str
         String with placeholders replaced by emojis
     """
-    return text.format_map(FormattingDict(dict_emojis()))
+    return text.format_map(EMOJIS)
 
 
 def is_admin(ctx: commands.Context) -> bool:
