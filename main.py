@@ -96,10 +96,12 @@ async def before_command(ctx: commands.Context) -> None:
         msg = ctx.message.content
     else:
         msg = f"/{ctx.command}"
+    display = author.global_name or author.name
+    name = display if display == author.name else f"{display} ({author.name})"
     if isinstance(ctx.channel, discord.DMChannel):
-        logger.command(f"{author} [{author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
+        logger.command(f"{name} [{author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
     else:
-        logger.command(f"{author} [{author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")  # type: ignore
+        logger.command(f"{name} [{author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")  # type: ignore
 
 
 @bot.event
