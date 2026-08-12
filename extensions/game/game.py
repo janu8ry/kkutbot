@@ -132,14 +132,17 @@ class Game(commands.Cog, name="게임"):
 
             players: list[discord.User | discord.Member] = [ctx.author]
             open_lobby = True
+            first_lobby = True
             try:
                 while True:
                     multi_game = MultiGame(ctx, hosting_time=round(time.time()))
                     multi_game.players = players
                     if open_lobby:
                         view = HostGuildGame(ctx, game=multi_game)
-                        view.message = await ctx.reply(embed=await multi_game.hosting_embed(), view=view)
+                        send = ctx.reply if first_lobby else ctx.channel.send
+                        view.message = await send(embed=await multi_game.hosting_embed(), view=view)  # type: ignore
                         multi_game.msg = view.message
+                        first_lobby = False
                         await view.wait()
                         if view.value == "stop":
                             return

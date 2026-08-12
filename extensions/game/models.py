@@ -167,6 +167,8 @@ class SoloGame(GameSession):
         embed.add_field(name="🔹 남은 시간", value=f"<t:{round(self.timeout + self.begin_time)}:R>", inline=False)
         embed.set_footer(text="'/도움'을 사용하여 규칙을 확인할 수 있습니다.")
         desc = fmt(desc)
+        if isinstance(msg, commands.Context) and msg.interaction and msg.interaction.response.is_done():
+            return await self.ctx.channel.send(f"{self.player.mention}님, {desc}", embed=embed, delete_after=self.time_left)
         try:
             return await msg.reply(desc, embed=embed, delete_after=self.time_left, mention_author=True)
         except discord.HTTPException as e:
