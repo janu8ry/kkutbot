@@ -240,7 +240,7 @@ class SoloGame(GameSession):
             tier_value = fmt(get_rank_progress(user.game.rank_solo))
             if lp_delta is not None:
                 tier_value += f" **({lp_delta:+d})**"
-            embed.add_field(name=fmt("🔸 티어"), value=tier_value, inline=False)
+            embed.add_field(name="🔸 티어", value=tier_value, inline=False)
         embed.set_thumbnail(url=self.ctx.bot.emoji(emoji).url)
         if result in ("패배", "포기"):
             possibles = [i for i in get_word(self.bot_word) if i not in self.used_words and (len(i) == 3 if self.kkd else True)]
