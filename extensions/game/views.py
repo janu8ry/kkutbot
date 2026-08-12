@@ -53,6 +53,8 @@ class PlayAgain(BaseView):
             return
         await self.disable_buttons(interaction)
         self.stop()
+        cog = self.ctx.command.cog  # type: ignore
+        self.ctx.args = [self.ctx] if cog is None else [cog, self.ctx]
         await self.ctx.bot.invoke(self.ctx)
 
 
