@@ -57,9 +57,10 @@ async def on_shard_ready(shard_id: int) -> None:
 
 @bot.before_invoke
 async def before_command(ctx: commands.Context) -> None:
-    if ctx.author.bot:
+    author = getattr(ctx, "stats_author", ctx.author)
+    if author.bot:
         return
-    user = await bot.db.get_user(ctx.author)
+    user = await bot.db.get_user(author)
     user.command_used += 1
     user.latest_usage = round(time.time())
 
@@ -96,9 +97,9 @@ async def before_command(ctx: commands.Context) -> None:
     else:
         msg = f"/{ctx.command}"
     if isinstance(ctx.channel, discord.DMChannel):
-        logger.command(f"{ctx.author} [{ctx.author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
+        logger.command(f"{author} [{author.id}]  |  DM [{ctx.channel.id}]  |  {msg}")
     else:
-        logger.command(f"{ctx.author} [{ctx.author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")  # type: ignore
+        logger.command(f"{author} [{author.id}]  |  {ctx.guild} [{ctx.guild.id}]  |  {ctx.channel} [{ctx.channel.id}]  |  {msg}")  # type: ignore
 
 
 @bot.event
@@ -149,7 +150,7 @@ async def on_command_completion(ctx: commands.Context) -> None:
     await bot.db.save(user)
 
     for embed in embeds:
-        await ctx.channel.send(embed=embed)
+        await ctx.channel.send(embed=embed, mention_author=True)
     if alert_message:
         await ctx.channel.send(f"{ctx.author.mention}\n\n" + "\n\n".join(alert_message))
 

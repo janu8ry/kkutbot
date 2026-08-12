@@ -153,6 +153,7 @@ class Game(commands.Cog, name="게임"):
                         return
                     players = await self.drop_broke_players(ctx, multi_game.players)
                     open_lobby = multi_game.next_action == "lobby" or len(players) < 2
+                    ctx.stats_author = players[0] if players else multi_game.host  # type: ignore
                     await ctx.command.call_before_hooks(ctx)  # type: ignore
             finally:
                 for player in players:
