@@ -16,7 +16,6 @@ from .ladder import (
     TIER_EMOJIS,
     choose_bot_word,
     get_bot_surrender_threshold,
-    get_lose_lp,
     get_rank_progress,
     get_win_lp,
     update_ladder,
@@ -225,10 +224,10 @@ class SoloGame(GameSession):
                 marks = ["✅" if (mask >> i) & 1 else "❌" for i in range(played)]
                 marks += ["🔳"] * (PLACEMENT_GAMES - played)
                 placement_field = " ".join(marks)
-            elif (solo.tier, solo.division) == pos_before:
+            elif (solo.tier, solo.division) != pos_before:
+                lp_delta = get_win_lp(self.score) if won else None
+            elif solo.lp != lp_before:
                 lp_delta = solo.lp - lp_before
-            else:
-                lp_delta = get_win_lp(self.score) if won else -get_lose_lp()
         modes[mode].winrate = get_winrate(modes[mode])
 
         head = f"**{modes[mode].streak}연승** 🔥" if result == "승리" and modes[mode].streak >= 2 else f"**{result}**"
