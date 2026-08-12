@@ -1,3 +1,4 @@
+import re
 from unicodedata import east_asian_width
 
 from discord.ext import commands
@@ -14,17 +15,16 @@ __all__ = [
 ]
 
 
-class FormattingDict(dict[str, str]):
-    def __missing__(self, key: str) -> str:
-        return "{" + key + "}"
-
-
-EMOJIS = FormattingDict({name: f"<:{name}:{emoji_id}>" for name, emoji_id in config.emojis.items()})
+EMOJIS = {name: f"<:{name}:{emoji_id}>" for name, emoji_id in config.emojis.items()}
+EMOJI_PATTERN = re.compile(r"\{(" + "|".join(re.escape(name) for name in EMOJIS) + r")\}")
 
 
 def fmt(text: str) -> str:
     """
     Replaces "{emoji_name}" placeholders in the text with actual emojis.
+
+    Unknown placeholders and stray braces are left untouched, so strings
+    containing user input can be passed in safely.
     Parameters
     ----------
     text : str
@@ -34,7 +34,7 @@ def fmt(text: str) -> str:
     str
         String with placeholders replaced by emojis
     """
-    return text.format_map(EMOJIS)
+    return EMOJI_PATTERN.sub(lambda m: EMOJIS[m[1]], text)
 
 
 def is_admin(ctx: commands.Context) -> bool:
