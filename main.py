@@ -178,7 +178,8 @@ async def check(ctx: commands.Context) -> bool:
             pass
         return False
 
-    if missing := [perm for perm in REQUIRED_PERMISSIONS if not getattr(perms, perm)]:
+    missing = [perm for perm in REQUIRED_PERMISSIONS if not getattr(perms, perm)]
+    if missing:
         raise commands.BotMissingPermissions(missing)
 
     return True
