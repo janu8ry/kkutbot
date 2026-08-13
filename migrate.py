@@ -81,6 +81,7 @@ GAME_MODES = ("rank_solo", "rank_online", "long", "kkd", "guild_multi", "online_
 RANK_MODES = ("rank_solo", "rank_online")
 UNRANKED_SOLO = {"times": 0, "win": 0, "best": 0, "winrate": 0.0, "streak": 0, "tier": "언랭크", "division": 0, "lp": 0}
 LEGACY_COLLECTIONS = ("general", "unused")
+PLACEMENT_LP = 50
 
 
 async def _migrate_command_stats() -> None:
@@ -134,7 +135,7 @@ async def _migrate_tiers() -> None:
             update = {"game.rank_solo": UNRANKED_SOLO}
             reset += 1
         else:
-            update = {"game.rank_solo.tier": tier, "game.rank_solo.division": division, "game.rank_solo.lp": 0}
+            update = {"game.rank_solo.tier": tier, "game.rank_solo.division": division, "game.rank_solo.lp": PLACEMENT_LP}
             placed += 1
         await db.user.update_one({"_id": doc["_id"]}, {"$set": update})
     print(f"user: {placed}개 문서의 솔로 티어를 신규 체계로 배치, {reset}개 문서의 솔로 전적을 초기화")
