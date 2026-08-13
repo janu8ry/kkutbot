@@ -88,7 +88,7 @@ def update_ladder(rank: RankGameBase, won: bool, score: int) -> tuple[str, str, 
         if rank.times < PLACEMENT_GAMES:
             return None
         rank.tier, rank.division = PLACEMENT_MAP[rank.lp.bit_count()]
-        rank.lp = 0
+        rank.lp = 1
     elif won:
         rank.lp += get_win_lp(score)
         if rank.tier == HIGHEST_TIER:
