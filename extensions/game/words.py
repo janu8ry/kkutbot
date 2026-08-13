@@ -61,7 +61,7 @@ class WordCheck(Enum):
 
 
 def check_word(user_word: str, current_word: str, used_words: list[str], *, first_round: bool, can_surrender: bool, kkd: bool = False) -> WordCheck:
-    if user_word in ("ㅈㅈ", "gg", "GG"):
+    if user_word == "ㅈㅈ" or user_word.lower() == "gg":
         return WordCheck.SURRENDER if can_surrender else WordCheck.SURRENDER_DENIED
     if user_word in used_words:
         return WordCheck.ALREADY_USED
