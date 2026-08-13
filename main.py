@@ -24,6 +24,8 @@ from views import ServerInvite
 
 logger: KkutbotLogger = logging.getLogger("kkutbot")  # type: ignore
 
+REQUIRED_PERMISSIONS = ("embed_links", "external_emojis")
+
 bot = core.Kkutbot()
 
 
@@ -159,7 +161,11 @@ async def on_command_completion(ctx: commands.Context) -> None:
 
 @bot.check
 async def check(ctx: commands.Context) -> bool:
-    if ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).send_messages:  # type: ignore
+    if not ctx.guild:
+        return True
+
+    perms = ctx.channel.permissions_for(ctx.guild.me)  # type: ignore
+    if not perms.send_messages:
         try:
             embed = discord.Embed(
                 title="오류",
@@ -171,6 +177,9 @@ async def check(ctx: commands.Context) -> bool:
         except discord.Forbidden:
             pass
         return False
+
+    if missing := [perm for perm in REQUIRED_PERMISSIONS if not getattr(perms, perm)]:
+        raise commands.BotMissingPermissions(missing)
 
     return True
 
@@ -198,9 +207,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         return
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.reply(
-            fmt(
-                f"{{denied}} `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(get_perm_name(i) for i in error.missing_permissions)}` 권한이 필요합니다."
-            )
+            f"⚠️ `{ctx.command}` 명령어를 사용하려면 끝봇에게 `{', '.join(get_perm_name(i) for i in error.missing_permissions)}` 권한이 필요합니다."
         )
     elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(

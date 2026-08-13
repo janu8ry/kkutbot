@@ -87,7 +87,7 @@ class HostGuildGame(BaseView):
             return
         self.game.players.append(interaction.user)
         self.ctx.bot.playing_games.add(interaction.user.id)
-        await self.ctx.channel.send(fmt(f"{{plus}} **{interaction.user.display_name}** 님이 참가했습니다."))
+        await self.ctx.channel.send(fmt("{plus}") + f" **{interaction.user.display_name}** 님이 참가했습니다.")
         if len(self.game.players) >= self.game.max_players:
             await self.ctx.channel.send(f"✅ 최대 인원에 도달하여 **{self.game.host.display_name}** 님의 게임을 시작합니다.")
             self.value = "start"
@@ -108,7 +108,7 @@ class HostGuildGame(BaseView):
         self.ctx.bot.playing_games.discard(interaction.user.id)
         self.game.last_host = self.game.host
         self.refresh_join_button()
-        await self.ctx.channel.send(fmt(f"{{minus}} **{interaction.user.display_name}**님이 나갔습니다."))
+        await self.ctx.channel.send(fmt("{minus}") + f" **{interaction.user.display_name}**님이 나갔습니다.")
         if len(self.game.players) == 0:
             await self.ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{self.game.host.display_name}** 님의 게임을 종료합니다.")
             self.value = "stop"

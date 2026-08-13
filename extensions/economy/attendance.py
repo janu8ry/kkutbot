@@ -14,7 +14,6 @@ class Attendance(commands.Cog, name="출석"):
         self.bot = bot
 
     @commands.hybrid_command(name="출석", usage="{attendance}", aliases=("ㅊ", "ㅊㅅ", "ㅊㅊ"))
-    @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=3, type=commands.BucketType.user)
     async def attendance(self, ctx: commands.Context):
         """

@@ -28,7 +28,7 @@ class InfoInput(BaseModal, title="소개말 수정하기"):
             btn.disabled = True  # type: ignore
         if self.view.message:
             await self.view.message.edit(view=self.view)
-        await interaction.response.send_message(fmt(f"{{done}} 소개말을 '{e_mk(e_mt(bio))}'(으)로 변경했습니다!"), ephemeral=True)
+        await interaction.response.send_message(fmt("{done}") + f" 소개말을 '{e_mk(e_mt(bio))}'(으)로 변경했습니다!", ephemeral=True)
         self.view.stop()
 
 

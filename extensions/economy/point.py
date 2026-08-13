@@ -27,7 +27,6 @@ class Reward(commands.Cog, name="포인트"):
         self.bot = bot
 
     @commands.hybrid_command(name="포인트", usage="{points}", aliases=("ㅍㅇㅌ", "지원금", "ㅈㅇㄱ"))
-    @commands.bot_has_permissions(external_emojis=True)
     @commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
     async def reward(self, ctx: commands.Context):
         """

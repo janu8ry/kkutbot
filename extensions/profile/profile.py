@@ -32,7 +32,6 @@ class Profile(commands.Cog, name="사용자"):
     @app_commands.rename(user="유저")
     @app_commands.describe(user="유저의 이름을 입력해 검색합니다.")
     @commands.cooldown(rate=1, per=2, type=commands.BucketType.user)
-    @commands.bot_has_permissions(external_emojis=True)
     async def profile(self, ctx: commands.Context, *, user: Annotated[discord.User, SearchUser] = commands.Author):
         """
         유저의 프로필과 자세한 통계를 확인합니다.
@@ -48,7 +47,7 @@ class Profile(commands.Cog, name="사용자"):
         name = user.display_name if user.display_name == user.name else f"{user.display_name} ({user.name})"
         if not user_data.registered:
             embed = discord.Embed(
-                title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"), description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.red
+                title=fmt("{stats}") + f" {e_mk(name)} 님의 통계", description="끝봇을 사용중인 유저가 아닙니다.", color=config.colors.red
             )
             embed.set_thumbnail(url=self.bot.emoji("denied").url)
             await ctx.reply(embed=embed)
@@ -64,8 +63,8 @@ class Profile(commands.Cog, name="사용자"):
 
         user_id = f" ({user.id})" if is_admin(ctx) else ""
         profile_embed = discord.Embed(
-            title=fmt(f"{{profile}} {e_mk(name)}{user_id}"),
-            description=fmt(f"```yaml\n{user_data.bio}```\n{{tier}} 랭킹전 티어 - **{get_rank_progress(user_data.game.rank_solo)}**\n​"),
+            title=fmt("{profile}") + f" {e_mk(name)}{user_id}",
+            description=f"```yaml\n{user_data.bio}```\n" + fmt(f"{{tier}} 랭킹전 티어 - **{get_rank_progress(user_data.game.rank_solo)}**") + "\n​",
             color=color,
         )
         profile_embed.add_field(name=fmt("{points} **포인트**"), value=f"{user_data.points}")
@@ -76,7 +75,7 @@ class Profile(commands.Cog, name="사용자"):
 
         latest_usage = f"<t:{user_data.latest_usage}:D>" if user_data.latest_usage else "`기록 없음`"
         stats_embed = discord.Embed(
-            title=fmt(f"{{stats}} {e_mk(name)} 님의 통계"),
+            title=fmt("{stats}") + f" {e_mk(name)} 님의 통계",
             description=f"가입일 : <t:{user_data.registered}:D>\n마지막 사용일 : {latest_usage}",
             color=color,
         )
