@@ -44,6 +44,7 @@ class GameSession:
     __slots__ = ("ctx", "score", "begin_time", "timeout")
 
     ENTRY_FEE = 40
+    SURRENDER_ROUND = 5
 
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
@@ -117,7 +118,7 @@ class SoloGame(GameSession):
                 self.bot_word,  # type: ignore
                 self.used_words,
                 first_round=self.score == 0,
-                can_surrender=len(self.used_words) >= 10,
+                can_surrender=len(self.used_words) >= self.SURRENDER_ROUND * 2,
                 kkd=self.kkd,
             )
             if result == WordCheck.SURRENDER:
@@ -125,7 +126,8 @@ class SoloGame(GameSession):
                 return
             if result != WordCheck.OK:
                 await _try_delete(info_msg)
-                info_msg = await self.send_info_embed(msg, word_error_message(result, user_word, self.bot_word))  # type: ignore
+                error = word_error_message(result, user_word, self.bot_word, surrender_hint=f"{self.SURRENDER_ROUND}턴")  # type: ignore
+                info_msg = await self.send_info_embed(msg, error)
                 continue
 
             await _try_delete(info_msg)
@@ -270,11 +272,25 @@ class SoloGame(GameSession):
 class MultiGame(GameSession):
     """Game Model for multiple play mode"""
 
-    __slots__ = ("players", "msg", "turn", "round", "word", "used_words", "final_score", "hosting_time", "last_host", "started_at", "next_action")
+    __slots__ = (
+        "players",
+        "msg",
+        "turn",
+        "round",
+        "word",
+        "used_words",
+        "final_score",
+        "hosting_time",
+        "last_host",
+        "started_at",
+        "next_action",
+        "board_lock",
+    )
 
     ENTRY_FEE = 20
     REWARD_RATE = 8
     MAX_RETURN = 1.5
+    SURRENDER_ROUND = 3
     max_players = 7
     hosting_timeout = 120
 
@@ -291,6 +307,7 @@ class MultiGame(GameSession):
         self.last_host = ctx.author
         self.started_at = time.time()
         self.next_action: str | None = None
+        self.board_lock = asyncio.Lock()
 
     @property
     def host(self) -> discord.User | discord.Member:
@@ -303,6 +320,11 @@ class MultiGame(GameSession):
     @property
     def alive(self) -> list[discord.User | discord.Member]:
         return [p for p in self.players if p not in self.final_score]
+
+    def wrap_turn(self) -> None:
+        if self.turn >= len(self.alive):
+            self.turn = 0
+            self.round += 1
 
     async def run(self) -> None:
         def check(x: discord.Message) -> bool:
@@ -323,21 +345,21 @@ class MultiGame(GameSession):
                 user_word,
                 self.word,
                 self.used_words,
-                first_round=(self.turn // len(self.alive)) == 0,
-                can_surrender=self.turn >= 5,
+                first_round=self.round == 1,
+                can_surrender=self.round > self.SURRENDER_ROUND,
             )
             if result == WordCheck.SURRENDER:
                 if await self.handle_elimination(gg=True):
                     return
                 continue
             if result != WordCheck.OK:
-                await self.update_board(word_error_message(result, user_word, self.word))
+                await self.update_board(word_error_message(result, user_word, self.word, surrender_hint=f"{self.SURRENDER_ROUND}라운드"))
                 continue
 
             self.used_words.append(user_word)
             self.word = user_word
             self.turn += 1
-            self.round = (self.turn // len(self.alive)) + 1
+            self.wrap_turn()
             self.score += 1
             self.begin_time = time.time()
             if is_hanbang(self.word, self.used_words):
@@ -377,10 +399,11 @@ class MultiGame(GameSession):
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None, content: str | None = None):
-        if self.msg.author.id == self.ctx.bot.user.id:
-            await _try_delete(self.msg)
-        self.msg = await self.ctx.channel.send(content, embed=embed, view=view)  # type: ignore
-        return self.msg
+        async with self.board_lock:
+            if self.msg.author.id == self.ctx.bot.user.id:
+                await _try_delete(self.msg)
+            self.msg = await self.ctx.channel.send(content, embed=embed, view=view)  # type: ignore
+            return self.msg
 
     async def update_board(self, desc: str | None = None) -> None:
         if desc is None:
@@ -403,7 +426,8 @@ class MultiGame(GameSession):
         return embed
 
     async def player_out(self, gg=False):
-        embed = discord.Embed(title=f"🔻 {self.now_player.display_name}님 {'포기' if gg else '탈락'}!", color=config.colors.red)
+        player = self.now_player
+        embed = discord.Embed(title=f"🔻 {player.display_name}님 {'포기' if gg else '탈락'}!", color=config.colors.red)
         embed.set_thumbnail(url=self.ctx.bot.emoji("surrender" if gg else "dead").url)
         possibles = [i for i in get_word(self.word) if i not in self.used_words]
         if possibles:
@@ -412,7 +436,8 @@ class MultiGame(GameSession):
         else:
             embed.add_field(name="🔹 가능했던 단어", value=f"`{self.word}`은(는) 한방단어였습니다...", inline=False)
         await self.ctx.channel.send(embed=embed)
-        self.final_score[self.now_player] = self.score
+        self.final_score[player] = self.score
+        self.wrap_turn()
         self.score += 2
         self.begin_time = time.time()
         self.word = choose_first_word()

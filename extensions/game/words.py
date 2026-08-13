@@ -76,10 +76,10 @@ def check_word(user_word: str, current_word: str, used_words: list[str], *, firs
     return WordCheck.OK
 
 
-def word_error_message(result: WordCheck, user_word: str, current_word: str) -> str:
+def word_error_message(result: WordCheck, user_word: str, current_word: str, *, surrender_hint: str) -> str:
     du = get_transition(current_word)
     messages = {
-        WordCheck.SURRENDER_DENIED: "{denied} 5턴 이상 진행해야 포기할 수 있습니다.",
+        WordCheck.SURRENDER_DENIED: f"{{denied}} {surrender_hint} 이상 진행해야 포기할 수 있습니다.",
         WordCheck.ALREADY_USED: f"{{denied}} **{user_word}** (은)는 이미 사용한 단어입니다.",
         WordCheck.WRONG_START: f"{{denied}} **{'** 또는 **'.join(du)}** (으)로 시작하는 단어를 입력해 주세요.",
         WordCheck.WRONG_LENGTH: "{denied} 세글자 단어만 사용 가능합니다.",
