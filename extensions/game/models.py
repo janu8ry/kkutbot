@@ -86,16 +86,15 @@ class GameSession:
 class SoloGame(GameSession):
     """Game Model for single play mode"""
 
-    __slots__ = ("player", "kkd", "tier", "placement", "bot_word", "used_words")
+    __slots__ = ("player", "kkd", "tier", "bot_word", "used_words")
 
     WIN_BONUS = 10
 
-    def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크", placement: bool = False):
+    def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크"):
         super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
         self.tier = tier
-        self.placement = placement
         self.bot_word = choose_first_word(kkd)
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
@@ -178,42 +177,41 @@ class SoloGame(GameSession):
             return None
 
     async def game_end(self, result: Literal["승리", "패배", "포기"], hanbang: bool = False):
-        mode = "kkd" if self.kkd else "rank_solo"
         user = await self.ctx.bot.db.get_user(self.player)
-        modes = {"rank_solo": user.game.rank_solo, "kkd": user.game.kkd}
+        stats = user.game.kkd if self.kkd else user.game.rank_solo
 
         if result == "승리":
             reward = (self.score + self.WIN_BONUS) * (5 if self.kkd else 3)
             desc = "봇이 대응할 단어를 찾지 못했습니다!"
             color = config.colors.blue
             emoji = "win"
-            modes[mode].win += 1
-            modes[mode].streak += 1
+            stats.win += 1
+            stats.streak += 1
         elif result == "패배":
             reward = 0
             desc = "한방단어에 당했습니다..." if hanbang else f"대답시간이 {self.timeout}초를 초과했습니다..."
             color = config.colors.red
             emoji = "gameover"
-            modes[mode].streak = 0
+            stats.streak = 0
         elif result == "포기":
             reward = 0
             desc = "게임을 포기했습니다."
             color = config.colors.red
             emoji = "surrender"
-            modes[mode].streak = 0
+            stats.streak = 0
         else:
             raise commands.BadArgument
 
         user.points += reward - self.ENTRY_FEE
-        modes[mode].times += 1
-        record = self.score > modes[mode].best
+        stats.times += 1
+        record = self.score > stats.best
         if record:
-            modes[mode].best = self.score
+            stats.best = self.score
         rank_changed = None
         placement_field: str | None = None
         lp_delta: int | None = None
         placement = False
-        if mode == "rank_solo":
+        if not self.kkd:
             solo = user.game.rank_solo
             won = result == "승리"
             placement = solo.tier == "언랭크"
@@ -230,15 +228,15 @@ class SoloGame(GameSession):
                 lp_delta = get_win_lp(self.score) if won else None
             elif solo.lp != lp_before:
                 lp_delta = solo.lp - lp_before
-        modes[mode].winrate = get_winrate(modes[mode])
+        stats.winrate = get_winrate(stats)
 
-        head = f"**{modes[mode].streak}연승** 🔥" if result == "승리" and modes[mode].streak >= 2 else f"**{result}**"
+        head = f"**{stats.streak}연승** 🔥" if result == "승리" and stats.streak >= 2 else f"**{result}**"
         embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"{head}  |  {desc}", color=color)
         embed.add_field(name="🔸 점수", value=f"`{self.score}` 점{' **(신기록! 🎉)**' if record else ''}")
         embed.add_field(name="🔸 보상", value=fmt(f"`{'+' if reward else ''}{reward}` {{points}}"))
         if placement_field is not None:
             embed.add_field(name="🔸 배치고사", value=placement_field, inline=False)
-        if mode == "rank_solo" and user.game.rank_solo.tier != "언랭크":
+        if not self.kkd and user.game.rank_solo.tier != "언랭크":
             tier_value = fmt(get_rank_progress(user.game.rank_solo))
             if lp_delta is not None:
                 tier_value += f" **({lp_delta:+d})**"
