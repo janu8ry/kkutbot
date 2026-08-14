@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 from typing import Any
 
 import discord
@@ -84,87 +85,48 @@ class PageInput(BaseModal, title="페이지 이동하기"):
     async def on_submit(self, interaction: discord.Interaction) -> None:
         if self.target_page.value.isdecimal() and (1 <= int(self.target_page.value) <= self.view.page_count):
             self.view.index = int(self.target_page.value) - 1
-            await self.view.children[2].update_buttons(interaction)  # type: ignore
+            await self.view.update_buttons(interaction)
         else:
             await interaction.response.send_message(f"올바른 값이 아닙니다.\n가능한 값: (1~{self.view.page_count})", ephemeral=True)
             self.stop()
             return
 
 
-class PaginatorButton(discord.ui.Button["Paginator"]):
-    @property
-    def view(self) -> Paginator:
-        return super().view  # type: ignore
-
-    async def update_buttons(self, interaction: discord.Interaction) -> None:
-        self.view.children[0].disabled = bool(self.view.index == 0)
-        self.view.children[1].disabled = bool(self.view.index == 0)
-        self.view.children[2].label = f"{self.view.index + 1}/{self.view.page_count}"  # type: ignore
-        self.view.children[3].disabled = bool(self.view.index == self.view.page_count - 1)
-        self.view.children[4].disabled = bool(self.view.index == self.view.page_count - 1)
-        await interaction.response.edit_message(embed=self.view.pages[self.view.index], view=self.view)
-
-
-class ToFirst(PaginatorButton):
-    def __init__(self) -> None:
-        super().__init__(label="<<", style=discord.ButtonStyle.red, disabled=True)
+class NavButton(discord.ui.Button["Paginator"]):
+    def __init__(self, label: str, style: discord.ButtonStyle, target: Callable[[Paginator], int], disabled: bool = False) -> None:
+        super().__init__(label=label, style=style, disabled=disabled)
+        self.target = target
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        self.view.index = 0
-        await self.update_buttons(interaction)
+        self.view.index = self.target(self.view)  # type: ignore
+        await self.view.update_buttons(interaction)  # type: ignore
 
 
-class ToBack(PaginatorButton):
-    def __init__(self) -> None:
-        super().__init__(label="<", style=discord.ButtonStyle.red, disabled=True)
-
-    async def callback(self, interaction: discord.Interaction) -> None:
-        self.view.index -= 1
-        await self.update_buttons(interaction)
-
-
-class PageInfo(PaginatorButton):
+class PageInfo(discord.ui.Button["Paginator"]):
     def __init__(self, pagecount: int) -> None:
-        super().__init__(label=f"1/{pagecount}", style=discord.ButtonStyle.gray, disabled=False)
+        super().__init__(label=f"1/{pagecount}", style=discord.ButtonStyle.gray)
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        modal = PageInput(self.view.ctx, self.view)
-        await interaction.response.send_modal(modal)
-
-
-class ToNext(PaginatorButton):
-    def __init__(self) -> None:
-        super().__init__(label=">", style=discord.ButtonStyle.blurple, disabled=False)
-
-    async def callback(self, interaction: discord.Interaction) -> None:
-        self.view.index += 1
-        await self.update_buttons(interaction)
-
-
-class ToLast(PaginatorButton):
-    def __init__(self) -> None:
-        super().__init__(label=">>", style=discord.ButtonStyle.blurple, disabled=False)
-
-    async def callback(self, interaction: discord.Interaction) -> None:
-        self.view.index = self.view.page_count - 1
-        await self.update_buttons(interaction)
+        await interaction.response.send_modal(PageInput(self.view.ctx, self.view))  # type: ignore
 
 
 class Paginator(BaseView):
     def __init__(self, ctx: commands.Context, pages: list[discord.Embed]):
         super().__init__(ctx=ctx, author_only=True)
         self.pages = pages
-        self.ctx = ctx
         self.index = 0
         self.page_count = len(self.pages)
-        self.add_item(ToFirst())
-        self.add_item(ToBack())
-        self.add_item(PageInfo(pagecount=len(pages)))
-        self.add_item(ToNext())
-        self.add_item(ToLast())
-        if self.page_count == 1:
-            self.children[3].disabled = True
-            self.children[4].disabled = True
+        self.add_item(NavButton("<<", discord.ButtonStyle.red, lambda v: 0, disabled=True))
+        self.add_item(NavButton("<", discord.ButtonStyle.red, lambda v: v.index - 1, disabled=True))
+        self.add_item(PageInfo(pagecount=self.page_count))
+        self.add_item(NavButton(">", discord.ButtonStyle.blurple, lambda v: v.index + 1, disabled=self.page_count == 1))
+        self.add_item(NavButton(">>", discord.ButtonStyle.blurple, lambda v: v.page_count - 1, disabled=self.page_count == 1))
+
+    async def update_buttons(self, interaction: discord.Interaction) -> None:
+        self.children[0].disabled = self.children[1].disabled = self.index == 0  # type: ignore
+        self.children[2].label = f"{self.index + 1}/{self.page_count}"  # type: ignore
+        self.children[3].disabled = self.children[4].disabled = self.index == self.page_count - 1  # type: ignore
+        await interaction.response.edit_message(embed=self.pages[self.index], view=self)
 
     async def run(self) -> None:
         self.message = await self.ctx.reply(embed=self.pages[0], view=self)
