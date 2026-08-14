@@ -1,6 +1,5 @@
 import logging
 from collections.abc import Callable
-from typing import Any
 
 import discord
 from discord.ext import commands
@@ -14,8 +13,8 @@ logger = logging.getLogger("kkutbot")
 
 
 class BaseView(discord.ui.View):
-    def __init__(self, ctx: commands.Context, *args: Any, author_only: bool = False, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, ctx: commands.Context, *, author_only: bool = False) -> None:
+        super().__init__()
         self.ctx = ctx
         self.author_only = author_only
         self.timeout = 120
@@ -57,8 +56,8 @@ class BaseView(discord.ui.View):
 
 
 class BaseModal(discord.ui.Modal):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
+        super().__init__()
         self.timeout = 120
 
     async def on_error(self, interaction: discord.Interaction, error: Exception, /) -> None:

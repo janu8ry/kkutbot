@@ -61,7 +61,6 @@ class PlayAgain(BaseView):
 class HostGuildGame(BaseView):
     def __init__(self, ctx: commands.Context, game: MultiGame):
         super().__init__(ctx=ctx, author_only=False)
-        self.ctx = ctx
         self.game = game
         self.timeout = game.hosting_timeout
         self.value: str | None = None

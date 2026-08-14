@@ -35,7 +35,6 @@ class ProfileMenu(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.profile_embed = profile_embed
         self.stats_embed = stats_embed
-        self.ctx = ctx
 
     @discord.ui.button(label="홈", style=discord.ButtonStyle.blurple, emoji="🏠", row=1, disabled=True)
     async def go_home(self: ProfileMenu, interaction: discord.Interaction, button: discord.ui.Button):

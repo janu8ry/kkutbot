@@ -61,7 +61,6 @@ class SendAnnouncement(BaseView):
     def __init__(self, ctx: commands.Context):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
-        self.ctx = ctx
 
     @discord.ui.button(label="내용 작성하기", style=discord.ButtonStyle.blurple)
     async def msg_input(self: SendAnnouncement, interaction: discord.Interaction, button: discord.ui.Button):
@@ -115,7 +114,6 @@ class ModifyData(BaseView):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
         self.target = target
-        self.ctx = ctx
 
     @discord.ui.button(label="수정하기", style=discord.ButtonStyle.blurple)
     async def modify_user(self: ModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
