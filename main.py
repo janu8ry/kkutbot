@@ -16,9 +16,10 @@ from sentry_sdk import capture_exception
 
 import core
 from config import config, get_nested_dict
+from database.models import User
 from extensions.economy.point import is_reward_claimable
 from tools.logger import KkutbotLogger, setup_logger
-from tools.utils import fmt, get_perm_name, is_admin
+from tools.utils import PERM_NAMES, fmt, get_perm_name, is_admin
 from views import ServerInvite
 
 logger: KkutbotLogger = logging.getLogger("kkutbot")  # type: ignore
@@ -44,7 +45,7 @@ async def on_ready() -> None:
         bot.add_aliases(name, aliases)
 
     guilds = len(bot.guilds)
-    users = await bot.db.count_users()
+    users = await User.count()
 
     logger.info(f"'{getattr(bot.user, 'name', '_')}'으로 로그인되었습니다! (서버수: {guilds}, 유저수: {users})")
 
@@ -337,23 +338,13 @@ async def on_guild_join(guild: discord.Guild) -> None:
     except discord.errors.Forbidden:
         pass
 
-    essential_perms = (
-        "send_messages",
-        "embed_links",
-        "attach_files",
-        "read_messages",
-        "add_reactions",
-        "external_emojis",
-        "use_application_commands",
-    )
-
-    missing_perms = [p for p in essential_perms if not dict(guild.me.guild_permissions)[p]]
+    missing_perms = [p for p in PERM_NAMES if not dict(guild.me.guild_permissions)[p]]
 
     if missing_perms:
         embed = discord.Embed(
             title="권한이 부족합니다.", description="끝봇이 정상적으로 작동하기 위해 필요한 필수 권한들이 부족합니다.", color=config.colors.red
         )
-        embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([get_perm_name(p) for p in missing_perms])}`")
+        embed.add_field(name="필수 권한 목록", value=f"`{'`, `'.join([PERM_NAMES[p] for p in missing_perms])}`")
         try:
             if announce:
                 await announce.send(embed=embed)

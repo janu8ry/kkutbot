@@ -112,7 +112,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
             summary.append("")
 
         cache_summary = (
-            f"`{len(self.bot.guilds)}`개의 서버와 `{await self.bot.db.count_users()}`명의 유저,\n"
+            f"`{len(self.bot.guilds)}`개의 서버와 `{await User.count()}`명의 유저,\n"
             f"`{await User.find(User.latest_usage >= round(time.time() - 86400 * days)).count()}`명의 활성화 유저, "  # type: ignore
             f"`{await Guild.find(Guild.latest_usage >= round(time.time() - 86400 * days)).count()}`개 활성화 서버"  # type: ignore
         )
