@@ -15,22 +15,24 @@ from views import BaseModal, BaseView
 __all__ = ["ModifyData", "SendAnnouncement"]
 
 
-class ConfirmSendAnnouncement(BaseView):
-    def __init__(self, ctx: commands.Context):
+class Confirm(BaseView):
+    def __init__(self, ctx: commands.Context, action: str, confirm_label: str):
         super().__init__(ctx=ctx, author_only=True)
         self.value = None
+        self.action = action
+        self.confirm.label = confirm_label
 
-    @discord.ui.button(label="전송하기", style=discord.ButtonStyle.green)
-    async def confirm_send(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
+    @discord.ui.button(style=discord.ButtonStyle.green)
+    async def confirm(self: Confirm, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = True
-        await interaction.channel.send("공지 전송 완료!")  # type: ignore
+        await interaction.channel.send(f"{self.action} 완료!")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
     @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
-    async def cancel(self: ConfirmSendAnnouncement, interaction: discord.Interaction, _button: discord.ui.Button):
+    async def cancel(self: Confirm, interaction: discord.Interaction, _button: discord.ui.Button):
         self.value = False
-        await interaction.channel.send("공지 전송이 취소되었습니다.")  # type: ignore
+        await interaction.channel.send(f"{self.action}이 취소되었습니다.")  # type: ignore
         await self.disable_buttons(interaction)
         self.stop()
 
@@ -46,7 +48,7 @@ class AnnouncementInput(BaseModal, title="공지 작성하기"):
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
         embed.add_field(name=f"🔹 {self.a_title.value} - <t:{int(time.time()) - 1}:R>", value=self.description.value)
-        view = ConfirmSendAnnouncement(ctx=self.ctx)
+        view = Confirm(ctx=self.ctx, action="공지 전송", confirm_label="전송하기")
         await interaction.response.send_message("**<공지 미리보기>**", embed=embed, view=view)
         await view.wait()
         if view.value:
@@ -66,26 +68,6 @@ class SendAnnouncement(BaseView):
         button.disabled = True
         await self.message.edit(view=self)  # type: ignore
         self.value = True
-        self.stop()
-
-
-class ConfirmModifyData(BaseView):
-    def __init__(self, ctx: commands.Context):
-        super().__init__(ctx=ctx, author_only=True)
-        self.value = None
-
-    @discord.ui.button(label="수정하기", style=discord.ButtonStyle.green)
-    async def confirm_send(self: ConfirmModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
-        self.value = True
-        await interaction.channel.send("데이터 수정 완료!")  # type: ignore
-        await self.disable_buttons(interaction)
-        self.stop()
-
-    @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
-    async def cancel(self: ConfirmModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
-        self.value = False
-        await interaction.channel.send("데이터 수정이 취소되었습니다.")  # type: ignore
-        await self.disable_buttons(interaction)
         self.stop()
 
 
@@ -117,7 +99,7 @@ class DataInput(BaseModal, title="데이터 수정하기"):
             color=config.colors.green,
         )
         embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
-        view = ConfirmModifyData(ctx=self.ctx)
+        view = Confirm(ctx=self.ctx, action="데이터 수정", confirm_label="수정하기")
         await interaction.response.send_message(embed=embed, view=view)
         await view.wait()
         if view.value:
