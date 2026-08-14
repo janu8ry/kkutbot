@@ -1,5 +1,4 @@
 import asyncio
-import linecache
 import logging
 import os
 import random
@@ -270,32 +269,9 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         if hasattr(error, "original"):
             error = error.original
 
-        te = traceback.TracebackException.from_exception(error, limit=None)
-        all_frames = list(te.stack)
-        cwd = os.getcwd()
-        project_frames = [f for f in all_frames if f.filename.startswith(cwd) and ".venv" not in f.filename.split(os.sep)]
-        extension_frames = [f for f in project_frames if f"extensions{os.sep}" in f.filename]
-        frame = (extension_frames or project_frames or all_frames)[-1]
-        filename = frame.filename
-        line_no = frame.lineno or 0
-        end_line_no = getattr(frame, "end_lineno", None) or line_no
-        if end_line_no > line_no:
-            line_text = "\n".join(linecache.getline(filename, ln).rstrip() for ln in range(line_no, end_line_no + 1))
-        else:
-            line_text = (frame.line or linecache.getline(filename, line_no)).strip()
-        if "kkutbot" in filename:
-            filename = filename.split("kkutbot/")[1]
-
-        line_range = f"{line_no}~{end_line_no}" if end_line_no > line_no else line_no
-        field_prefix = f"- 파일: {filename} (`line {line_range}`)\n```py\n"
-        max_code_len = 1024 - len(field_prefix) - 3
-        if len(line_text) > max_code_len:
-            lines = line_text.splitlines()
-            if len(lines) > 1:
-                candidate = f"{lines[0]}\n(...)\n{lines[-1]}"
-                line_text = candidate if len(candidate) <= max_code_len else f"{lines[0][: max_code_len - 6]}\n(...)"
-            else:
-                line_text = f"{line_text[: max_code_len - 6]}\n(...)"
+        tb = "".join(traceback.format_exception(error)).replace(f"{os.getcwd()}{os.sep}", "")
+        if len(tb) > 1000:
+            tb = f"(...)\n{tb[-1000:]}"
 
         error_id = str(uuid.uuid4())[:6]
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.red)
@@ -305,11 +281,11 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             error_loc = f"- 채널: DM (`{ctx.channel.id}`)"
         error_embed.add_field(
             name="에러 발생 위치",
-            value=f"- 유저: {ctx.author.name} (`{ctx.author.id}`)\n{error_loc}",
+            value=f"- 명령어: `{ctx.command}`\n- 유저: {ctx.author.name} (`{ctx.author.id}`)\n{error_loc}",
         )
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
-        error_embed.add_field(name="에러 코드", value=f"{field_prefix}{line_text}```", inline=False)
+        error_embed.add_field(name="트레이스백", value=f"```py\n{tb}```", inline=False)
         error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False)
 
         if is_admin(ctx):
@@ -319,8 +295,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
             await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
         logger.error(
-            f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}\n"
-            f"에러 파일: {filename}\n에러 코드: {line_text} (line {line_no})",
+            f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n"
+            f"에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}",
             exc_info=error,
         )
         capture_exception(error)
