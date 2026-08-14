@@ -73,14 +73,12 @@ class ServerInvite(discord.ui.View):
 
 
 class PageInput(BaseModal, title="페이지 이동하기"):
-    target_page = discord.ui.TextInput(label="페이지 번호", placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
-
     def __init__(self, ctx: commands.Context, view: Paginator) -> None:
         super().__init__()
         self.ctx = ctx
-        self.target = None
         self.view = view
-        self.target_page.label = f"페이지 번호 (1~{view.page_count})"
+        self.target_page = discord.ui.TextInput(placeholder="이동할 페이지의 번호를 입력해 주세요.", required=True)
+        self.add_item(discord.ui.Label(text=f"페이지 번호 (1~{view.page_count})", component=self.target_page))
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
         if self.target_page.value.isdecimal() and (1 <= int(self.target_page.value) <= self.view.page_count):

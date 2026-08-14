@@ -38,12 +38,13 @@ class Confirm(BaseView):
 
 
 class AnnouncementInput(BaseModal, title="공지 작성하기"):
-    a_title = discord.ui.TextInput(label="공지 제목", required=True, max_length=256)
-    description = discord.ui.TextInput(label="공지 본문", style=discord.TextStyle.long, required=True, max_length=1024)
-
     def __init__(self, ctx: commands.Context):
         super().__init__()
         self.ctx = ctx
+        self.a_title = discord.ui.TextInput(required=True, max_length=256)
+        self.description = discord.ui.TextInput(style=discord.TextStyle.long, required=True, max_length=1024)
+        self.add_item(discord.ui.Label(text="공지 제목", component=self.a_title))
+        self.add_item(discord.ui.Label(text="공지 본문", component=self.description))
 
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(title=fmt("{email} 끝봇 공지사항"), color=config.colors.green)
@@ -72,14 +73,15 @@ class SendAnnouncement(BaseView):
 
 
 class DataInput(BaseModal, title="데이터 수정하기"):
-    data_path = discord.ui.TextInput(label="수정할 데이터 경로", required=True)
-    data_value = discord.ui.TextInput(label="수정할 값", style=discord.TextStyle.long, required=True)
-
     def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | Literal["public"], collection: AsyncIOMotorCollection):
         super().__init__()
         self.ctx = ctx
         self.target = target
         self.collection = collection
+        self.data_path = discord.ui.TextInput(required=True)
+        self.data_value = discord.ui.TextInput(style=discord.TextStyle.long, required=True)
+        self.add_item(discord.ui.Label(text="수정할 데이터 경로", component=self.data_path))
+        self.add_item(discord.ui.Label(text="수정할 값", component=self.data_value))
 
     async def on_submit(self, interaction: discord.Interaction):
         try:

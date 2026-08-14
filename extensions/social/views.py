@@ -1,5 +1,4 @@
 import asyncio
-from typing import Coroutine, TypedDict
 
 import discord
 from discord.ext import commands
@@ -15,10 +14,17 @@ from views import BaseView
 __all__ = ["RankMenu"]
 
 
-class _Categories(TypedDict):
-    general: dict[str, str]
-    game: dict[str, str]
-    main: list[str]
+GENERAL_CATEGORIES = {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"}
+GAME_CATEGORIES = {"솔로 랭크": "rank_solo", "쿵쿵따": "kkd"}  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
+MAIN_CATEGORIES = ["포인트", "메달", "출석", "솔로 랭크", "쿵쿵따"]  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
+CATEGORY_EMOJIS = {
+    "포인트": "{points}",
+    "메달": "{medals}",
+    "출석": "{attendance}",
+    "명령어": "⌨️",
+    "솔로 랭크": "📔",
+    "쿵쿵따": "3️⃣",
+}
 
 
 class RankDropdown(discord.ui.Select):
@@ -27,28 +33,16 @@ class RankDropdown(discord.ui.Select):
         self.guild = False
         self.guild_ids = [m.id for m in self.ctx.guild.members]  # type: ignore
         self.now = "종합 랭킹"
-        self.categories: _Categories = {
-            "general": {"포인트": "points", "메달": "medals", "출석": "attendance.times", "명령어": "command_used"},
-            "game": {"솔로 랭크": "rank_solo", "쿵쿵따": "kkd"},  # TODO: 게임모드 완성시 교체: , "온라인": 'rank_online', "긴단어": 'long'},
-            "main": ["포인트", "메달", "출석", "솔로 랭크", "쿵쿵따"],  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
-        }
-        category_emojis: dict[str, str] = {
-            "포인트": fmt("{points}"),
-            "메달": fmt("{medals}"),
-            "출석": fmt("{attendance}"),
-            "명령어": "⌨️",
-            "솔로 랭크": "📔",
-            "쿵쿵따": "3️⃣",
-        }
         options = [
             discord.SelectOption(label="종합 랭킹", value="종합 랭킹", description="여러 분야의 랭킹을 한번에 확인합니다.", emoji=fmt("{ranking}"))
         ]
-        for category in self.categories["general"] | self.categories["game"]:
+        for category in GENERAL_CATEGORIES | GAME_CATEGORIES:
+            general = category in GENERAL_CATEGORIES
             option = discord.SelectOption(
-                label=category if category in self.categories["general"] else f"끝말잇기 - {category}",
+                label=category if general else f"끝말잇기 - {category}",
                 value=category,
-                description=f"{category + ' 분야' if category in self.categories['general'] else '끝말잇기 ' + category + ' 모드'}의 랭킹을 확인합니다.",
-                emoji=category_emojis.get(category, fmt("{ranking}")),
+                description=f"{category + ' 분야' if general else '끝말잇기 ' + category + ' 모드'}의 랭킹을 확인합니다.",
+                emoji=fmt(CATEGORY_EMOJIS.get(category, "{ranking}")),
             )
             options.append(option)
         super().__init__(placeholder="분야를 선택해 주세요.", options=options, row=1)
@@ -61,7 +55,7 @@ class RankDropdown(discord.ui.Select):
 
     def game_query(self, path: str) -> dict:
         query = self.query.copy()
-        query[f"game.{self.categories['game'][path]}.times"] = {"$gte": 30}
+        query[f"game.{GAME_CATEGORIES[path]}.times"] = {"$gte": 30}
         return query
 
     async def get_user_name(self, doc: dict) -> str:
@@ -113,19 +107,19 @@ class RankDropdown(discord.ui.Select):
             lines.append(f"**{idx + 1}**. {e_mk(names[idx])} : {fmt(TIER_EMOJIS.get(rs['tier'], ''))}{division} `{format_number(rs['lp'])}`LP")
         return lines
 
-    async def get_overall_rank(self) -> tuple[discord.Embed, list[Coroutine]]:
+    async def get_overall_rank(self) -> discord.Embed:
         embed = discord.Embed(title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 종합 랭킹 Top 5"), color=config.colors.green)
         coros = []
-        for path in self.categories["main"]:
-            if path in self.categories["general"]:
+        for path in MAIN_CATEGORIES:
+            if path in GENERAL_CATEGORIES:
                 coros.append(
                     self.format_rank(
-                        self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][path], -1).limit(5),
-                        self.categories["general"][path],
+                        self.ctx.bot.db.client.user.find(self.query).sort(GENERAL_CATEGORIES[path], -1).limit(5),
+                        GENERAL_CATEGORIES[path],
                     ),
                 )
             else:
-                mode = self.categories["game"][path]
+                mode = GAME_CATEGORIES[path]
                 coros.append(
                     self.format_rank(
                         self.ctx.bot.db.client.user.find(self.game_query(path)).sort(f"game.{mode}.win", -1).limit(5), f"game.{mode}.win"
@@ -149,7 +143,7 @@ class RankDropdown(discord.ui.Select):
         labels_kkd = ["승리수", "최고점수", "승률"]
         for i, rank in enumerate(overall_rank):
             if i <= 2:
-                embed.add_field(name=f"🔹 {self.categories['main'][i]}", value="\n".join(rank) or "정보 없음")
+                embed.add_field(name=f"🔹 {MAIN_CATEGORIES[i]}", value="\n".join(rank) or "정보 없음")
             elif 3 <= i <= 5:
                 embed.add_field(name=f"🔹 솔로 랭크 - {labels_solo[i - 3]}", value="\n".join(rank) or "정보 없음")
             else:
@@ -157,21 +151,21 @@ class RankDropdown(discord.ui.Select):
                     name=f"🔹 쿵쿵따 모드 - {labels_kkd[i - 6]}", value="\n".join(rank) or "정보 없음"
                 )  # TODO: 온라인모드 완성시 '쿵쿵따'를 '온라인' 으로 교체
 
-        return embed, coros
+        return embed
 
     async def rank_embed(self, category: str = "종합 랭킹") -> discord.Embed:
         if category == "종합 랭킹":
-            embed, coros = await self.get_overall_rank()
-        elif category in self.categories["general"]:
-            rank = self.ctx.bot.db.client.user.find(self.query).sort(self.categories["general"][category], -1).limit(15)
+            embed = await self.get_overall_rank()
+        elif category in GENERAL_CATEGORIES:
+            rank = self.ctx.bot.db.client.user.find(self.query).sort(GENERAL_CATEGORIES[category], -1).limit(15)
             embed = discord.Embed(
                 title=fmt(f"{{ranking}} {'서버' if self.guild else ''} 랭킹 top 15 | {category}"),
-                description="\n".join(await self.format_rank(rank, self.categories["general"][category])),
+                description="\n".join(await self.format_rank(rank, GENERAL_CATEGORIES[category])),
                 color=config.colors.green,
             )
         else:
             embed = discord.Embed(title=fmt(f"{{ranking}} 랭킹 Top 15 | 끝말잇기 - {category} 모드"), color=config.colors.green)
-            mode = self.categories["game"][category]
+            mode = GAME_CATEGORIES[category]
             is_solo = mode == "rank_solo"
             coros = [
                 self.format_rank(
@@ -209,9 +203,8 @@ class RankMenu(BaseView):
         self.dropdown = RankDropdown(ctx)
         self.add_item(self.dropdown)
 
-    async def get_home_embed(self):
-        embed, _ = await self.dropdown.get_overall_rank()
-        return embed
+    async def get_home_embed(self) -> discord.Embed:
+        return await self.dropdown.get_overall_rank()
 
     @discord.ui.button(label="전체 랭킹", style=discord.ButtonStyle.blurple, emoji=fmt("{global}"), row=2, disabled=True)
     async def global_rank(self: RankMenu, interaction: discord.Interaction, button: discord.ui.Button):

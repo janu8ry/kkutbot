@@ -10,14 +10,12 @@ __all__ = ["ProfileMenu", "SelfProfileMenu"]
 
 
 class InfoInput(BaseModal, title="소개말 수정하기"):
-    bio_text = discord.ui.TextInput(
-        label="소개말 내용 (최대 50자)", min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True
-    )
-
     def __init__(self, ctx: commands.Context, view: BaseView):
         super().__init__()
         self.ctx = ctx
         self.view = view
+        self.bio_text = discord.ui.TextInput(min_length=1, max_length=50, placeholder="소개말을 입력해 주세요.", required=True)
+        self.add_item(discord.ui.Label(text="소개말 내용 (최대 50자)", component=self.bio_text))
 
     async def on_submit(self, interaction: discord.Interaction):
         bio = self.bio_text.value.replace("`", "")
