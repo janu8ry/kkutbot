@@ -1,12 +1,11 @@
 import logging
 import time
-from typing import Any
 
 import discord
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from config import Mongo, config, get_nested_dict  # noqa
+from config import Mongo, config  # noqa
 
 from .models import Announcement, Guild, Public, User
 
@@ -103,17 +102,6 @@ class Client:
         return await User.count()
 
     @staticmethod
-    async def count_guilds() -> int:
-        """
-        Counts the total number of guilds in the database.
-        Returns
-        -------
-        int
-            Total guild count in the database
-        """
-        return await Guild.count()
-
-    @staticmethod
     async def get_public() -> Public:
         document = await Public.get("public")
         if not document:
@@ -137,9 +125,3 @@ class Client:
         else:
             await document.save_changes()
             return document
-
-    async def read_user(self, target: int, path: str | None = None) -> Any:
-        main_data: dict[str, Any] | None = await self.client.user.find_one({"_id": getattr(target, "id", target)})
-        if path is None or main_data is None:
-            return main_data
-        return get_nested_dict(main_data, path.split("."))
