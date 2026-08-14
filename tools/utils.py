@@ -11,6 +11,7 @@ __all__ = [
     "split_string",
     "format_number",
     "truncate_by_width",
+    "PERM_NAMES",
     "get_perm_name",
 ]
 

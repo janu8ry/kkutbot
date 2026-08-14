@@ -21,26 +21,21 @@ type DocumentType = User | Guild | Public
 
 class Client:
     def __init__(self) -> None:
-        self.host = dbconfig.host
-        self.port = dbconfig.port
-        self.db = dbconfig.db
-        self.username = dbconfig.username
-        self.password = dbconfig.password
         self.client: AsyncIOMotorDatabase = None  # type: ignore
 
     async def setup_db(self) -> None:
-        logger.info(f"{'테스트' if config.is_test else '프로덕션'} DB에 연결중...({self.host}:{self.port}/{self.db})")
+        logger.info(f"{'테스트' if config.is_test else '프로덕션'} DB에 연결중...({dbconfig.host}:{dbconfig.port}/{dbconfig.db})")
         db_options = {}
-        if all([username := self.username, password := self.password]):
-            db_options["username"] = username
-            db_options["password"] = password
+        if dbconfig.username and dbconfig.password:
+            db_options["username"] = dbconfig.username
+            db_options["password"] = dbconfig.password
             db_options["authSource"] = "admin"
             logger.info("암호 인증으로 연결합니다. (authSource: admin)")
         else:
             logger.info("인증 없이 연결합니다.")
-        motor_client = AsyncIOMotorClient(host=self.host, port=self.port, **db_options)
+        motor_client = AsyncIOMotorClient(host=dbconfig.host, port=dbconfig.port, **db_options)
         motor_client.append_metadata = motor_client.delegate.append_metadata
-        self.client = motor_client[self.db]
+        self.client = motor_client[dbconfig.db]
         await init_beanie(database=self.client, document_models=[User, Guild, Public, Announcement])  # type: ignore
         logger.info("DB 연결 완료!")
 
@@ -89,17 +84,6 @@ class Client:
             document = Guild(id=guild.id)
 
         return document
-
-    @staticmethod
-    async def count_users() -> int:
-        """
-        Counts the total number of users in the database.
-        Returns
-        -------
-        int
-            Total user count in the database
-        """
-        return await User.count()
 
     @staticmethod
     async def get_public() -> Public:
