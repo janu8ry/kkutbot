@@ -99,7 +99,7 @@ class Game(commands.Cog, name="게임"):
         async with self.game_session(ctx):
             if (user := await self.get_playable_user(ctx, SoloGame.ENTRY_FEE)) is None:
                 return
-            game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo), placement=user.game.rank_solo.tier == "언랭크")
+            game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo))
             await game.run()
 
     @commands.hybrid_command(name="다인전", usage="{server}", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2", "ㄷㅇㅈ", "멀티", "ㅁ"))
@@ -138,7 +138,7 @@ class Game(commands.Cog, name="게임"):
                     if open_lobby:
                         view = HostGuildGame(ctx, game=multi_game)
                         send = ctx.reply if first_lobby else ctx.channel.send
-                        view.message = await send(embed=await multi_game.hosting_embed(), view=view)  # type: ignore
+                        view.message = await send(embed=await multi_game.hosting_embed(), view=view)  # noqa
                         multi_game.msg = view.message
                         first_lobby = False
                         await view.wait()
