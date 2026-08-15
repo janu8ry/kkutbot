@@ -43,7 +43,7 @@ class Admin(commands.Cog, name="관리자"):
     def cog_check(self, ctx: commands.Context):
         return is_admin(ctx)
 
-    @commands.command(name="$로그", usage="ㄲ$로그 <날짜>")
+    @commands.command(name="$로그", usage="ㄲ$로그 <날짜>", aliases=("$ㄹㄱ", "$ㄹ"))
     async def get_log(self, ctx: commands.Context, date: str = commands.parameter(default=None)):
         """해당 날짜의 로그 파일을 확인합니다."""
         if date is None:
@@ -68,7 +68,7 @@ class Admin(commands.Cog, name="관리자"):
             return
         await ctx.reply(file=discord.File(path))
 
-    @commands.command(name="$백업", usage="ㄲ$백업")
+    @commands.command(name="$백업", usage="ㄲ$백업", aliases=("$ㅂㅇ", "$ㅂ"))
     async def backup_now(self, ctx: commands.Context):
         """현재 데이터베이스를 백업하여 파일로 전송합니다."""
         fp = f"backup/{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.gz"
@@ -81,7 +81,7 @@ class Admin(commands.Cog, name="관리자"):
             finally:
                 os.remove(fp)
 
-    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False)
+    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False, aliases=("$ㅈㅂ", "$ㅈ"))
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
@@ -101,7 +101,7 @@ class Admin(commands.Cog, name="관리자"):
             for content in split_string("\n".join(format_field(k, v) for k, v in user_data.model_dump().items())):
                 await ctx.reply(content)
 
-    @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>")
+    @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>", aliases=("$ㅅㅂㅈㅂ", "$ㅅㅈ"))
     async def guild_info(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
         guild_data = await self.bot.db.get_guild(guild)
@@ -113,7 +113,7 @@ class Admin(commands.Cog, name="관리자"):
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
             await ctx.reply(content)
 
-    @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>")
+    @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>", aliases=("$ㅍㅇㅌ", "$ㅍ"))
     async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User = commands.Author):
         """관리자 권한으로 포인트를 지급합니다."""
         if user.bot:
@@ -124,7 +124,7 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt("{done} 완료!"))
 
-    @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>")
+    @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>", aliases=("$ㅁㄷ", "$ㅁ"))
     async def give_medal(self, ctx: commands.Context, amount: int = 10, *, user: discord.User = commands.Author):
         """관리자 권한으로 메달을 지급합니다."""
         if user.bot:
@@ -135,7 +135,7 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt("{done} 완료!"))
 
-    @commands.command(name="$티어", usage="ㄲ$티어 <티어> <lp> <유저>")
+    @commands.command(name="$티어", usage="ㄲ$티어 <티어> <lp> <유저>", aliases=("$ㅌㅇ", "$ㅌ"))
     async def set_tier(self, ctx: commands.Context, tier: str, lp: int = 0, *, user: discord.User = commands.Author):
         """
         유저의 솔로 랭크 티어를 변경합니다.
@@ -168,7 +168,7 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
 
-    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <대상>")
+    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <대상>", aliases=("$ㅈㅂㅅㅈ", "$ㅈㅅ"))
     async def modify_data(
         self,
         ctx: commands.Context,
@@ -183,7 +183,7 @@ class Admin(commands.Cog, name="관리자"):
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 
-    @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>")
+    @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", aliases=("$ㅌㄱㅅㅈ", "$ㅌㅅ"))
     async def delete_user_data(self, ctx: commands.Context, *, user: discord.User = commands.Author):
         """유저의 데이터를 초기화합니다."""
         data = await self.bot.db.get_user(user)
@@ -193,7 +193,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 유저는 끝봇의 유저가 아닙니다."))
 
-    @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>")
+    @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>", aliases=("$ㅅㅌㅅ",))
     async def delete_guild_data(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """서버의 데이터를 초기화합니다."""
         data = await self.bot.db.get_guild(guild)
@@ -203,7 +203,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
-    @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기"))
+    @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기", "$ㅅㅌ"))
     async def leave_guild(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """서버를 나갑니다."""
         data = await self.bot.db.get_guild(guild)
@@ -214,7 +214,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
-    @commands.command(name="$공지", usage="ㄲ$공지")
+    @commands.command(name="$공지", usage="ㄲ$공지", aliases=("$ㄱㅈ", "$ㄱ"))
     async def announce_users(self, ctx: commands.Context):
         """끝봇의 유저들에게 공지를 전송합니다."""
         view = SendAnnouncement(ctx=ctx)
