@@ -3,7 +3,7 @@ import random
 from enum import Enum, auto
 from functools import lru_cache
 
-__all__ = ["get_transition", "get_word", "dead_end_words", "choose_first_word", "is_hanbang", "WordCheck", "check_word", "word_error_message"]
+__all__ = ["all_words", "get_transition", "get_word", "dead_end_words", "choose_first_word", "is_hanbang", "WordCheck", "check_word", "word_error_message"]
 
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:
@@ -43,7 +43,7 @@ def choose_first_word(kkd: bool = False) -> str:
     candidates = kkd_words if kkd else all_words
     while True:
         bot_word = random.choice(candidates)
-        if len(get_word(bot_word)) >= 3:
+        if len([w for w in get_word(bot_word) if not kkd or len(w) == 3]) >= 3:
             return bot_word
 
 
@@ -68,7 +68,9 @@ class WordCheck(Enum):
     HANBANG_FIRST_ROUND = auto()
 
 
-def check_word(user_word: str, current_word: str, used_words: list[str], *, first_round: bool, can_surrender: bool, kkd: bool = False) -> WordCheck:
+def check_word(
+    user_word: str, current_word: str, used_words: list[str], *, can_surrender: bool, first_round: bool = False, kkd: bool = False
+) -> WordCheck:
     if user_word == "ㅈㅈ" or user_word.lower() == "gg":
         return WordCheck.SURRENDER if can_surrender else WordCheck.SURRENDER_DENIED
     if user_word in used_words:

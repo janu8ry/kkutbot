@@ -15,6 +15,7 @@ from .ladder import (
     ROMAN_DIVISIONS,
     TIER_EMOJIS,
     choose_bot_word,
+    choose_opening_word,
     get_bot_surrender_threshold,
     get_rank_progress,
     get_win_lp,
@@ -86,16 +87,17 @@ class GameSession:
 class SoloGame(GameSession):
     """Game Model for single play mode"""
 
-    __slots__ = ("player", "kkd", "tier", "bot_word", "used_words")
+    __slots__ = ("player", "kkd", "tier", "rank_tier", "bot_word", "used_words")
 
     WIN_BONUS = 10
 
-    def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크"):
+    def __init__(self, ctx: commands.Context, kkd: bool = False, tier: str = "언랭크", rank_tier: str = "언랭크"):
         super().__init__(ctx)
         self.player = ctx.author
         self.kkd = kkd
         self.tier = tier
-        self.bot_word = choose_first_word(kkd)
+        self.rank_tier = rank_tier
+        self.bot_word = choose_opening_word(tier, kkd)
         self.used_words = [self.bot_word]
         self.timeout = 15 if self.kkd else 10
 
@@ -116,7 +118,6 @@ class SoloGame(GameSession):
                 user_word,
                 self.bot_word,  # type: ignore
                 self.used_words,
-                first_round=self.score == 0,
                 can_surrender=len(self.used_words) >= self.SURRENDER_ROUND * 2,
                 kkd=self.kkd,
             )
@@ -158,9 +159,12 @@ class SoloGame(GameSession):
     async def send_info_embed(self, msg: discord.Message | commands.Context, desc: str | None = None) -> discord.Message | None:
         if desc is None:
             desc = f"⏰ **{self.timeout}초** 안에 단어를 이어주세요!"
+        description = f"🔸 현재 점수: `{self.score}` 점"
+        if self.rank_tier != "언랭크":
+            description = f"🔸 난이도: {self.rank_tier} {TIER_EMOJIS[self.rank_tier]}\n{description}"
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따 모드' if self.kkd else '솔로 랭크 게임'}",
-            description=f"🔸 현재 점수: `{self.score}` 점",
+            description=fmt(description),
             color=config.colors.green,
         )
         embed.add_field(name="🔹 단어", value=f"```yaml\n{self.bot_word} ({' / '.join(get_transition(self.bot_word))})```", inline=False)
@@ -343,8 +347,8 @@ class MultiGame(GameSession):
                 user_word,
                 self.word,
                 self.used_words,
-                first_round=self.round == 1,
                 can_surrender=self.round > self.SURRENDER_ROUND,
+                first_round=self.round == 1,
             )
             if result == WordCheck.SURRENDER:
                 if await self.handle_elimination(gg=True):

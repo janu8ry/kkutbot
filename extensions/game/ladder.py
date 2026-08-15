@@ -3,7 +3,7 @@ from typing import Any
 
 from database.models import RankGameBase
 
-from .words import dead_end_words, get_word
+from .words import all_words, choose_first_word, dead_end_words, get_word
 
 __all__ = [
     "get_win_lp",
@@ -12,6 +12,7 @@ __all__ = [
     "get_difficulty_tier",
     "get_bot_surrender_threshold",
     "choose_bot_word",
+    "choose_opening_word",
     "get_rank_progress",
     "TIER_EMOJIS",
     "ROMAN_DIVISIONS",
@@ -152,3 +153,10 @@ def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> 
         return random.choice(dead_ends)
     graded.sort(key=lambda g: abs(g[2] - conf["target"]))
     return random.choice(graded[: conf["variety"]])[0]
+
+
+def choose_opening_word(tier: str, kkd: bool = False) -> str:
+    if kkd:
+        return choose_first_word(kkd=True)
+    pool = [w for w in random.sample(all_words, DIFFICULTY_SAMPLE_SIZE) if w not in dead_end_words]
+    return choose_bot_word(pool, [], tier) or choose_first_word()

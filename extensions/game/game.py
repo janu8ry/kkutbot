@@ -68,7 +68,6 @@ class Game(commands.Cog, name="게임"):
         --기본 규칙
         상대방이 제시한 단어의 마지막 글자로 시작하는 단어를 제시합니다.
         이를 계속 반복하다가 한쪽이 단어를 잇지 못하게 되면 상대방의 승리!
-        첫 차례에 한방단어는 사용 불가합니다.
         이미 사용한 단어, 한글자 단어, 사전에 없는 단어는 사용할 수 없습니다.
         게임 도중에 "ㅈㅈ" 또는 "gg"를 입력하면 게임을 포기할 수 있습니다.
 
@@ -99,7 +98,7 @@ class Game(commands.Cog, name="게임"):
         async with self.game_session(ctx):
             if (user := await self.get_playable_user(ctx, SoloGame.ENTRY_FEE)) is None:
                 return
-            game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo))
+            game = SoloGame(ctx, kkd=False, tier=get_difficulty_tier(user.game.rank_solo), rank_tier=user.game.rank_solo.tier)
             await game.run()
 
     @commands.hybrid_command(name="다인전", usage="{server}", aliases=("ㄲ2", "끝2", "ㄲㅁㅇㄱ2", "ㄷㅇㅈ", "멀티", "ㅁ"))
@@ -110,6 +109,7 @@ class Game(commands.Cog, name="게임"):
 
         기본 게임 규칙은 랭크 게임과 동일하지만,
         티어제와 LP 변동이 없는 친선전 모드입니다.
+        첫 라운드에는 한방단어를 사용할 수 없습니다.
         최소 2인부터 최대 7인까지 플레이 가능합니다.
 
         --포인트 획득 방식
