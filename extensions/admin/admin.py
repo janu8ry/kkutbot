@@ -81,7 +81,7 @@ class Admin(commands.Cog, name="관리자"):
             finally:
                 os.remove(fp)
 
-    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", rest_is_raw=False, aliases=("$ㅈㅂ", "$ㅈ"))
+    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", aliases=("$ㅈㅂ", "$ㅈ"))
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """유저의 (상세)정보를 출력합니다."""
         if user is None:
