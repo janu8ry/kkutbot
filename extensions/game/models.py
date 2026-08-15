@@ -377,11 +377,13 @@ class MultiGame(GameSession):
     async def hosting_embed(self) -> discord.Embed:
         embed = discord.Embed(
             title=f"📔 **{self.host.display_name}**님의 끝말잇기 다인전",
-            description=f"🔸 채널: {self.ctx.channel.mention}\n"  # type: ignore
-            f"🔸 플레이어 모집 종료: <t:{self.hosting_time + self.hosting_timeout}:R>\n\n"
-            "**참가하기** 버튼을 클릭하여 게임에 참가하기\n"
-            "**나가기** 버튼을 클릭하여 게임에서 나가기\n"
-            f"호스트 {self.host.mention} 님은 **게임 시작** 버튼을 클릭하여 게임을 시작할 수 있습니다.",
+            description=fmt(
+                f"🔸 채널: {self.ctx.channel.mention}\n"  # type: ignore
+                f"🔸 참가비: `{self.ENTRY_FEE}`{{points}}\n"
+                f"🔸 플레이어 모집 종료: <t:{self.hosting_time + self.hosting_timeout}:R>\n\n"
+                "서버 멤버들과 플레이하는 친선전입니다.\n"
+                "티어와 LP는 변하지 않으며, 오래 살아남을수록 더 많은 포인트를 획득할 수 있습니다."
+            ),
             color=config.colors.blue,
         )
         users = await asyncio.gather(*[self.ctx.bot.db.get_user(player) for player in self.players])
@@ -394,6 +396,7 @@ class MultiGame(GameSession):
                 division = f"`{ROMAN_DIVISIONS[rank.division]}`" if rank.division else ""
                 lines.append(f"{player.mention} ({fmt(TIER_EMOJIS[rank.tier])}{division})")
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/{self.max_players})", value="\n".join(lines))
+        embed.set_footer(text="최소 2인부터 시작할 수 있으며, 게임 시작은 호스트만 가능합니다.")
         return embed
 
     async def update_embed(self, embed: discord.Embed, view: discord.ui.View | None = None, content: str | None = None):
