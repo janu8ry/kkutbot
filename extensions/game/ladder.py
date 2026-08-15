@@ -3,7 +3,7 @@ from typing import Any
 
 from database.models import RankGameBase
 
-from .words import get_word
+from .words import dead_end_words, get_word
 
 __all__ = [
     "get_win_lp",
@@ -48,14 +48,14 @@ PLACEMENT_MAP: dict[int, tuple[str, int]] = {
 }
 PLACEMENT_DIFFICULTY = ("브론즈", "브론즈", "실버", "골드", "플래티넘")
 DIFFICULTY: dict[str, dict[str, Any]] = {
-    "브론즈": {"surrender": 4, "band": (0.0, 0.5), "hanbang": False},
-    "실버": {"surrender": 3, "band": (0.1, 0.7), "hanbang": False},
-    "골드": {"surrender": 2, "band": (0.2, 0.9), "hanbang": False},
-    "플래티넘": {"surrender": 1, "band": (0.4, 0.9), "hanbang": True},
-    "다이아몬드": {"surrender": 0, "band": (0.6, 1.0), "hanbang": True},
-    "마스터": {"surrender": 0, "band": (0.75, 1.0), "hanbang": True},
+    "브론즈": {"surrender": 4, "target": 330, "variety": 12, "hanbang": 0.0},
+    "실버": {"surrender": 3, "target": 240, "variety": 12, "hanbang": 0.0},
+    "골드": {"surrender": 2, "target": 190, "variety": 12, "hanbang": 0.0},
+    "플래티넘": {"surrender": 1, "target": 145, "variety": 12, "hanbang": 0.0},
+    "다이아몬드": {"surrender": 0, "target": 95, "variety": 10, "hanbang": 0.02},
+    "마스터": {"surrender": 0, "target": 70, "variety": 10, "hanbang": 0.04},
 }
-DIFFICULTY_SAMPLE_SIZE = 50
+DIFFICULTY_SAMPLE_SIZE = 120
 
 
 def get_rank_display(rank: RankGameBase, emoji: bool = True) -> str:
@@ -134,16 +134,21 @@ def get_bot_surrender_threshold(tier: str) -> int:
     return DIFFICULTY[tier]["surrender"]
 
 
+def grade_word(word: str, used: set[str]) -> tuple[int, int]:
+    replies = [x for x in get_word(word) if x not in used and x != word]
+    return len(replies), sum(1 for x in replies if len(x) == 2)
+
+
 def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> str | None:
     conf = DIFFICULTY[tier]
     sample = random.sample(candidates, min(DIFFICULTY_SAMPLE_SIZE, len(candidates)))
     used = set(used_words)
-    graded = sorted(((w, sum(1 for x in get_word(w) if x not in used and x != w)) for w in sample), key=lambda t: -t[1])
+    graded = [(w, *grade_word(w, used)) for w in sample]
     if not conf["hanbang"]:
-        graded = [(w, c) for w, c in graded if c > 0]
+        graded = [g for g in graded if g[1] > 0]
         if not graded:
             return None
-    lo, hi = conf["band"]
-    start = int(len(graded) * lo)
-    end = max(int(len(graded) * hi), start + 1)
-    return random.choice(graded[start:end])[0]
+    elif random.random() < conf["hanbang"] and (dead_ends := [w for w in candidates if w in dead_end_words]):
+        return random.choice(dead_ends)
+    graded.sort(key=lambda g: abs(g[2] - conf["target"]))
+    return random.choice(graded[: conf["variety"]])[0]

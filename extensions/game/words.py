@@ -1,8 +1,9 @@
 import json
 import random
 from enum import Enum, auto
+from functools import lru_cache
 
-__all__ = ["get_transition", "get_word", "choose_first_word", "is_hanbang", "WordCheck", "check_word", "word_error_message"]
+__all__ = ["get_transition", "get_word", "dead_end_words", "choose_first_word", "is_hanbang", "WordCheck", "check_word", "word_error_message"]
 
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:
@@ -22,13 +23,20 @@ def get_transition(word: str) -> list[str]:
         return [word[-1]]
 
 
-def get_word(word: str) -> list[str]:
-    du = get_transition(word)
+@lru_cache(maxsize=None)
+def _lookup(key: str) -> list[str]:
     return_list = []
-    for x in du:
+    for x in transition.get(key, [key]):
         if x in wordlist:
             return_list += wordlist[x]
     return return_list
+
+
+def get_word(word: str) -> list[str]:
+    return _lookup(word[-1])
+
+
+dead_end_words: frozenset[str] = frozenset(w for w in all_words if not get_word(w))
 
 
 def choose_first_word(kkd: bool = False) -> str:
