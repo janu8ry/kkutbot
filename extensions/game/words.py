@@ -3,7 +3,17 @@ import random
 from enum import Enum, auto
 from functools import lru_cache
 
-__all__ = ["all_words", "get_transition", "get_word", "dead_end_words", "choose_first_word", "is_hanbang", "WordCheck", "check_word", "word_error_message"]
+__all__ = [
+    "all_words",
+    "get_transition",
+    "get_word",
+    "dead_end_words",
+    "choose_first_word",
+    "is_hanbang",
+    "WordCheck",
+    "check_word",
+    "word_error_message",
+]
 
 
 with open("static/wordlist.json", "r", encoding="utf-8") as f:

@@ -8,16 +8,30 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
+from extensions.game.ladder import LP_PER_DIVISION, ROMAN_DIVISIONS, TIER_EMOJIS, get_rank_progress  # noqa
 from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
 from .views import ModifyData, SendAnnouncement
+
+TIER_CODES: dict[str, str] = dict(zip("ubsgpdm", TIER_EMOJIS))
+NO_DIVISION = ("언랭크", "마스터")
 
 
 def format_field(key: str, value: Any) -> str:
     if isinstance(value, dict) and any(isinstance(v, dict) for v in value.values()):
         return "\n".join([f"{key}:", *(f"- {k}: `{v}`" for k, v in value.items())])
     return f"{key}: `{value}`"
+
+
+def parse_tier(text: str) -> tuple[str, int] | None:
+    name = TIER_CODES.get(text[:1].lower())
+    if name is None:
+        return None
+    division = text[1:]
+    if name in NO_DIVISION:
+        return (name, 0) if not division else None
+    return (name, int(division)) if division.isdigit() and int(division) in ROMAN_DIVISIONS else None
 
 
 class Admin(commands.Cog, name="관리자"):
@@ -120,6 +134,39 @@ class Admin(commands.Cog, name="관리자"):
         user_data.medals += amount
         await self.bot.db.save(user_data)
         await ctx.reply(fmt("{done} 완료!"))
+
+    @commands.command(name="$티어", usage="ㄲ$티어 <티어> <lp> <유저>")
+    async def set_tier(self, ctx: commands.Context, tier: str, lp: int = 0, *, user: discord.User = commands.Author):
+        """
+        유저의 솔로 랭크 티어를 변경합니다.
+        티어는 앞글자(ubsgpdm)에 디비전을 붙여 씁니다. (예: `b3`, `s1`, `d2`)
+        언랭크와 마스터는 디비전을 쓰지 않습니다. (예: `u`, `m`)
+        언랭크로 변경하면 배치고사 기록이 함께 초기화됩니다.
+        """
+        if user.bot:
+            await ctx.reply(fmt("{denied} 봇의 티어는 변경할 수 없습니다."))
+            return
+        if (parsed := parse_tier(tier)) is None:
+            await ctx.reply(fmt("{denied} 티어 형식이 올바르지 않습니다. (예: `b3`, `s1`, `d2`, `m`, `u`)"))
+            return
+        name, division = parsed
+        if lp < 0:
+            await ctx.reply(fmt("{denied} LP는 0 이상이어야 합니다."))
+            return
+        if name == "언랭크":
+            lp = 0
+        elif name != "마스터" and lp >= LP_PER_DIVISION:
+            await ctx.reply(fmt(f"{{denied}} 마스터가 아닌 티어의 LP는 최대 `{LP_PER_DIVISION - 1}`입니다."))
+            return
+
+        user_data = await self.bot.db.get_user(user)
+        rank = user_data.game.rank_solo
+        rank.tier, rank.division, rank.lp = name, division, lp
+        if name == "언랭크":
+            rank.times = rank.win = rank.streak = 0
+            rank.winrate = 0.0
+        await self.bot.db.save(user_data)
+        await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
 
     @commands.command(name="$정보수정", usage="ㄲ$정보수정 <대상>")
     async def modify_data(
