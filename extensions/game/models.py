@@ -241,7 +241,7 @@ class SoloGame(GameSession):
         if placement_field is not None:
             embed.add_field(name="🔸 배치고사", value=placement_field, inline=False)
         if not self.kkd and user.game.rank_solo.tier != "언랭크":
-            tier_value = fmt(f"**{get_rank_progress(user.game.rank_solo)}**")
+            tier_value = fmt(get_rank_progress(user.game.rank_solo))
             if lp_delta is not None:
                 tier_value += f" **({lp_delta:+d})**"
             embed.add_field(name="🔸 티어", value=tier_value, inline=False)
