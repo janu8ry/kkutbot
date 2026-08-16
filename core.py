@@ -66,7 +66,7 @@ class Kkutbot(commands.AutoShardedBot):
         await self.db.setup_db()
 
     def run_bot(self) -> None:
-        super().run(getattr(config.token, "test" if config.is_test else "main"))
+        super().run(getattr(config.token, "test" if config.is_test else "main"), log_level=logging.WARNING)
 
     async def is_owner(self, user: discord.User, /) -> bool:
         if user.id in config.admin:

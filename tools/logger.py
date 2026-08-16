@@ -76,7 +76,7 @@ def setup_command_logger() -> None:
     file_handler = TimedRotatingFileHandler(filename=os.path.join("logs", "latest.log"), when="midnight", encoding="utf-8")
     file_handler.setFormatter(
         logging.Formatter(
-            fmt="[%(asctime)s] [%(levelname)s] [%(lineno)d]: %(message)s",
+            fmt="[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)d]: %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
     )
@@ -87,6 +87,7 @@ def setup_command_logger() -> None:
 
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
+    logging.getLogger("discord").addHandler(file_handler)
 
     logger.info("로깅 설정 완료!")
 
