@@ -1,9 +1,10 @@
 import random
+from collections import Counter
 from typing import Any
 
 from database.models import RankGameBase
 
-from .words import all_words, choose_first_word, dead_end_words, get_word
+from .words import all_words, choose_first_word, dead_end_words, get_reply_stats, get_transition
 
 __all__ = [
     "get_win_lp",
@@ -135,16 +136,27 @@ def get_bot_surrender_threshold(tier: str) -> int:
     return DIFFICULTY[tier]["surrender"]
 
 
-def grade_word(word: str, used: set[str]) -> tuple[int, int]:
-    replies = [x for x in get_word(word) if x not in used and x != word]
-    return len(replies), sum(1 for x in replies if len(x) == 2)
+def grade_word(word: str, used: set[str], heads: Counter[str], heads_short: Counter[str]) -> tuple[int, int]:
+    """(응답 가능한 단어 수, 그 중 2글자 수). 음절별 집계에서 사용된 단어만 빼므로 사전 전체를 훑지 않는다."""
+    replies, short = get_reply_stats(word)
+    group = get_transition(word)
+    for char in group:
+        replies -= heads[char]
+        short -= heads_short[char]
+    if word[0] in group and word not in used:
+        replies -= 1
+        if len(word) == 2:
+            short -= 1
+    return replies, short
 
 
 def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> str | None:
     conf = DIFFICULTY[tier]
     sample = random.sample(candidates, min(DIFFICULTY_SAMPLE_SIZE, len(candidates)))
     used = set(used_words)
-    graded = [(w, *grade_word(w, used)) for w in sample]
+    heads = Counter(w[0] for w in used)
+    heads_short = Counter(w[0] for w in used if len(w) == 2)
+    graded = [(w, *grade_word(w, used, heads, heads_short)) for w in sample]
     if not conf["hanbang"]:
         graded = [g for g in graded if g[1] > 0]
         if not graded:

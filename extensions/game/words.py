@@ -7,6 +7,7 @@ __all__ = [
     "all_words",
     "get_transition",
     "get_word",
+    "get_reply_stats",
     "dead_end_words",
     "choose_first_word",
     "is_hanbang",
@@ -44,6 +45,16 @@ def _lookup(key: str) -> list[str]:
 
 def get_word(word: str) -> list[str]:
     return _lookup(word[-1])
+
+
+@lru_cache(maxsize=None)
+def _reply_stats(key: str) -> tuple[int, int]:
+    replies = _lookup(key)
+    return len(replies), sum(1 for w in replies if len(w) == 2)
+
+
+def get_reply_stats(word: str) -> tuple[int, int]:
+    return _reply_stats(word[-1])
 
 
 dead_end_words: frozenset[str] = frozenset(w for w in all_words if not get_word(w))
