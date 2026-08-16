@@ -161,7 +161,7 @@ class SoloGame(GameSession):
             desc = f"⏰ **{self.timeout}초** 안에 단어를 이어주세요!"
         description = f"🔸 현재 점수: `{self.score}` 점"
         if self.rank_tier != "언랭크":
-            description = f"🔸 난이도: {self.rank_tier} {TIER_EMOJIS[self.rank_tier]}\n{description}"
+            description = f"🔸 난이도: **{self.rank_tier} {TIER_EMOJIS[self.rank_tier]}**\n{description}"
         embed = discord.Embed(
             title=f"📔 끝말잇기 {'쿵쿵따 모드' if self.kkd else '솔로 랭크 게임'}",
             description=fmt(description),
@@ -241,7 +241,7 @@ class SoloGame(GameSession):
         if placement_field is not None:
             embed.add_field(name="🔸 배치고사", value=placement_field, inline=False)
         if not self.kkd and user.game.rank_solo.tier != "언랭크":
-            tier_value = fmt(get_rank_progress(user.game.rank_solo))
+            tier_value = fmt(f"**{get_rank_progress(user.game.rank_solo)}**")
             if lp_delta is not None:
                 tier_value += f" **({lp_delta:+d})**"
             embed.add_field(name="🔸 티어", value=tier_value, inline=False)
