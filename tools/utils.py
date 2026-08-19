@@ -17,7 +17,7 @@ __all__ = [
 
 
 EMOJIS = {name: f"<:{name}:{emoji_id}>" for name, emoji_id in config.emojis.items()}
-EMOJI_PATTERN = re.compile(r"\{(" + "|".join(re.escape(name) for name in EMOJIS) + r")\}")
+EMOJI_PATTERN = re.compile(r"\{(" + "|".join(re.escape(name) for name in EMOJIS) + r")}")
 
 
 def fmt(text: str) -> str:
