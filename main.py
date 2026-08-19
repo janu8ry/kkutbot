@@ -267,7 +267,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
     elif isinstance(error, commands.CommandNotFound):
         return
     else:
-        if hasattr(error, "original"):
+        while hasattr(error, "original"):
             error = error.original
 
         tb = "".join(traceback.format_exception(error)).replace(f"{os.getcwd()}{os.sep}", "")
@@ -329,13 +329,13 @@ async def on_guild_join(guild: discord.Guild) -> None:
     try:
         if announce:
             await announce.send(embed=embed, view=ServerInvite())
-    except discord.errors.Forbidden:
+    except discord.HTTPException:
         pass
     try:
         if owner_id := guild.owner_id:
             owner = bot.get_user(owner_id) or await bot.fetch_user(owner_id)
             await owner.send(embed=embed, view=ServerInvite())
-    except discord.errors.Forbidden:
+    except discord.HTTPException:
         pass
 
     missing_perms = [p for p in PERM_NAMES if not dict(guild.me.guild_permissions)[p]]
@@ -351,7 +351,7 @@ async def on_guild_join(guild: discord.Guild) -> None:
             if owner_id := guild.owner_id:
                 owner = bot.get_user(owner_id) or await bot.fetch_user(owner_id)
                 await owner.send(embed=embed)
-        except discord.errors.Forbidden:
+        except discord.HTTPException:
             pass
 
 
