@@ -94,18 +94,13 @@ class Client:
         return document
 
     @staticmethod
-    async def save(document: User | Guild | Public) -> DocumentType:
-        if isinstance(document, User) and not document.registered:
-            document.registered = round(time.time())
+    async def save(document: DocumentType) -> DocumentType:
+        if document.get_saved_state() is None:
+            if isinstance(document, User):
+                document.registered = round(time.time())
+            elif isinstance(document, Guild):
+                document.invited = round(time.time())
             await document.insert()
-            return document
-        elif isinstance(document, Guild) and not document.invited and document.command_used <= 1:
-            document.invited = round(time.time())
-            await document.insert()
-            return document
-        elif isinstance(document, Public) and document.command_used <= 1:
-            await document.insert()
-            return document
         else:
             await document.save_changes()
-            return document
+        return document
