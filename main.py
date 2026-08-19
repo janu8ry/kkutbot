@@ -240,7 +240,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, commands.UserNotFound):
-        embed = discord.Embed(title=fmt("{stats} 프로필 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.red)
+        embed = discord.Embed(title=fmt("{stats} 유저 조회 불가"), description="존재하지 않는 유저입니다.", color=config.colors.red)
         embed.set_thumbnail(url=bot.emoji("denied").url)
         await ctx.reply(embed=embed)
     elif isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
