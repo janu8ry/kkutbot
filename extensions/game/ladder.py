@@ -17,11 +17,9 @@ __all__ = [
     "choose_opening_word",
     "get_rank_progress",
     "TIER_EMOJIS",
-    "ROMAN_DIVISIONS",
     "PLACEMENT_GAMES",
 ]
 
-ROMAN_DIVISIONS = {1: "I", 2: "II", 3: "III"}
 TIER_EMOJIS = {
     "언랭크": "{unrank}",
     "브론즈": "{bronze}",
@@ -75,7 +73,7 @@ OPENING_SAMPLE_SIZE = 1000
 
 def get_rank_display(rank: RankGameBase, emoji: bool = True) -> str:
     tier = rank.tier if rank.tier in TIER_EMOJIS else UNRANKED
-    name = tier if (tier == UNRANKED or rank.division == 0) else f"{tier} {ROMAN_DIVISIONS[rank.division]}"
+    name = tier if (tier == UNRANKED or rank.division == 0) else f"{tier} {'I' * rank.division}"
     return f"{name} {TIER_EMOJIS[tier]}" if emoji else name
 
 

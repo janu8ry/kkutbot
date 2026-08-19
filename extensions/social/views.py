@@ -6,7 +6,7 @@ from discord.utils import escape_markdown as e_mk
 from motor.motor_asyncio import AsyncIOMotorCursor
 
 from config import config, get_nested_dict
-from extensions.game.ladder import ROMAN_DIVISIONS, TIER_EMOJIS
+from extensions.game.ladder import TIER_EMOJIS
 from tools import fmt
 from tools.utils import format_number, truncate_by_width  # noqa
 from views import BaseView
@@ -103,7 +103,7 @@ class RankDropdown(discord.ui.Select):
         lines = []
         for idx, doc in enumerate(docs):
             rs = doc["game"]["rank_solo"]
-            division = f" {ROMAN_DIVISIONS[rs['division']]}" if rs["division"] else ""
+            division = f" {'I' * rs['division']}" if rs["division"] else ""
             lines.append(f"**{idx + 1}**. {e_mk(names[idx])} : {fmt(TIER_EMOJIS.get(rs['tier'], ''))}{division} `{format_number(rs['lp'])}`LP")
         return lines
 

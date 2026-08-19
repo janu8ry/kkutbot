@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
-from extensions.game.ladder import LP_PER_DIVISION, ROMAN_DIVISIONS, TIER_EMOJIS, get_rank_progress  # noqa
+from extensions.game.ladder import DIVISIONS, LP_PER_DIVISION, TIER_EMOJIS, get_rank_progress  # noqa
 from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
@@ -31,7 +31,7 @@ def parse_tier(text: str) -> tuple[str, int] | None:
     division = text[1:]
     if name in NO_DIVISION:
         return (name, 0) if not division else None
-    return (name, int(division)) if division.isdigit() and int(division) in ROMAN_DIVISIONS else None
+    return (name, int(division)) if division.isdecimal() and 0 < int(division) <= DIVISIONS else None
 
 
 class Admin(commands.Cog, name="관리자"):

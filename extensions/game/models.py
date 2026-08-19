@@ -12,7 +12,6 @@ from tools.utils import fmt
 
 from .ladder import (
     PLACEMENT_GAMES,
-    ROMAN_DIVISIONS,
     TIER_EMOJIS,
     choose_bot_word,
     choose_opening_word,
@@ -397,7 +396,7 @@ class MultiGame(GameSession):
             if rank.tier == "언랭크":
                 lines.append(player.mention)
             else:
-                division = f"`{ROMAN_DIVISIONS[rank.division]}`" if rank.division else ""
+                division = f"`{'I' * rank.division}`" if rank.division else ""
                 lines.append(f"{player.mention} ({fmt(TIER_EMOJIS[rank.tier])}{division})")
         embed.add_field(name=f"🔸 플레이어 ({len(self.players)}/{self.max_players})", value="\n".join(lines))
         embed.set_footer(text="최소 2인부터 시작할 수 있으며, 게임 시작은 호스트만 가능합니다.")
