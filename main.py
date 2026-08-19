@@ -268,7 +268,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         return
     else:
         while hasattr(error, "original"):
-            error = error.original
+            error = error.original  # type: ignore
 
         tb = "".join(traceback.format_exception(error)).replace(f"{os.getcwd()}{os.sep}", "")
         if len(tb) > 1000:
