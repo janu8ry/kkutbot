@@ -183,9 +183,7 @@ def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> 
         groups[g[0][-1]].append(g)
     center, pressure = math.log(conf["target"]), conf["pressure"]
     keys = list(groups)
-    weights = [
-        math.exp(-((math.log(max(groups[k][0][2], 1.0)) - center) ** 2) / (2 * SIGMA**2)) * (1.0 + pressure * heads[k]) for k in keys
-    ]
+    weights = [math.exp(-((math.log(max(groups[k][0][2], 1.0)) - center) ** 2) / (2 * SIGMA**2)) * (1.0 + pressure * heads[k]) for k in keys]
     if not any(weights):
         return random.choice(graded)[0]
     return random.choice(groups[random.choices(keys, weights)[0]])[0]
