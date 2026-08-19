@@ -48,17 +48,11 @@ PLACEMENT_MAP: dict[int, tuple[str, int]] = {
     5: ("플래티넘", 3),
 }
 PLACEMENT_DIFFICULTY = ("브론즈", "실버", "골드", "플래티넘", "플래티넘")
-#   surrender : 유저가 낸 단어의 응답 후보가 이 수 이하로 남으면 봇이 항복한다(= 유저 승리).
-#               0 이면 완전히 막혔을 때만 진다.
-#   target    : 난이도 중심값. "봇이 낸 단어 다음에 유저가 답할 수 있는 단어"의 길이 가중 점수
-#               (words.LENGTH_WEIGHT: 2자 1.0 / 3자 0.25 / 4자 0.1)이며 낮을수록 어렵다.
-#               로그 스케일 중심이라 산술 중앙이 아니라 기하 중심으로 동작한다. 퍼짐은 SIGMA 참고.
-#   hanbang   : 매 턴 이 확률로 일부러 한방단어를 던져 유저를 즉사시킨다.
-#               턴마다 굴리므로 판 단위로 누적된다(2% × 30턴 ≒ 45%). 작게 잡을 것.
-#   pressure  : 유저가 이미 소비한 끝글자를 다시 고를 가중치( 1 + pressure × 소비 횟수 ).
-#               고티어에서 같은 글자로 몰아넣는 압박을 만든다. 0 이면 없음.
-#   dodge     : 이 확률로 "유저가 한방단어로 되받을 수 있는" 후보를 제외한다. 사전상 한방
-#               (dead_end_words)만 보므로, 게임 중 소진으로 만드는 두방 전략은 막지 않는다.
+#   surrender : 봇의 응답 후보 단어 개수가 이 값 이하일 경우 유저의 승리로 처리
+#   target    : 유저가 답할 수 있는 단어 개수의 중심값. 후보 단어의 길이별로 가중치 적용
+#   hanbang   : 한방단어 확률
+#   pressure  : 이미 사용한 끝글자를 다시 고를 가중치 (1 + pressure × 소비 횟수)
+#   dodge     : 한방단어가 존재하지 않는 단어를 낼 확률
 DIFFICULTY: dict[str, dict[str, Any]] = {
     "브론즈": {"surrender": 4, "target": 700, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
     "실버": {"surrender": 3, "target": 400, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
@@ -67,7 +61,7 @@ DIFFICULTY: dict[str, dict[str, Any]] = {
     "다이아몬드": {"surrender": 0, "target": 100, "hanbang": 0.01, "pressure": 0.2, "dodge": 0.5},
     "마스터": {"surrender": 0, "target": 60, "hanbang": 0.015, "pressure": 0.3, "dodge": 0.75},
 }
-SIGMA = 0.5
+SIGMA = 0.5  # target에서 단어 개수의 퍼짐 정도
 OPENING_SAMPLE_SIZE = 1000
 
 
