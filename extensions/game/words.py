@@ -8,6 +8,8 @@ __all__ = [
     "get_transition",
     "get_word",
     "get_reply_stats",
+    "word_weight",
+    "dead_ends_after",
     "dead_end_words",
     "choose_first_word",
     "is_hanbang",
@@ -47,17 +49,34 @@ def get_word(word: str) -> list[str]:
     return _lookup(word[-1])
 
 
+LENGTH_WEIGHT = {2: 1.0, 3: 0.25, 4: 0.1}
+
+
+def word_weight(word: str) -> float:
+    return LENGTH_WEIGHT.get(len(word), 0.0)
+
+
 @lru_cache(maxsize=None)
-def _reply_stats(key: str) -> tuple[int, int]:
+def _reply_stats(key: str) -> tuple[int, float]:
     replies = _lookup(key)
-    return len(replies), sum(1 for w in replies if len(w) == 2)
+    return len(replies), sum(word_weight(w) for w in replies)
 
 
-def get_reply_stats(word: str) -> tuple[int, int]:
+def get_reply_stats(word: str) -> tuple[int, float]:
     return _reply_stats(word[-1])
 
 
 dead_end_words: frozenset[str] = frozenset(w for w in all_words if not get_word(w))
+
+
+@lru_cache(maxsize=None)
+def _dead_ends_after(key: str) -> frozenset[str]:
+    return frozenset(w for w in _lookup(key) if w in dead_end_words)
+
+
+def dead_ends_after(word: str) -> frozenset[str]:
+    """이 단어를 내면 상대가 한방으로 되받을 수 있는 단어들."""
+    return _dead_ends_after(word[-1])
 
 
 def choose_first_word(kkd: bool = False) -> str:
