@@ -45,9 +45,15 @@ class Admin(commands.Cog, name="관리자"):
     def cog_check(self, ctx: commands.Context):
         return is_admin(ctx)
 
-    @commands.command(name="$로그", usage="ㄲ$로그 <날짜>", aliases=("$ㄹㄱ", "$ㄹ"))
+    @commands.command(name="$로그", aliases=("$ㄹㄱ", "$ㄹ"))
     async def get_log(self, ctx: commands.Context, date: str = commands.parameter(default=None)):
-        """해당 날짜의 로그 파일을 확인합니다."""
+        """
+        봇 로그 파일을 확인합니다.
+        
+        --사용법
+        `ㄲ$로그`로 오늘자 로그 파일을 확인합니다.
+        `ㄲ$로그 yy/mm/dd`로 특정 날짜의 로그 파일을 확인합니다.
+        """
         if date is None:
             path = "logs/latest.log"  # noqa
         else:
@@ -70,9 +76,14 @@ class Admin(commands.Cog, name="관리자"):
             return
         await ctx.reply(file=discord.File(path))
 
-    @commands.command(name="$백업", usage="ㄲ$백업", aliases=("$ㅂㅇ", "$ㅂ"))
+    @commands.command(name="$백업", aliases=("$ㅂㅇ", "$ㅂ"))
     async def backup_now(self, ctx: commands.Context):
-        """현재 데이터베이스를 백업하여 파일로 전송합니다."""
+        """
+        현재 데이터베이스를 백업하여 파일로 전송합니다.
+        
+        --사용법
+        `ㄲ$백업`을 사용하여 실시간 백업을 진행합니다.
+        """
         fp = f"backup/{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.gz"
         async with ctx.typing():
             if error := await self.bot.dump_data(fp):
@@ -83,9 +94,15 @@ class Admin(commands.Cog, name="관리자"):
             finally:
                 os.remove(fp)
 
-    @commands.command(name="$정보", usage="ㄲ$정보 <유저>", aliases=("$ㅈㅂ", "$ㅈ"))
+    @commands.command(name="$정보", aliases=("$ㅈㅂ", "$ㅈ"))
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
-        """유저의 (상세)정보를 출력합니다."""
+        """
+        유저의 상세 정보를 출력합니다.
+        
+        --사용법
+        `ㄲ$정보`를 사용하여 공용 데이터를 확인합니다.
+        `ㄲ$정보 <유저>`를 사용하여 특정 유저의 데이터를 확인합니다.
+        """
         if user is None:
             public_data = await self.bot.db.get_public()  # noqa
             sorted_data = sorted(public_data.commands.items(), key=lambda item: item[1], reverse=True)
@@ -103,9 +120,15 @@ class Admin(commands.Cog, name="관리자"):
             for content in split_string("\n".join(format_field(k, v) for k, v in user_data.model_dump().items())):
                 await ctx.reply(content)
 
-    @commands.command(name="$서버정보", usage="ㄲ$서버정보 <서버>", aliases=("$ㅅㅂㅈㅂ", "$ㅅㅈ"))
+    @commands.command(name="$서버정보", aliases=("$ㅅㅂㅈㅂ", "$ㅅㅈ"))
     async def guild_info(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
-        """끝봇을 이용하는 서버의 상세 정보를 출력합니다."""
+        """
+        끝봇을 사용중인 서버의 상세 정보를 출력합니다.
+        
+        --사용법
+        `ㄲ$서버정보`를 사용하여 현재 서버의 데이터를 확인합니다.
+        `ㄲ$서버정보 <서버>`를 사용하여 특정 서버의 데이터를 확인합니다.
+        """
         guild_data = await self.bot.db.get_guild(guild)
         if not guild_data.invited:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
@@ -115,9 +138,15 @@ class Admin(commands.Cog, name="관리자"):
         for content in split_string("\n".join(f"{k}: `{v}`" for k, v in guild_data.items())):
             await ctx.reply(content)
 
-    @commands.command(name="$포인트", usage="ㄲ$포인트 <포인트> <유저>", aliases=("$ㅍㅇㅌ", "$ㅍ"))
+    @commands.command(name="$포인트", aliases=("$ㅍㅇㅌ", "$ㅍ"))
     async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User = commands.Author):
-        """관리자 권한으로 포인트를 지급합니다."""
+        """
+        관리자 권한으로 유저에게 포인트를 지급합니다.
+        
+        --사용법
+        `ㄲ$포인트 <포인트>`로 자신에게 포인트를 지급합니다.
+        `ㄲ$포인트 <포인트> <유저>`를 사용하여 특정 유저에게 포인트를 지급합니다.
+        """
         if user.bot:
             await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
             return
@@ -126,9 +155,15 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt("{done} 완료!"))
 
-    @commands.command(name="$메달", usage="ㄲ$메달 <메달> <유저>", aliases=("$ㅁㄷ", "$ㅁ"))
+    @commands.command(name="$메달", aliases=("$ㅁㄷ", "$ㅁ"))
     async def give_medal(self, ctx: commands.Context, amount: int = 10, *, user: discord.User = commands.Author):
-        """관리자 권한으로 메달을 지급합니다."""
+        """
+        관리자 권한으로 유저에게 메달을 지급합니다.
+
+        --사용법
+        `ㄲ$메달 <메달>`로 자신에게 메달을 지급합니다.
+        `ㄲ$메달 <메달> <유저>`를 사용하여 특정 유저에게 메달을 지급합니다.
+        """
         if user.bot:
             await ctx.reply(fmt("{denied} 봇에게는 지급할 수 없습니다."))
             return
@@ -170,16 +205,20 @@ class Admin(commands.Cog, name="관리자"):
         embed.set_footer(text=f"전체 {total:,}명 · 배치 완료 {ranked:,}명 ({ranked / total * 100:.2f}%)")
         await ctx.reply(embed=embed)
 
-    @commands.command(name="$티어", usage="ㄲ$티어 <티어> <lp> <유저>", aliases=("$ㅌㅇ", "$ㅌ"))
+    @commands.command(name="$티어", aliases=("$ㅌㅇ", "$ㅌ"))
     async def set_tier(
         self, ctx: commands.Context, tier: str | None = commands.parameter(default=None), lp: int = 0, *, user: discord.User = commands.Author
     ):
         """
         유저의 솔로 랭크 티어를 변경합니다.
-        인자 없이 사용하면 전체 유저의 티어 분포를 출력합니다.
-        티어는 앞글자(ubsgpdm)에 디비전을 붙여 씁니다. (예: `b3`, `s1`, `d2`)
-        언랭크와 마스터는 디비전을 쓰지 않습니다. (예: `u`, `m`)
+
+        티어는 앞글자(ubsgpdm)에 디비전을 붙여 사용하고, (예: `b3`, `s1`, `d2`)
+        언랭크와 마스터는 디비전을 추가하지 않습니다. (예: `u`, `m`)
         언랭크로 변경하면 배치고사 기록이 함께 초기화됩니다.
+
+        --사용법
+        `ㄲ$티어`를 사용하여 전체 유저의 티어 분포를 확인합니다.
+        `ㄲ$티어 <티어> <lp> <유저>`를 사용하여 특정 유저의 티어를 변경합니다.
         """
         if tier is None:
             await self.send_tier_distribution(ctx)
@@ -209,7 +248,7 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
 
-    @commands.command(name="$정보수정", usage="ㄲ$정보수정 <대상>", aliases=("$ㅈㅂㅅㅈ", "$ㅈㅅ"))
+    @commands.command(name="$정보수정", aliases=("$ㅈㅂㅅㅈ", "$ㅈㅅ"))
     async def modify_data(
         self,
         ctx: commands.Context,
@@ -218,15 +257,24 @@ class Admin(commands.Cog, name="관리자"):
     ):
         """
         대상의 정보를 수정합니다.
-        대상이 주어지지 않았다면 공용 데이터를 수정합니다.
+
+        --사용법
+        `ㄲ$정보수정`을 사용하여 공용 데이터를 수정합니다.
+        `ㄲ$정보수정 <유저/서버>`를 사용하여 특정 유저 또는 서버의 데이터를 수정합니다.
         """
         embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config.colors.green)
         view = ModifyData(ctx=ctx, target=target)
         view.message = await ctx.reply(embed=embed, view=view)
 
-    @commands.command(name="$통계삭제", usage="ㄲ$통계삭제 <유저>", aliases=("$ㅌㄱㅅㅈ", "$ㅌㅅ"))
+    @commands.command(name="$통계삭제", aliases=("$ㅌㄱㅅㅈ", "$ㅌㅅ"))
     async def delete_user_data(self, ctx: commands.Context, *, user: discord.User = commands.Author):
-        """유저의 데이터를 초기화합니다."""
+        """
+        유저의 데이터를 초기화합니다.
+
+        --사용법
+        `ㄲ$통계삭제`를 사용하여 자신의 데이터를 삭제합니다.
+        `ㄲ$통계삭제 <유저>`를 사용하여 특정 유저의 데이터를 삭제합니다.
+        """
         data = await self.bot.db.get_user(user)
         if data.registered:
             await data.delete()
@@ -234,9 +282,15 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 유저는 끝봇의 유저가 아닙니다."))
 
-    @commands.command(name="$서버통계삭제", usage="ㄲ$서버통계삭제 <서버>", aliases=("$ㅅㅌㅅ",))
+    @commands.command(name="$서버통계삭제", aliases=("$ㅅㅌㅅ",))
     async def delete_guild_data(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
-        """서버의 데이터를 초기화합니다."""
+        """
+        서버의 데이터를 초기화합니다.
+
+        --사용법
+        `ㄲ$서버통계삭제`를 사용하여 현재 서버의 데이터를 삭제합니다.
+        `ㄲ$서버통계삭제 <서버>`를 사용하여 특정 서버의 데이터를 삭제합니다.
+        """
         data = await self.bot.db.get_guild(guild)
         if data.invited:
             await data.delete()
@@ -244,9 +298,15 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
-    @commands.command(name="$서버탈퇴", usage="ㄲ$서버탈퇴 <서버>", aliases=("$탈퇴", "$나가기", "$ㅅㅌ"))
+    @commands.command(name="$서버탈퇴", aliases=("$탈퇴", "$나가기", "$ㅅㅌ"))
     async def leave_guild(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
-        """서버를 나갑니다."""
+        """
+        봇이 참가한 서버를 나갑니다.
+
+        --사용법
+        `ㄲ$서버탈퇴`를 사용하여 현재 서버를 탈퇴합니다.
+        `ㄲ$서버탈퇴 <서버>`를 사용하여 특정 서버를 탈퇴합니다.
+        """
         data = await self.bot.db.get_guild(guild)
         if data.invited:
             await guild.leave()
@@ -255,8 +315,13 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
-    @commands.command(name="$공지", usage="ㄲ$공지", aliases=("$ㄱㅈ", "$ㄱ"))
+    @commands.command(name="$공지", aliases=("$ㄱㅈ", "$ㄱ"))
     async def announce_users(self, ctx: commands.Context):
-        """끝봇의 유저들에게 공지를 전송합니다."""
+        """
+        끝봇의 유저들에게 공지를 전송합니다.
+
+        --사용법
+        `ㄲ$공지`로 공지를 작성하고 전송합니다.
+        """
         view = SendAnnouncement(ctx=ctx)
         view.message = await ctx.reply("버튼 눌러 공지 작성하기", view=view)
