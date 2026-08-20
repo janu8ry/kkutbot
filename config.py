@@ -102,7 +102,7 @@ class Links:
     invite: InviteLink = InviteLink()
     privacy_policy: str = "https://github.com/janu8ry/kkutbot/blob/main/privacy.md"
     terms_of_service: str = "https://github.com/janu8ry/kkutbot/blob/main/privacy.md"
-    koreanbots: str = "https://koreanbots.dev/bots/703956235900420226"
+    koreanbots: str = "https://koreanbots.dev/bots/kkutbot"
     dbl: str = "https://top.gg/bot/703956235900420226"
     github: str = "https://github.com/janu8ry/kkutbot"
     website: str = "https://kkutbot.github.io"

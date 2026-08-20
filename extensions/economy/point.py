@@ -34,7 +34,7 @@ class Reward(commands.Cog, name="포인트"):
 
         포인트는 12시간마다 한번씩 수령 가능합니다.
         연속으로 수령하면 연속 횟수가 쌓이고, 7회마다 추가 보상을 받습니다.
-         - 한국 디스코드 리스트: https://koreanbots.dev/bots/703956235900420226/vote
+         - 한국 디스코드 리스트: https://koreanbots.dev/bots/kkutbot/vote
 
         --사용법
         한국 디스코드 리스트에서 하트를 누른 후 `/포인트` 를 사용하여 포인트를 받습니다.
