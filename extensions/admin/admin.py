@@ -247,7 +247,7 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
 
-    @commands.command(name="$통계삭제", aliases=("$ㅌㄱㅅㅈ", "$ㅌㅅ"))
+    @commands.command(name="$삭제", aliases=("$ㅅ", "$통계삭제", "$ㅌㅅ"))
     async def delete_user_data(self, ctx: commands.Context, *, user: discord.User = commands.Author):
         """
         유저의 데이터를 초기화합니다.
@@ -263,7 +263,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 유저는 끝봇의 유저가 아닙니다."))
 
-    @commands.command(name="$서버통계삭제", aliases=("$ㅅㅌㅅ",))
+    @commands.command(name="$서버삭제", aliases=("$ㅅㅅ", "$서버통계삭제", "$ㅅㅌㅅ"))
     async def delete_guild_data(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """
         서버의 데이터를 초기화합니다.
@@ -279,7 +279,7 @@ class Admin(commands.Cog, name="관리자"):
         else:
             await ctx.reply(fmt("{denied} 해당 서버는 끝봇을 사용 중인 서버가 아닙니다."))
 
-    @commands.command(name="$서버탈퇴", aliases=("$탈퇴", "$나가기", "$ㅅㅌ"))
+    @commands.command(name="$탈퇴", aliases=("$서버탈퇴", "$나가기", "$ㅌㅌ"))
     async def leave_guild(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """
         봇이 참가한 서버를 나갑니다.
