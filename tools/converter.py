@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.converter import CONVERTER_MAPPING, Converter, GuildConverter  # noqa
+from discord.ext.commands.converter import CONVERTER_MAPPING  # noqa
 
-__all__ = ["SearchUser", "UserGuildConverter"]
+__all__ = ["SearchUser"]
 
 
 class SearchUser(commands.UserConverter):
@@ -31,19 +31,3 @@ class SearchUser(commands.UserConverter):
 
 
 CONVERTER_MAPPING[discord.User] = SearchUser
-
-
-class UserGuildConverter(Converter[discord.Member | discord.User | discord.Guild | str]):
-    async def convert(self, ctx: commands.Context, argument: str) -> discord.User | discord.Member | discord.Guild | str:
-        argument = argument.lstrip()
-
-        if not argument:
-            return "public"
-        try:
-            return await SearchUser().convert(ctx, argument)
-        except commands.UserNotFound:
-            pass
-        try:
-            return await GuildConverter().convert(ctx, argument)
-        except commands.GuildNotFound:
-            raise commands.BadArgument

@@ -1,18 +1,15 @@
-import ast
 import time
-from typing import Literal
 
 import discord
 from beanie.operators import Set
 from discord.ext import commands
-from motor.motor_asyncio import AsyncIOMotorCollection
 
 from config import config
 from database.models import Announcement, User
 from tools import fmt
 from views import BaseModal, BaseView
 
-__all__ = ["ModifyData", "SendAnnouncement"]
+__all__ = ["SendAnnouncement"]
 
 
 class Confirm(BaseView):
@@ -69,65 +66,3 @@ class SendAnnouncement(BaseView):
         await self.message.edit(view=self)  # type: ignore
         self.value = True
         self.stop()
-
-
-class DataInput(BaseModal, title="데이터 수정하기"):
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | Literal["public"], collection: AsyncIOMotorCollection):
-        super().__init__()
-        self.ctx = ctx
-        self.target = target
-        self.collection = collection
-        self.data_path = discord.ui.TextInput(required=True)
-        self.data_value = discord.ui.TextInput(style=discord.TextStyle.long, required=True)
-        self.add_item(discord.ui.Label(text="수정할 데이터 경로", component=self.data_path))
-        self.add_item(discord.ui.Label(text="수정할 값", component=self.data_value))
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            data = self.data_value.value.strip()
-            final_data = ast.literal_eval(data)
-        except SyntaxError, ValueError:
-            try:
-                data = '"' + self.data_value.value.strip() + '"'
-                final_data = ast.literal_eval(data)
-            except SyntaxError, ValueError:
-                await interaction.response.send_message("올바른 값이 아닙니다.")
-                self.stop()
-                return
-        embed = discord.Embed(
-            title="데이터 수정 확인",
-            description=f"수정 대상: {getattr(self.target, 'name', '공용 데이터')} - {getattr(self.target, 'id', 'public')}",
-            color=config.colors.green,
-        )
-        embed.add_field(name=f"수정할 데이터: {self.data_path.value}", value=self.data_value.value)
-        view = Confirm(ctx=self.ctx, action="데이터 수정", confirm_label="수정하기")
-        await interaction.response.send_message(embed=embed, view=view)
-        await view.wait()
-        if view.value:
-            await self.collection.update_one({"_id": getattr(self.target, "id", "public")}, {"$set": {self.data_path.value: final_data}})
-        self.stop()
-        return
-
-
-class ModifyData(BaseView):
-    def __init__(self, ctx: commands.Context, target: discord.User | discord.Guild | Literal["public"]):
-        super().__init__(ctx=ctx, author_only=True)
-        self.value = None
-        self.target = target
-
-    @discord.ui.button(label="수정하기", style=discord.ButtonStyle.blurple)
-    async def modify_user(self: ModifyData, interaction: discord.Interaction, _button: discord.ui.Button):
-        if isinstance(self.target, discord.User) and (await self.ctx.bot.db.get_user(self.target)).registered:
-            collection = self.ctx.bot.db.client.user
-        elif isinstance(self.target, discord.Guild) and (await self.ctx.bot.db.get_guild(self.target)).invited:
-            collection = self.ctx.bot.db.client.guild
-        elif self.target == "public":
-            collection = self.ctx.bot.db.client.public
-        else:
-            await interaction.response.send_message("올바른 타깃이 아닙니다.")
-            self.stop()
-            return
-        await interaction.response.send_modal(DataInput(ctx=self.ctx, target=self.target, collection=collection))
-        self.value = True
-        self.stop()
-        return

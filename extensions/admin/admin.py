@@ -11,10 +11,9 @@ from config import config
 from core import Kkutbot
 from database.models import RankGameBase
 from extensions.game.ladder import DIVISIONS, LP_PER_DIVISION, TIER_EMOJIS, get_rank_display, get_rank_progress  # noqa
-from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
-from .views import ModifyData, SendAnnouncement
+from .views import SendAnnouncement
 
 TIER_CODES: dict[str, str] = dict(zip("ubsgpdm", TIER_EMOJIS))
 NO_DIVISION = ("언랭크", "마스터")
@@ -49,7 +48,7 @@ class Admin(commands.Cog, name="관리자"):
     async def get_log(self, ctx: commands.Context, date: str = commands.parameter(default=None)):
         """
         봇 로그 파일을 확인합니다.
-        
+
         --사용법
         `ㄲ$로그`로 오늘자 로그 파일을 확인합니다.
         `ㄲ$로그 yy/mm/dd`로 특정 날짜의 로그 파일을 확인합니다.
@@ -80,7 +79,7 @@ class Admin(commands.Cog, name="관리자"):
     async def backup_now(self, ctx: commands.Context):
         """
         현재 데이터베이스를 백업하여 파일로 전송합니다.
-        
+
         --사용법
         `ㄲ$백업`을 사용하여 실시간 백업을 진행합니다.
         """
@@ -98,7 +97,7 @@ class Admin(commands.Cog, name="관리자"):
     async def user_info(self, ctx: commands.Context, *, user: discord.User = commands.parameter(default=None)):
         """
         유저의 상세 정보를 출력합니다.
-        
+
         --사용법
         `ㄲ$정보`를 사용하여 공용 데이터를 확인합니다.
         `ㄲ$정보 <유저>`를 사용하여 특정 유저의 데이터를 확인합니다.
@@ -124,7 +123,7 @@ class Admin(commands.Cog, name="관리자"):
     async def guild_info(self, ctx: commands.Context, *, guild: discord.Guild = commands.CurrentGuild):
         """
         끝봇을 사용중인 서버의 상세 정보를 출력합니다.
-        
+
         --사용법
         `ㄲ$서버정보`를 사용하여 현재 서버의 데이터를 확인합니다.
         `ㄲ$서버정보 <서버>`를 사용하여 특정 서버의 데이터를 확인합니다.
@@ -142,7 +141,7 @@ class Admin(commands.Cog, name="관리자"):
     async def give_point(self, ctx: commands.Context, amount: int = 1000, *, user: discord.User = commands.Author):
         """
         관리자 권한으로 유저에게 포인트를 지급합니다.
-        
+
         --사용법
         `ㄲ$포인트 <포인트>`로 자신에게 포인트를 지급합니다.
         `ㄲ$포인트 <포인트> <유저>`를 사용하여 특정 유저에게 포인트를 지급합니다.
@@ -247,24 +246,6 @@ class Admin(commands.Cog, name="관리자"):
             rank.winrate = 0.0
         await self.bot.db.save(user_data)
         await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
-
-    @commands.command(name="$정보수정", aliases=("$ㅈㅂㅅㅈ", "$ㅈㅅ"))
-    async def modify_data(
-        self,
-        ctx: commands.Context,
-        *,
-        target: discord.User | discord.Guild = commands.parameter(converter=UserGuildConverter, default="public"),
-    ):
-        """
-        대상의 정보를 수정합니다.
-
-        --사용법
-        `ㄲ$정보수정`을 사용하여 공용 데이터를 수정합니다.
-        `ㄲ$정보수정 <유저/서버>`를 사용하여 특정 유저 또는 서버의 데이터를 수정합니다.
-        """
-        embed = discord.Embed(title="데이터 수정하기", description=f"대상: {target}", color=config.colors.green)
-        view = ModifyData(ctx=ctx, target=target)
-        view.message = await ctx.reply(embed=embed, view=view)
 
     @commands.command(name="$통계삭제", aliases=("$ㅌㄱㅅㅈ", "$ㅌㅅ"))
     async def delete_user_data(self, ctx: commands.Context, *, user: discord.User = commands.Author):
