@@ -68,11 +68,6 @@ class Kkutbot(commands.AutoShardedBot):
     def run_bot(self) -> None:
         super().run(getattr(config.token, "test" if config.is_test else "main"), log_level=logging.WARNING)
 
-    async def is_owner(self, user: discord.User, /) -> bool:
-        if user.id in config.admin:
-            return True
-        return await super().is_owner(user)
-
     async def try_reload(self, name: str) -> None:
         if name.rpartition(".")[2].startswith("_"):
             return
