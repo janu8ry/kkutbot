@@ -1,5 +1,5 @@
 # 디스코드봇, 끝봇
-[![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/703956235900420226)
+[![koreanbots](https://koreanbots.dev/api/widget/bots/votes/703956235900420226.svg?style=classic)](https://koreanbots.dev/bots/kkutbot)
 [![GitHub](https://img.shields.io/badge/license-AGPL--3.0-brightgreen)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.14-blue)](https://www.python.org/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6716eb15f92f4bb29c3da2f09d8e2483)](https://app.codacy.com/gh/janu8ry/kkutbot/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
