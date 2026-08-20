@@ -1,5 +1,6 @@
 import os
 import re
+from collections import defaultdict
 from datetime import datetime
 from typing import Any
 
@@ -8,7 +9,8 @@ from discord.ext import commands
 
 from config import config
 from core import Kkutbot
-from extensions.game.ladder import DIVISIONS, LP_PER_DIVISION, TIER_EMOJIS, get_rank_progress  # noqa
+from database.models import RankGameBase
+from extensions.game.ladder import DIVISIONS, LP_PER_DIVISION, TIER_EMOJIS, get_rank_display, get_rank_progress  # noqa
 from tools.converter import UserGuildConverter
 from tools.utils import fmt, is_admin, split_string
 
@@ -135,14 +137,53 @@ class Admin(commands.Cog, name="관리자"):
         await self.bot.db.save(user_data)
         await ctx.reply(fmt("{done} 완료!"))
 
+    async def send_tier_distribution(self, ctx: commands.Context) -> None:
+        pipeline = [{"$group": {"_id": {"tier": "$game.rank_solo.tier", "division": "$game.rank_solo.division"}, "count": {"$sum": 1}}}]
+        docs = await self.bot.db.client.user.aggregate(pipeline).to_list(None)
+        order = list(TIER_EMOJIS)
+
+        counts: defaultdict[str, defaultdict[int, int]] = defaultdict(lambda: defaultdict(int))
+        for doc in docs:
+            name = doc["_id"].get("tier")
+            counts[name if name in order else order[0]][doc["_id"].get("division") or 0] += doc["count"]
+
+        total = sum(sum(divisions.values()) for divisions in counts.values())
+        if not total:
+            await ctx.reply(fmt("{denied} 집계할 유저가 없습니다."))
+            return
+
+        def stat(tier: str, division: int, count: int) -> str:
+            label = get_rank_display(RankGameBase(tier=tier, division=division), emoji=False)
+            return f"- {label} `{count:,}`명 (`{count / total * 100:.2f}`%)"
+
+        sections = []
+        for name in reversed(order):
+            if not (divisions := counts.get(name)):
+                continue
+            subtotal = sum(divisions.values())
+            rows = [f"🔸 **{name}** {fmt(TIER_EMOJIS[name])} - `{subtotal:,}`명 (`{subtotal / total * 100:.2f}`%)"]
+            rows.extend(stat(name, division, divisions[division]) for division in sorted(divisions) if division)
+            sections.append("\n".join(rows))
+
+        ranked = total - sum(counts[order[0]].values())
+        embed = discord.Embed(title="솔로 랭크 티어 분포", description="\n\n".join(sections), color=config.colors.blue)
+        embed.set_footer(text=f"전체 {total:,}명 · 배치 완료 {ranked:,}명 ({ranked / total * 100:.2f}%)")
+        await ctx.reply(embed=embed)
+
     @commands.command(name="$티어", usage="ㄲ$티어 <티어> <lp> <유저>", aliases=("$ㅌㅇ", "$ㅌ"))
-    async def set_tier(self, ctx: commands.Context, tier: str, lp: int = 0, *, user: discord.User = commands.Author):
+    async def set_tier(
+        self, ctx: commands.Context, tier: str | None = commands.parameter(default=None), lp: int = 0, *, user: discord.User = commands.Author
+    ):
         """
         유저의 솔로 랭크 티어를 변경합니다.
+        인자 없이 사용하면 전체 유저의 티어 분포를 출력합니다.
         티어는 앞글자(ubsgpdm)에 디비전을 붙여 씁니다. (예: `b3`, `s1`, `d2`)
         언랭크와 마스터는 디비전을 쓰지 않습니다. (예: `u`, `m`)
         언랭크로 변경하면 배치고사 기록이 함께 초기화됩니다.
         """
+        if tier is None:
+            await self.send_tier_distribution(ctx)
+            return
         if user.bot:
             await ctx.reply(fmt("{denied} 봇의 티어는 변경할 수 없습니다."))
             return
