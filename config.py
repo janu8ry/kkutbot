@@ -10,6 +10,7 @@ __all__ = ["get_nested_dict", "Mongo", "config"]
 
 load_dotenv()
 
+VERSION = "3.1"
 IS_TEST = os.environ.get("TESTMODE", "true").strip().lower() != "false"
 
 
@@ -114,7 +115,7 @@ class Links:
 @dataclass(frozen=True)
 class Config:
     is_test: bool = IS_TEST
-    version: str = "3.0"
+    version: str = VERSION
     bot_id: int = 703956235900420226
     admin: tuple[int, ...] = (610625541157945344, 394116972176080916)
     prefix: Prefix = Prefix()
