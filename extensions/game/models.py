@@ -363,7 +363,7 @@ class MultiGame(GameSession):
 
     async def handle_elimination(self, gg: bool = False) -> bool:
         await self.player_out(gg=gg)
-        if len(self.players) - len(self.final_score) == 1:
+        if len(self.alive) <= 1:
             await self.game_end()
             return True
         await self.update_board()
@@ -442,7 +442,8 @@ class MultiGame(GameSession):
     async def game_end(self):
         await _try_delete(self.msg)
         desc = []
-        self.final_score[self.now_player] = self.score
+        if self.alive:
+            self.final_score[self.now_player] = self.score
         rank = sorted(self.final_score.items(), key=lambda item: item[1], reverse=True)
         pool = min(round(self.score * self.REWARD_RATE), round(self.ENTRY_FEE * len(rank) * self.MAX_RETURN))
         weight_sum = len(rank) * (len(rank) + 1) // 2

@@ -79,13 +79,15 @@ class HostGuildGame(BaseView):
         if interaction.user.id in self.ctx.bot.playing_games:
             await interaction.response.send_message(fmt("{denied} 이미 진행 중인 끝말잇기 게임이 있습니다."), ephemeral=True)
             return
+        # 잔액 조회 중에 같은 유저의 두 번째 클릭이 검사를 통과하지 못하도록 자리를 먼저 잡는다.
+        self.ctx.bot.playing_games.add(interaction.user.id)
         if (await self.ctx.bot.db.get_user(interaction.user)).points < self.game.ENTRY_FEE:
+            self.ctx.bot.playing_games.discard(interaction.user.id)
             await interaction.response.send_message(
                 fmt(f"{{denied}} 참가비 `{self.game.ENTRY_FEE}`{{points}}가 부족하여 참가할 수 없습니다."), ephemeral=True
             )
             return
         self.game.players.append(interaction.user)
-        self.ctx.bot.playing_games.add(interaction.user.id)
         await self.ctx.channel.send(fmt("{plus}") + f" **{interaction.user.display_name}** 님이 참가했습니다.")
         if len(self.game.players) >= self.game.max_players:
             await self.ctx.channel.send(f"✅ 최대 인원에 도달하여 **{self.game.host.display_name}** 님의 게임을 시작합니다.")
