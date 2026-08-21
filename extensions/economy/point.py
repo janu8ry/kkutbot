@@ -76,8 +76,5 @@ class Reward(commands.Cog, name="포인트"):
 
         user.reward.latest = now
         user.alerts.reward = False
-        public = await self.bot.db.get_public()
-        public.reward += 1
         await self.bot.db.save(user)
-        await self.bot.db.save(public)
         await ctx.reply(embed=embed)

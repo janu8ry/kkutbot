@@ -17,8 +17,13 @@ _client = AsyncIOMotorClient(host=dbconfig.host, port=dbconfig.port, **db_option
 db = _client[dbconfig.db]
 
 
+async def remove_public_reward() -> None:
+    result = await db["public"].update_many({"reward": {"$exists": True}}, {"$unset": {"reward": ""}})
+    print(f"public.reward 필드 제거: {result.modified_count}개 문서")
+
+
 async def main() -> None:
-    print("실행할 마이그레이션 작업이 없습니다.")
+    await remove_public_reward()
 
 
 if __name__ == "__main__":

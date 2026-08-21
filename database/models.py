@@ -133,7 +133,6 @@ class Guild(Document):
 class Public(Document):
     id: str
     attendance: int = 0
-    reward: int = 0
     command_used: int = 0
     latest_usage: int | None = None
     commands: dict[str, int] = Field(default_factory=dict)
