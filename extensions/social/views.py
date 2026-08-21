@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from discord.utils import escape_markdown as e_mk
-from motor.motor_asyncio import AsyncIOMotorCursor
+from motor.motor_asyncio import AsyncIOMotorCommandCursor, AsyncIOMotorCursor
 
 from config import config, get_nested_dict
 from extensions.game.ladder import TIER_EMOJIS
@@ -73,10 +73,20 @@ class RankDropdown(discord.ui.Select):
                 await self.ctx.bot.db.client.user.update_one({"_id": doc["_id"]}, {"$set": updates})
         return truncate_by_width(display)
 
-    async def format_rank(self, cursor: AsyncIOMotorCursor, query: str) -> list[str]:
+    async def format_rank(self, cursor: AsyncIOMotorCursor | AsyncIOMotorCommandCursor, query: str) -> list[str]:
         docs = await cursor.to_list(None)
         names = list(await asyncio.gather(*[self.get_user_name(doc) for doc in docs]))  # type: ignore
         return [f"**{idx + 1}**. {e_mk(names[idx])} : `{format_number(get_nested_dict(doc, query.split('.')))}`" for idx, doc in enumerate(docs)]
+
+    def winrate_cursor(self, path: str, limit: int) -> AsyncIOMotorCommandCursor:
+        mode = GAME_CATEGORIES[path]
+        pipeline = [
+            {"$match": self.game_query(path)},
+            {"$addFields": {"_winrate": {"$round": [{"$multiply": [{"$divide": [f"$game.{mode}.win", f"$game.{mode}.times"]}, 100]}, 2]}}},
+            {"$sort": {"_winrate": -1}},
+            {"$limit": limit},
+        ]
+        return self.ctx.bot.db.client.user.aggregate(pipeline)
 
     async def format_ladder_rank(self, limit: int) -> list[str]:
         tiers = list(TIER_EMOJIS)
@@ -133,11 +143,7 @@ class RankDropdown(discord.ui.Select):
                 if mode == "rank_solo":
                     coros.append(self.format_ladder_rank(5))
                 else:
-                    coros.append(
-                        self.format_rank(
-                            self.ctx.bot.db.client.user.find(self.game_query(path)).sort(f"game.{mode}.winrate", -1).limit(5), f"game.{mode}.winrate"
-                        )
-                    )
+                    coros.append(self.format_rank(self.winrate_cursor(path, 5), "_winrate"))
         overall_rank = await asyncio.gather(*coros)
         labels_solo = ["승리수", "최고점수", "래더"]
         labels_kkd = ["승리수", "최고점수", "승률"]
@@ -174,11 +180,7 @@ class RankDropdown(discord.ui.Select):
                 self.format_rank(
                     self.ctx.bot.db.client.user.find(self.game_query(category)).sort(f"game.{mode}.best", -1).limit(15), f"game.{mode}.best"
                 ),
-                self.format_ladder_rank(15)
-                if is_solo
-                else self.format_rank(
-                    self.ctx.bot.db.client.user.find(self.game_query(category)).sort(f"game.{mode}.winrate", -1).limit(15), f"game.{mode}.winrate"
-                ),
+                self.format_ladder_rank(15) if is_solo else self.format_rank(self.winrate_cursor(category, 15), "_winrate"),
             ]
             rank = await asyncio.gather(*coros)
             embed.add_field(name="🔹 승리수", value="\n".join(rank[0]) or "정보 없음")

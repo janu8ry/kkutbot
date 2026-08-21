@@ -7,7 +7,6 @@ import discord
 from discord.ext import commands
 
 from config import config
-from database.models import GameBase
 from tools.utils import fmt
 
 from .ladder import (
@@ -24,12 +23,6 @@ from .views import MultiGameResult, PlayAgain
 from .words import WordCheck, check_word, choose_first_word, get_transition, get_word, is_hanbang, word_error_message
 
 __all__ = ["SoloGame", "MultiGame"]
-
-
-def get_winrate(data: GameBase) -> float:
-    if not data.times or not data.win:
-        return 0.0
-    return round(data.win / data.times * 100, 2)
 
 
 async def _try_delete(msg: discord.Message | None) -> None:
@@ -231,7 +224,6 @@ class SoloGame(GameSession):
                 lp_delta = get_win_lp(self.score) if won else None
             elif solo.lp != lp_before:
                 lp_delta = solo.lp - lp_before
-        stats.winrate = get_winrate(stats)
 
         head = f"**{stats.streak}연승** 🔥" if result == "승리" and stats.streak >= 2 else f"**{result}**"
         embed = discord.Embed(title=fmt("{result} 게임 결과"), description=f"{head}  |  {desc}", color=color)
@@ -469,7 +461,6 @@ class MultiGame(GameSession):
                 user.game.guild_multi.streak += 1
             else:
                 user.game.guild_multi.streak = 0
-            user.game.guild_multi.winrate = get_winrate(user.game.guild_multi)
             streak = user.game.guild_multi.streak
             tail = f" **({streak}연승 🔥)**" if streak >= 2 else (" **(신기록! 🎉)**" if record else "")
             desc.append(

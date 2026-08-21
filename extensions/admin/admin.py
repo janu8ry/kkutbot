@@ -243,7 +243,6 @@ class Admin(commands.Cog, name="관리자"):
         rank.tier, rank.division, rank.lp = name, division, lp
         if name == "언랭크":
             rank.times = rank.win = rank.streak = 0
-            rank.winrate = 0.0
         await self.bot.db.save(user_data)
         await ctx.reply(fmt(f"{{done}} `{user.name}`님의 티어를 {get_rank_progress(rank)} (으)로 변경했습니다."))
 

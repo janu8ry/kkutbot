@@ -22,8 +22,19 @@ async def remove_public_reward() -> None:
     print(f"public.reward 필드 제거: {result.modified_count}개 문서")
 
 
+async def remove_game_winrate() -> None:
+    modes = ["rank_solo", "rank_online", "long", "kkd", "guild_multi", "online_multi"]
+    result = await db["user"].update_many({}, {"$unset": {f"game.{mode}.winrate": "" for mode in modes}})
+    print(f"game.*.winrate 필드 제거: {result.modified_count}개 문서")
+
+    if "game.kkd.winrate_-1" in await db["user"].index_information():
+        await db["user"].drop_index("game.kkd.winrate_-1")
+        print("game.kkd.winrate 인덱스 제거 완료")
+
+
 async def main() -> None:
     await remove_public_reward()
+    await remove_game_winrate()
 
 
 if __name__ == "__main__":

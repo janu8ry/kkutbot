@@ -25,8 +25,13 @@ class GameBase(BaseModel):
     times: int = 0
     win: int = 0
     best: int = 0
-    winrate: float = 0.0
     streak: int = 0
+
+    @property
+    def winrate(self) -> float:
+        if not self.times or not self.win:
+            return 0.0
+        return round(self.win / self.times * 100, 2)
 
 
 class RankGameBase(GameBase):
@@ -113,7 +118,6 @@ class User(Document):
             IndexModel([("game.rank_solo.tier", 1)]),
             IndexModel([("game.kkd.win", -1)]),
             IndexModel([("game.kkd.best", -1)]),
-            IndexModel([("game.kkd.winrate", -1)]),
         ]
 
 
