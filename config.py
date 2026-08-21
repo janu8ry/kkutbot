@@ -10,7 +10,7 @@ __all__ = ["get_nested_dict", "Mongo", "config"]
 
 load_dotenv()
 
-VERSION = "3.1"
+VERSION = "3.0"
 IS_TEST = os.environ.get("TESTMODE", "true").strip().lower() != "false"
 
 
