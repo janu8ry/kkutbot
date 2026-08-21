@@ -16,8 +16,8 @@ dependencies = [
     "motor==3.7.1",
     "beanie==2.2.0",
     "rich==15.0.0",
-    "sentry-sdk==2.66.1",
-    "python-dotenv==1.2.2",
+    "sentry-sdk==2.68.0",
+    "python-dotenv==1.2.3",
     "apscheduler>=3.11.3",
     "humanize==4.16.0",
 ]
