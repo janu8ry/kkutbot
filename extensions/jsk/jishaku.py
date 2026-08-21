@@ -161,6 +161,7 @@ class CustomJSK(*STANDARD_FEATURES, *OPTIONAL_FEATURES, name="지샤쿠"):
         summary.append(f"평균 웹소켓 지연시간: `{round(self.bot.latency * 1000, 2)}`ms")
         summary.append("")
         summary.append(f"출석 유저 수: `{(await self.bot.db.get_public()).attendance}`명")
+        summary.append(f"현재 플레이 중인 유저 수: `{len(self.bot.playing_games)}`명")
         summary.append("_ _")
 
         await ctx.reply("\n".join(summary), view=AdminTools())
