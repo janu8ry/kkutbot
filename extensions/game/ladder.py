@@ -57,9 +57,9 @@ DIFFICULTY: dict[str, dict[str, Any]] = {
     "브론즈": {"surrender": 4, "target": 700, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
     "실버": {"surrender": 3, "target": 400, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
     "골드": {"surrender": 2, "target": 250, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.1},
-    "플래티넘": {"surrender": 1, "target": 175, "hanbang": 0.005, "pressure": 0.1, "dodge": 0.3},
-    "다이아몬드": {"surrender": 0, "target": 100, "hanbang": 0.01, "pressure": 0.2, "dodge": 0.5},
-    "마스터": {"surrender": 0, "target": 60, "hanbang": 0.015, "pressure": 0.3, "dodge": 0.75},
+    "플래티넘": {"surrender": 1, "target": 175, "hanbang": 0.005, "pressure": 0.1, "dodge": 0.35},
+    "다이아몬드": {"surrender": 0, "target": 100, "hanbang": 0.01, "pressure": 0.3, "dodge": 0.6},
+    "마스터": {"surrender": 0, "target": 60, "hanbang": 0.02, "pressure": 0.5, "dodge": 0.85},
 }
 SIGMA = 0.5  # target에서 단어 개수의 퍼짐 정도
 OPENING_SAMPLE_SIZE = 1000
