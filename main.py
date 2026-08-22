@@ -275,6 +275,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
             tb = f"(...)\n{tb[-1000:]}"
 
         error_id = str(uuid.uuid4())[:6]
+        event_id = capture_exception(error)
         error_embed = discord.Embed(title=":warning: 에러 발생", description=f"에러 ID: `{error_id}`", color=config.colors.red)
         if guild := ctx.guild:
             error_loc = f"- 서버: {guild} (`{guild.id}`)\n- 채널: {ctx.channel} (`{ctx.channel.id}`)"
@@ -287,20 +288,25 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         error_embed.add_field(name="에러 이름", value=f"`{error.__class__.__name__}`", inline=False)
         error_embed.add_field(name="에러 내용", value=f"```py\n{error}```", inline=False)
         error_embed.add_field(name="트레이스백", value=f"```py\n{tb}```", inline=False)
-        error_embed.add_field(name="Sentry 링크", value=f"- [Issues]({config.sentry.url})", inline=False)
+        sentry_links = f"- [Issues]({config.sentry.url})"
+        if event_id:
+            sentry_links += f"\n- [이 오류]({config.sentry.url}&query={event_id})"
+        error_embed.add_field(name="Sentry 링크", value=sentry_links, inline=False)
 
-        if is_admin(ctx):
-            await ctx.reply(embed=error_embed)
-        else:
-            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.red)
-            await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
-            await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
         logger.error(
             f"에러 발생함. (명령어: {ctx.message.content if ctx.message else ctx.command})\n"
             f"에러 이름: {error.__class__.__name__}\n에러 ID: {error_id}",
             exc_info=error,
         )
-        capture_exception(error)
+
+        if is_admin(ctx):
+            with suppress(discord.HTTPException):
+                await ctx.reply(embed=error_embed)
+        else:
+            embed = discord.Embed(title="에러 발생", description=f"알 수 없는 오류가 발생했습니다. (에러 ID: `{error_id}`)", color=config.colors.red)
+            with suppress(discord.HTTPException):
+                await ctx.reply(embed=embed, view=ServerInvite("커뮤니티에 문의하기"))
+            await (bot.get_channel(config.channels.error_log)).send(embed=error_embed)  # type: ignore
 
 
 @bot.event
