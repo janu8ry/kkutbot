@@ -1,3 +1,5 @@
+import re
+
 import discord
 from discord.ext import commands
 from discord.ext.commands.converter import CONVERTER_MAPPING  # noqa
@@ -17,8 +19,9 @@ class SearchUser(commands.UserConverter):
         except commands.MemberNotFound:
             pass
         recent = [("latest_usage", -1)]
-        doc = await ctx.bot.db.client.user.find_one({"name": argument}, {"_id": 1}, sort=recent) or await ctx.bot.db.client.user.find_one(
-            {"global_name": argument}, {"_id": 1}, sort=recent
+        exact = {"$regex": f"^{re.escape(argument)}$", "$options": "i"}
+        doc = await ctx.bot.db.client.user.find_one({"name": exact}, {"_id": 1}, sort=recent) or await ctx.bot.db.client.user.find_one(
+            {"global_name": exact}, {"_id": 1}, sort=recent
         )
         if doc:
             if user := ctx.bot.get_user(doc["_id"]):
