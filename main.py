@@ -270,6 +270,22 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError |
         while hasattr(error, "original"):
             error = error.original  # type: ignore
 
+        if isinstance(error, discord.Forbidden):
+            timed_out = bool(ctx.guild and ctx.guild.me.is_timed_out())  # type: ignore
+            logger.warning(
+                f"'{ctx.command}' 실행 중 메시지 전송이 차단되었습니다. (서버: {ctx.guild} / 채널: {ctx.channel} / 봇 타임아웃: {timed_out})"
+            )
+            cause = "끝봇이 서버에서 타임아웃되어" if timed_out else "끝봇에게 해당 채널의 메시지 전송 권한이 없어"
+            with suppress(discord.HTTPException):
+                await ctx.author.send(
+                    embed=discord.Embed(
+                        title="게임이 중단되었습니다",
+                        description=f"{cause} 게임을 계속 진행할 수 없습니다.\n서버 관리자에게 문의해 주세요.",
+                        color=config.colors.red,
+                    )
+                )
+            return
+
         tb = "".join(traceback.format_exception(error)).replace(f"{os.getcwd()}{os.sep}", "")
         if len(tb) > 1000:
             tb = f"(...)\n{tb[-1000:]}"
