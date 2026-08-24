@@ -111,6 +111,7 @@ class SoloGame(GameSession):
                 self.bot_word,  # type: ignore
                 self.used_words,
                 can_surrender=len(self.used_words) >= self.SURRENDER_ROUND * 2,
+                first_round=self.score == 0,
                 kkd=self.kkd,
             )
             if result == WordCheck.SURRENDER:
