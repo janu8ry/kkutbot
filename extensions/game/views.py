@@ -79,11 +79,11 @@ class HostGuildGame(BaseView):
         if interaction.user.id in self.ctx.bot.playing_games:
             await interaction.response.send_message(fmt("{denied} 이미 진행 중인 끝말잇기 게임이 있습니다."), ephemeral=True)
             return
-        # 잔액 조회 중에 같은 유저의 두 번째 클릭이 검사를 통과하지 못하도록 자리를 먼저 잡는다.
         self.ctx.bot.playing_games.add(interaction.user.id)
+        await interaction.response.defer()
         if (await self.ctx.bot.db.get_user(interaction.user)).points < self.game.ENTRY_FEE:
             self.ctx.bot.playing_games.discard(interaction.user.id)
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 fmt(f"{{denied}} 참가비 `{self.game.ENTRY_FEE}`{{points}}가 부족하여 참가할 수 없습니다."), ephemeral=True
             )
             return
@@ -92,10 +92,9 @@ class HostGuildGame(BaseView):
         if len(self.game.players) >= self.game.max_players:
             await self.ctx.channel.send(f"✅ 최대 인원에 도달하여 **{self.game.host.display_name}** 님의 게임을 시작합니다.")
             self.value = "start"
-            await self.disable_buttons(interaction)
+            await self.disable_buttons(interaction, use_msg=True)
             self.stop()
             return
-        await interaction.response.defer()
         self.message = await self.game.update_embed(await self.game.hosting_embed(), view=self)
 
     @discord.ui.button(label="나가기", style=discord.ButtonStyle.red, emoji=fmt("{leave}"))
@@ -105,6 +104,7 @@ class HostGuildGame(BaseView):
         if interaction.user not in self.game.players:
             await interaction.response.send_message(fmt("{denied} 게임에 참가하지 않았습니다."), ephemeral=True)
             return
+        await interaction.response.defer()
         self.game.players.remove(interaction.user)
         self.ctx.bot.playing_games.discard(interaction.user.id)
         self.game.last_host = self.game.host
@@ -113,10 +113,9 @@ class HostGuildGame(BaseView):
         if len(self.game.players) == 0:
             await self.ctx.channel.send(f"❌ 플레이어 수가 부족하여 **{self.game.host.display_name}** 님의 게임을 종료합니다.")
             self.value = "stop"
-            await self.disable_buttons(interaction)
+            await self.disable_buttons(interaction, use_msg=True)
             self.stop()
             return
-        await interaction.response.defer()
         self.message = await self.game.update_embed(await self.game.hosting_embed(), view=self)
 
     @discord.ui.button(label="게임 시작", style=discord.ButtonStyle.green, emoji=fmt("{start}"))
@@ -129,8 +128,8 @@ class HostGuildGame(BaseView):
         if len(self.game.players) < 2:
             await interaction.response.send_message(fmt("{denied} 플레이어 수가 부족하여 게임을 시작할 수 없습니다."), ephemeral=True)
             return
+        await self.disable_buttons(interaction)
         await self.ctx.channel.send(f"✅ **{self.game.host.display_name}**님의 게임을 시작합니다.")
         self.value = "start"
-        await self.disable_buttons(interaction)
         self.stop()
         return
