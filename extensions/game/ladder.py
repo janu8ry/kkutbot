@@ -38,6 +38,8 @@ LP_PER_DIVISION = 100
 DIVISIONS = 3
 DIVISION_DEMOTION_LP = 85
 TIER_DEMOTION_LP = 50
+DEFAULT_LOSE_LP = 15
+LOSE_LP: dict[str, int] = {"플래티넘": 16, "다이아몬드": 18, "마스터": 20}
 
 PLACEMENT_MAP: dict[int, tuple[str, int]] = {
     0: ("브론즈", 3),
@@ -57,9 +59,9 @@ DIFFICULTY: dict[str, dict[str, Any]] = {
     "브론즈": {"surrender": 4, "target": 700, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
     "실버": {"surrender": 3, "target": 400, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.0},
     "골드": {"surrender": 2, "target": 250, "hanbang": 0.0, "pressure": 0.0, "dodge": 0.1},
-    "플래티넘": {"surrender": 1, "target": 175, "hanbang": 0.005, "pressure": 0.1, "dodge": 0.35},
+    "플래티넘": {"surrender": 1, "target": 175, "hanbang": 0.005, "pressure": 0.1, "dodge": 0.3},
     "다이아몬드": {"surrender": 0, "target": 100, "hanbang": 0.01, "pressure": 0.3, "dodge": 0.6},
-    "마스터": {"surrender": 0, "target": 60, "hanbang": 0.02, "pressure": 0.5, "dodge": 0.85},
+    "마스터": {"surrender": 0, "target": 60, "hanbang": 0.02, "pressure": 0.7, "dodge": 0.9},
 }
 SIGMA = 0.5  # target에서 단어 개수의 퍼짐 정도
 OPENING_SAMPLE_SIZE = 1000
@@ -81,8 +83,8 @@ def get_win_lp(score: int) -> int:
     return 20 + max(0, min(5, (score - 11) // 4))
 
 
-def get_lose_lp() -> int:
-    return 15
+def get_lose_lp(tier: str) -> int:
+    return LOSE_LP.get(tier, DEFAULT_LOSE_LP)
 
 
 def update_ladder(rank: RankGameBase, won: bool, score: int) -> tuple[str, str, bool] | None:
@@ -111,8 +113,9 @@ def update_ladder(rank: RankGameBase, won: bool, score: int) -> tuple[str, str, 
             if rank.lp == 0:
                 rank.lp = 1
     else:
-        if rank.lp >= get_lose_lp():
-            rank.lp -= get_lose_lp()
+        lose_lp = get_lose_lp(rank.tier)
+        if rank.lp >= lose_lp:
+            rank.lp -= lose_lp
         elif rank.lp >= 1:
             rank.lp = 0
         elif rank.tier == LOWEST_TIER and rank.division == DIVISIONS:
