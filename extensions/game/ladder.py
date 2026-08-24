@@ -173,8 +173,6 @@ def choose_bot_word(candidates: list[str], used_words: list[str], tier: str) -> 
     if random.random() < conf["dodge"]:
         graded = [g for g in graded if not (dead_ends_after(g[0]) - used)] or graded
 
-    # 끝글자로 묶어 뽑는다. 단어 단위로 추첨하면 '법'처럼 그 글자로 끝나는 단어가 많은 쪽이
-    # 사전 수록량만큼 과대 대표되어, 티어마다 같은 글자가 반복 출제된다.
     groups: defaultdict[str, list[tuple[str, int, float]]] = defaultdict(list)
     for g in graded:
         groups[g[0][-1]].append(g)
